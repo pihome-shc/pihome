@@ -1,0 +1,306 @@
+ 
+*******************************************
+*    Serial Gateway for Raspberry Pi      *
+*    First Build for Wireless sensonrs    *
+*    Build Date: 25/05/2016 13:22         *
+*******************************************
+ 
+
+Fri Dec 16 16:37:49 2016
+Full String :    0;0;3;0;9;read: 101-101-0 s=255,c=3,t=15,pt=2,l=2,sg=0:0
+
+Full Statement :  ['0', '0', '3', '0', '9', 'read: 101-101-0 s=255,c=3,t=15,pt=2,l=2,sg=0:0\n']
+NodeID:           0
+Child SensorID:   0
+Message Type:     3
+Acknowledge:      0
+SubType:          9
+PayLoad:          read: 101-101-0 s=255,c=3,t=15,pt=2,l=2,sg=0:0
+
+Fri Dec 16 16:37:50 2016
+Full String :    101;255;3;0;15;0
+
+Full Statement :  ['101', '255', '3', '0', '15', '0\n']
+NodeID:           101
+Child SensorID:   255
+Message Type:     3
+Acknowledge:      0
+SubType:          15
+PayLoad:          0
+
+Fri Dec 16 16:37:51 2016
+Full String :    0;0;3;0;9;read: 101-101-0 s=255,c=0,t=18,pt=0,l=5,sg=0:1.5.4
+
+Full Statement :  ['0', '0', '3', '0', '9', 'read: 101-101-0 s=255,c=0,t=18,pt=0,l=5,sg=0:1.5.4\n']
+NodeID:           0
+Child SensorID:   0
+Message Type:     3
+Acknowledge:      0
+SubType:          9
+PayLoad:          read: 101-101-0 s=255,c=0,t=18,pt=0,l=5,sg=0:1.5.4
+
+Fri Dec 16 16:37:52 2016
+Full String :    101;255;0;0;18;1.5.4
+
+Full Statement :  ['101', '255', '0', '0', '18', '1.5.4\n']
+NodeID:           101
+Child SensorID:   255
+Message Type:     0
+Acknowledge:      0
+SubType:          18
+PayLoad:          1.5.4
+
+Fri Dec 16 16:37:53 2016
+Full String :    0;0;3;0;9;read: 101-101-0 s=255,c=3,t=6,pt=1,l=1,sg=0:0
+
+Full Statement :  ['0', '0', '3', '0', '9', 'read: 101-101-0 s=255,c=3,t=6,pt=1,l=1,sg=0:0\n']
+NodeID:           0
+Child SensorID:   0
+Message Type:     3
+Acknowledge:      0
+SubType:          9
+PayLoad:          read: 101-101-0 s=255,c=3,t=6,pt=1,l=1,sg=0:0
+
+Fri Dec 16 16:37:54 2016
+Full String :    101;255;3;0;6;0
+
+Full Statement :  ['101', '255', '3', '0', '6', '0\n']
+NodeID:           101
+Child SensorID:   255
+Message Type:     3
+Acknowledge:      0
+SubType:          6
+PayLoad:          0
+
+Fri Dec 16 16:37:55 2016
+Full String :    0;0;3;0;9;read: 101-101-0 s=255,c=3,t=11,pt=0,l=5,sg=0:Relay
+
+Full Statement :  ['0', '0', '3', '0', '9', 'read: 101-101-0 s=255,c=3,t=11,pt=0,l=5,sg=0:Relay\n']
+NodeID:           0
+Child SensorID:   0
+Message Type:     3
+Acknowledge:      0
+SubType:          9
+PayLoad:          read: 101-101-0 s=255,c=3,t=11,pt=0,l=5,sg=0:Relay
+
+Fri Dec 16 16:37:56 2016
+Full String :    101;255;3;0;11;Relay
+
+Full Statement :  ['101', '255', '3', '0', '11', 'Relay\n']
+NodeID:           101
+Child SensorID:   255
+Message Type:     3
+Acknowledge:      0
+SubType:          11
+PayLoad:          Relay
+
+2 Add/Update Last Seen NodeID: 101 Child Sensor ID: 255  Sensor Type: Relay
+
+Fri Dec 16 16:37:57 2016
+Full String :    0;0;3;0;9;read: 101-101-0 s=255,c=3,t=12,pt=0,l=3,sg=0:1.0
+
+Full Statement :  ['0', '0', '3', '0', '9', 'read: 101-101-0 s=255,c=3,t=12,pt=0,l=3,sg=0:1.0\n']
+NodeID:           0
+Child SensorID:   0
+Message Type:     3
+Acknowledge:      0
+SubType:          9
+PayLoad:          read: 101-101-0 s=255,c=3,t=12,pt=0,l=3,sg=0:1.0
+
+Fri Dec 16 16:37:58 2016
+Full String :    101;255;3;0;12;1.0
+
+Full Statement :  ['101', '255', '3', '0', '12', '1.0\n']
+NodeID:           101
+Child SensorID:   255
+Message Type:     3
+Acknowledge:      0
+SubType:          12
+PayLoad:          1.0
+
+Fri Dec 16 16:37:59 2016
+Full String :    0;0;3;0;9;read: 101-101-0 s=1,c=0,t=3,pt=0,l=0,sg=0:
+
+Full Statement :  ['0', '0', '3', '0', '9', 'read: 101-101-0 s=1,c=0,t=3,pt=0,l=0,sg=0:\n']
+NodeID:           0
+Child SensorID:   0
+Message Type:     3
+Acknowledge:      0
+SubType:          9
+PayLoad:          read: 101-101-0 s=1,c=0,t=3,pt=0,l=0,sg=0:
+
+Fri Dec 16 16:38:00 2016
+Full String :    101;1;0;0;3;
+
+Full Statement :  ['101', '1', '0', '0', '3', '\n']
+NodeID:           101
+Child SensorID:   1
+Message Type:     0
+Acknowledge:      0
+SubType:          3
+PayLoad:          
+
+1 Add/Update Node:  101  Child Sensor ID: 1
+Fri Dec 16 16:38:01 2016
+Full String :    0;0;3;0;9;read: 101-101-0 s=2,c=0,t=3,pt=0,l=0,sg=0:
+
+Full Statement :  ['0', '0', '3', '0', '9', 'read: 101-101-0 s=2,c=0,t=3,pt=0,l=0,sg=0:\n']
+NodeID:           0
+Child SensorID:   0
+Message Type:     3
+Acknowledge:      0
+SubType:          9
+PayLoad:          read: 101-101-0 s=2,c=0,t=3,pt=0,l=0,sg=0:
+
+Fri Dec 16 16:38:02 2016
+Full String :    101;2;0;0;3;
+
+Full Statement :  ['101', '2', '0', '0', '3', '\n']
+NodeID:           101
+Child SensorID:   2
+Message Type:     0
+Acknowledge:      0
+SubType:          3
+PayLoad:          
+
+1 Add/Update Node:  101  Child Sensor ID: 2
+Fri Dec 16 16:38:03 2016
+Full String :    0;0;3;0;9;read: 101-101-0 s=3,c=0,t=3,pt=0,l=0,sg=0:
+
+Full Statement :  ['0', '0', '3', '0', '9', 'read: 101-101-0 s=3,c=0,t=3,pt=0,l=0,sg=0:\n']
+NodeID:           0
+Child SensorID:   0
+Message Type:     3
+Acknowledge:      0
+SubType:          9
+PayLoad:          read: 101-101-0 s=3,c=0,t=3,pt=0,l=0,sg=0:
+
+Fri Dec 16 16:38:04 2016
+Full String :    101;3;0;0;3;
+
+Full Statement :  ['101', '3', '0', '0', '3', '\n']
+NodeID:           101
+Child SensorID:   3
+Message Type:     0
+Acknowledge:      0
+SubType:          3
+PayLoad:          
+
+1 Add/Update Node:  101  Child Sensor ID: 3
+Fri Dec 16 16:38:05 2016
+Full String :    0;0;3;0;9;read: 101-101-0 s=4,c=0,t=3,pt=0,l=0,sg=0:
+
+Full Statement :  ['0', '0', '3', '0', '9', 'read: 101-101-0 s=4,c=0,t=3,pt=0,l=0,sg=0:\n']
+NodeID:           0
+Child SensorID:   0
+Message Type:     3
+Acknowledge:      0
+SubType:          9
+PayLoad:          read: 101-101-0 s=4,c=0,t=3,pt=0,l=0,sg=0:
+
+Fri Dec 16 16:38:06 2016
+Full String :    101;4;0;0;3;
+
+Full Statement :  ['101', '4', '0', '0', '3', '\n']
+NodeID:           101
+Child SensorID:   4
+Message Type:     0
+Acknowledge:      0
+SubType:          3
+PayLoad:          
+
+1 Add/Update Node:  101  Child Sensor ID: 4
+Fri Dec 16 16:38:33 2016
+Full String :    0;0;3;0;9;read: 20-20-0 s=0,c=1,t=0,pt=7,l=5,sg=0:18.7
+
+Full Statement :  ['0', '0', '3', '0', '9', 'read: 20-20-0 s=0,c=1,t=0,pt=7,l=5,sg=0:18.7\n']
+NodeID:           0
+Child SensorID:   0
+Message Type:     3
+Acknowledge:      0
+SubType:          9
+PayLoad:          read: 20-20-0 s=0,c=1,t=0,pt=7,l=5,sg=0:18.7
+
+Fri Dec 16 16:38:34 2016
+Full String :    20;0;1;0;0;18.7
+
+Full Statement :  ['20', '0', '1', '0', '0', '18.7\n']
+NodeID:           20
+Child SensorID:   0
+Message Type:     1
+Acknowledge:      0
+SubType:          0
+PayLoad:          18.7
+
+Adding Database Record: Node ID: 20  Child Sensor ID: 0  PayLoad: 18.7
+
+
+Fri Dec 16 16:38:35 2016
+Full String :    0;0;3;0;9;read: 20-20-0 s=255,c=3,t=0,pt=1,l=1,sg=0:74
+
+Full Statement :  ['0', '0', '3', '0', '9', 'read: 20-20-0 s=255,c=3,t=0,pt=1,l=1,sg=0:74\n']
+NodeID:           0
+Child SensorID:   0
+Message Type:     3
+Acknowledge:      0
+SubType:          9
+PayLoad:          read: 20-20-0 s=255,c=3,t=0,pt=1,l=1,sg=0:74
+
+Fri Dec 16 16:38:36 2016
+Full String :    20;255;3;0;0;74
+
+Full Statement :  ['20', '255', '3', '0', '0', '74\n']
+NodeID:           20
+Child SensorID:   255
+Message Type:     3
+Acknowledge:      0
+SubType:          0
+PayLoad:          74
+
+Fri Dec 16 16:38:46 2016
+Full String :    0;0;3;0;9;read: 30-30-0 s=0,c=1,t=0,pt=7,l=5,sg=0:16.8
+
+Full Statement :  ['0', '0', '3', '0', '9', 'read: 30-30-0 s=0,c=1,t=0,pt=7,l=5,sg=0:16.8\n']
+NodeID:           0
+Child SensorID:   0
+Message Type:     3
+Acknowledge:      0
+SubType:          9
+PayLoad:          read: 30-30-0 s=0,c=1,t=0,pt=7,l=5,sg=0:16.8
+
+Fri Dec 16 16:38:47 2016
+Full String :    30;0;1;0;0;16.8
+
+Full Statement :  ['30', '0', '1', '0', '0', '16.8\n']
+NodeID:           30
+Child SensorID:   0
+Message Type:     1
+Acknowledge:      0
+SubType:          0
+PayLoad:          16.8
+
+Adding Database Record: Node ID: 30  Child Sensor ID: 0  PayLoad: 16.8
+
+
+Fri Dec 16 16:38:49 2016
+Full String :    0;0;3;0;9;read: 30-30-0 s=255,c=3,t=0,pt=1,l=1,sg=0:96
+
+Full Statement :  ['0', '0', '3', '0', '9', 'read: 30-30-0 s=255,c=3,t=0,pt=1,l=1,sg=0:96\n']
+NodeID:           0
+Child SensorID:   0
+Message Type:     3
+Acknowledge:      0
+SubType:          9
+PayLoad:          read: 30-30-0 s=255,c=3,t=0,pt=1,l=1,sg=0:96
+
+Fri Dec 16 16:38:50 2016
+Full String :    30;255;3;0;0;96
+
+Full Statement :  ['30', '255', '3', '0', '0', '96\n']
+NodeID:           30
+Child SensorID:   255
+Message Type:     3
+Acknowledge:      0
+SubType:          0
+PayLoad:          96
+
