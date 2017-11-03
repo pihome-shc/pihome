@@ -1,3 +1,12 @@
+<p align="center">
+    <a href="https://www.pihome.eu" target="_blank" align="center">
+        <img src="http://www.pihome.eu/images/pi-home_logo_text.png">
+    </a>
+<br/>
+    <h1>Sentry SDK for React Native</h1>
+</p>
+
+
 # PiHome - Smart Heating Control
 
 ![alt text](http://www.pihome.eu/images/pihome_home.png "PiHome - Smart Heating Control - Home Screen")
