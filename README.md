@@ -12,7 +12,8 @@ PiHome – Smart Heating Control is home automation system or you can say centra
 * Night climate
 * Away
 
-[PiHome](http://www.pihome.eu "PiHome - Smart Heating Control")
+Follow Instructions on [PiHome](http://www.pihome.eu "PiHome - Smart Heating Control") if you have any question drop me comments and i will do my best to reply as soon as humanely possible. 
+
 
 ## Secial Thanks to:
 
