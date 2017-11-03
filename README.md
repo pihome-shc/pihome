@@ -12,7 +12,7 @@
 
 PiHome – Smart Heating Control is home automation system or you can say central heating control systems that runs on credit card size single board computer Raspberry Pi. You can control your home heating from your smartphone, laptop or tablet, PiHome is a wireless boiler control which mean you don’t need to run cables from pihome controller to your boiler or to your heating zone valve or to any temperature sensors in any heating zone.PiHome is active heating control of your multi zoned heating, hot water including electrical immersion with unlimited schedules, boost and night climate suites your needs.
 
-[Step by Step Instructions](http://www.pihome.eu/how-to-install/"PiHome - Step by Step Instructions")
+[Step by Step Instructions](http://www.pihome.eu/how-to-install/ "PiHome - Step by Step Instructions")
 
 <p style="color:red;">Before we deep dive into this project something very important: PiHome comes with ABSOLUTELY NO WARRANTY, to the extent permitted by applicable law. DO NOT MAKE ANY CHANGES TO YOUR HEATING SYSTEM UNTIL UNLESS YOU KNOW WHAT YOU ARE DOING, contents provided here are for information and education purpose only, I take no responsibility for any loss or damage to you or your property.”</p3>
 
