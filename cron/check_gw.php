@@ -10,7 +10,7 @@ $gw_location = gw('location');
 $gw_port = gw('port');
 
 echo date('Y-m-d H:i:s'). " - Python Gateway Script Status Check Script Started \n"; 
-if (gw_logs('type') == 'wifi'){
+if (gw('type') == 'wifi'){
 	exec("ps ax | grep wifigw.py", $pids); 
 	//exec(" pgrep aux | grep serialgwv2.py", $pids); 
 	$gw_script_txt = 'python /var/www/cron/wifigw.py';
@@ -37,7 +37,7 @@ if (gw_logs('type') == 'wifi'){
 		$query = "UPDATE gateway SET pid = '{$out[0]}', pid_running_since = '{$pid_details}' LIMIT 1";
 		mysql_query($query, $connection);
 	}
-} elseif (gw_logs('type') == 'serial'){
+} elseif (gw('type') == 'serial'){
 	exec("ps ax | grep serialgw.py", $pids); 
 	//exec(" pgrep aux | grep serialgwv2.py", $pids); 
 	$gw_script_txt = 'python /var/www/cron/serialgw.py';
