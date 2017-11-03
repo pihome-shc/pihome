@@ -3,7 +3,6 @@
         <img src="http://www.pihome.eu/images/pi-home_logo_text.png">
     </a>
 <br/>
-    <h1>Sentry SDK for React Native</h1>
 </p>
 
 
