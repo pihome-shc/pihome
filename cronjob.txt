@@ -1,0 +1,5 @@
+*/10 * * * * /usr/bin/php /var/www/cron/system_c.php >/dev/null 2>&1
+*/30 * * * * /usr/bin/php /var/www/cron/update_weather.php >/dev/null 2>&1
+*/2 * * * * sh /var/www/cron/check_wifi.sh >/dev/null 2>&1
+*/2 * * * * php /var/www/cron/check_gw.php >/dev/null 2>&1
+*/1 * * * * /usr/bin/php /var/www/cron/boiler.php >/dev/null 2>&1
