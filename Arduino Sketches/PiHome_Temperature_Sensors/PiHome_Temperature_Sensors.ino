@@ -8,7 +8,7 @@
 //    S M A R T   H E A T I N G   C O N T R O L 
 // *****************************************************************
 // * 18650 Battery Powered OneWire DS18B20 Temperature Sensor      *
-// *            Version 0.2 Build Date 06/11/2017                  *
+// *            Version 1.34 Build Date 06/11/2017                  *
 // *                                          Have Fun - PiHome.eu *
 // *****************************************************************
 
