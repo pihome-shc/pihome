@@ -216,8 +216,10 @@ echo "--------------------------------------------------------------------------
 
 if (isset($boiler_stop_datetime)) {echo date('Y-m-d H:i:s'). " - Boiler Switched Off At: ".$boiler_stop_datetime. "\n";}
 if (isset($expected_end_date_time)){echo date('Y-m-d H:i:s'). " - Boiler Expected End Time: ".$expected_end_date_time. "\n"; }
+
 //search inside array if any value is set to 1 then we need to update db with boiler status
 //Boiler On section
+
 if (in_array("1", $boiler)) {
 	$new_boiler_status='1';
 	
@@ -228,6 +230,9 @@ if (in_array("1", $boiler)) {
 	//update messages_out table with sent status to 0 and payload to as boiler status.
 	$query = "UPDATE messages_out SET sent = '0', payload = '{$new_boiler_status}' WHERE node_id ='{$boiler_node_id}' AND child_id = '{$boiler_node_child_id}' LIMIT 1";
 	mysql_query($query, $connection);
+	
+	//If you have your boiler connected to Raspberry pi you need to modify this section 
+	//Place your code here to change Raspberry Pi GPIO status to 1 here 
 	
 	echo date('Y-m-d H:i:s'). " - Boiler Node ID: ".$boiler_node_id." Child ID: ".$boiler_node_child_id." \n";	
 	if ($boiler_fire_status != $new_boiler_status){
@@ -259,6 +264,9 @@ if (in_array("1", $boiler)) {
 	//update messages_out table with sent status to 0 and payload to as boiler status.
 	$query = "UPDATE messages_out SET sent = '0', payload = '{$new_boiler_status}' WHERE node_id ='{$boiler_node_id}' AND child_id = '{$boiler_node_child_id}' LIMIT 1";
 	mysql_query($query, $connection);
+	
+	//If you have your boiler connected to Raspberry pi you need to modify this section 
+	//Place your code here to change Raspberry Pi GPIO status to 0 here 
 	
 	echo date('Y-m-d H:i:s'). " - Boiler Node ID: ".$boiler_node_id." Child ID: ".$boiler_node_child_id." \n";	
 	if ($boiler_fire_status != $new_boiler_status){
