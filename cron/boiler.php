@@ -173,7 +173,7 @@ while ($row = mysql_fetch_assoc($results)) {
 	$start_cause ='';
 	$stop_cause = '';
 if ($zone_c < $frost_c){$zone_status="1"; $start_cause="Frost Protection";}
-	elseif(($zone_c >= $frost_c) && ($zone_c < $zone_max_c) && ($hysteresis=='0')){ 
+	elseif(($zone_c >= $frost_c) && ($zone_c < $zone_max_c) && ($hysteresis=='0')){
 		if ($away_status=='0'){
 			if($boost_status=='0'){$zone_status="0"; $stop_cause="Boost Finished";
 				if ($night_climate_status =='0') {
@@ -197,6 +197,10 @@ if ($zone_status=='0') {echo date('Y-m-d H:i:s'). " - Zone: ".$zone_name." Stop 
 $query = "UPDATE messages_out SET sent = '0', payload = '{$zone_status}' WHERE node_id ='$zone_controler_id' AND child_id = '$zone_controler_child_id' LIMIT 1";
 mysql_query($query, $connection);
 
+//*******************************************
+//If you have your zone valve connected to Raspberry Pi GPIO then You need to add GPIO Status after this line, you can use $zone_status variable to set status GPIO
+
+
 //all zone status to boiler array and incriment array index
 $boiler[$boiler_index] = $zone_status;
 $boiler_index = $boiler_index+1;
@@ -217,6 +221,7 @@ echo "--------------------------------------------------------------------------
 if (isset($boiler_stop_datetime)) {echo date('Y-m-d H:i:s'). " - Boiler Switched Off At: ".$boiler_stop_datetime. "\n";}
 if (isset($expected_end_date_time)){echo date('Y-m-d H:i:s'). " - Boiler Expected End Time: ".$expected_end_date_time. "\n"; }
 
+//*******************************************
 //search inside array if any value is set to 1 then we need to update db with boiler status
 //Boiler On section
 
@@ -265,6 +270,7 @@ if (in_array("1", $boiler)) {
 	$query = "UPDATE messages_out SET sent = '0', payload = '{$new_boiler_status}' WHERE node_id ='{$boiler_node_id}' AND child_id = '{$boiler_node_child_id}' LIMIT 1";
 	mysql_query($query, $connection);
 	
+	//*******************************************
 	//If you have your boiler connected to Raspberry pi you need to modify this section 
 	//Place your code here to change Raspberry Pi GPIO status to 0 here 
 	
