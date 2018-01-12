@@ -150,10 +150,10 @@
 <text x="16.51" y="3.81" size="1.27" layer="21">PiHome Temperature Sensor</text>
 <text x="10.795" y="44.45" size="0.8128" layer="21">nRF24L01 / 2.4GHz RF</text>
 <text x="59.69" y="40.005" size="0.8128" layer="21" rot="R180">Arduino Mini Pro 3.3v 8MHz</text>
-<text x="10.16" y="21.59" size="0.8128" layer="21" ratio="10" rot="R90">GND</text>
-<text x="9.525" y="26.035" size="0.8128" layer="21" ratio="10" rot="R270">DQ</text>
-<text x="10.16" y="27.305" size="0.8128" layer="21" ratio="10" rot="R90">VDD</text>
-<text x="29.845" y="31.115" size="0.8128" layer="21" ratio="10" rot="R180">0.1uF</text>
+<text x="10.4775" y="22.86" size="0.8128" layer="21" ratio="10" rot="R90">GND</text>
+<text x="9.525" y="27.305" size="0.8128" layer="21" ratio="10" rot="R270">DQ</text>
+<text x="10.16" y="28.575" size="0.8128" layer="21" ratio="10" rot="R90">VDD</text>
+<text x="30.48" y="31.115" size="0.8128" layer="21" ratio="10" rot="R180">0.1uF</text>
 <text x="44.45" y="36.195" size="0.8128" layer="21" ratio="10" rot="R270">0.1uF</text>
 <text x="30.48" y="10.795" size="1.27" layer="21">18650 Battery</text>
 <text x="34.925" y="48.26" size="0.8128" layer="21" ratio="10">GND</text>
