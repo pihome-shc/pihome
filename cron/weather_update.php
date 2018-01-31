@@ -1,7 +1,24 @@
 #!/usr/bin/php
-<?php require_once("connection.php");
-require_once("functions.php"); 
+<?php 
 header('Content-Type: application/json');
+echo "\033[36m";
+echo "\n";
+echo "   _____    _   _    _                             \n";
+echo "  |  __ \  (_) | |  | |                            \n";
+echo "  | |__) |  _  | |__| |   ___    _ __ ___     ___  \n";
+echo "  |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \ \n";
+echo "  | |      | | | |  | | | (_) | | | | | | | |  __/ \n";
+echo "  |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___| \n";
+echo " \033[0m \n";
+echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
+echo "\033[31m";
+echo "***************************************************************\n";
+echo "*   Weather Update Script Version 0.1 Build Date 31/01/2018   *\n";
+echo "*                                        Have Fun - PiHome.eu *\n";
+echo "***************************************************************\n";
+echo " \033[0m \n";
+require_once(__DIR__.'../../st_inc/connection.php');
+require_once(__DIR__.'../../st_inc/functions.php'); 
 
 echo date('Y-m-d H:i:s'). " - Weather Update Script Started \n"; 
 
@@ -12,6 +29,7 @@ $row = mysql_fetch_array($result);
 $country = $row['country'];
 $city = $row['city'];
 $appid = $row['openweather_api'];
+
 
 //Get Current Weather Data
 $weather_current_api = "http://api.openweathermap.org/data/2.5/weather?q=".$city.",".$country."&appid=".$appid;
@@ -106,5 +124,4 @@ foreach($weather_data['list'] as $day => $value) {
 
 echo "  \n"; 
 echo date('Y-m-d H:i:s'). " - Weather Update Script Finished \n"; 
-if(isset($connection)) { mysql_close($connection); }
 ?>

@@ -1,7 +1,8 @@
 #!/usr/bin/php
-<?php require_once("connection.php"); ?>
-<?php require_once("functions.php"); ?>
 <?php
+require_once(__DIR__.'../../st_inc/connection.php');
+require_once(__DIR__.'../../st_inc/functions.php'); 
+
 $time=date('H:i');
 $date=date('y-m-d');
 $system_c = exec ("vcgencmd measure_temp | cut -c6,7,8,9");

@@ -1,0 +1,90 @@
+
+
+-- You Must create following View Talbes in MySQL for PiHome Smart Heating to work 
+
+
+----Schedule List with zone details view table version 1.x
+Drop View if exists schedule_daily_time_zone_view; 
+CREATE VIEW schedule_daily_time_zone_view AS 
+select ss.id as time_id, ss.status as time_status, sstart.start, send.end, 
+sdtz.id as tz_id, sdtz.status as tz_status, 
+sdtz.zone_id, zone.index_id, zone.name as zone_name, temperature
+from schedule_daily_time_zone sdtz
+join schedule_daily_time ss on sdtz.schedule_daily_time_id = ss.id
+join schedule_daily_time sstart on sdtz.schedule_daily_time_id = sstart.id
+join schedule_daily_time send on sdtz.schedule_daily_time_id = send.id
+join zone on sdtz.zone_id = zone.id
+order by zone.index_id
+
+
+--Zone View version 2
+Drop View if exists zone_view; 
+CREATE VIEW zone_view AS
+select zone.status, zone.id, zone.index_id, zone.name, zone.type, zone.max_c, zone.max_operation_time, zone.hysteresis_time, 
+sid.node_id as sensors_id, zone.sensor_child_id, 
+cid.node_id as controler_id, zone.controler_child_id, 
+bid.node_id as boiler_id, 
+lasts.last_seen, msv.ms_version, skv.sketch_version
+from zone
+join nodes sid on zone.sensor_id = sid.id
+join nodes cid on zone.controler_id = cid.id
+join nodes bid on zone.boiler_id = bid.id
+
+join nodes lasts on zone.sensor_id = lasts.id
+join nodes msv on zone.sensor_id = msv.id
+join nodes skv on zone.sensor_id = skv.id
+
+--Boiler View
+Drop View if exists boiler_view; 
+CREATE VIEW boiler_view AS
+select boiler.status, boiler.fired_status, boiler.name, nodes.node_id, boiler.node_child_id, boiler.hysteresis_time, boiler.max_operation_time
+from boiler
+join nodes on boiler.node_id = nodes.id
+
+
+--Boost View
+Drop View if exists boost_view; 
+CREATE VIEW boost_view AS
+select boost.`status`, boost.zone_id, zone_idx.index_id, zone.name, boost.temperature, boost.minute
+from boost
+join zone on boost.zone_id = zone.id
+join zone zone_idx on boost.zone_id = zone_idx.id
+
+
+--Boost View
+Drop View if exists override_view; 
+CREATE VIEW override_view AS
+select override.`status`, override.zone_id, zone_idx.index_id, zone.name, override.time, override.temperature
+from override
+join zone on override.zone_id = zone.id
+join zone zone_idx on override.zone_id = zone_idx.id
+
+----Schedule List with zone details view table version 1.x
+Drop View if exists schedule_night_climat_zone_view; 
+CREATE VIEW schedule_night_climat_zone_view AS 
+select tnct.status as t_status, ncz.status as z_status, ncz.zone_id, snct.start_time, enct.end_time, ncz.min_temperature, ncz.max_temperature
+from schedule_night_climat_zone ncz
+join schedule_night_climate_time snct on ncz.schedule_night_climate_id = snct.id
+join schedule_night_climate_time enct on ncz.schedule_night_climate_id = enct.id
+join schedule_night_climate_time tnct on ncz.schedule_night_climate_id = tnct.id
+
+
+--Messages_in View for Graps
+Drop View if exists messages_in_view_24h; 
+CREATE VIEW messages_in_view_24h AS
+select node_id, child_id, datetime, payload 
+from messages_in 
+where datetime > DATE_SUB( NOW(), INTERVAL 24 HOUR)
+
+
+--Zone Logs views 
+Drop View if exists zone_log_view; 
+CREATE VIEW zone_log_view AS
+select zone_logs.id, zone_logs.zone_id, ztype.type, 
+zone_logs.boiler_log_id, blst.start_datetime, blet.stop_datetime, blext.expected_end_date_time, zone_logs.status
+from zone_logs
+join zone ztype on zone_logs.zone_id = ztype.id
+join boiler_logs blst on zone_logs.boiler_log_id = blst.id
+join boiler_logs blet on zone_logs.boiler_log_id = blet.id
+join boiler_logs blext on zone_logs.boiler_log_id = blext.id
+order by id asc;
