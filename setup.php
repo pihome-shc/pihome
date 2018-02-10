@@ -29,7 +29,7 @@ $cronfile = '/tmp/crontab.txt';
 //* Modify Following variable according to your settings  *
 //*********************************************************
 $hostname = 'localhost';
-$dbname   = 'testing';
+$dbname   = 'pihome';
 $dbusername = 'root';
 $dbpassword = 'passw0rd';
 $connect_error = 'Sorry We are Experiencing MySQL Database Connection Problem...';
