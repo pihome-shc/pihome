@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS `boiler` (
   `hysteresis_time` tinyint(4) DEFAULT '3',
   `max_operation_time` tinyint(4) DEFAULT '60',
   `datetime` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `gpio_pin` INT(11) NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_boiler_zone` (`node_id`),
   CONSTRAINT `FK_boiler_zone` FOREIGN KEY (`node_id`) REFERENCES `nodes` (`id`)
@@ -474,6 +475,7 @@ CREATE TABLE IF NOT EXISTS `zone` (
   `controler_id` int(11) DEFAULT NULL,
   `controler_child_id` int(11) DEFAULT NULL,
   `boiler_id` int(11) DEFAULT NULL,
+  `gpio_pin` INT(11) NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_zone_nodes` (`sensor_id`),
   KEY `FK_zone_nodes_2` (`controler_id`),

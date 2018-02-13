@@ -129,7 +129,7 @@ if (!$db_selected) {
 	$query = "CREATE VIEW zone_view AS
 	select zone.status, zone.id, zone.index_id, zone.name, zone.type, zone.max_c, zone.max_operation_time, zone.hysteresis_time, 
 	sid.node_id as sensors_id, zone.sensor_child_id, 
-	cid.node_id as controler_id, zone.controler_child_id, 
+	cid.node_id as controler_id, zone.controler_child_id, zone.gpio_pin,
 	bid.node_id as boiler_id, 
 	lasts.last_seen, msv.ms_version, skv.sketch_version
 	from zone
@@ -149,7 +149,7 @@ if (!$db_selected) {
 	
 	//Create Table View
 	$query = "CREATE VIEW boiler_view AS
-	select boiler.status, boiler.fired_status, boiler.name, nodes.node_id, boiler.node_child_id, boiler.hysteresis_time, boiler.max_operation_time
+	select boiler.status, boiler.fired_status, boiler.name, nodes.node_id, boiler.node_child_id, boiler.hysteresis_time, boiler.max_operation_time, boiler.gpio_pin
 	from boiler
 	join nodes on boiler.node_id = nodes.id;";
 	$result = mysql_query($query, $connection);
