@@ -12,7 +12,8 @@ echo " \033[0m \n";
 echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
 echo "*******************************************************\n";
-echo "*  Boiler Script Version 0.3 Build Date 31/01/2018    *\n";
+echo "*   Boiler Script Version 0.4 Build Date 31/01/2018   *\n";
+echo "*   Update on 13/02/218                               *\n";
 echo "*                                Have Fun - PiHome.eu *\n";
 echo "*******************************************************\n";
 echo " \033[0m \n";
@@ -36,6 +37,7 @@ $boiler_node_id = $row['node_id'];
 $boiler_node_child_id = $row['node_child_id']; 
 $boiler_hysteresis_time = $row['hysteresis_time']; 
 $boiler_max_operation_time = $row['max_operation_time'];
+$boiler_goip_pin = $row['gpio_pin'];
 
 //query to check away status 
 $query = "SELECT * FROM away LIMIT 1";
@@ -74,6 +76,7 @@ while ($row = mysql_fetch_assoc($results)) {
 	$zone_sensor_child_id=$row['sensor_child_id'];
 	$zone_controler_id=$row['controler_id'];
 	$zone_controler_child_id=$row['controler_child_id'];
+	$zone_gpio_pin=$row['gpio_pin'];
 	
 	//query to get temperature from messages_in table 
 	//$query = "SELECT * FROM messages_in WHERE node_id = {$zone_sensor_id} ORDER BY datetime desc LIMIT 1";
@@ -109,7 +112,7 @@ while ($row = mysql_fetch_assoc($results)) {
 	$boost_c = $boost['temperature'];
 	$boost_minute = $boost['minute'];
 
-	//query to check night cliemate status and get temperature from night climate table 
+	//query to check night climate status and get temperature from night climate table 
 	$query = "select * from schedule_night_climat_zone_view WHERE zone_id = {$zone_id} LIMIT 1";
 	$result = mysql_query($query, $connection);
 	$night_climate = mysql_fetch_array($result);
@@ -145,7 +148,7 @@ while ($row = mysql_fetch_assoc($results)) {
 		$query = "UPDATE boost SET status = '{$boost_active}' WHERE zone_id = {$row['id']} LIMIT 1";
 		mysql_query($query, $connection);
 		/* 
-		Following is commented out to test wireless communication to zone relay module. 
+		Following is commented out if you dont have Boost Console Build. 
 		$query = "SELECT * FROM boost WHERE zone_id ={$row['id']}";
 		$bresults = mysql_query($query, $connection);
 		$brow = mysql_fetch_assoc($bresults);
@@ -194,11 +197,19 @@ echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone ID: \033[41m".$zone_id. "\0
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Controller: \033[41m".$zone_controler_id."\033[0m Controller Child: \033[41m".$zone_controler_child_id."\033[0m Zone Status: \033[41m".$zone_status."\033[0m \n";	
 if ($zone_status=='1') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Start Cause: ".$start_cause." - Target C:\033[41m".$target_c."\033[0m Zone C:\033[31m".$zone_c."\033[0m \n";}
 if ($zone_status=='0') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Stop Cause: ".$stop_cause." - Target C:\033[41m".$target_c."\033[0m Zone C:\033[31m".$zone_c."\033[0m \n";}
+
+/********************************************************************************************************************************************************************
+Following Two lines only if you your Zone Vole is connected directly to Raspberry Pi GPIO, Uncomment following two lines and make sure you have WiringPi installed, 
+If you need help on how to install WiringPi on Raspberry pi then follow this link: http://www.pihome.eu/2017/10/13/wiringpi-installation/
+/********************************************************************************************************************************************************************/
+//exec("/usr/local/bin/gpio write ".$zone_gpio_pin." ".$zone_status ); 
+//exec("/usr/local/bin/gpio mode ".$zone_gpio_pin." out");
+
 //update messages_out table with sent status to 0 and payload to as zone status.
 $query = "UPDATE messages_out SET sent = '0', payload = '{$zone_status}' WHERE node_id ='$zone_controler_id' AND child_id = '$zone_controler_child_id' LIMIT 1";
 mysql_query($query, $connection);
 
-//all zone status to boiler array and incriment array index
+//all zone status to boiler array and increment array index
 $boiler[$boiler_index] = $zone_status;
 $boiler_index = $boiler_index+1;
 
@@ -214,7 +225,6 @@ echo "--------------------------------------------------------------------------
 //print_r ($zone_log);
 //print_r ($boiler);
 
-
 if (isset($boiler_stop_datetime)) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Switched Off At: ".$boiler_stop_datetime. "\n";}
 if (isset($expected_end_date_time)){echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Expected End Time: ".$expected_end_date_time. "\n"; }
 //search inside array if any value is set to 1 then we need to update db with boiler status
@@ -229,7 +239,14 @@ if (in_array("1", $boiler)) {
 	//update messages_out table with sent status to 0 and payload to as boiler status.
 	$query = "UPDATE messages_out SET sent = '0', payload = '{$new_boiler_status}' WHERE node_id ='{$boiler_node_id}' AND child_id = '{$boiler_node_child_id}' LIMIT 1";
 	mysql_query($query, $connection);
-	
+
+	/********************************************************************************************************************************************************************
+	Following Two lines only if you your Gas Boiler is connected directly to Raspberry Pi GPIO, Uncomment following two lines and make sure you have WiringPi installed, 
+	If you need help on how to install WiringPi on Raspberry pi then follow this link: http://www.pihome.eu/2017/10/13/wiringpi-installation/
+	/********************************************************************************************************************************************************************/
+	//exec("/usr/local/bin/gpio write ".$boiler_goip_pin ." ".$new_boiler_status ); 
+	//exec("/usr/local/bin/gpio mode ".$boiler_goip_pin ." out");
+
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Node ID: \033[41m".$boiler_node_id."\033[0m Child ID: \033[41m".$boiler_node_child_id."\033[0m \n";	
 	if ($boiler_fire_status != $new_boiler_status){
 		//insert date and time into boiler log table so we can record boiler start date and time.
@@ -260,6 +277,13 @@ if (in_array("1", $boiler)) {
 	//update messages_out table with sent status to 0 and payload to as boiler status.
 	$query = "UPDATE messages_out SET sent = '0', payload = '{$new_boiler_status}' WHERE node_id ='{$boiler_node_id}' AND child_id = '{$boiler_node_child_id}' LIMIT 1";
 	mysql_query($query, $connection);
+
+	/********************************************************************************************************************************************************************
+	Following Two lines only if you your Gas Boiler is connected directly to Raspberry Pi GPIO, Uncomment following two lines and make sure you have WiringPi installed, 
+	If you need help on how to install WiringPi on Raspberry pi then follow this link: http://www.pihome.eu/2017/10/13/wiringpi-installation/
+	/********************************************************************************************************************************************************************/
+	//exec("/usr/local/bin/gpio write ".$boiler_goip_pin ." ".$new_boiler_status ); 
+	//exec("/usr/local/bin/gpio mode ".$boiler_goip_pin ." out");
 	
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Node ID: \033[41m".$boiler_node_id."\033[0m Child ID: \033[41m".$boiler_node_child_id."\033[0m \n";	
 	if ($boiler_fire_status != $new_boiler_status){
@@ -274,10 +298,11 @@ if (in_array("1", $boiler)) {
 	}
 }
 
-//Following section is Optional for Stats collection  
-//I thank you for not commenting it out as it will help me to allocate time to keep this systems updated. 
-//I am using CPU serial as salt and then using MD5 hasing to get unique reference, i have no other intention if you want you can set variable to anything you like
-
+/********************************************************************************************************************************************************************
+Following section is Optional for States collection  
+I thank you for not commenting it out as it will help me to allocate time to keep this systems updated. 
+I am using CPU serial as salt and then using MD5 hasing to get unique reference, i have no other intention if you want you can set variable to anything you like
+/********************************************************************************************************************************************************************/
 $start_time = '23:58:00';
 $end_time = '00:00:00';
 if (TimeIsBetweenTwoTimes($current_time, $start_time, $end_time)) {
