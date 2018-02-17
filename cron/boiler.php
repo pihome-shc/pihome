@@ -13,17 +13,21 @@ echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
 echo "*******************************************************\n";
 echo "*   Boiler Script Version 0.4 Build Date 31/01/2018   *\n";
-echo "*   Update on 13/02/218                               *\n";
+echo "*   Update on 14/02/218                               *\n";
 echo "*                                Have Fun - PiHome.eu *\n";
 echo "*******************************************************\n";
 echo " \033[0m \n";
 
 require_once(__DIR__.'../../st_inc/connection.php');
-require_once(__DIR__.'../../st_inc/functions.php'); 
+require_once(__DIR__.'../../st_inc/functions.php');
 
 //Set php script execution time in seconds
 ini_set('max_execution_time', 40); 
 $date_time = date('Y-m-d H:i:s');
+
+//GPIO Value for SainSmart Relay Board to turn on  or off 
+$relay_on = '1'; //GPIO value to write to turn on attached relay
+$relay_off = '0'; // GPIO value to write to turn off attached relay
 
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Script Started \n"; 
 
@@ -199,11 +203,15 @@ if ($zone_status=='1') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".
 if ($zone_status=='0') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Stop Cause: ".$stop_cause." - Target C:\033[41m".$target_c."\033[0m Zone C:\033[31m".$zone_c."\033[0m \n";}
 
 /********************************************************************************************************************************************************************
-Following Two lines only if you your Zone Vole is connected directly to Raspberry Pi GPIO, Uncomment following two lines and make sure you have WiringPi installed, 
+Following lines only if your Zone Vole is connected directly to Raspberry Pi GPIO, Uncomment following two lines and make sure you have WiringPi installed, 
 If you need help on how to install WiringPi on Raspberry pi then follow this link: http://www.pihome.eu/2017/10/13/wiringpi-installation/
 /********************************************************************************************************************************************************************/
-//exec("/usr/local/bin/gpio write ".$zone_gpio_pin." ".$zone_status ); 
-//exec("/usr/local/bin/gpio mode ".$zone_gpio_pin." out");
+/*
+$relay_status = ($zone_status == '1') ? $relay_off : $relay_on;
+echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone:  GIOP Relay Status: \033[41m".$relay_status. "\033[0m (1=On, 0=Off) \n";
+exec("/usr/local/bin/gpio write ".$zone_gpio_pin." ".$relay_status ); 
+exec("/usr/local/bin/gpio mode ".$zone_gpio_pin." out");
+*/
 
 //update messages_out table with sent status to 0 and payload to as zone status.
 $query = "UPDATE messages_out SET sent = '0', payload = '{$zone_status}' WHERE node_id ='$zone_controler_id' AND child_id = '$zone_controler_child_id' LIMIT 1";
@@ -227,7 +235,8 @@ echo "--------------------------------------------------------------------------
 
 if (isset($boiler_stop_datetime)) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Switched Off At: ".$boiler_stop_datetime. "\n";}
 if (isset($expected_end_date_time)){echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Expected End Time: ".$expected_end_date_time. "\n"; }
-//search inside array if any value is set to 1 then we need to update db with boiler status
+
+//Search inside array if any value is set to 1 then we need to update db with boiler status
 //Boiler On section
 if (in_array("1", $boiler)) {
 	$new_boiler_status='1';
@@ -244,7 +253,7 @@ if (in_array("1", $boiler)) {
 	Following Two lines only if you your Gas Boiler is connected directly to Raspberry Pi GPIO, Uncomment following two lines and make sure you have WiringPi installed, 
 	If you need help on how to install WiringPi on Raspberry pi then follow this link: http://www.pihome.eu/2017/10/13/wiringpi-installation/
 	/********************************************************************************************************************************************************************/
-	//exec("/usr/local/bin/gpio write ".$boiler_goip_pin ." ".$new_boiler_status ); 
+	//exec("/usr/local/bin/gpio write ".$boiler_goip_pin ." ".$relay_on ); 
 	//exec("/usr/local/bin/gpio mode ".$boiler_goip_pin ." out");
 
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Node ID: \033[41m".$boiler_node_id."\033[0m Child ID: \033[41m".$boiler_node_child_id."\033[0m \n";	
@@ -282,7 +291,7 @@ if (in_array("1", $boiler)) {
 	Following Two lines only if you your Gas Boiler is connected directly to Raspberry Pi GPIO, Uncomment following two lines and make sure you have WiringPi installed, 
 	If you need help on how to install WiringPi on Raspberry pi then follow this link: http://www.pihome.eu/2017/10/13/wiringpi-installation/
 	/********************************************************************************************************************************************************************/
-	//exec("/usr/local/bin/gpio write ".$boiler_goip_pin ." ".$new_boiler_status ); 
+	//exec("/usr/local/bin/gpio write ".$boiler_goip_pin ." ".$relay_off ); 
 	//exec("/usr/local/bin/gpio mode ".$boiler_goip_pin ." out");
 	
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Node ID: \033[41m".$boiler_node_id."\033[0m Child ID: \033[41m".$boiler_node_child_id."\033[0m \n";	
