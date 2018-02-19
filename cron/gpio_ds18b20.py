@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import time, os, fnmatch, MySQLdb as mdb, logging
+from decimal import Decimal
 class bc:
 	hed = '\033[0;36;40m'
 	dtm = '\033[0;36;40m'
@@ -46,16 +47,27 @@ print "-" * 68
 def insertDB(IDs, temperature):
 	try:
 		con = mdb.connect(dbhost, dbuser, dbpass, dbname);
-		cursor = con.cursor()
+		cur = con.cursor()
 		for i in range(0,len(temperature)):
+			#Check if Sensors Already Exit in Nodes Table, if no then add Sensors into Nodes Table otherwise just update Temperature Readings. 
+			cur.execute('SELECT COUNT(*) FROM `nodes` where node_id = (%s)', (IDs[i]))
+			row = cur.fetchone()
+			row = int(row[0])
+			if (row == 0):
+				print bc.dtm + time.ctime() + bc.ENDC + ' - New DS18B20 Sensors Discovered' + bc.grn, IDs[i], bc.ENDC 
+				cur.execute('INSERT INTO nodes (node_id, child_id_1, name, last_seen, ms_version) VALUES(%s,%s,%s,%s,%s)', (IDs[i], '0', 'Temperature Sensor', time.strftime("%Y-%m-%d %H:%M:%S"), '0'))
+				con.commit()
+			#If DS18B20 Sensor record exist: Update Nodes Table with Last seen status. 
+			if (row == 1):
+				cur.execute('UPDATE `nodes` SET `last_seen`=now() WHERE node_id = %s', [IDs[i]])
+				con.commit()
 			print bc.dtm + time.ctime() + bc.ENDC + ' - Sensors ID' + bc.grn, IDs[i], bc.ENDC + 'Temperature' + bc.grn, temperature[i], bc.ENDC
-			sql = "INSERT INTO messages_in(node_id, child_id, sub_type, payload, datetime) VALUES ('%s', '%s', '%s', '%s', '%s')" % (IDs[i], '0', '0', temperature[i], time.strftime("%Y-%m-%d %H:%M"))
-			cursor.execute(sql)
-			sql = []
+			cur.execute('INSERT INTO messages_in(node_id, child_id, sub_type, payload, datetime) VALUES(%s, %s, %s, %s, %s)', (IDs[i], '0', '0', round(temperature[i],2), time.strftime("%Y-%m-%d %H:%M:%S")))
 			con.commit()
 		con.close()
 	except mdb.Error, e:
 		logger.error(e)
+		print bc.dtm + time.ctime() + bc.ENDC + ' - DB Connection Closed: %s' % e
 
 #Read DS18B20 Sensors and Save Them to MySQL
 while True:
