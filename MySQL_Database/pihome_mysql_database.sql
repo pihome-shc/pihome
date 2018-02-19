@@ -154,7 +154,7 @@ CREATE TABLE IF NOT EXISTS `messages_in` (
   `node_id` tinyint(4) DEFAULT NULL,
   `child_id` tinyint(4) DEFAULT NULL,
   `sub_type` int(11) DEFAULT NULL,
-  `payload` decimal(10,3) DEFAULT NULL,
+  `payload` decimal(10,2) DEFAULT NULL,
   `datetime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_bin;

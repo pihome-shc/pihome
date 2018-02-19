@@ -1,4 +1,4 @@
-<?php 
+<?php
 //query to frost protection temperature 
 $query = "SELECT * FROM frost_protection LIMIT 1 ";
 $result = mysql_query($query, $connection);
@@ -144,12 +144,17 @@ $query = "SELECT * FROM nodes where name = 'Temperature Sensor' ORDER BY node_id
 $results = mysql_query($query, $connection);
 echo '	<div class=\"list-group\">';
 while ($row = mysql_fetch_assoc($results)) {
-	$batquery = "select * from nodes_battery where node_id = {$row['node_id']} ORDER BY id desc limit 1";
+	$batquery = "select * from nodes_battery where node_id = {$row['node_id']} ORDER BY id desc limit 1;";
 	$batresults = mysql_query($batquery, $connection);
 	$brow = mysql_fetch_array($batresults);
-	echo "<a href=\"#\" class=\"list-group-item\">
-    <i class=\"ionicons ion-thermometer red\"></i> ".$row['node_id']." - <i class=\"fa fa-battery-full\"></i> ".round($brow ['bat_level'],0)."% - ".$brow ['bat_voltage']."v
-    <span class=\"pull-right text-muted small\"><em>".$row['last_seen']."</em></span></a>"; 
+	if ($row['ms_version'] > 0){
+		echo "<a href=\"#\" class=\"list-group-item\">
+		<i class=\"ionicons ion-thermometer red\"></i> ".$row['node_id']." - <i class=\"fa fa-battery-full\"></i> ".round($brow ['bat_level'],0)."% - ".$brow ['bat_voltage']."v
+		<span class=\"pull-right text-muted small\"><em>".$row['last_seen']."</em></span></a>"; 	
+	}else {
+		echo "<a href=\"#\" class=\"list-group-item\">
+		<i class=\"ionicons ion-thermometer red\"></i> ".$row['node_id']."<span class=\"pull-right text-muted small\"><em>".$row['last_seen']."</em></span></a>"; 
+	}
 }
 echo '</div></div>
             <div class="modal-footer">
@@ -178,10 +183,18 @@ $query = "select * from zone_view order by index_id asc";
 $results = mysql_query($query, $connection);
 echo '	<div class=\"list-group\">';
 while ($row = mysql_fetch_assoc($results)) {
-echo "<div class=\"list-group-item\">
-    <i class=\"glyphicon glyphicon-th-large orange\"></i> ".$row['name']."
-    <span class=\"pull-right \"><em>&nbsp;&nbsp;<small> Max ".$row['max_c']."&deg; </em> - Sensor: ".$row['sensors_id']." - Ctr: ".$row['controler_id']."-".$row['controler_child_id']."</small></span> 
-    </div>";
+	if ($row['gpio_pin'] == 0){
+		echo "<div class=\"list-group-item\">
+		<i class=\"glyphicon glyphicon-th-large orange\"></i> ".$row['name']."
+		<span class=\"pull-right \"><em>&nbsp;&nbsp;<small> Max ".$row['max_c']."&deg; </em> - Sensor: ".$row['sensors_id']." - Ctr: ".$row['controler_id']."-".$row['controler_child_id']."</small></span> 
+		</div>";
+	} else {
+		echo "<div class=\"list-group-item\">
+		<i class=\"glyphicon glyphicon-th-large orange\"></i> ".$row['name']."
+		<span class=\"pull-right \"><em>&nbsp;&nbsp;<small> Max ".$row['max_c']."&deg; </em> - Sensor: ".$row['sensors_id']." - GPIO: ".$row['gpio_pin']."</small></span> 
+		</div>";
+	}
+
 }
 echo '</div></div>
             <div class="modal-footer">
@@ -552,5 +565,6 @@ echo '</div></div>
         </div>
     </div>
 </div>';
+
 
 ?>
