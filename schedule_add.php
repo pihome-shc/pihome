@@ -1,8 +1,28 @@
-<?php require_once("st_inc/session.php"); ?>
-<?php confirm_logged_in(); ?>
-<?php require_once("st_inc/connection.php"); ?>
-<?php require_once("st_inc/functions.php"); ?>
-<?php
+<?php 
+/*
+   _____    _   _    _                             
+  |  __ \  (_) | |  | |                            
+  | |__) |  _  | |__| |   ___    _ __ ___     ___  
+  |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \ 
+  | |      | | | |  | | | (_) | | | | | | | |  __/ 
+  |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___| 
+
+     S M A R T   H E A T I N G   C O N T R O L 
+
+*************************************************************************"
+* PiHome is Raspberry Pi based Central Heating Control systems. It runs *"
+* from web interface and it comes with ABSOLUTELY NO WARRANTY, to the   *"
+* extent permitted by applicable law. I take no responsibility for any  *"
+* loss or damage to you or your property.                               *"
+* DO NOT MAKE ANY CHANGES TO YOUR HEATING SYSTEM UNTILL UNLESS YOU KNOW *"
+* WHAT YOU ARE DOING                                                    *"
+*************************************************************************"
+*/
+require_once("st_inc/session.php"); 
+confirm_logged_in();
+require_once(__DIR__.'/st_inc/connection.php');
+require_once(__DIR__.'/st_inc/functions.php');
+
 if (isset($_POST['submit'])) {
  		$sc_en = isset($_POST['sc_en']) ? $_POST['sc_en'] : "0";
 		$start_time = mysql_prep($_POST['start_time']);
@@ -98,10 +118,16 @@ while ($row = mysql_fetch_assoc($results)) {
 	</select>
     <div class="help-block with-errors"></div></div></div>
 
+
 <?php }?>				
+
+
                 <a href="schedule.php"><button type="button" class="btn btn-primary btn-sm" >Cancel</button></a>
                 <input type="submit" name="submit" value="Submit" class="btn btn-default btn-sm login">
 				</form>
+				
+				
+
 						</div>
                         <!-- /.panel-body -->
 						<div class="panel-footer">
@@ -118,6 +144,10 @@ Outside: <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
 <?php echo $weather['description'];?></span>
                         </div>
                     </div>
+					
+					
+					
+					
                 </div>
 
                 <!-- /.col-lg-4 -->
@@ -125,4 +155,10 @@ Outside: <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
             <!-- /.row -->
         </div>
         <!-- /#page-wrapper -->
+		
 		<?php include("footer.php"); ?>
+		
+		
+		
+
+

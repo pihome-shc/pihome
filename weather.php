@@ -1,7 +1,28 @@
-<?php require_once("st_inc/session.php"); ?>
-<?php confirm_logged_in(); ?>
-<?php require_once("st_inc/connection.php"); ?>
-<?php require_once("st_inc/functions.php"); ?>
+<?php 
+/*
+   _____    _   _    _                             
+  |  __ \  (_) | |  | |                            
+  | |__) |  _  | |__| |   ___    _ __ ___     ___  
+  |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \ 
+  | |      | | | |  | | | (_) | | | | | | | |  __/ 
+  |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___| 
+
+     S M A R T   H E A T I N G   C O N T R O L 
+
+*************************************************************************"
+* PiHome is Raspberry Pi based Central Heating Control systems. It runs *"
+* from web interface and it comes with ABSOLUTELY NO WARRANTY, to the   *"
+* extent permitted by applicable law. I take no responsibility for any  *"
+* loss or damage to you or your property.                               *"
+* DO NOT MAKE ANY CHANGES TO YOUR HEATING SYSTEM UNTILL UNLESS YOU KNOW *"
+* WHAT YOU ARE DOING                                                    *"
+*************************************************************************"
+*/
+require_once("st_inc/session.php"); 
+confirm_logged_in();
+require_once(__DIR__.'/st_inc/connection.php');
+require_once(__DIR__.'/st_inc/functions.php');
+?>
 <?php include("header.php");  ?>
 <?php  if(isset($message_success)) { echo "<div class=\"alert alert-success alert-dismissable\"> <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button>" . $message_success . "</div>" ;}  ?>
 <?php  if(isset($error)) { echo "<div class=\"alert alert-danger alert-dismissable\"> <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button>" . $error . "</div>" ;}  ?>	
@@ -17,7 +38,21 @@
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
+						
 <?php
+/* 
+// read jaso weather data and present it using function. 
+$weather = getWeather(); 
+echo "<img src=\"images/".$weather['icon'].".png\">";
+echo "Location: ".$weather['location']."<br>";
+echo "Temperature: ".$weather['temp_celsius']."<br>";
+echo $weather['title']."- " .$weather['description']."<br>";
+*/
+
+//date_default_timezone_set("Europe/Dublin");
+//echo date_default_timezone_get();
+
+
 echo '<div class="list-group">';
 $weather_api = file_get_contents('weather_5days.json');
 $weather_data = json_decode($weather_api, true);
@@ -38,9 +73,15 @@ echo '<a href="#" class="list-group-item">'
 }
 ?>
 </div>
+
+
+
+
+
                         </div>
                         <!-- /.panel-body -->
 						<div class="panel-footer">
+                            Next Schedule: 
                         </div>
                     </div>
                 </div>
@@ -50,4 +91,7 @@ echo '<a href="#" class="list-group-item">'
             <!-- /.row -->
         </div>
         <!-- /#page-wrapper -->
+		
 <?php include("footer.php");  ?> 
+
+
