@@ -50,6 +50,7 @@ Basic knowledge of command line with following main components for pihome to fun
 * MySQL 
 
 ## How To Install 
+sudo apt-get install git
 sudo git clone https://github.com/pihome-shc/pihome "/var/www"
 
 
