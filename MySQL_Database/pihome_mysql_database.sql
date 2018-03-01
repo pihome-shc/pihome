@@ -409,7 +409,7 @@ CREATE TABLE IF NOT EXISTS `system` (
 -- Dumping data for table pihome.system: ~0 rows (approximately)
 /*!40000 ALTER TABLE `system` DISABLE KEYS */;
 REPLACE INTO `system` (`id`, `name`, `version`, `build`, `update_location`, `update_file`, `update_alias`, `country`, `city`, `openweather_api`, `backup_email`, `ping_home`, `pi_serial`) VALUES
-	(2, 'PiHome - Smart Heating Control', '0.21', '181717', 'http://www.pihome.eu/updates/', 'current-release-versions.php', 'pihome', 'IE', 'Portlaoise', '', 'info@pihome.eu', b'1', '1');
+	(2, 'PiHome - Smart Heating Control', '0.22', '010318', 'http://www.pihome.eu/updates/', 'current-release-versions.php', 'pihome', 'IE', 'Portlaoise', '', 'info@pihome.eu', b'1', '1');
 /*!40000 ALTER TABLE `system` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.user
