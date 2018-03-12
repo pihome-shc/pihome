@@ -315,6 +315,7 @@ I am using CPU serial as salt and then using MD5 hasing to get unique reference,
 $start_time = '23:58:00';
 $end_time = '00:00:00';
 if (TimeIsBetweenTwoTimes($current_time, $start_time, $end_time)) {
+	echo "---------------------------------------------------------------------------------------- \n";
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Time to call Home \n";
 	$external_ip = file_get_contents('http://ddns.pihome.eu/myip.php');
 	$pi_serial = exec ("cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2");
@@ -323,16 +324,17 @@ if (TimeIsBetweenTwoTimes($current_time, $start_time, $end_time)) {
 	$hardware = exec ("cat /proc/cpuinfo | grep Hardware | cut -d ' ' -f 2");
 	$revision = exec ("cat /proc/cpuinfo | grep Revision | cut -d ' ' -f 2");
 	$uid = UniqueMachineID($pi_serial);
-	echo date('Y-m-d H:i:s'). " - External IP Address: ".$external_ip."\n";
-	echo date('Y-m-d H:i:s'). " - Raspberry Pi Serial: " .$pi_serial."\n";
-	echo date('Y-m-d H:i:s'). " - Raspberry Pi Hardware: " .$hardware."\n";
-	echo date('Y-m-d H:i:s'). " - Raspberry Pi CPU Model: " .$cpu_model."\n";
-	echo date('Y-m-d H:i:s'). " - Raspberry Pi Revision: " .$revision."\n";
-	echo date('Y-m-d H:i:s'). " - Raspberry Pi UID: " .$uid."\n";
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - External IP Address: ".$external_ip."\n";
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Raspberry Pi Serial: " .$pi_serial."\n";
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Raspberry Pi Hardware: " .$hardware."\n";
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Raspberry Pi CPU Model: " .$cpu_model."\n";
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Raspberry Pi Revision: " .$revision."\n";
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Raspberry Pi UID: " .$uid."\n";
 	$url="http://ddns.pihome.eu/home.php?ip=${external_ip}&serial=${uid}&cpu_model=${cpu_model}&hardware=${hardware}&revision=${revision}";
 	echo $url."\n";
 	$result = url_get_contents($url);
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiHome Says: ".$result;
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiHome Says: ".$result."\n";
+	echo "---------------------------------------------------------------------------------------- \n";
 }
 
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Fired Status: ".$new_boiler_status."\n";	
