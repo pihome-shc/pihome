@@ -1,12 +1,15 @@
 #!/usr/bin/python
-class bcolors:
-	HEADER = '\033[95m'
-	OKBLUE = '\033[94m'
-	OKGREEN = '\033[92m'
-	YELLOW = '\033[93m'
-	FAIL = '\033[91m'
+class bc:
+	hed = '\033[95m'
+	dtm = '\033[0;36;40m'
 	ENDC = '\033[0m'
-print bcolors.HEADER + " "
+	SUB = '\033[3;30;45m'
+	WARN = '\033[0;31;40m'
+	grn = '\033[0;32;40m'
+	wht = '\033[0;37;40m'
+	ylw = '\033[93m'
+	fail = '\033[91m'
+print bc.hed + " "	
 print "  _____    _   _    _                            "
 print " |  __ \  (_) | |  | |                           "
 print " | |__) |  _  | |__| |   ___    _ __ ___     ___ "
@@ -14,31 +17,42 @@ print " |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \ "
 print " | |      | | | |  | | | (_) | | | | | | | |  __/"
 print " |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___|"
 print " "
-print "    S M A R T   H E A T I N G   C O N T R O L "
-print "*******************************************************"
-print "* WiFi - ESP8266 Gateway Build for Wireless sensors   *"
-print "* using MySeonsors serial API Build Date: 18/09/2017  *"
-print "*                                Have Fun - PiHome.eu *"
-print "*******************************************************"
-print " " + bcolors.ENDC
+print "    "+bc.SUB + "S M A R T   H E A T I N G   C O N T R O L "+ bc.ENDC
+print bc.WARN +" "
+print "********************************************************"
+print "* MySensors Wifi/Ethernet Gateway Communication Script *"
+print "* to communicate with MySensors Nodes, for more info   *"
+print "* please check MySensors API. Build Date: 18/09/2017   *"
+print "*      Version 0.03 - Last Modified 19/02/2019         *"
+print "*                                 Have Fun - PiHome.eu *"
+print "********************************************************"
+print " " + bc.ENDC
 import sys, telnetlib, MySQLdb as mdb, time
 # ref: https://forum.mysensors.org/topic/7818/newline-of-debug-output/2
 # stty -F /dev/ttyUSB0 115200
 # cat /dev/ttyUSB0
 
-HOST = "192.168.99.3" 	# ip address of your mysensors wifi gateway
-port = "5003" 			# UDP port number for mysensors gateway
-timeout = 3    			# Connection timout in Seconds
-tn = telnetlib.Telnet(HOST, port, timeout) # Connect mysensors gateway 
+#MySensors Wifi/Ethernet Gateway Settings
+mysgw = "192.168.99.3" 	#ip address of your MySensors gateway
+mysport = "5003" 		#UDP port number for MySensors gateway
+timeout = 3    			#Connection timout in Seconds
+
+#PiHome Database Settings Variables 
+dbhost = 'localhost'
+dbuser = 'root'
+dbpass = 'passw0rd'
+dbname = 'pihome'
+
+tn = telnetlib.Telnet(mysgw, mysport, timeout) # Connect mysensors gateway 
 while 1:
 	try:
-		con = mdb.connect('localhost', 'root', 'passw0rd', 'pihome') # MySQL Database Connection Settings
+		con = mdb.connect(dbhost, dbuser, dbpass, dbname) # MySQL Database Connection Settings
 		cur = con.cursor() # Cursor object to Current Connection
 		cur.execute('SELECT COUNT(*) FROM `messages_out` where sent = 0') # MySQL query statement
 		count = cur.fetchone() # Grab all messages from database for Outgoing. 
 		count = count[0] # Parse first and the only one part of data table named "count" - there is number of records grabbed in SELECT above
 		if count > 0: #If greater then 0 then we have something to send out. 
-			print bcolors.OKGREEN + "Total Messages to Sent : ",count, bcolors.ENDC # Print how many Messages we have to send out.
+			print bc.grn + "Total Messages to Sent : ",count, bc.ENDC # Print how many Messages we have to send out.
 			cur.execute('SELECT * FROM `messages_out` where sent = 0') #grab all messages that where not send yet (sent ==0)
 			msg = cur.fetchone(); 	#Grab first record and build a message: if you change table fields order you need to change following lines as well. 
 			out_id = int(msg[0]) 	#Record ID - only DB info,
@@ -94,7 +108,7 @@ while 1:
 	# print "String as Received:      ",in_str," \n"
 	if not sys.getsizeof(in_str) <= 22 : # string value less then 21 is null value hence we need to 
 
-		print bcolors.YELLOW + "Size of the String Received:      ", sys.getsizeof(in_str), bcolors.ENDC
+		print bc.ylw + "Size of the String Received:      ", sys.getsizeof(in_str), bc.ENDC
 		print "Date & Time:             ", time.ctime()
 		print "Full String Received:    ", in_str
 		statement = in_str.split(";")
@@ -112,7 +126,7 @@ while 1:
 		payload = statement[5]
 		print "Pay Load:                ", payload
 		try:
-			con = mdb.connect('localhost', 'root', 'passw0rd', 'pihome')#Database Connection Settings 
+			con = mdb.connect(dbhost, dbuser, dbpass, dbname)
 			cur = con.cursor()
 			
 			# ..::Step One::..
@@ -197,8 +211,6 @@ while 1:
 				cur.execute('UPDATE `nodes` SET `last_seen`=now() WHERE node_id = %s', [node_id])
 				con.commit()
 
-
-				
 		except mdb.Error, e:
 				print "Error %d: %s" % (e.args[0], e.args[1])
 				sys.exit(1)

@@ -32,7 +32,7 @@ $relay_off = '0'; // GPIO value to write to turn off attached relay
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Script Started \n"; 
 
 //query to check boiler status 
-$query = "SELECT * FROM boiler_view LIMIT 1";
+$query = "SELECT * FROM boiler_view LIMIT 1;";
 $result = mysql_query($query, $connection);
 $row = mysql_fetch_array($result);
 $boiler_status = $row['status'];
@@ -50,13 +50,13 @@ $away = mysql_fetch_array($result);
 $away_status = $away['status'];
 
 //query to get frost protection temperature
-$query = "SELECT * FROM frost_protection ORDER BY id desc LIMIT 1 ";
+$query = "SELECT * FROM frost_protection ORDER BY id desc LIMIT 1;";
 $result = mysql_query($query, $connection);
 $frost_q = mysql_fetch_array($result);
 $frost_c = $frost_q['temperature'];
 
 //query to get last boiler statues change time
-$query = "SELECT * FROM boiler_logs ORDER BY id desc LIMIT 1";
+$query = "SELECT * FROM boiler_logs ORDER BY id desc LIMIT 1;";
 $result = mysql_query($query, $connection);
 $row = mysql_fetch_array($result);
 $boiler_start_datetime = $row['start_datetime'];
@@ -68,7 +68,7 @@ echo "--------------------------------------------------------------------------
 //following variable set to 0 on start for array index. 
 $boiler_index = '0';
 $zone_index = '0';
-$query = "SELECT * FROM zone_view where status = 1 order by index_id asc";
+$query = "SELECT * FROM zone_view where status = 1 order by index_id asc;";
 $results = mysql_query($query, $connection);
 while ($row = mysql_fetch_assoc($results)) {
 	$zone_id=$row['id'];
@@ -84,13 +84,13 @@ while ($row = mysql_fetch_assoc($results)) {
 	
 	//query to get temperature from messages_in table 
 	//$query = "SELECT * FROM messages_in WHERE node_id = {$zone_sensor_id} ORDER BY datetime desc LIMIT 1";
-	$query = "SELECT * FROM messages_in_view_24h WHERE node_id = {$zone_sensor_id} ORDER BY datetime desc LIMIT 1";
+	$query = "SELECT * FROM messages_in_view_24h WHERE node_id = {$zone_sensor_id} ORDER BY datetime desc LIMIT 1;";
 	$result = mysql_query($query, $connection);
 	$sensor = mysql_fetch_array($result);
 	$zone_c = $sensor['payload'];
 							
 //	$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between `start` AND `end` AND zone_id = {$zone_id} AND time_status = '1' AND tz_status = '1' LIMIT 1";
-	$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between `start` AND `end` AND zone_id = {$zone_id} AND time_status = '1' LIMIT 1";
+	$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between `start` AND `end` AND zone_id = {$zone_id} AND time_status = '1' LIMIT 1;";
 	$result = mysql_query($query, $connection);
 	$schedule = mysql_fetch_array($result);
 	$sch_status = $schedule['tz_status'];
@@ -101,14 +101,14 @@ while ($row = mysql_fetch_assoc($results)) {
 //echo date('Y-m-d H:i:s'). " - Start Time: ".$start_time." End Time: ".$end_time." Target C: ".$schedule_c ."\n"; 
 	
 	//query to check override status and get temperature from override table 
-	$query = "SELECT * FROM override WHERE zone_id = {$zone_id} LIMIT 1";
+	$query = "SELECT * FROM override WHERE zone_id = {$zone_id} LIMIT 1;";
 	$result = mysql_query($query, $connection);
 	$override = mysql_fetch_array($result);
 	$override_status = $override['status'];
 	$override_c = $override['temperature'];
 
 	//query to check boost status and get temperature from boost table 
-	$query = "SELECT * FROM boost WHERE zone_id = {$zone_id} LIMIT 1";
+	$query = "SELECT * FROM boost WHERE zone_id = {$zone_id} LIMIT 1;";
 	$result = mysql_query($query, $connection);
 	$boost = mysql_fetch_array($result);
 	$boost_status = $boost['status'];
@@ -117,7 +117,7 @@ while ($row = mysql_fetch_assoc($results)) {
 	$boost_minute = $boost['minute'];
 
 	//query to check night climate status and get temperature from night climate table 
-	$query = "select * from schedule_night_climat_zone_view WHERE zone_id = {$zone_id} LIMIT 1";
+	$query = "select * from schedule_night_climat_zone_view WHERE zone_id = {$zone_id} LIMIT 1;";
 	$result = mysql_query($query, $connection);
 	$night_climate = mysql_fetch_array($result);
 	$nc_time_status = $night_climate['t_status'];
@@ -214,7 +214,7 @@ exec("/usr/local/bin/gpio mode ".$zone_gpio_pin." out");
 */
 
 //update messages_out table with sent status to 0 and payload to as zone status.
-$query = "UPDATE messages_out SET sent = '0', payload = '{$zone_status}' WHERE node_id ='$zone_controler_id' AND child_id = '$zone_controler_child_id' LIMIT 1";
+$query = "UPDATE messages_out SET sent = '0', payload = '{$zone_status}' WHERE node_id ='$zone_controler_id' AND child_id = '$zone_controler_child_id' LIMIT 1;";
 mysql_query($query, $connection);
 
 //all zone status to boiler array and increment array index
@@ -246,7 +246,7 @@ if (in_array("1", $boiler)) {
 	mysql_query($query, $connection);
 	
 	//update messages_out table with sent status to 0 and payload to as boiler status.
-	$query = "UPDATE messages_out SET sent = '0', payload = '{$new_boiler_status}' WHERE node_id ='{$boiler_node_id}' AND child_id = '{$boiler_node_child_id}' LIMIT 1";
+	$query = "UPDATE messages_out SET sent = '0', payload = '{$new_boiler_status}' WHERE node_id ='{$boiler_node_id}' AND child_id = '{$boiler_node_child_id}' LIMIT 1;";
 	mysql_query($query, $connection);
 
 	/********************************************************************************************************************************************************************
@@ -259,14 +259,14 @@ if (in_array("1", $boiler)) {
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Node ID: \033[41m".$boiler_node_id."\033[0m Child ID: \033[41m".$boiler_node_child_id."\033[0m \n";	
 	if ($boiler_fire_status != $new_boiler_status){
 		//insert date and time into boiler log table so we can record boiler start date and time.
-		$bsquery = "INSERT INTO boiler_logs(start_datetime, start_cause, expected_end_date_time) VALUES ('{$date_time}', '{$start_cause}', '{$expected_end_date_time}')";
+		$bsquery = "INSERT INTO boiler_logs(start_datetime, start_cause, expected_end_date_time) VALUES ('{$date_time}', '{$start_cause}', '{$expected_end_date_time}');";
 		$result = mysql_query($bsquery, $connection);
 		$boiler_log_id = mysql_insert_id();
 
 		//echo all zone and status 
 		for ($row = 0; $row < 3; $row++){
 			echo "Zone ID: ".$zone_log[$row]["zone_id"]." Status: ".$zone_log[$row]["status"]."\n";
-			$zlquery = "INSERT INTO zone_logs(zone_id, boiler_log_id, status) VALUES ('{$zone_log[$row]["zone_id"]}', '{$boiler_log_id}', '{$zone_log[$row]["status"]}')";
+			$zlquery = "INSERT INTO zone_logs(zone_id, boiler_log_id, status) VALUES ('{$zone_log[$row]["zone_id"]}', '{$boiler_log_id}', '{$zone_log[$row]["status"]}');";
 			$zlresults = mysql_query($zlquery, $connection);
 			if ($zlresults) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Log table updated successfully. \n";} else {echo "zone log update failed... ".mysql_error(). " \n";}
 			}
@@ -284,7 +284,7 @@ if (in_array("1", $boiler)) {
 	mysql_query($query, $connection);
 	
 	//update messages_out table with sent status to 0 and payload to as boiler status.
-	$query = "UPDATE messages_out SET sent = '0', payload = '{$new_boiler_status}' WHERE node_id ='{$boiler_node_id}' AND child_id = '{$boiler_node_child_id}' LIMIT 1";
+	$query = "UPDATE messages_out SET sent = '0', payload = '{$new_boiler_status}' WHERE node_id ='{$boiler_node_id}' AND child_id = '{$boiler_node_child_id}' LIMIT 1;";
 	mysql_query($query, $connection);
 
 	/********************************************************************************************************************************************************************
@@ -315,6 +315,7 @@ I am using CPU serial as salt and then using MD5 hasing to get unique reference,
 $start_time = '23:58:00';
 $end_time = '00:00:00';
 if (TimeIsBetweenTwoTimes($current_time, $start_time, $end_time)) {
+	echo "---------------------------------------------------------------------------------------- \n";
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Time to call Home \n";
 	$external_ip = file_get_contents('http://ddns.pihome.eu/myip.php');
 	$pi_serial = exec ("cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2");
@@ -323,16 +324,17 @@ if (TimeIsBetweenTwoTimes($current_time, $start_time, $end_time)) {
 	$hardware = exec ("cat /proc/cpuinfo | grep Hardware | cut -d ' ' -f 2");
 	$revision = exec ("cat /proc/cpuinfo | grep Revision | cut -d ' ' -f 2");
 	$uid = UniqueMachineID($pi_serial);
-	echo date('Y-m-d H:i:s'). " - External IP Address: ".$external_ip."\n";
-	echo date('Y-m-d H:i:s'). " - Raspberry Pi Serial: " .$pi_serial."\n";
-	echo date('Y-m-d H:i:s'). " - Raspberry Pi Hardware: " .$hardware."\n";
-	echo date('Y-m-d H:i:s'). " - Raspberry Pi CPU Model: " .$cpu_model."\n";
-	echo date('Y-m-d H:i:s'). " - Raspberry Pi Revision: " .$revision."\n";
-	echo date('Y-m-d H:i:s'). " - Raspberry Pi UID: " .$uid."\n";
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - External IP Address: ".$external_ip."\n";
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Raspberry Pi Serial: " .$pi_serial."\n";
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Raspberry Pi Hardware: " .$hardware."\n";
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Raspberry Pi CPU Model: " .$cpu_model."\n";
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Raspberry Pi Revision: " .$revision."\n";
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Raspberry Pi UID: " .$uid."\n";
 	$url="http://ddns.pihome.eu/home.php?ip=${external_ip}&serial=${uid}&cpu_model=${cpu_model}&hardware=${hardware}&revision=${revision}";
 	echo $url."\n";
 	$result = url_get_contents($url);
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiHome Says: ".$result;
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiHome Says: ".$result."\n";
+	echo "---------------------------------------------------------------------------------------- \n";
 }
 
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Fired Status: ".$new_boiler_status."\n";	

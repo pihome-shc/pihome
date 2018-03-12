@@ -1,8 +1,28 @@
-<?php require_once("st_inc/session.php"); ?>
-<?php confirm_logged_in(); ?>
-<?php require_once("st_inc/connection.php"); ?>
-<?php require_once("st_inc/functions.php"); ?>
-<?php
+<?php 
+/*
+   _____    _   _    _                             
+  |  __ \  (_) | |  | |                            
+  | |__) |  _  | |__| |   ___    _ __ ___     ___  
+  |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \ 
+  | |      | | | |  | | | (_) | | | | | | | |  __/ 
+  |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___| 
+
+     S M A R T   H E A T I N G   C O N T R O L 
+
+*************************************************************************"
+* PiHome is Raspberry Pi based Central Heating Control systems. It runs *"
+* from web interface and it comes with ABSOLUTELY NO WARRANTY, to the   *"
+* extent permitted by applicable law. I take no responsibility for any  *"
+* loss or damage to you or your property.                               *"
+* DO NOT MAKE ANY CHANGES TO YOUR HEATING SYSTEM UNTILL UNLESS YOU KNOW *"
+* WHAT YOU ARE DOING                                                    *"
+*************************************************************************"
+*/
+require_once("st_inc/session.php"); 
+confirm_logged_in();
+require_once(__DIR__.'/st_inc/connection.php');
+require_once(__DIR__.'/st_inc/functions.php');
+
 if (isset($_POST['submit'])) {
 	
 	$zone_status = isset($_POST['zone_status']) ? $_POST['zone_status'] : "0";
@@ -18,23 +38,24 @@ if (isset($_POST['submit'])) {
 	$controler_child_id = mysql_prep($_POST['controler_child_id']);
 	$boost_button_id = mysql_prep($_POST['boost_button_id']);
 	$boost_button_child_id = mysql_prep($_POST['boost_button_child_id']);
+	//$zone_gpio = mysql_prep($_POST['zone_gpio']);
 	$boiler = explode('-', $_POST['boiler_id'], 2);
 	$boiler_id = $boiler[0];
 
 	//query to search node id for temperature sensors
-	$query = "SELECT * FROM nodes WHERE node_id = '{$sensor_id}' LIMIT 1";
+	$query = "SELECT * FROM nodes WHERE node_id = '{$sensor_id}' LIMIT 1;";
 	$result = mysql_query($query, $connection);
 	$found_product = mysql_fetch_array($result);
 	$sensor_id = $found_product['id'];
 		
 	//query to search node id for zone controller
-	$query = "SELECT * FROM nodes WHERE node_id = '{$controler_id}' LIMIT 1";
+	$query = "SELECT * FROM nodes WHERE node_id = '{$controler_id}' LIMIT 1;";
 	$result = mysql_query($query, $connection);
 	$found_product = mysql_fetch_array($result);
 	$controler_id = $found_product['id'];
 	
 	//query to search node id for boost button
-	$query = "SELECT * FROM nodes WHERE node_id = '{$boost_button_id}' LIMIT 1";
+	$query = "SELECT * FROM nodes WHERE node_id = '{$boost_button_id}' LIMIT 1;";
 	$result = mysql_query($query, $connection);
 	$found_product = mysql_fetch_array($result);
 	$boost_button_id = $found_product['node_id'];
@@ -58,6 +79,7 @@ if (isset($_POST['submit'])) {
 		$error = "<p>Zone Controler Recrd Addition Failed!!!</p> <p>" . mysql_error() . "</p>";
 	}
 
+	
 	//Add Zone Boost Button Console to message out table at same time
 	$query = "INSERT INTO messages_out (node_id, child_id, sub_type, payload, sent, zone_id)VALUES ('{$boost_button_id}','{$boost_button_child_id}', '2', '0', '1', '{$zone_id}');";
 	$result = mysql_query($query, $connection);
@@ -66,6 +88,7 @@ if (isset($_POST['submit'])) {
 	} else {
 		$error = "<p>Zone Boost Button Recrd Addition Failed!!!</p> <p>" . mysql_error() . "</p>";
 	}
+	
 	
 	//Add Zone to boost table at same time
 	$query = "INSERT INTO boost (status, zone_id, temperature, minute, boost_button_id, boost_button_child_id)VALUES ('0', '{$zone_id}','{$max_c}','{$max_operation_time}', '{$boost_button_id}', '{$boost_button_child_id}');";
@@ -162,19 +185,34 @@ echo "<option>$node_id</option>";} ?>
 
 <input type="hidden" name="sensor_child_id" value="0">			
 
-<div class="form-group" class="control-label"><label>Zone Controler ID</label>
+
+<div class="form-group" class="control-label">
+<label>Select Zone Relay</label><br>
+<div class="radio radio-warning radio-inline">
+    <input type="radio" id="zone_relay1" value="zone_relay_wifi" name="zone_relay" onclick="$('#zone_relay_wifi').toggle();">
+    <label for="zone_relay1"> Wireless Relay </label>
+</div>
+<div class="radio radio-warning radio-inline">
+    <input type="radio" id="zone_relay2" value="zone_relay_gpio" name="zone_relay" onclick="$('#zone_relay_gpio').toggle();">
+    <label for="zone_relay2"> Wired GPIO Relay </label>
+</div>
+</div>
+					
+<div id="zone_relay_wifi" style="display:none !important;">
+<div class="form-group" class="control-label"><label>Zone Relay Controller ID</label>
 <select id="controler_id" name="controler_id" class="form-control select2" data-error="Zone Controler ID can not be empty! This Node connect to Zone's motorized valve" autocomplete="off" required>
 <?php if(isset($_POST['controler_id'])) { echo '<option selected >'.$_POST['controler_id'].'</option>'; } ?>
 <?php  $query = "SELECT node_id FROM nodes where name = 'Zone Controller Relay'";
 $result = mysql_query($query, $connection);
 echo "<option></option>";
 while ($datarw=mysql_fetch_array($result)) {
-$node_id=$datarw["node_id"];
-echo "<option>$node_id</option>";} ?>
+	$node_id=$datarw["node_id"];
+	echo "<option>$node_id</option>";
+} ?>
 </select>				
 <div class="help-block with-errors"></div></div>
 
-<div class="form-group" class="control-label"><label>Zone Controler's Child ID</label>
+<div class="form-group" class="control-label"><label>Zone Relay Controller's Child ID</label>
 <select id="controler_child_id" name="controler_child_id" class="form-control select2" placeholder="Zone Type i.e Heating or Water"  data-error="Child ID on Zone Controller, This value is from 1 to 8 that connect to your Zone's motorized valve relay" autocomplete="off" required>
 <?php if(isset($_POST['controler_child_id'])) { echo '<option selected >'.$_POST['controler_child_id'].'</option>'; } ?>
 <option></option>
@@ -188,6 +226,24 @@ echo "<option>$node_id</option>";} ?>
 <option>8</option>
 </select>				
 <div class="help-block with-errors"></div></div>
+</div>
+
+<div id="zone_relay_gpio" style="display:none !important;">
+<div class="form-group" class="control-label"><label>Zone Relay GPIO Pin</label>
+<select id="controler_child_id" name="controler_child_id" class="form-control select2" placeholder="Zone Type i.e Heating or Water"  data-error="Child ID on Zone Controller, This value is from 1 to 8 that connect to your Zone's motorized valve relay" autocomplete="off" required>
+<?php if(isset($_POST['controler_child_id'])) { echo '<option selected >'.$_POST['controler_child_id'].'</option>'; } ?>
+<option></option>
+<option>1</option>
+<option>2</option>
+<option>3</option>
+<option>4</option>
+<option>5</option>
+<option>6</option>
+<option>7</option>
+<option>8</option>
+</select>				
+<div class="help-block with-errors"></div></div>
+</div>
 
 <div class="form-group" class="control-label"><label>Boost Button ID</label>
 <select id="boost_button_id" name="boost_button_id" class="form-control select2" data-error="Zone Controler ID can not be empty! This Node connect to Zone's motorized valve" autocomplete="off" required>
@@ -217,7 +273,22 @@ echo "<option>$node_id</option>";} ?>
 </select>				
 <div class="help-block with-errors"></div></div>
 
-<div class="form-group" class="control-label"><label>Boiler ID</label>
+
+
+<div class="form-group" class="control-label">
+<label>Select Boiler</label><br>
+<div class="radio radio-warning radio-inline">
+    <input type="radio" id="boiler_relay1" value="boiler_relay_wifi" name="boiler_relay" onclick="$('#boiler_relay_wifi').toggle();">
+    <label for="boiler_relay1"> Wireless Boiler Relay </label>
+</div>
+<div class="radio radio-warning radio-inline">
+    <input type="radio" id="boiler_relay2" value="boiler_relay_gpio" name="boiler_relay" onclick="$('#boiler_relay_gpio').toggle();">
+    <label for="boiler_relay2"> Wired Boiler GPIO Relay </label>
+</div>
+</div>
+
+<div id="boiler_relay_wifi" style="display:none !important;">
+<div class="form-group" class="control-label"><label>Boiler</label>
 <select id="boiler_id" name="boiler_id" class="form-control select2" data-error="Boiler ID can not be empty!" autocomplete="off" required>
 <?php if(isset($_POST['boiler_id'])) { echo '<option selected >'.$_POST['boiler_id'].'</option>'; } ?>
 <?php  $query = "SELECT id, node_id, name FROM boiler;";
@@ -227,6 +298,15 @@ $boiler_id=$datarw["id"].'-'.$datarw["name"].' Node ID: '.$datarw["node_id"] ;
 echo "<option>$boiler_id</option>";} ?>
 </select>				
 <div class="help-block with-errors"></div></div>
+</div>
+
+
+<div id="boiler_relay_gpio" style="display:none !important;">
+
+</div>
+
+
+
 <input type="submit" name="submit" value="Submit" class="btn btn-default btn-sm">
 <a href="home.php"><button type="button" class="btn btn-primary btn-sm">Cancel</button></a>
 </form>
@@ -256,3 +336,5 @@ Outside: <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
         </div>
         <!-- /#page-wrapper -->
 <?php include("footer.php");  ?>
+
+

@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import time, os, fnmatch, MySQLdb as mdb, logging
+from decimal import Decimal
 class bc:
 	hed = '\033[0;36;40m'
 	dtm = '\033[0;36;40m'
@@ -29,31 +30,46 @@ print " " + bc.ENDC
 logging.basicConfig(filename='/var/www/cron/logs/DS18B20_error.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(name)s %(message)s')
 logger=logging.getLogger(__name__)
 
-# Add in the w1_gpio and w1_therm modules
+#Add in the w1_gpio and w1_therm modules
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
 
-print bc.dtm + time.ctime() + bc.ENDC + ' - DS Temperature Sensors Script Started'
+#Database Settings Variables 
+dbhost = 'localhost'
+dbuser = 'root'
+dbpass = 'passw0rd'
+dbname = 'pihome'
+
+print bc.dtm + time.ctime() + bc.ENDC + ' - DS18B20 Temperature Sensors Script Started'
 print "-" * 68
 
-#function for storing readings into MySql
+#Function for Storing DS18B20 Temperature Readings into MySQL
 def insertDB(IDs, temperature):
 	try:
-		con = mdb.connect('localhost', 'root', 'passw0rd', 'pihome');
-		cursor = con.cursor()
+		con = mdb.connect(dbhost, dbuser, dbpass, dbname);
+		cur = con.cursor()
 		for i in range(0,len(temperature)):
+			#Check if Sensors Already Exit in Nodes Table, if no then add Sensors into Nodes Table otherwise just update Temperature Readings. 
+			cur.execute('SELECT COUNT(*) FROM `nodes` where node_id = (%s)', (IDs[i]))
+			row = cur.fetchone()
+			row = int(row[0])
+			if (row == 0):
+				print bc.dtm + time.ctime() + bc.ENDC + ' - New DS18B20 Sensors Discovered' + bc.grn, IDs[i], bc.ENDC 
+				cur.execute('INSERT INTO nodes (node_id, child_id_1, name, last_seen, ms_version) VALUES(%s,%s,%s,%s,%s)', (IDs[i], '0', 'Temperature Sensor', time.strftime("%Y-%m-%d %H:%M:%S"), '0'))
+				con.commit()
+			#If DS18B20 Sensor record exist: Update Nodes Table with Last seen status. 
+			if (row == 1):
+				cur.execute('UPDATE `nodes` SET `last_seen`=now() WHERE node_id = %s', [IDs[i]])
+				con.commit()
 			print bc.dtm + time.ctime() + bc.ENDC + ' - Sensors ID' + bc.grn, IDs[i], bc.ENDC + 'Temperature' + bc.grn, temperature[i], bc.ENDC
-			sql = "INSERT INTO temp_reading(sensor_id, date, time, value) \
-			VALUES ('%s', '%s', '%s', '%s' )" % \
-			(IDs[i], time.strftime("%Y-%m-%d"), time.strftime("%H:%M"), temperature[i])
-			cursor.execute(sql)
-			sql = []
+			cur.execute('INSERT INTO messages_in(node_id, child_id, sub_type, payload, datetime) VALUES(%s, %s, %s, %s, %s)', (IDs[i], '0', '0', round(temperature[i],2), time.strftime("%Y-%m-%d %H:%M:%S")))
 			con.commit()
 		con.close()
 	except mdb.Error, e:
 		logger.error(e)
+		print bc.dtm + time.ctime() + bc.ENDC + ' - DB Connection Closed: %s' % e
 
-#get readings from sensors and store them to MySql
+#Read DS18B20 Sensors and Save Them to MySQL
 while True:
 	temperature = []
 	IDs = []

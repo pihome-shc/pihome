@@ -1,8 +1,28 @@
-<?php require_once("st_inc/session.php"); ?>
-<?php confirm_logged_in(); ?>
-<?php require_once("st_inc/connection.php"); ?>
-<?php require_once("st_inc/functions.php"); ?>
-<?php
+<?php 
+/*
+   _____    _   _    _                             
+  |  __ \  (_) | |  | |                            
+  | |__) |  _  | |__| |   ___    _ __ ___     ___  
+  |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \ 
+  | |      | | | |  | | | (_) | | | | | | | |  __/ 
+  |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___| 
+
+     S M A R T   H E A T I N G   C O N T R O L 
+
+*************************************************************************"
+* PiHome is Raspberry Pi based Central Heating Control systems. It runs *"
+* from web interface and it comes with ABSOLUTELY NO WARRANTY, to the   *"
+* extent permitted by applicable law. I take no responsibility for any  *"
+* loss or damage to you or your property.                               *"
+* DO NOT MAKE ANY CHANGES TO YOUR HEATING SYSTEM UNTILL UNLESS YOU KNOW *"
+* WHAT YOU ARE DOING                                                    *"
+*************************************************************************"
+*/
+require_once("st_inc/session.php"); 
+confirm_logged_in();
+require_once(__DIR__.'/st_inc/connection.php');
+require_once(__DIR__.'/st_inc/functions.php');
+
 $id = $_SESSION['user_id'];
 if (isset($_POST['submit'])) { 
 	if ((!isset($_POST['old_pass'])) || (empty($_POST['old_pass']))) {
@@ -67,6 +87,7 @@ $row = mysql_fetch_assoc($results);
                 </div>
 				
 
+
                 <div class="form-group"><label><?php echo $LANG['old_password']; ?></label>
                 <input class="form-control" type="password" class="form-control" placeholder="Old Password" value="" id="old_pass" name="old_pass" data-error="Old Password is Required" autocomplete="off" required> 
                 <div class="help-block with-errors"></div></div>
@@ -89,6 +110,7 @@ $row = mysql_fetch_assoc($results);
 <?php 
 $query="select * from weather";
 $result = mysql_query($query, $connection);
+confirm_query($result);
 $weather = mysql_fetch_array($result);
 ?>
 

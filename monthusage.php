@@ -1,4 +1,24 @@
-<?php
+<?php 
+/*
+   _____    _   _    _                             
+  |  __ \  (_) | |  | |                            
+  | |__) |  _  | |__| |   ___    _ __ ___     ___  
+  |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \ 
+  | |      | | | |  | | | (_) | | | | | | | |  __/ 
+  |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___| 
+
+     S M A R T   H E A T I N G   C O N T R O L 
+
+*************************************************************************"
+* PiHome is Raspberry Pi based Central Heating Control systems. It runs *"
+* from web interface and it comes with ABSOLUTELY NO WARRANTY, to the   *"
+* extent permitted by applicable law. I take no responsibility for any  *"
+* loss or damage to you or your property.                               *"
+* DO NOT MAKE ANY CHANGES TO YOUR HEATING SYSTEM UNTILL UNLESS YOU KNOW *"
+* WHAT YOU ARE DOING                                                    *"
+*************************************************************************"
+*/
+
 $arr_name='month_usage';
 $query="select date(start_datetime) as month, 
 sum(TIMESTAMPDIFF(MINUTE, start_datetime, expected_end_date_time))/60 as total_minuts,
@@ -32,6 +52,7 @@ while ($row = mysql_fetch_assoc($result)) {
 	$bon_minuts[] = array(strtotime($row['month']) * 1000, (int) $row['on_minuts'] );
 	$bsave_minuts[] = array(strtotime($row['month']) * 1000, (int) $row['save_minuts'] );
 }
+
 ;?>
 <div class="flot-chart">
    <div class="flot-chart-content" id="month_usage"></div>

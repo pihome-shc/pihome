@@ -1,8 +1,28 @@
-<?php require_once("st_inc/session.php"); ?>
-<?php confirm_logged_in(); ?>
-<?php require_once("st_inc/connection.php"); ?>
-<?php require_once("st_inc/functions.php"); ?>
 <?php 
+/*
+   _____    _   _    _                             
+  |  __ \  (_) | |  | |                            
+  | |__) |  _  | |__| |   ___    _ __ ___     ___  
+  |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \ 
+  | |      | | | |  | | | (_) | | | | | | | |  __/ 
+  |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___| 
+
+     S M A R T   H E A T I N G   C O N T R O L 
+
+*************************************************************************"
+* PiHome is Raspberry Pi based Central Heating Control systems. It runs *"
+* from web interface and it comes with ABSOLUTELY NO WARRANTY, to the   *"
+* extent permitted by applicable law. I take no responsibility for any  *"
+* loss or damage to you or your property.                               *"
+* DO NOT MAKE ANY CHANGES TO YOUR HEATING SYSTEM UNTILL UNLESS YOU KNOW *"
+* WHAT YOU ARE DOING                                                    *"
+*************************************************************************"
+*/
+require_once("st_inc/session.php"); 
+confirm_logged_in();
+require_once(__DIR__.'/st_inc/connection.php');
+require_once(__DIR__.'/st_inc/functions.php');
+
 	if(isset($_GET['uid'])) {
 		$id = $_GET['uid'];
 	} else {
@@ -19,6 +39,7 @@
 			$error_message = "Password Confirmation failed. New Password and Confirm Password must be same.";
 		}
 		
+	
 		$new_pass = mysql_real_escape_string(md5($_POST['new_pass']));
 		$con_pass = mysql_real_escape_string(md5($_POST['con_pass']));
 
@@ -47,7 +68,7 @@ $row = mysql_fetch_assoc($results);
                 <div class="col-lg-12">
                     <div class="panel panel-primary">
                         <div class="panel-heading">
-                            <i class="fa fa-cog fa-fw"></i> Settings    
+                            <i class="fa fa-cog fa-fw"></i>   Settings    
 						<div class="pull-right"> <div class="btn-group"><?php echo date("H:i"); ?></div> </div>
                         </div>
                         <!-- /.panel-heading -->
@@ -72,6 +93,7 @@ $row = mysql_fetch_assoc($results);
                 <input type="submit" name="submit" value="submit" class="btn btn-default btn-sm">
 
                 </form>
+
 					
                         </div>
                         <!-- /.panel-body -->

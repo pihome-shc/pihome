@@ -1,7 +1,28 @@
-<?php require_once("st_inc/session.php"); ?>
-<?php confirm_logged_in(); ?>
-<?php require_once("st_inc/connection.php"); ?>
-<?php require_once("st_inc/functions.php"); ?>
+<?php 
+/*
+   _____    _   _    _                             
+  |  __ \  (_) | |  | |                            
+  | |__) |  _  | |__| |   ___    _ __ ___     ___  
+  |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \ 
+  | |      | | | |  | | | (_) | | | | | | | |  __/ 
+  |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___| 
+
+     S M A R T   H E A T I N G   C O N T R O L 
+
+*************************************************************************"
+* PiHome is Raspberry Pi based Central Heating Control systems. It runs *"
+* from web interface and it comes with ABSOLUTELY NO WARRANTY, to the   *"
+* extent permitted by applicable law. I take no responsibility for any  *"
+* loss or damage to you or your property.                               *"
+* DO NOT MAKE ANY CHANGES TO YOUR HEATING SYSTEM UNTILL UNLESS YOU KNOW *"
+* WHAT YOU ARE DOING                                                    *"
+*************************************************************************"
+*/
+require_once("st_inc/session.php"); 
+confirm_logged_in();
+require_once(__DIR__.'/st_inc/connection.php');
+require_once(__DIR__.'/st_inc/functions.php');
+?>
                     <div class="panel panel-primary">
                         <div class="panel-heading">
                             <i class="fa fa-clock-o fa-fw"></i> Schedule   
@@ -28,7 +49,8 @@
 <?php 
 //following variable set to 0 on start for array index. 
 $sch_time_index = '0';
-$query = "SELECT * FROM schedule_daily_time_zone_view group by time_id ORDER BY start asc";
+//$query = "SELECT * FROM schedule_daily_time_zone_view group by time_id ORDER BY start asc";
+$query = "SELECT time_id, time_status, `start`, `end`, tz_id, tz_status, zone_id, index_id, zone_name, temperature, max(temperature) as max_c FROM schedule_daily_time_zone_view group by time_id ORDER BY start asc";
 $results = mysql_query($query, $connection);
 while ($row = mysql_fetch_assoc($results)) {
 
@@ -42,7 +64,7 @@ while ($row = mysql_fetch_assoc($results)) {
 	echo '
 	<li class="left clearfix scheduleli animated fadeIn">
 	
-	<a href="javascript:active_schedule('.$row["time_id"].');"><span class="chat-img pull-left"><div class="circle '. $shactive.'"> <p class="schdegree">'.$row["temperature"].'&deg;</p></div></span></a>
+	<a href="javascript:active_schedule('.$row["time_id"].');"><span class="chat-img pull-left"><div class="circle '. $shactive.'"> <p class="schdegree">'.$row["max_c"].'&deg;</p></div></span></a>
 	
 	<a style="color: #333; cursor: pointer; text-decoration: none;" data-toggle="collapse" data-parent="#accordion" href="#collapse'.$row['tz_id'].'">
 	<div class="chat-body clearfix">
@@ -58,7 +80,6 @@ while ($row = mysql_fetch_assoc($results)) {
 	if($datarw["tz_status"]=="0"){ $status_icon="ion-close-circled"; $status_color="bluefa"; }else{ $status_icon="ion-checkmark-circled"; $status_color="orangefa"; }
 	echo '
 		<div class="list-group">
-		
 		<div class="list-group-item">
 		<i class="ionicons '.$status_icon.' fa-lg '.$status_color.'"></i>  '.$datarw['zone_name'].'<span class="pull-right text-muted small"><em>'.$datarw['temperature'].'&deg;</em></span>
 		</div>';
@@ -105,14 +126,24 @@ $weather = mysql_fetch_array($result);
 <span><img border="0" width="24" src="images/<?php echo $weather['img'];?>.png" title="<?php echo $weather['title'];?> - 
 <?php echo $weather['description'];?>"></span> <span><?php echo $weather['title'];?>
 </span>
+
+
                             <div class="pull-right">
                                 <div class="btn-group">
 <?php
+//$date_time = date('Y-m-d H:i:s');
+
+//echo 'Total Schedule Minuts: ' .array_sum($schedule_time);
 echo '<i class="ionicons ion-ios-clock-outline"></i> All Schedule: '.secondsToWords((array_sum($schedule_time)*60));
 
+//echo date("H:i:s", strtotime(array_sum($schedule_time)));
+//echo date("H:i:s", array_sum($schedule_time));
 ?>
                                 </div>
                             </div>
+							
+
+
                         </div>
                     </div>
                 </div>
