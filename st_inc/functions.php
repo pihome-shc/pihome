@@ -1,5 +1,30 @@
 <?php
-date_default_timezone_set("Europe/Dublin");
+
+/*
+   _____    _   _    _                             
+  |  __ \  (_) | |  | |                            
+  | |__) |  _  | |__| |   ___    _ __ ___     ___  
+  |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \ 
+  | |      | | | |  | | | (_) | | | | | | | |  __/ 
+  |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___| 
+
+     S M A R T   H E A T I N G   C O N T R O L 
+
+*************************************************************************"
+* PiHome is Raspberry Pi based Central Heating Control systems. It runs *"
+* from web interface and it comes with ABSOLUTELY NO WARRANTY, to the   *"
+* extent permitted by applicable law. I take no responsibility for any  *"
+* loss or damage to you or your property.                               *"
+* DO NOT MAKE ANY CHANGES TO YOUR HEATING SYSTEM UNTILL UNLESS YOU KNOW *"
+* WHAT YOU ARE DOING                                                    *"
+*************************************************************************"
+*/
+
+// Time Zone Settings for PHP
+
+//date_default_timezone_set("Europe/Dublin"); // You can set Timezone Manually and uncomment this line and comment out following line 
+date_default_timezone_set(settings("timezone"));
+
 $sysversion="0.125";
 
 // This file is to include basic functions
@@ -59,6 +84,7 @@ function getWeather()
   }
 
 
+//ref: http://stackoverflow.com/questions/14721443/php-convert-seconds-into-mmddhhmmss
 // Prefix single-digit values with a zero.
 function ensure2Digit($number) {
     if($number < 10) {
@@ -69,6 +95,7 @@ function ensure2Digit($number) {
 
 
 //function to check if night climate time 
+//ref: http://blog.yiannistaos.com/php-check-if-time-is-between-two-times-regardless-of-date/
 function TimeIsBetweenTwoTimes($from, $till, $input) {
     $f = DateTime::createFromFormat('H:i:s', $from);
     $t = DateTime::createFromFormat('H:i:s', $till);
@@ -118,7 +145,7 @@ function secondsToWords($seconds)
     return $ret;
 }
 
-//function to search inside array 
+//function to search inside array ref: http://forums.phpfreaks.com/topic/195499-partial-text-match-in-array/
 function searchArray($search, $array)
 {
     foreach($array as $key => $value)
@@ -180,6 +207,7 @@ function url_get_contents ($Url) {
     curl_close($ch);
     return $output;
 }
+
 
 //Return Unique ID for Record Purpose
 function UniqueMachineID($salt) {

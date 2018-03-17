@@ -403,13 +403,14 @@ CREATE TABLE IF NOT EXISTS `system` (
   `backup_email` char(100) COLLATE utf16_bin DEFAULT NULL,
   `ping_home` bit(1) DEFAULT b'1',
   `pi_serial` varchar(50) COLLATE utf16_bin DEFAULT '0',
+  `timezone` VARCHAR(50) NULL DEFAULT 'Europe/Dublin' COLLATE 'utf16_bin',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
 -- Dumping data for table pihome.system: ~0 rows (approximately)
 /*!40000 ALTER TABLE `system` DISABLE KEYS */;
-REPLACE INTO `system` (`id`, `name`, `version`, `build`, `update_location`, `update_file`, `update_alias`, `country`, `city`, `openweather_api`, `backup_email`, `ping_home`, `pi_serial`) VALUES
-	(2, 'PiHome - Smart Heating Control', '0.22', '010318', 'http://www.pihome.eu/updates/', 'current-release-versions.php', 'pihome', 'IE', 'Portlaoise', '', 'info@pihome.eu', b'1', '1');
+REPLACE INTO `system` (`id`, `name`, `version`, `build`, `update_location`, `update_file`, `update_alias`, `country`, `city`, `openweather_api`, `backup_email`, `ping_home`, `pi_serial`, `timezone`) VALUES
+	(2, 'PiHome - Smart Heating Control', '0.23', '170318', 'http://www.pihome.eu/updates/', 'current-release-versions.php', 'pihome', 'IE', 'Portlaoise', '', 'info@pihome.eu', b'1', '1', 'Europe/Dublin');
 /*!40000 ALTER TABLE `system` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.user
