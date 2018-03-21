@@ -28,6 +28,31 @@ $opp =  $_GET['o'];   # insert, update, delete, ( active only device )
 $wid = $_GET['wid'];  # which id
 $frost_temp = $_GET['frost_temp']; #update frost temperature
 
+//Delete Zone and all related records
+if(($what=="zone") && ($opp=="delete")){
+	//Delete Boost Records
+	$query = "DELETE FROM boost WHERE zone_id = '".$wid."'";
+	mysql_query($query, $connection);
+	//Delete All Message Out records
+	$query = "DELETE FROM messages_out WHERE zone_id = '".$wid."'";
+	mysql_query($query, $connection);
+	//Delete Override records
+	$query = "DELETE FROM override WHERE zone_id = '".$wid."'";
+	mysql_query($query, $connection);
+	//Delete Daily Time records
+	$query = "DELETE FROM schedule_daily_time_zone WHERE zone_id = '".$wid."'";
+	mysql_query($query, $connection);
+	//Delete Night Climat records
+	$query = "DELETE FROM schedule_night_climat_zone WHERE zone_id = '".$wid."'";
+	mysql_query($query, $connection);
+	//Delete All Zone Logs records
+	$query = "DELETE FROM zone_logs WHERE zone_id = '".$wid."'";
+	mysql_query($query, $connection);
+	//Delete Zone record
+	$query = "DELETE FROM zone WHERE id = '".$wid."'";
+	mysql_query($query, $connection);
+}	
+
 if($what=="holidays"){
 	if($opp=="active"){
 		$query = "SELECT * FROM holidays WHERE id ='".$wid."'";
