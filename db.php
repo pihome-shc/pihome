@@ -18,7 +18,7 @@
 * WHAT YOU ARE DOING                                                    *"
 *************************************************************************"
 */
-require_once("st_inc/session.php"); 
+require_once(__DIR__.'/st_inc/session.php');
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
@@ -94,12 +94,22 @@ if($what=="override"){
 
 if($what=="boost"){
 	if($opp=="active"){
-		$time = date("Y-m-d H:i:s");
+		$query = "SELECT * FROM boost WHERE status = '1' limit 1;";
+		$result = mysql_query($query, $connection);
+		$boost_row = mysql_fetch_assoc($result);
+		$boost_status = $boost_row['status'];
+		$boost_time = $boost_row['time'];
+		if ($boost_status == 1){
+			$time = $boost_time;
+		}else {
+			$time = date("Y-m-d H:i:s");
+		}
+		
 		$query = "SELECT * FROM boost WHERE zone_id ='".$wid."'";
 		$results = mysql_query($query, $connection);	
 		$row = mysql_fetch_assoc($results);
-		$ba= $row['status'];
-		if($ba=="1"){ $set="0"; }else{ $set="1"; }
+		$boost_status= $row['status'];
+		if($boost_status=="1"){ $set="0"; }else{ $set="1";}
 		$query = "UPDATE boost SET status = '{$set}', time = '{$time}' WHERE zone_id = '{$wid}' LIMIT 1";
 		mysql_query($query, $connection);
 		/* Following is commented out to test wireless communication to zone relay module.
