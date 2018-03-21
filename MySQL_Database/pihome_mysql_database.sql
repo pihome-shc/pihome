@@ -491,7 +491,7 @@ CREATE TABLE IF NOT EXISTS `zone` (
 REPLACE INTO `zone` (`id`, `status`, `index_id`, `name`, `type`, `model`, `max_c`, `max_operation_time`, `hysteresis_time`, `sensor_id`, `sensor_child_id`, `controler_id`, `controler_child_id`, `boiler_id`) VALUES
 	(33, 1, 1, 'Ground Floor', 'Heating', NULL, 23, 60, 3, 1, 0, 112, 1, 1),
 	(34, 1, 2, 'First Floor', 'Heating', NULL, 23, 60, 3, 2, 0, 112, 2, 1),
-	(35, 1, 5, 'Ch. Hot Water', 'Water', NULL, 40, 60, 3, 4, 0, 112, 3, 1);
+	(35, 1, 5, 'Ch. Hot Water', 'Water', NULL, 50, 60, 3, 4, 0, 112, 3, 1);
 /*!40000 ALTER TABLE `zone` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.zone_logs
