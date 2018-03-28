@@ -34,6 +34,13 @@ function request(url, method, data, callback) {
 	return http;
 }
 
+//delete Zone 
+function delete_zone(wid){
+	var quest = "?w=zone&o=delete&wid=" + wid + "&frost_temp=0";
+	request('db.php', 'GET', quest, function(){ window.location="settings.php?zone_deleted"; } );
+}
+
+
 //activate and deactivate holidays schedule 
 function active_holidays(wid){
 	var quest = "?w=holidays&o=active&wid=" + wid + "&frost_temp=0";

@@ -18,7 +18,7 @@
 * WHAT YOU ARE DOING                                                    *"
 *************************************************************************"
 */
-require_once("st_inc/session.php"); 
+require_once(__DIR__.'/st_inc/session.php');
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
@@ -27,6 +27,31 @@ $what = $_GET['w'];   # what to do, override, schedule, away etc..
 $opp =  $_GET['o'];   # insert, update, delete, ( active only device )
 $wid = $_GET['wid'];  # which id
 $frost_temp = $_GET['frost_temp']; #update frost temperature
+
+//Delete Zone and all related records
+if(($what=="zone") && ($opp=="delete")){
+	//Delete Boost Records
+	$query = "DELETE FROM boost WHERE zone_id = '".$wid."'";
+	mysql_query($query, $connection);
+	//Delete All Message Out records
+	$query = "DELETE FROM messages_out WHERE zone_id = '".$wid."'";
+	mysql_query($query, $connection);
+	//Delete Override records
+	$query = "DELETE FROM override WHERE zone_id = '".$wid."'";
+	mysql_query($query, $connection);
+	//Delete Daily Time records
+	$query = "DELETE FROM schedule_daily_time_zone WHERE zone_id = '".$wid."'";
+	mysql_query($query, $connection);
+	//Delete Night Climat records
+	$query = "DELETE FROM schedule_night_climat_zone WHERE zone_id = '".$wid."'";
+	mysql_query($query, $connection);
+	//Delete All Zone Logs records
+	$query = "DELETE FROM zone_logs WHERE zone_id = '".$wid."'";
+	mysql_query($query, $connection);
+	//Delete Zone record
+	$query = "DELETE FROM zone WHERE id = '".$wid."'";
+	mysql_query($query, $connection);
+}	
 
 if($what=="holidays"){
 	if($opp=="active"){
@@ -94,12 +119,22 @@ if($what=="override"){
 
 if($what=="boost"){
 	if($opp=="active"){
-		$time = date("Y-m-d H:i:s");
+		$query = "SELECT * FROM boost WHERE status = '1' limit 1;";
+		$result = mysql_query($query, $connection);
+		$boost_row = mysql_fetch_assoc($result);
+		$boost_status = $boost_row['status'];
+		$boost_time = $boost_row['time'];
+		if ($boost_status == 1){
+			$time = $boost_time;
+		}else {
+			$time = date("Y-m-d H:i:s");
+		}
+		
 		$query = "SELECT * FROM boost WHERE zone_id ='".$wid."'";
 		$results = mysql_query($query, $connection);	
 		$row = mysql_fetch_assoc($results);
-		$ba= $row['status'];
-		if($ba=="1"){ $set="0"; }else{ $set="1"; }
+		$boost_status= $row['status'];
+		if($boost_status=="1"){ $set="0"; }else{ $set="1";}
 		$query = "UPDATE boost SET status = '{$set}', time = '{$time}' WHERE zone_id = '{$wid}' LIMIT 1";
 		mysql_query($query, $connection);
 		/* Following is commented out to test wireless communication to zone relay module.
