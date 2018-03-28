@@ -87,7 +87,7 @@ while ($row = mysql_fetch_assoc($results)) {
 echo '</div></div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
-				<a class="btn btn-default login btn-sm btn-edit">Edit</a>
+				
             </div>
         </div>
     </div>
@@ -114,7 +114,7 @@ while ($row = mysql_fetch_assoc($results)) {
 echo '</div></div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
-				<a class="btn btn-default login btn-sm btn-edit">Edit</a>
+				
             </div>
         </div>
     </div>
@@ -179,7 +179,7 @@ while ($row = mysql_fetch_assoc($results)) {
 echo '</div></div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
-				<a class="btn btn-default btn-sm btn-edit">Edit</a>
+				
             </div>
         </div>
     </div>
@@ -195,10 +195,11 @@ echo '
                 <h5 class="modal-title">Zone Settings</h5>
             </div>
             <div class="modal-body">
-<p class="text-muted">Zone Settings: <br>
+<p class="text-muted">
 Hysteresis (Minimim delay between power off and on) <br>
 Maximum operating time <br>
 Maximum zone temperature. </p>';
+
 $query = "select * from zone_view order by index_id asc";
 $results = mysql_query($query, $connection);
 echo '	<div class=\"list-group\">';
@@ -207,19 +208,29 @@ while ($row = mysql_fetch_assoc($results)) {
 		echo "<div class=\"list-group-item\">
 		<i class=\"glyphicon glyphicon-th-large orange\"></i> ".$row['name']."
 		<span class=\"pull-right \"><em>&nbsp;&nbsp;<small> Max ".$row['max_c']."&deg; </em> - Sensor: ".$row['sensors_id']." - Ctr: ".$row['controler_id']."-".$row['controler_child_id']."</small></span> 
+		<br><span class=\"pull-right \"><small>
+		<a href=\"zone_edit.php?id=".$row['id']."\" class=\"btn btn-default btn-xs login\"><span class=\"ionicons ion-edit\"></span></a>&nbsp;&nbsp;
+		<a href=\"javascript:delete_zone(".$row['id'].");\"><button class=\"btn btn-danger btn-xs\"><span class=\"glyphicon glyphicon-trash\"></span></button></a>
+		</small></span>
+		<br>
 		</div>";
 	} else {
 		echo "<div class=\"list-group-item\">
 		<i class=\"glyphicon glyphicon-th-large orange\"></i> ".$row['name']."
-		<span class=\"pull-right \"><em>&nbsp;&nbsp;<small> Max ".$row['max_c']."&deg; </em> - Sensor: ".$row['sensors_id']." - GPIO: ".$row['gpio_pin']."</small></span> 
+		<span class=\"pull-right \"><em>&nbsp;&nbsp;<small> Max ".$row['max_c']."&deg; </em> - Sensor: ".$row['sensors_id']." - GPIO: ".$row['gpio_pin']."</small></span>
+		<br><span class=\"pull-right \"><small>
+		<a href=\"zone_edit.php?id=".$row['id']."\" class=\"btn btn-default btn-xs login\"><span class=\"ionicons ion-edit\"></span></a>&nbsp;&nbsp;
+		<a href=\"javascript:delete_zone(".$row['id'].");\"><button class=\"btn btn-danger btn-xs\"><span class=\"glyphicon glyphicon-trash\"></span></button></a>
+		</small></span>
+		<br>
+		
 		</div>";
 	}
-
 }
-echo '</div></div>
+echo '
+</div></div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
-				
             </div>
         </div>
     </div>
@@ -275,7 +286,7 @@ fclose($file_handle);
 echo ' </div></div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
-				<a class="btn btn-default login btn-sm btn-edit">Edit</a>
+				
             </div>
         </div>
     </div>
@@ -586,5 +597,5 @@ echo '</div></div>
     </div>
 </div>';
 
-
+// <a class="btn btn-default login btn-sm btn-edit">Edit</a>
 ?>
