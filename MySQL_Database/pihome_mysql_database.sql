@@ -221,6 +221,7 @@ REPLACE INTO `nodes` (`id`, `node_id`, `child_id_1`, `child_id_2`, `child_id_3`,
 	(5, '100', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Boiler Relay', '2017-09-11 17:01:54', 'Active', NULL, NULL),
 	(6, '25', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Temperature Sensor', '2017-11-02 22:49:08', '000', '2.1.1', '1.34'),
 	(112, '101', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Zone Controller Relay', '2017-10-30 15:45:06', NULL, '2.1.1', '1.2'),
+	(113, '0', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Zone Controller Relay', '2017-10-30 15:45:06', NULL, '2.1.1', '1.2'),
 	(116, '40', 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Button Console', '2017-10-06 13:09:31', NULL, '2.1.1', '1.31');
 /*!40000 ALTER TABLE `nodes` ENABLE KEYS */;
 
@@ -410,7 +411,7 @@ CREATE TABLE IF NOT EXISTS `system` (
 -- Dumping data for table pihome.system: ~1 rows (approximately)
 /*!40000 ALTER TABLE `system` DISABLE KEYS */;
 REPLACE INTO `system` (`id`, `name`, `version`, `build`, `update_location`, `update_file`, `update_alias`, `country`, `city`, `openweather_api`, `backup_email`, `ping_home`, `pi_serial`, `timezone`) VALUES
-	(2, 'PiHome - Smart Heating Control', '0.23', '170318', 'http://www.pihome.eu/updates/', 'current-release-versions.php', 'pihome', 'IE', 'Portlaoise', '', 'info@pihome.eu', b'1', '1', 'Europe/Dublin');
+	(2, 'PiHome - Smart Heating Control', '0.24', '280318', 'http://www.pihome.eu/updates/', 'current-release-versions.php', 'pihome', 'IE', 'Portlaoise', '', 'info@pihome.eu', b'1', '1', 'Europe/Dublin');
 /*!40000 ALTER TABLE `system` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.user
