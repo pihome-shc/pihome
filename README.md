@@ -21,7 +21,7 @@ If you want to upgrade your PiHome controller to Rhinoceros you just need to upg
 
 If you have any questions or concerns about this notification drop me comments.
 
-
+-----------------------------------------------------------------
 <p style="color:red;">Before we deep dive into this project something very important: PiHome comes with ABSOLUTELY NO WARRANTY, to the extent permitted by applicable law. DO NOT MAKE ANY CHANGES TO YOUR HEATING SYSTEM UNTIL UNLESS YOU KNOW WHAT YOU ARE DOING, contents provided here are for information and education purpose only, I take no responsibility for any loss or damage to you or your property.”</p3>
 
 
