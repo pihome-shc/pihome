@@ -14,6 +14,7 @@ PiHome – Smart Heating Control is home automation system or you can say centra
 
 [Step by Step Instructions](http://www.pihome.eu/how-to-install/ "PiHome - Step by Step Instructions")
 
+## PiHome PHP 7 Support
 To meet growing demand I'm exited to share an update with all the folks running PiHome as their heating controller, PiHome smart heating will support PHP 7, I'll be migrating all PiHome code to php 7.x. PiHome support for php 7 will be released to public on 7th April. I m dedicating this upgrade to Sudan (Rhinoceros) and calling this version Rhinoceros.
 
 If you want to upgrade your PiHome controller to Rhinoceros you just need to upgrade to php 7 and download all code from GitHub after 7th April 2018.
