@@ -18,111 +18,109 @@
 * WHAT YOU ARE DOING                                                    *"
 *************************************************************************"
 */
-require_once("st_inc/session.php"); 
+require_once(__DIR__.'/st_inc/session.php');
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
 
 if (isset($_POST['submit'])) {
-	
 	$zone_status = isset($_POST['zone_status']) ? $_POST['zone_status'] : "0";
-	$index_id = mysql_prep($_POST['index_id']);
-	$name = mysql_prep($_POST['name']);
-	$type = mysql_prep($_POST['type']);
-	$max_c = mysql_prep($_POST['max_c']);
-	$max_operation_time = mysql_prep($_POST['max_operation_time']);
-	$hysteresis_time = mysql_prep($_POST['hysteresis_time']);
-	$sensor_id = mysql_prep($_POST['sensor_id']);
-	$controler = mysql_prep($_POST['controler_id']);
-	$controler_id = mysql_prep($_POST['controler_id']);
-	$controler_child_id = mysql_prep($_POST['controler_child_id']);
-	$boost_button_id = mysql_prep($_POST['boost_button_id']);
-	$boost_button_child_id = mysql_prep($_POST['boost_button_child_id']);
-	//$zone_gpio = mysql_prep($_POST['zone_gpio']);
+	$index_id = $_POST['index_id'];
+	$name = $_POST['name'];
+	$type = $_POST['type'];
+	$max_c = $_POST['max_c'];
+	$max_operation_time = $_POST['max_operation_time'];
+	$hysteresis_time = $_POST['hysteresis_time'];
+	$sensor_id = $_POST['sensor_id'];
+	$controler = $_POST['controler_id'];
+	$controler_id = $_POST['controler_id'];
+	$controler_child_id = $_POST['controler_child_id'];
+	$boost_button_id = $_POST['boost_button_id'];
+	$boost_button_child_id = $_POST['boost_button_child_id'];
+	//$zone_gpio = mysqli_prepare($_POST['zone_gpio']);
 	$boiler = explode('-', $_POST['boiler_id'], 2);
 	$boiler_id = $boiler[0];
 
 	//query to search node id for temperature sensors
 	$query = "SELECT * FROM nodes WHERE node_id = '{$sensor_id}' LIMIT 1;";
-	$result = mysql_query($query, $connection);
-	$found_product = mysql_fetch_array($result);
+	$result = $conn->query($query);
+	$found_product = mysqli_fetch_array($result);
 	$sensor_id = $found_product['id'];
 		
 	//query to search node id for zone controller
 	$query = "SELECT * FROM nodes WHERE node_id = '{$controler_id}' LIMIT 1;";
-	$result = mysql_query($query, $connection);
-	$found_product = mysql_fetch_array($result);
+	$result = $conn->query($query);
+	$found_product = mysqli_fetch_array($result);
 	$controler_id = $found_product['id'];
 	
 	//query to search node id for boost button
 	$query = "SELECT * FROM nodes WHERE node_id = '{$boost_button_id}' LIMIT 1;";
-	$result = mysql_query($query, $connection);
-	$found_product = mysql_fetch_array($result);
+	$result = $conn->query($query);
+	$found_product = mysqli_fetch_array($result);
 	$boost_button_id = $found_product['node_id'];
 	
 	//Add zone record to Zone Talbe 
 	$query = "INSERT INTO zone (status, index_id, name, type, max_c, max_operation_time, hysteresis_time, sensor_id, sensor_child_id, controler_id, controler_child_id, boiler_id) 
 	VALUES ('{$zone_status}', '{$index_id}', '{$name}', '{$type}', '{$max_c}', '{$max_operation_time}', '{$hysteresis_time}', '{$sensor_id}', '{$sensor_child_id}', '{$controler_id}', '{$controler_child_id}', '{$boiler_id}');";
-	$result = mysql_query($query, $connection);
-	$zone_id = mysql_insert_id();
+	$result = $conn->query($query);
+	$zone_id = mysqli_insert_id($conn);
 	if ($result) {
 		$message_success = "<p>Zone Record Added Successfuly.</p>";
 	} else {
-		$error = "<p>{$LANG['add_purchase_failed']}</p> <p>" . mysql_error() . "</p>";
+		$error = "<p>Zone Record Addition Failed: </p> <p>" .mysqli_error($conn). "</p>";
 	}
 
 	//Add Zone to message out table at same time to send out instructions to controller for each zone. 
 	$query = "INSERT INTO messages_out (node_id, child_id, sub_type, payload, sent, zone_id)VALUES ('{$controler}','{$controler_child_id}', '2', '0', '1', '{$zone_id}');";
-	$result = mysql_query($query, $connection);
+	$result = $conn->query($query);
 	if ($result) {
 		$message_success .= "<p>Zone Controler Record Added Successfuly.</p>";
 	} else {
-		$error = "<p>Zone Controler Recrd Addition Failed!!!</p> <p>" . mysql_error() . "</p>";
+		$error .= "<p>Zone Controler Recrd Addition Failed!!!</p> <p>" .mysqli_error($conn). "</p>";
 	}
 
 	//Add Zone Boost Button Console to messageout table at same time
 	$query = "INSERT INTO messages_out (node_id, child_id, sub_type, payload, sent, zone_id)VALUES ('{$boost_button_id}','{$boost_button_child_id}', '2', '0', '1', '{$zone_id}');";
-	$result = mysql_query($query, $connection);
+	$result = $conn->query($query);
 	if ($result) {
 		$message_success .= "<p>Zone Boost Button Record Added Successfuly.</p>";
 	} else {
-		$error = "<p>Zone Boost Button Recrd Addition Failed!!!</p> <p>" . mysql_error() . "</p>";
+		$error .= "<p>Zone Boost Button Recrd Addition Failed!!!</p> <p>" .mysqli_error($conn). "</p>";
 	}
 	
 	//Add Zone to boost table at same time
 	$query = "INSERT INTO boost (status, zone_id, temperature, minute, boost_button_id, boost_button_child_id)VALUES ('0', '{$zone_id}','{$max_c}','{$max_operation_time}', '{$boost_button_id}', '{$boost_button_child_id}');";
-	$result = mysql_query($query, $connection);
+	$result = $conn->query($query);
 	if ($result) {
 		$message_success .= "<p>Zone Boost Record Added Successfuly.</p>";
 	} else {
-		$error = "<p>Zone Boost Recrd Addition Failed!!!</p> <p>" . mysql_error() . "</p>";
+		$error .= "<p>Zone Boost Recrd Addition Failed!!!</p> <p>" .mysqli_error($conn). "</p>";
 	}
 	
 	//Add Zone to override table at same time
 	$query = "INSERT INTO override (status, zone_id, temperature) VALUES ('0', '{$zone_id}','{$max_c}');";
-	$result = mysql_query($query, $connection);
+	$result = $conn->query($query);
 	if ($result) {
 		$message_success .= "<p>Zone Override Record Added Successfuly.</p>";
 	} else {
-		$error = "<p>Zone Override Record Addition Failed!!!</p> <p>" . mysql_error() . "</p>";
+		$error .= "<p>Zone Override Record Addition Failed!!!</p> <p>" .mysqli_error($conn). "</p>";
 	}
 	
 	//Add Zone to schedule_night_climat_zone table at same time
 	$query = "INSERT INTO schedule_night_climat_zone (status, zone_id, schedule_night_climate_id, min_temperature, max_temperature) VALUES ('0', '{$zone_id}', '1', '18','21');";
-	$result = mysql_query($query, $connection);
+	$result = $conn->query($query);
 	if ($result) {
 		$message_success .= "<p>Zone Night Climate Record Added Successfuly. </p>
 		<p>Do Not refrest and click Back button on your Browser...</p>";
 		header("Refresh: 10; url=home.php");
 	} else {
-		$error = "<p>Zone Night Climate Record Addition Failed!!!</p> <p>" . mysql_error() . "</p>";
+		$error .= "<p>Zone Night Climate Record Addition Failed!!!</p> <p>" .mysqli_error($conn). "</p>";
 	}
 	$alert_message="Zone ".$name." will not be added to any exiting heating Schedule!!!";
 }
 ?>
 <?php include("header.php");  ?>
 <?php include_once("notice.php"); ?>
-
 <div id="page-wrapper">
 <br>
             <div class="row">
@@ -137,8 +135,8 @@ if (isset($_POST['submit'])) {
 <form data-toggle="validator" role="form" method="post" action="<?php $_SERVER['PHP_SELF'];?>" id="form-join">
 <?php 
 $query = "select index_id from zone order by index_id desc limit 1;";
-$result = mysql_query($query, $connection);
-$found_product = mysql_fetch_array($result);
+$result = $conn->query($query);
+$found_product = mysqli_fetch_array($result);
 $new_index_id = $found_product['index_id']+1;
 ?>
 <div class="checkbox checkbox-default checkbox-circle">
@@ -178,24 +176,23 @@ $new_index_id = $found_product['index_id']+1;
 <select id="sensor_id" name="sensor_id" class="form-control select2" data-error="Zone sensor id can not be empty!" autocomplete="off" required>
 <?php if(isset($_POST['node_id'])) { echo '<option selected >'.$_POST['node_id'].'</option>'; } ?>
 <?php  $query = "SELECT node_id, child_id_1 FROM nodes where name = 'Temperature Sensor'";
-$result = mysql_query($query, $connection);
+$result = $conn->query($query);
 echo "<option></option>";
-while ($datarw=mysql_fetch_array($result)) {
+while ($datarw=mysqli_fetch_array($result)) {
 $node_id=$datarw["node_id"];
 echo "<option>$node_id</option>";} ?>
 </select>				
 <div class="help-block with-errors"></div></div>
 
 <input type="hidden" name="sensor_child_id" value="0">			
-
  
 <div class="form-group" class="control-label"><label>Zone Relay Controller ID</label>
 <select id="controler_id" name="controler_id" class="form-control select2" data-error="Zone Controler ID can not be empty! Select Node connect to Zone's motorized valve, If your zone connected to RPI GPIO you can select 0" autocomplete="off" required>
 <?php if(isset($_POST['controler_id'])) { echo '<option selected >'.$_POST['controler_id'].'</option>'; } ?>
 <?php  $query = "SELECT node_id FROM nodes where name = 'Zone Controller Relay'";
-$result = mysql_query($query, $connection);
+$result = $conn->query($query);
 echo "<option></option>";
-while ($datarw=mysql_fetch_array($result)) {
+while ($datarw=mysqli_fetch_array($result)) {
 	$node_id=$datarw["node_id"];
 	echo "<option>$node_id</option>";
 } ?>
@@ -249,9 +246,9 @@ while ($datarw=mysql_fetch_array($result)) {
 <select id="boost_button_id" name="boost_button_id" class="form-control select2" data-error="If you have Boost Console then you can select Boost Console ID" autocomplete="off" >
 <?php if(isset($_POST['boost_button_id'])) { echo '<option selected >'.$_POST['boost_button_id'].'</boost_button_id>'; } ?>
 <?php  $query = "SELECT node_id FROM nodes where name = 'Button Console'";
-$result = mysql_query($query, $connection);
+$result = $conn->query($query);
 echo "<option></option>";
-while ($datarw=mysql_fetch_array($result)) {
+while ($datarw=mysqli_fetch_array($result)) {
 $node_id=$datarw["node_id"];
 echo "<option>$node_id</option>";} ?>
 </select>				
@@ -277,8 +274,8 @@ echo "<option>$node_id</option>";} ?>
 <select id="boiler_id" name="boiler_id" class="form-control select2" data-error="Boiler ID can not be empty!" autocomplete="off" required>
 <?php if(isset($_POST['boiler_id'])) { echo '<option selected >'.$_POST['boiler_id'].'</option>'; } ?>
 <?php  $query = "SELECT id, node_id, name FROM boiler;";
-$result = mysql_query($query, $connection);
-while ($datarw=mysql_fetch_array($result)) {
+$result = $conn->query($query);
+while ($datarw=mysqli_fetch_array($result)) {
 $boiler_id=$datarw["id"].'-'.$datarw["name"].' Node ID: '.$datarw["node_id"] ;
 echo "<option>$boiler_id</option>";} ?>
 </select>				
@@ -292,8 +289,8 @@ echo "<option>$boiler_id</option>";} ?>
 						<div class="panel-footer">
 <?php 
 $query="select * from weather";
-$result = mysql_query($query, $connection);
-$weather = mysql_fetch_array($result);
+$result = $conn->query($query);
+$weather = mysqli_fetch_array($result);
 ?>
 Outside: <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
 <span><img border="0" width="24" src="images/<?php echo $weather['img'];?>.png" title="<?php echo $weather['title'];?> - 
@@ -301,7 +298,6 @@ Outside: <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
 <?php echo $weather['description'];?></span>
                             <div class="pull-right">
                                 <div class="btn-group">
-
                                 </div>
                             </div>
                         </div>
@@ -312,5 +308,4 @@ Outside: <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
             <!-- /.row -->
         </div>
         <!-- /#page-wrapper -->
-
 <?php include("footer.php");  ?>

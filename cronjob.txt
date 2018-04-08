@@ -1,5 +1,7 @@
 */10 * * * * /usr/bin/php /var/www/cron/system_c.php >/dev/null 2>&1
-*/30 * * * * /usr/bin/php /var/www/cron/update_weather.php >/dev/null 2>&1
-*/2 * * * * sh /var/www/cron/check_wifi.sh >/dev/null 2>&1
+*/30 * * * * /usr/bin/php /var/www/cron/weather_update.php >/dev/null 2>&1
+# */2 * * * * sh /var/www/cron/reboot_wifi.sh >>/var/www/cron/logs/reboot_wifi.log 2>&1
+*/2 * * * * sh /var/www/cron/reboot_wifi.sh >/dev/null 2>&1
 */2 * * * * php /var/www/cron/check_gw.php >/dev/null 2>&1
 */1 * * * * /usr/bin/php /var/www/cron/boiler.php >/dev/null 2>&1
+# @reboot sh /var/www/cron/gw.sh >/dev/null 2>&1

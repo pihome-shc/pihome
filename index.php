@@ -19,58 +19,63 @@
 *************************************************************************"
 */
 ?>
-<?php require_once("st_inc/session.php");
-	if (logged_in()) {
-		header("Location: home.php");
-		exit;
-	}
-require_once("st_inc/connection.php"); 
-require_once("st_inc/functions.php"); 
-//$ip = getenv("REMOTE_ADDR");
+<?php
+//Error reporting on php ON
+error_reporting(E_ALL);
+//Error reporting on php OFF
+//error_reporting(0);
 
-    // start process if data is passed from url  http://192.168.99.9/index.php?user=username&pass=password
+require_once(__DIR__.'/st_inc/session.php');
+if (logged_in()) {
+	header("Location: home.php");
+	exit;
+}
+require_once(__DIR__.'/st_inc/connection.php');
+require_once(__DIR__.'/st_inc/functions.php');
+ 
+
+ // start process if data is passed from url  http://192.168.99.9/index.php?user=username&pass=password
     if(isset($_GET['user']) && isset($_GET['pass'])) {
-        $username = $_GET['user'];
-        $password = $_GET['pass'];
-    // perform validations on the form data
-    if( (((!isset($_GET['user'])) || (empty($_GET['user']))) && (((!isset($_GET['pass'])) || (empty($_GET['pass'])))) )){
-        $error_message = "Username and Password is empty.";
-    } elseif ((!isset($_GET['user'])) || (empty($_GET['user']))) {
-        $error_message = "Username is empty.";
-    } elseif((!isset($_GET['pass'])) || (empty($_GET['pass']))) {
-        $error_message = "Password is empty.";
-    }
+		$username = $_GET['user'];
+		$password = $_GET['pass'];
+		// perform validations on the form data
+		if( (((!isset($_GET['user'])) || (empty($_GET['user']))) && (((!isset($_GET['pass'])) || (empty($_GET['pass'])))) )){
+			$error_message = "Username and Password is empty.";
+		} elseif ((!isset($_GET['user'])) || (empty($_GET['user']))) {
+			$error_message = "Username is empty.";
+		} elseif((!isset($_GET['pass'])) || (empty($_GET['pass']))) {
+			$error_message = "Password is empty.";
+		}
 
-    $username = mysql_real_escape_string($_GET['user']);
-    $password = mysql_real_escape_string(md5($_GET['pass']));
-    if ( !isset($error_message) ) {
-        // Check database to see if username and the hashed password exist there.
-        $query = "SELECT id, username FROM user WHERE username = '{$username}' AND password = '{$password}' ";
-        $result_set = mysql_query($query);
-        confirm_query($result_set);
-            if (mysql_num_rows($result_set) == 1) {
-                // username/password authenticated
-                $found_user = mysql_fetch_array($result_set);
-                // Set username session variable
-                $_SESSION['user_id'] = $found_user['id'];
-                $_SESSION['username'] = $found_user['username'];
+		$username = mysqli_real_escape_string($conn, $_POST['user']);
+		$password = mysqli_real_escape_string($conn,(md5($_POST['pass'])));
+		if ( !isset($error_message) ) {
+			// Check database to see if username and the hashed password exist there.
+			$query = "SELECT id, username FROM user WHERE username = '{$username}' AND password = '{$password}';";
+			$result_set = $conn->query($query);
+			if (mysqli_num_rows($result_set) == 1) {
+				// username/password authenticated
+				$found_user = mysqli_fetch_array($result_set);
+				// Set username session variable
+				$_SESSION['user_id'] = $found_user['id'];
+				$_SESSION['username'] = $found_user['username'];
 				//$_SESSION['url'] = $_SERVER['REQUEST_URI']; // i.e. "about.php"
-                $lastlogin= date("Y-m-d H:i:s");
-                $query = "UPDATE user SET lastlogin = '{$lastlogin}' WHERE username = '{$username}' LIMIT 1";
-                $result = mysql_query($query, $connection);
-                // redirect to home page after successfull login
-                //redirect_to('home.php');
+				$lastlogin= date("Y-m-d H:i:s");
+				$query = "UPDATE user SET lastlogin = '{$lastlogin}' WHERE username = '{$username}' LIMIT 1";
+				$result = $conn->query($query);
+				// redirect to home page after successfull login
+				//redirect_to('home.php');
 				if(isset($_SESSION['url'])) {
 					$url = $_SESSION['url']; // holds url for last page visited.
 				}else {
 					$url = "index.php"; // default page for 
 				}
-				redirect_to($url);
-            }
-        }
-    } 
+			redirect_to($url);
+			}
+		}
+	}
 
-	if (isset($_POST['submit'])) { 
+	if (isset($_POST['submit'])) {
 		if( (((!isset($_POST['username'])) || (empty($_POST['username']))) && (((!isset($_POST['password'])) || (empty($_POST['password'])))) )){
 			$error_message = "Username and Password is empty.";
 		} elseif ((!isset($_POST['username'])) || (empty($_POST['username']))) {
@@ -79,8 +84,8 @@ require_once("st_inc/functions.php");
 			$error_message = "Password is empty.";
 		} 
 
-		$username = mysql_real_escape_string($_POST['username']);
-		$password = mysql_real_escape_string(md5($_POST['password']));
+		$username = mysqli_real_escape_string($conn, $_POST['username']);
+		$password = mysqli_real_escape_string($conn,(md5($_POST['password'])));
 
 		//get client ip address 
 		if (!empty($_SERVER["HTTP_CLIENT_IP"]))
@@ -102,19 +107,17 @@ require_once("st_inc/functions.php");
 
 		if ( !isset($error_message) ) {
 			// Check database to see if username and the hashed password exist there.
-			$query = "SELECT id, username FROM user WHERE username = '{$username}' AND password = '{$password}' ";
-			$result_set = mysql_query($query);
-			confirm_query($result_set);
-			
-			if (mysql_num_rows($result_set) == 1) {
+			$query = "SELECT id, username FROM user WHERE username = '{$username}' AND password = '{$password}';";
+			$result_set = $conn->query($query);
+			if (mysqli_num_rows($result_set) == 1) {
 				// username/password authenticated
-				$found_user = mysql_fetch_array($result_set);
+				$found_user = mysqli_fetch_array($result_set);
 				// Set username session variable
 				$_SESSION['user_id'] = $found_user['id'];
         		$_SESSION['username'] = $found_user['username'];
 				// add entry to database if login is success
-				$query = "INSERT INTO userhistory(username, password, date, audit, ipaddress) VALUES ('{$username}', ' ', '{$lastlogin}', 'Success', '{$ip}')";
-				$result = mysql_query($query, $connection);
+				$query = "INSERT INTO userhistory(username, password, date, audit, ipaddress) VALUES ('{$username}', '{$password}', '{$lastlogin}', 'Failed', '{$ip}')";
+				$result = $conn->query($query);
         		// Jump to secured page
         		//redirect_to('home.php?uid='.$_SESSION['user_id']);
 				if(isset($_SESSION['url'])) {
@@ -123,14 +126,12 @@ require_once("st_inc/functions.php");
 					$url = "index.php"; // default page for 
 				}
 				redirect_to($url);
-				
-				
 			} else {
 				// add entry to database if login is success
-				$query = "INSERT INTO userhistory(username, password, date, audit, ipaddress) VALUES ('{$username}', ' ', '{$lastlogin}', 'Failed', '{$ip}')";
-				$result = mysql_query($query, $connection);
+				$query = "INSERT INTO userhistory(username, password, date, audit, ipaddress) VALUES ('{$username}', '{$password}', '{$lastlogin}', 'Failed', '{$ip}')";
+				$result = $conn->query($query);
 				// username/password was not found in the database
-				$message = "Username/Password combination incorrect. Please make sure your caps lock key is off and try again.";
+				$message = "Username/Password".$password." combination incorrect. Please make sure your caps lock key is off and try again.";
 			}
 		} 
 	} else { // Form has not been submitted.
@@ -149,7 +150,7 @@ require_once("st_inc/functions.php");
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="description" content="">
     <meta name="author" content="">
-  <title><?php  echo settings('name') ;?></title>
+ <title><?php  echo settings($conn, 'name') ;?></title>
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <link rel="shortcut icon" href="images/favicon.ico">
   <link rel="apple-touch-icon" href="images/apple-touch-icon.png"/>
@@ -213,7 +214,7 @@ html {
     <div class="container">
         <div class="row">
 		<br><br>
-		<h6 class="text-center"><img src="images/pi-home_logo.png" height="64"> <br><br><?php  echo settings('name') ;?></h6>
+		<h6 class="text-center"><img src="images/pi-home_logo.png" height="64"> <br><br><?php  echo settings($conn, 'name') ;?></h6>
             <div class="col-md-4 col-md-offset-4">
                 <div class="login-panel panel panel-primary">
                     <div class="panel-heading">
@@ -222,7 +223,7 @@ html {
                     <div class="panel-body">
 					<div class="row">
 					
-                        <form method="post" action="index.php" role="form">
+                        <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>" role="form">
 <?php  if(isset($error_message)) { echo "<div class=\"alert alert-success alert-dismissable\"> <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button>" . $error_message . "</div>" ;}  ?>
 <?php  if(isset($message)) { echo "<div class=\"alert alert-danger alert-dismissable\"> <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button>" . $message . "</div>" ;}  ?>
 <br>
@@ -245,17 +246,17 @@ html {
 <br>
                     </div></div>	
 <!--<div class="panel-footer">	</div> -->
-
                  </div>
-
-            
         </div>
-
-
     </div>
 	<div class="col-md-8 col-md-offset-2">
-	<div class="login-panel-foother"> <h6><?php echo settings('name').' '.settings('version')."&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;Build ".settings('build'); ?>&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;Powered By: RaspberryPi</h6> </div>
-</div>
+	<div class="login-panel-foother">
+	<h6><?php echo settings($conn, 'name').' '.settings($conn, 'version')."&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;Build ".settings($conn, 'build'); ?>&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;Powered By: Raspberry Pi</h6>
+	<br><br>
+	<h6><a style="color: #707070;" href="https://en.wikipedia.org/wiki/Sudan_(rhinoceros)" target="_blank" >Dedicated to Sudan (Rhinoceros) 1973 - 2018</a></h6>
+	</div>
+	</div>
+
 </div>
 
     <!-- jQuery -->
@@ -279,4 +280,4 @@ window.setTimeout(function() {
 </script>
 </body>
 </html>
-<?php if(isset($connection)) { mysql_close($connection); } ?>
+<?php if(isset($conn)) { $conn->close();} ?>

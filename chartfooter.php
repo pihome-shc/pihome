@@ -22,8 +22,8 @@
 <?php
 // weather table to get sunrise and sun set time 
 $query="select * from weather";
-$result = mysql_query($query, $connection);
-$weather_row = mysql_fetch_array($result);
+$result = $conn->query($query);
+$weather_row = mysqli_fetch_array($result);
 $sunrise = $weather_row['sunrise']* 1000 ;
 $sunset = $weather_row['sunset']* 1000 ;
 
@@ -59,9 +59,9 @@ var dataset = [
 var markings = [
 <?php
 $query="select start_datetime, stop_datetime from zone_log_view where (start_datetime > DATE_SUB( NOW(), INTERVAL 24 HOUR)) AND type='Heating' AND status= '1';";
-$results = mysql_query($query, $connection);
-$count=mysql_num_rows($results); 
-while ($row = mysql_fetch_assoc($results)) {
+$results = $conn->query($query);
+$count=mysqli_num_rows($results); 
+while ($row = mysqli_fetch_assoc($results)) {
 	if((--$count)==0) break;
 $boiler_start = strtotime($row['start_datetime']) * 1000;
 $boiler_stop = strtotime($row['stop_datetime'])* 1000;
@@ -89,9 +89,9 @@ var dataset_c = [{label: "Hot Water ", data: hot_water, color: "#0077FF"}, {labe
 var markings_chwater = [
 <?php
 $query="select start_datetime, stop_datetime from zone_log_view where (start_datetime > DATE_SUB( NOW(), INTERVAL 24 HOUR)) AND type = 'Water' AND status= '1';";
-$results = mysql_query($query, $connection);
-$count=mysql_num_rows($results); 
-while ($row = mysql_fetch_assoc($results)) {
+$results = $conn->query($query);
+$count=mysqli_num_rows($results); 
+while ($row = mysqli_fetch_assoc($results)) {
 	if((--$count)==0) break;
 $boiler_start = strtotime($row['start_datetime']) * 1000;
 $boiler_stop = strtotime($row['stop_datetime'])* 1000;
@@ -120,9 +120,9 @@ var dataset_hw = [{label: "CPU  ", data: system_c, color: "#DE000F"},{label: "Pi
 var markings_boiler = [
 <?php
 $query="select start_datetime, stop_datetime from zone_log_view where (start_datetime > DATE_SUB( NOW(), INTERVAL 24 HOUR));";
-$results = mysql_query($query, $connection);
-$count=mysql_num_rows($results); 
-while ($row = mysql_fetch_assoc($results)) {
+$results = $conn->query($query);
+$count=mysqli_num_rows($results); 
+while ($row = mysqli_fetch_assoc($results)) {
 	if((--$count)==0) break;
 $boiler_start = strtotime($row['start_datetime']) * 1000;
 $boiler_stop = strtotime($row['stop_datetime'])* 1000;

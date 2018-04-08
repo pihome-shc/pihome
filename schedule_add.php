@@ -18,34 +18,32 @@
 * WHAT YOU ARE DOING                                                    *"
 *************************************************************************"
 */
-require_once("st_inc/session.php"); 
+require_once(__DIR__.'/st_inc/session.php');  
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
 
 if (isset($_POST['submit'])) {
- 		$sc_en = isset($_POST['sc_en']) ? $_POST['sc_en'] : "0";
-		$start_time = mysql_prep($_POST['start_time']);
-		$end_time = mysql_prep($_POST['end_time']);
-		$query = "INSERT INTO schedule_daily_time( status, start, end) VALUES ('{$sc_en}', '{$start_time}','{$end_time}')"; 
-		$result = mysql_query($query, $connection);
-
-		$schedule_daily_time_id = mysql_insert_id();
-
-		if ($result) {
-			$message_success = "Schedule Time Added Successfully!!!";
-			header("Refresh: 3; url=schedule.php");
-		} else {
-			$error = "<p>{$LANG['username_create_failed']}</p><p>" . mysql_error() . "</p>";
-		}
+	$sc_en = isset($_POST['sc_en']) ? $_POST['sc_en'] : "0";
+	$start_time = $_POST['start_time'];
+	$end_time = $_POST['end_time'];
+	$query = "INSERT INTO schedule_daily_time( status, start, end) VALUES ('{$sc_en}', '{$start_time}','{$end_time}')"; 
+	$result = $conn->query($query);
+	$schedule_daily_time_id = mysqli_insert_id($conn);
 	
+	if ($result) {
+		$message_success = "Schedule Time Added Successfully!!!";
+		header("Refresh: 3; url=schedule.php");
+	} else {
+		$error = "<p>{$LANG['username_create_failed']}</p><p>" . mysqli_error() . "</p>";
+	}
 	foreach($_POST['id'] as $id){
 		$id = $_POST['id'][$id];
 		$status = isset($_POST['status'][$id]) ? $_POST['status'][$id] : "0";
 		$status = $_POST['status'][$id];
 		$temp = $_POST['temp'][$id];
 		$query = "INSERT INTO schedule_daily_time_zone(status, schedule_daily_time_id, zone_id, temperature) VALUES ('{$status}', '{$schedule_daily_time_id}','{$id}','{$temp}')"; 
-		$zoneresults = mysql_query($query, $connection);
+		$zoneresults = $conn->query($query);
 	}
 }
 ?>
@@ -80,8 +78,8 @@ if (isset($_POST['submit'])) {
                 <div class="help-block with-errors"></div></div>				
 <?php 
 $query = "select * from zone";
-$results = mysql_query($query, $connection);	
-while ($row = mysql_fetch_assoc($results)) {
+$results = $conn->query($query);	
+while ($row = mysqli_fetch_assoc($results)) {
 ?>
 
 	<input type="hidden" name="id[<?php echo $row["id"];?>]" value="<?php echo $row["id"];?>">
@@ -113,29 +111,32 @@ while ($row = mysql_fetch_assoc($results)) {
 	<option>32</option>
 	<option>33</option>
 	<option>34</option>
-	
+	<option>35</option>
+	<option>36</option>
+	<option>37</option>
+	<option>38</option>
+	<option>39</option>
+	<option>40</option>
+	<option>41</option>
+	<option>42</option>
+	<option>43</option>
+	<option>44</option>
+	<option>45</option>
 	
 	</select>
     <div class="help-block with-errors"></div></div></div>
-
-
+	
 <?php }?>				
-
-
                 <a href="schedule.php"><button type="button" class="btn btn-primary btn-sm" >Cancel</button></a>
                 <input type="submit" name="submit" value="Submit" class="btn btn-default btn-sm login">
 				</form>
-				
-				
-
 						</div>
                         <!-- /.panel-body -->
 						<div class="panel-footer">
 <?php 
 $query="select * from weather";
-$result = mysql_query($query, $connection);
-//confirm_query($result);
-$weather = mysql_fetch_array($result);
+$result = $conn->query($query);
+$weather = mysqli_fetch_array($result);
 ?>
 
 Outside: <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
@@ -144,21 +145,10 @@ Outside: <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
 <?php echo $weather['description'];?></span>
                         </div>
                     </div>
-					
-					
-					
-					
                 </div>
-
                 <!-- /.col-lg-4 -->
             </div>
             <!-- /.row -->
         </div>
         <!-- /#page-wrapper -->
-		
 		<?php include("footer.php"); ?>
-		
-		
-		
-
-

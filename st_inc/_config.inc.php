@@ -1,8 +1,8 @@
 <?php
 $hostname = 'localhost';
 $dbname   = 'pihome';
-$dbusername = 'root';
-$dbpassword = 'passw0rd';
+$dbusername = 'pihomedbadmin';
+$dbpassword = 'pihome2018';
 $connect_error = 'Sorry We are experiencing connection Problem...';
 
 ?>

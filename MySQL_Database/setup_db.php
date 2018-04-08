@@ -12,32 +12,32 @@ echo " \033[0m \n";
 echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
 echo "***************************************************************\n";
-echo "*   MySQL Database Script Version 0.1 Build Date 31/01/2018   *\n";
+echo "*   PiHome Install Script Version 0.2 Build Date 31/01/2018   *\n";
 echo "*                                      Have Fun - PiHome.eu   *\n";
 echo "***************************************************************\n";
 echo "\033[0m";
-echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View Script Started \n"; 
+echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiHome Install Script Started \n"; 
 echo "---------------------------------------------------------------------------------------- \n";
 
 //Set php script execution time in seconds
 ini_set('max_execution_time', 400); 
 $date_time = date('Y-m-d H:i:s');
+//Temporary File to save exiting CronJobs
+$cronfile = '/tmp/crontab.txt';
 
 //Check php version before doing anything else 
 $version = explode('.', PHP_VERSION);
-if ($version[0] > 5){
+if ($version[0] > 7){
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiHome Supported on php version 5.x you are running version \033[41m".phpversion()."\033[0m \n"; 
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Please visit http://www.pihome.eu/2017/10/11/apache-php-mysql-raspberry-pi-lamp/ to install correction version. \n";
 	exit();
 }else {
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - php version \033[41m".phpversion()."\033[0m looks OK \n";
-} 
-
+}
 
 //*********************************************************
 //* Modify Following variable according to your settings  *
 //*********************************************************
-
 $hostname = 'localhost';
 $dbname   = 'pihome';
 $dbusername = 'root';
@@ -45,21 +45,21 @@ $dbpassword = 'passw0rd';
 $connect_error = 'Sorry We are Experiencing MySQL Database Connection Problem...';
 
 //Test Connection to MySQL Server with Given Username & Password 
-$connection = mysql_connect($hostname, $dbusername, $dbpassword);
-if(!$connection) {
-	die($connect_error." ". mysql_error())."\n";
+$conn = new mysqli($hostname, $dbusername, $dbpassword, $dbname);
+if ($conn->connect_error){
+	die('Database Connecction Failed with Error: '.$conn->connect_error);
 }
 
-$db_selected = mysql_select_db($dbname, $connection);
+$db_selected = mysqli_select_db($conn, $dbname);
 if (!$db_selected) {
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase \033[41m".$dbname."\033[0m Does not Exist \n"; 
 	$query = "CREATE DATABASE {$dbname};";
-	$result = mysql_query($query, $connection);
+	$result = $conn->query($query);
 	if ($result) {
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase \033[41m".$dbname."\033[0m Created Successfully!!! \n"; 
 	}else {
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Error Creating Database \n"; 
-		echo mysql_error(). "\n";
+		mysqli_error($conn). "\n";
 	}
 }else {
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase \033[41m".$dbname."\033[0m Already Exist. \n";
@@ -85,9 +85,9 @@ if (!$db_selected) {
 }
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Importing SQL File to Database \n";
 	// Name of the file
-	$filename = __DIR__.'/pihome_mysql_database.sql';
+	$filename = __DIR__.'/MySQL_Database/pihome_mysql_database.sql';
 	// Select database
-	mysql_select_db($dbname) or die('Error Selecting MySQL Database: ' . mysql_error());
+	mysqli_select_db($dbname) or die('Error Selecting MySQL Database: ' . mysqli_error($conn));
 	// Temporary variable, used to store current query
 	$templine = '';
 	// Read in entire file
@@ -102,7 +102,7 @@ if (!$db_selected) {
 			// If it has a semicolon at the end, it's the end of the query
 			if (substr(trim($line), -1, 1) == ';'){
 				// Perform the query
-				mysql_query($templine) or print("MySQL Database Error with Query ".$templine.":". mysql_error()."\n");
+				mysql_query($templine) or print("MySQL Database Error with Query ".$templine.":". mysqli_error($conn)."\n");
 				// Reset temp variable to empty
 				$templine = '';
 			}
@@ -110,10 +110,9 @@ if (!$db_selected) {
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase File \033[41m".$filename."\033[0m Imported Successfully \n";
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Creating Table View \n";
 
-	
 	//Drop Table View If Exist
 	$query = "Drop View if exists schedule_daily_time_zone_view;";
-	$result = mysql_query($query, $connection);
+	$result = $conn->query($query);
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m schedule_daily_time_zone_view \033[0m Created \n"; }
 	
 	//Create Table View
@@ -127,13 +126,12 @@ if (!$db_selected) {
 	join schedule_daily_time send on sdtz.schedule_daily_time_id = send.id
 	join zone on sdtz.zone_id = zone.id
 	order by zone.index_id;";
-	$result = mysql_query($query, $connection);
+	$result = $conn->query($query);
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m schedule_daily_time_zone_view \033[0m Created \n"; }
 
-	
 	//Drop Table View If Exist
 	$query = "Drop View if exists zone_view;";
-	$result = mysql_query($query, $connection);
+	$result = $conn->query($query);
 	
 	//Create Table View
 	$query = "CREATE VIEW zone_view AS
@@ -149,26 +147,24 @@ if (!$db_selected) {
 	join nodes lasts on zone.sensor_id = lasts.id
 	join nodes msv on zone.sensor_id = msv.id
 	join nodes skv on zone.sensor_id = skv.id;";
-	$result = mysql_query($query, $connection);
+	$result = $conn->query($query);
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m zone_view \033[0m Created \n"; }
 
-	
 	//Drop Table View If Exist
 	$query = "Drop View if exists boiler_view;";
-	$result = mysql_query($query, $connection);
+	$result = $conn->query($query);
 	
 	//Create Table View
 	$query = "CREATE VIEW boiler_view AS
 	select boiler.status, boiler.fired_status, boiler.name, nodes.node_id, boiler.node_child_id, boiler.hysteresis_time, boiler.max_operation_time, boiler.gpio_pin
 	from boiler
 	join nodes on boiler.node_id = nodes.id;";
-	$result = mysql_query($query, $connection);
+	$result = $conn->query($query);
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m boiler_view \033[0m Created \n"; }
 
-	
 	//Drop Table View If Exist
 	$query = "Drop View if exists boost_view;";
-	$result = mysql_query($query, $connection);
+	$result = $conn->query($query);
 	
 	//Create Table View
 	$query = "CREATE VIEW boost_view AS
@@ -176,13 +172,12 @@ if (!$db_selected) {
 	from boost
 	join zone on boost.zone_id = zone.id
 	join zone zone_idx on boost.zone_id = zone_idx.id;";
-	$result = mysql_query($query, $connection);
+	$result = $conn->query($query);
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m boost_view \033[0m Created \n"; }
-	
 	
 	//Drop Table View If Exist
 	$query = "Drop View if exists override_view;";
-	$result = mysql_query($query, $connection);
+	$result = $conn->query($query);
 	
 	//Create Table View
 	$query = "CREATE VIEW override_view AS
@@ -190,13 +185,12 @@ if (!$db_selected) {
 	from override
 	join zone on override.zone_id = zone.id
 	join zone zone_idx on override.zone_id = zone_idx.id;";
-	$result = mysql_query($query, $connection);
+	$result = $conn->query($query);
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m override_view \033[0m Created \n"; }
-	
 	
 	//Drop Table View If Exist
 	$query = "Drop View if exists schedule_night_climat_zone_view;";
-	$result = mysql_query($query, $connection);
+	$result = $conn->query($query);
 	
 	//Create Table View
 	$query = "CREATE VIEW schedule_night_climat_zone_view AS 
@@ -205,26 +199,24 @@ if (!$db_selected) {
 	join schedule_night_climate_time snct on ncz.schedule_night_climate_id = snct.id
 	join schedule_night_climate_time enct on ncz.schedule_night_climate_id = enct.id
 	join schedule_night_climate_time tnct on ncz.schedule_night_climate_id = tnct.id;";
-	$result = mysql_query($query, $connection);
+	$result = $conn->query($query);
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m schedule_night_climat_zone_view \033[0m Created \n"; }
-	
 	
 	//Drop Table View If Exist
 	$query = "Drop View if exists messages_in_view_24h;";
-	$result = mysql_query($query, $connection);
+	$result = $conn->query($query);
 	
 	//Create Table View
 	$query = "CREATE VIEW messages_in_view_24h AS
 	select node_id, child_id, datetime, payload 
 	from messages_in 
 	where datetime > DATE_SUB( NOW(), INTERVAL 24 HOUR);";
-	$result = mysql_query($query, $connection);
+	$result = $conn->query($query);
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m messages_in_view_24h \033[0m Created \n"; }
-	
 	
 	//Drop Table View If Exist
 	$query = "Drop View if exists zone_log_view;";
-	$result = mysql_query($query, $connection);
+	$result = $conn->query($query);
 	
 	//Create Table View
 	$query = "CREATE VIEW zone_log_view AS
@@ -236,7 +228,7 @@ if (!$db_selected) {
 	join boiler_logs blet on zone_logs.boiler_log_id = blet.id
 	join boiler_logs blext on zone_logs.boiler_log_id = blext.id
 	order by id asc;";
-	$result = mysql_query($query, $connection);
+	$result = $conn->query($query);
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m zone_log_view \033[0m Created \n"; }
 
 echo "---------------------------------------------------------------------------------------- \n";

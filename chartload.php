@@ -18,7 +18,7 @@
 * WHAT YOU ARE DOING                                                    *"
 *************************************************************************"
 */
-require_once("st_inc/session.php"); 
+require_once(__DIR__.'/st_inc/session.php');  
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');

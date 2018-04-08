@@ -29,8 +29,8 @@ $relay_on = '1'; //GPIO value to write to turn on attached relay
 $relay_off = '0'; // GPIO value to write to turn off attached relay
 
 $query = "SELECT * FROM zone_view where status = 1 order by index_id asc;";
-$results = mysql_query($query, $connection);
-while ($row = mysql_fetch_assoc($results)) {
+$results = $conn->query($query);
+while ($row = mysqli_fetch_assoc($results)) {
 	$zone_id=$row['id'];
 	$zone_name=$row['name'];
 	$zone_gpio_pin=$row['gpio_pin'];
@@ -46,8 +46,8 @@ while ($row = mysql_fetch_assoc($results)) {
 }
 
 $query = "SELECT * FROM boiler_view;";
-$results = mysql_query($query, $connection);
-while ($row = mysql_fetch_assoc($results)) {
+$results = $conn->query($query);
+while ($row = mysqli_fetch_assoc($results)) {
 	$boiler_status=$row['status'];
 	$boiler_name=$row['name'];
 	$boiler_gpio_pin=$row['gpio_pin'];

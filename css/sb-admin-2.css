@@ -818,3 +818,17 @@ h3 small {font-family: "HelveticaNeue-Light",Helvetica,Arial,sans-serif;}
 	padding: 5px 3px;
 	
 }
+
+.navbar-brand {
+    float: left;
+    height: 20px;
+    padding: 10px 10px;
+	padding-right: 60px;
+    font-size: 18px;
+    line-height: 20px;
+}
+
+.navbar-right {
+    float: right !important;
+    margin-right: -15px;
+}

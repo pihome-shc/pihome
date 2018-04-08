@@ -1,7 +1,26 @@
-#!/usr/bin/php
-<?php require_once("connection.php"); ?>
-<?php require_once("functions.php"); ?>
 <?php 
+#!/usr/bin/php
+echo "\033[36m";
+echo "\n";
+echo "   _____    _   _    _                             \n";
+echo "  |  __ \  (_) | |  | |                            \n";
+echo "  | |__) |  _  | |__| |   ___    _ __ ___     ___  \n";
+echo "  |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \ \n";
+echo "  | |      | | | |  | | | (_) | | | | | | | |  __/ \n";
+echo "  |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___| \n";
+echo " \033[0m \n";
+echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
+echo "\033[31m";
+echo "*******************************************************\n";
+echo "*   Call Home Version 0.5 Build Date 31/03/2018       *\n";
+echo "*   Update on 31/03/218                               *\n";
+echo "*                                Have Fun - PiHome.eu *\n";
+echo "*******************************************************\n";
+echo " \033[0m \n";
+
+require_once(__DIR__.'../../st_inc/connection.php');
+require_once(__DIR__.'../../st_inc/functions.php');
+
 $current_time = date('H:i:s');
 $start_time = '23:57:00';
 $end_time = '00:00:00';
