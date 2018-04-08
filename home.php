@@ -18,7 +18,7 @@
 * WHAT YOU ARE DOING                                                    *"
 *************************************************************************"
 */
-require_once("st_inc/session.php"); 
+require_once(__DIR__.'/st_inc/session.php');
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
@@ -31,14 +31,20 @@ require_once(__DIR__.'/st_inc/functions.php');
                    	<div id="homelist" >
 				   <div class="text-center"><br><br><p>Please wait while system grab latest information from database...</p>
 				   <br><br><img src="images/loader.gif">
+				   <br><br><br><br>
 				   </div>
 				   </div>
                 </div>
-
                 <!-- /.col-lg-4 -->
             </div>
-            <!-- /.row -->
+			<!-- /.row -->
+	<div class="col-md-8 col-md-offset-2">
+	<div class="login-panel-foother">
+	<h6><a style="color: #707070;" href="https://en.wikipedia.org/wiki/Sudan_(rhinoceros)" target="_blank" >Dedicated to Sudan (Rhinoceros) 1973 - 2018</a></h6>
+	</div>
+	</div>
+	
+            
         </div>
         <!-- /#page-wrapper -->
-		
 		<?php include("footer.php"); ?>

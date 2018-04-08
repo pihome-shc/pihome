@@ -18,7 +18,7 @@
 * WHAT YOU ARE DOING                                                    *"
 *************************************************************************"
 */
-require_once("st_inc/session.php"); 
+require_once(__DIR__.'/st_inc/session.php');
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
@@ -32,61 +32,47 @@ if (isset($_POST['submit'])) {
 	$end_date_time = $_POST['end_date_time'];
 	$etime = date('Y-m-d H:i:s',strtotime($end_date_time));
 
-
 	$sql_device_insert= "INSERT INTO holidays(active, start_date_time, end_date_time)values('{$holidays_enable}', '{$start_date_time}', '{$end_date_time}')";
-	$result = mysql_query($sql_device_insert);
+	$result = $conn->query($sql_device_insert);
 	
 	if ($result) {
 		// Success!
 		$message_success = "All Done";
 	} else {
 				// Display error message.
-		$error .= "<p>" . mysql_error() . "</p>";
+		$error .= "<p>" . mysqli_error($conn) . "</p>";
 	}				
  }
- 
  	if(isset($_GET['id'])) {
 		$id = $_GET['id'];
-		
 		$query = "SELECT * FROM holidays WHERE id = {$id} LIMIT 1";
-		$get_product = mysql_query($query, $connection);
-		confirm_query($get_product);
-		$found_product = mysql_fetch_array($get_product);
-		
+		$get_product = $conn->query($query);
+		$found_product = mysqli_fetch_array($get_product);
 		if (!$found_product) {
-		$error_message = "No record found for database record number " . $id . mysql_error();
+			$error_message = "No record found for database record number " . $id .mysqli_error($conn);
 		} else {		
-		
-		$query = "DELETE FROM holidays WHERE id = {$id} LIMIT 1";
-		$result = mysql_query($query, $connection);
-		confirm_query($result);
-		
+			$query = "DELETE FROM holidays WHERE id = {$id} LIMIT 1";
+			$result = $conn->query($query);
 			if ($result) {
 				// Success!
 				$message_success = "Record Delete Successfully";
 			} else {
 				$error = "<p>Something went wrong! please try again...</p>";
-				$error .= "<p>" . mysql_error() . "</p>";
+				$error .= "<p>" .mysqli_error($conn). "</p>";
 			}
 		}
 	}
- 
 ?>
 <?php include("header.php");  ?>
-<?php  if(isset($error)) { echo "<div class=\"alert alert-danger alert-dismissable\"> <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button>" . $error . "</div>" ;}  ?>
-
+<?php include_once("notice.php"); ?>
  <div id="page-wrapper">
 <br>
             <div class="row">
                 <div class="col-lg-12">
-
 <div id="holidayslist"></div>
-
-
                 <!-- /.col-lg-4 -->
             </div>
             <!-- /.row -->
         </div>
         <!-- /#page-wrapper -->
-		
 <?php include("footer.php");  ?>

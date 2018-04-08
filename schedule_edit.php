@@ -18,46 +18,42 @@
 * WHAT YOU ARE DOING                                                    *"
 *************************************************************************"
 */
-require_once("st_inc/session.php"); 
+require_once(__DIR__.'/st_inc/session.php'); 
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
 
- if(isset($_GET['id'])) {
-		$time_id = $_GET['id'];
-		}else {
-		redirect_to("schedule.php");
-	}
+if(isset($_GET['id'])) {
+	$time_id = $_GET['id'];
+}else {
+	redirect_to("schedule.php");
+}
 	
 if (isset($_POST['submit'])) {
- 		$sc_en = isset($_POST['sc_en']) ? $_POST['sc_en'] : "0";
-		$start_time = mysql_prep($_POST['start_time']);
-		$end_time = mysql_prep($_POST['end_time']);
-		
-		$query = "UPDATE schedule_daily_time SET status = '{$sc_en}', start = '{$start_time}', end = '{$end_time}' WHERE id = '{$time_id}' LIMIT 1";
-		$result = mysql_query($query, $connection);
-		$schedule_daily_time_id = mysql_insert_id();
-
-		if ($result) {
-			$message_success = "Schedule Modified Successfully!!!";
-			header("Refresh: 3; url=schedule.php");
-		} else {
-			$error = "<p>{$LANG['username_create_failed']}</p><p>" . mysql_error() . "</p>";
-		}
+	$sc_en = isset($_POST['sc_en']) ? $_POST['sc_en'] : "0";
+	$start_time = $_POST['start_time'];
+	$end_time = $_POST['end_time'];
 	
+	$query = "UPDATE schedule_daily_time SET status = '{$sc_en}', start = '{$start_time}', end = '{$end_time}' WHERE id = '{$time_id}' LIMIT 1";
+	$result = $conn->query($query);
+	$schedule_daily_time_id = mysqli_insert_id($conn);
+	if ($result) {
+		$message_success = "Schedule Modified Successfully!!!";
+		header("Refresh: 3; url=schedule.php");
+	} else {
+		$error = "<p>{$LANG['username_create_failed']}</p><p>" . mysqli_error() . "</p>";
+	}
+
 	foreach($_POST['id'] as $id){
 		$id = $_POST['id'][$id];
 		$status = isset($_POST['status'][$id]) ? $_POST['status'][$id] : "0";
 		$status = $_POST['status'][$id];
 		$temp = $_POST['temp'][$id];
 		$query = "UPDATE schedule_daily_time_zone SET status = '{$status}', temperature = '{$temp}' WHERE id = '{$id}' LIMIT 1";
-		
-		//$query = "INSERT INTO schedule_daily_time_zone(status, schedule_daily_time_id, zone_id, temperature) VALUES ('{$status}', '{$schedule_daily_time_id}','{$id}','{$temp}')"; 
-		$zoneresults = mysql_query($query, $connection);
+		$zoneresults = $conn->query($query);
 	}
 }
 ?>
-
 <?php include("header.php"); ?>
 <?php include_once("notice.php"); ?>
         <div id="page-wrapper">
@@ -75,8 +71,8 @@ if (isset($_POST['submit'])) {
 	<form data-toggle="validator" role="form" method="post" action="<?php $_SERVER['PHP_SELF'];?>" id="form-join">
 <?php 
 $query = "SELECT * FROM schedule_daily_time WHERE id = {$time_id}";
-$results = mysql_query($query, $connection);	
-$time_row = mysql_fetch_assoc($results);
+$results = $conn->query($query);	
+$time_row = mysqli_fetch_assoc($results);
 ?>
 	<div class="checkbox checkbox-default checkbox-circle">
     <input id="checkbox0" class="styled" type="checkbox" name="sc_en" value="1" <?php $check = ($time_row['status'] == 1) ? 'checked' : ''; echo $check; ?>>
@@ -92,8 +88,8 @@ $time_row = mysql_fetch_assoc($results);
     <div class="help-block with-errors"></div></div>				
 <?php 
 $query = "select * from schedule_daily_time_zone_view where time_id = {$time_id}";
-$results = mysql_query($query, $connection);	
-while ($row = mysql_fetch_assoc($results)) {
+$results = $conn->query($query);	
+while ($row = mysqli_fetch_assoc($results)) {
 ?>
 	<input type="hidden" name="id[<?php echo $row["tz_id"];?>]" value="<?php echo $row["tz_id"];?>">
 	
@@ -130,6 +126,18 @@ if($row['tz_status'] == 1){
 	<option>32</option>
 	<option>33</option>
 	<option>34</option>
+	<option>35</option>
+	<option>36</option>
+	<option>37</option>
+	<option>38</option>
+	<option>39</option>
+	<option>40</option>
+	<option>41</option>
+	<option>42</option>
+	<option>43</option>
+	<option>44</option>
+	<option>45</option>
+	
 	</select>
     <div class="help-block with-errors"></div></div></div>
 <?php }?>				
@@ -141,9 +149,8 @@ if($row['tz_status'] == 1){
 						<div class="panel-footer">
 <?php 
 $query="select * from weather";
-$result = mysql_query($query, $connection);
-//confirm_query($result);
-$weather = mysql_fetch_array($result);
+$result = $conn->query($query);
+$weather = mysqli_fetch_array($result);
 ?>
 
 Outside: <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C

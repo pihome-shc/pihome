@@ -1,10 +1,6 @@
 <?php 
 require("_config.inc.php");
-$connection = mysql_connect($hostname, $dbusername, $dbpassword);
-if(!$connection) {
-	die($connect_error." ". mysql_error());
-}
-$db_select = mysql_select_db($dbname, $connection);
-if(!$db_select) {
-	die($connect_error." ". mysql_error());
-}?>
+$conn = new mysqli($hostname, $dbusername, $dbpassword, $dbname);
+if ($conn->connect_error){
+	die('Database Connecction Failed with Error: '.$conn->connect_error);
+} ?>

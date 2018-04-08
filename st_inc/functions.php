@@ -1,5 +1,4 @@
 <?php
-
 /*
    _____    _   _    _                             
   |  __ \  (_) | |  | |                            
@@ -20,22 +19,23 @@
 *************************************************************************"
 */
 
+require_once(__DIR__.'/connection.php');
+
 // Time Zone Settings for PHP
-
 //date_default_timezone_set("Europe/Dublin"); // You can set Timezone Manually and uncomment this line and comment out following line 
-date_default_timezone_set(settings("timezone"));
+date_default_timezone_set(settings($conn, 'timezone'));
 
-$sysversion="0.125";
+//$sysversion="0.125";
 
 // This file is to include basic functions
-function mysql_prep($value) {
+function mysqli_prep($value) {
 	$magic_quotes_active = get_magic_quotes_gpc();
-	$new_enough_php = function_exists("mysql_real_escape_string");
+	$new_enough_php = function_exists("mysqli_real_escape_string");
 	//if php 4.3.0 or highre
 	if($new_enough_php) {
 		//undo magic quotes effect so that real escape sting can do the work	
 		if($magic_quotes_active) { $value = stripslashes($value); }
-		$value = mysql_real_escape_string($value);
+		$value = mysqli_real_escape_string($value);
 	} else {		//before php 4.3.0
 		// if magic quotes are not on then add slahes
 		if(!$magic_quotes_active) { $value = addslashes($value); }
@@ -49,12 +49,6 @@ function redirect_to($location = NULL) {
 		header("Location: {$location}");
 		exit;
 	}
-}
-
-function confirm_query($result_set) {
-if(!$result_set) {
-        die("Sorry We are experiencing connection Problem..." . mysql_error());
-    }
 }
 
 function getWeather() 
@@ -146,20 +140,17 @@ function secondsToWords($seconds)
 }
 
 //function to search inside array ref: http://forums.phpfreaks.com/topic/195499-partial-text-match-in-array/
-function searchArray($search, $array)
-{
-    foreach($array as $key => $value)
-    {
-        if (stristr($value, $search))
-        {
-            return $key;
+function searchArray($search, $array) {
+    foreach($array as $key => $value) {
+        if (stristr($value, $search)) {
+			return $key;
         }
     }
     return false;
 }
 
-function get_real_ip()
-{
+// Return realy ip address of visitor 
+function get_real_ip() {
     if (isset($_SERVER["HTTP_CLIENT_IP"])){return $_SERVER["HTTP_CLIENT_IP"];}
     elseif (isset($_SERVER["HTTP_X_FORWARDED_FOR"])){return $_SERVER["HTTP_X_FORWARDED_FOR"];}
     elseif (isset($_SERVER["HTTP_X_FORWARDED"])){return $_SERVER["HTTP_X_FORWARDED"];}
@@ -169,33 +160,33 @@ function get_real_ip()
 }
 
 // Return Systems setting from settings table function
-function settings($svalue){
+function settings($db, $svalue){
 	$rValue = "";
-	$query = ("SELECT * FROM system;");
-	$result = mysql_query($query);
-	if ($row = mysql_fetch_array($result)){	$rValue = $row[$svalue];	}
-	return $rValue;
-} 
+	$query="SELECT * FROM system limit 1;";
+	$result = $db->query($query);
+	if ($row = mysqli_fetch_array($result)){$rValue = $row[$svalue];}
+	return $rValue;	
+}
 
 // Return MySensors Logs from gateway_log function
-function gw_logs($value){
+function gw_logs($db, $value){
 	$rValue = "";
 	$query = ("SELECT * FROM gateway_logs order by id desc limit 1;");
-	$result = mysql_query($query);
-	if ($row = mysql_fetch_array($result)){	$rValue = $row[$value];	}
+	$result = $db->query($query);
+	if ($row = mysqli_fetch_array($result)){	$rValue = $row[$value];	}
 	return $rValue;
 }
 
 // Return MySensors Setting from gateway table function
-function gw($value){
+function gw($db, $value){
 	$rValue = "";
 	$query = ("SELECT * FROM gateway order by id asc limit 1;");
-	$result = mysql_query($query);
-	if ($row = mysql_fetch_array($result)){	$rValue = $row[$value];	}
+	$result = $db->query($query);
+	if ($row = mysqli_fetch_array($result)){	$rValue = $row[$value];	}
 	return $rValue;
 }
 
-
+//get contents of and url 
 function url_get_contents ($Url) {
     if (!function_exists('curl_init')){ 
         die('CURL is not installed!');

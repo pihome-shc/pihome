@@ -19,6 +19,7 @@
 *************************************************************************"
 */
 ?>
+
     </div>
     <!-- /#wrapper -->
     <!-- jQuery -->
@@ -127,4 +128,4 @@ $(document).ready(function(){
 <?php if (isset($graphs_page)){include("chartfooter.php");} ?>
 </body>
 </html>
-<?php if(isset($connection)) { mysql_close($connection); } ?>
+<?php if(isset($conn)) { $conn->close();} ?>

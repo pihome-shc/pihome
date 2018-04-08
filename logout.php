@@ -38,4 +38,4 @@
 		header("Location: index.php?logout=1");
 		exit;
 ?>
-<?php if(isset($connection)) { mysql_close($connection); } ?>
+<?php if(isset($conn)) { $conn->close();} ?>

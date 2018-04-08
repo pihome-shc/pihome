@@ -20,13 +20,19 @@ echo " \033[0m \n";
 require_once(__DIR__.'../../st_inc/connection.php');
 require_once(__DIR__.'../../st_inc/functions.php'); 
 //Set php script execution time in seconds
+
 ini_set('max_execution_time', 40); 
-$gw_type = gw('type');
-$gw_location = gw('location');
-$gw_port = gw('port');
+
+//query to get gateway information 
+$query = "SELECT * FROM gateway order by id asc limit 1;";
+$result = $conn->query($query);
+$row = mysqli_fetch_array($result);
+$gw_type = $row['type'];
+$gw_location = $row['location'];
+$gw_port = $row['port'];
 
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Python Gateway Script Status Check Script Started \n"; 
-if (gw('type') == 'wifi'){
+if ($gw_type == 'wifi'){
 	exec("ps ax | grep wifigw.py", $pids); 
 	//exec(" pgrep aux | grep serialgwv2.py", $pids); 
 	$gw_script_txt = 'python /var/www/cron/wifigw.py';
@@ -40,9 +46,9 @@ if (gw('type') == 'wifi'){
 		echo "\033[36m".date('Y-m-d H:i:s')."\033[0m - The PID is: \033[41m".$out[0]."\033[0m \n";
 		$pid_details = exec("ps -p '$out[0]' -o lstart=");
 		$query = "UPDATE gateway SET pid = '{$out[0]}', pid_running_since = '{$pid_details}' LIMIT 1";
-		mysql_query($query, $connection);
+		$conn->query($query);
 		$query = "INSERT INTO gateway_logs (type, location, port, pid, pid_start_time) VALUES ( '{$gw_type}', '{$gw_location}', '{$gw_port}', '{$out[0]}', '{$pid_details}' )";
-		mysql_query($query, $connection);
+		$conn->query($query);
 		
 	} else {
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Python Script for WiFi Gateway is Running \n";
@@ -51,9 +57,9 @@ if (gw('type') == 'wifi'){
 		$pid_details = exec("ps -p '$out[0]' -o lstart=");
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Gateway Process Running Since: ".$pid_details."\n";
 		$query = "UPDATE gateway SET pid = '{$out[0]}', pid_running_since = '{$pid_details}' LIMIT 1";
-		mysql_query($query, $connection);
+		$conn->query($query);
 	}
-} elseif (gw('type') == 'serial'){
+} elseif ($gw_type == 'serial'){
 	exec("ps ax | grep serialgw.py", $pids); 
 	//exec(" pgrep aux | grep serialgwv2.py", $pids); 
 	$gw_script_txt = 'python /var/www/cron/serialgw.py';
@@ -69,11 +75,11 @@ if (gw('type') == 'wifi'){
 		echo "The PID is: " . $out[0]."\n";
 		echo $pids[$position]."\n" ;
 		$query = "UPDATE gateway SET pid = '{$out[0]}', pid_running_since = '{$pid_details}' LIMIT 1";
-		mysql_query($query, $connection);
+		$conn->query($query);
 	}
 }
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Python Gateway Script Status Check Script Ended \n"; 
 echo "***************************************************************************";
 echo "\n";
-if(isset($connection)) { mysql_close($connection); }
+if(isset($conn)) { $conn->close();}
 ?>

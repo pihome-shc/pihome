@@ -1,17 +1,35 @@
+<?php 
 #!/usr/bin/php
-<?php
+echo "\033[36m";
+echo "\n";
+echo "   _____    _   _    _                             \n";
+echo "  |  __ \  (_) | |  | |                            \n";
+echo "  | |__) |  _  | |__| |   ___    _ __ ___     ___  \n";
+echo "  |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \ \n";
+echo "  | |      | | | |  | | | (_) | | | | | | | |  __/ \n";
+echo "  |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___| \n";
+echo " \033[0m \n";
+echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
+echo "\033[31m";
+echo "********************************************************\n";
+echo "* System Temperature Version 0.4 Build Date 31/03/2018 *\n";
+echo "* Update on 31/03/218                                  *\n";
+echo "*                                 Have Fun - PiHome.eu *\n";
+echo "********************************************************\n";
+echo " \033[0m \n";
+
 require_once(__DIR__.'../../st_inc/connection.php');
-require_once(__DIR__.'../../st_inc/functions.php'); 
+require_once(__DIR__.'../../st_inc/functions.php');
 
 $time=date('H:i');
 $date=date('y-m-d');
 $system_c = exec ("vcgencmd measure_temp | cut -c6,7,8,9");
-echo $system_c."\n";
+echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - System Temperature: ". $system_c."\n";
 if ($system_c == 0) {
 	//do nothing
 }else {
-$query = "INSERT INTO messages_in (node_id, child_id, payload) VALUES ('0', '0', '{$system_c}')";
-mysql_query($query, $connection);
+	$query = "INSERT INTO messages_in (node_id, child_id, payload) VALUES ('0', '0', '{$system_c}')";
+	$conn->query($query);
 }
-if(isset($connection)) { mysql_close($connection); } 
+if(isset($conn)) { $conn->close();} 
 ?>

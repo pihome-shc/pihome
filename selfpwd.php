@@ -18,7 +18,7 @@
 * WHAT YOU ARE DOING                                                    *"
 *************************************************************************"
 */
-require_once("st_inc/session.php"); 
+require_once(__DIR__.'/st_inc/session.php'); 
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
@@ -34,34 +34,33 @@ if (isset($_POST['submit'])) {
 	} elseif($_POST['new_pass'] != $_POST['con_pass']) {
 		$error_message = $LANG['conf_password_error2'];
 	}
-	$old_pass = mysql_real_escape_string(md5($_POST['old_pass']));
-	$new_pass = mysql_real_escape_string(md5($_POST['new_pass']));
-	$con_pass = mysql_real_escape_string(md5($_POST['con_pass']));
+	$old_pass = mysqli_real_escape_string($conn,(md5($_POST['old_pass'])));
+	$new_pass = mysqli_real_escape_string($conn,(md5($_POST['new_pass'])));
+	$con_pass = mysqli_real_escape_string($conn,(md5($_POST['con_pass'])));
 	
 	$query = "SELECT * FROM user WHERE id = {$id}";
-	$results = mysql_query($query, $connection);	
-	$user_oldpass = mysql_fetch_assoc($results);
+	$results = $conn->query($query);	
+	$user_oldpass = mysqli_fetch_assoc($results);
 	if ($user_oldpass['password'] != $old_pass ){
 		$error_message = 'Your Old Password is Incorrect!';
 	} else {
 		if ( !isset($error_message) && ($new_pass == $con_pass)) {
 			$cpdate= date("Y-m-d H:i:s");
 			$query = "UPDATE user SET password = '{$new_pass}', cpdate = '{$cpdate}' WHERE id = '{$id}' LIMIT 1";
-			$result = mysql_query($query, $connection);
+			$result = $conn->query($query);
 				if ($result) {
-					$message_success = $LANG['password_changed'];
+					$message_success = "Password is successfully changed!!!";
 					header("Refresh: 10; url=home.php");
 				} else {
-					$error = "<p>{$LANG['password_x_changed']}</p>";
-					$error .= "<p>" . mysql_error() . "</p>";
+					$error = "<p>Password chaneg failed!!!</p>";
+					$error .= "<p>".mysqli_error($conn)."</p>";
 				}
-		} 
+		}
 	}
 }
-	
 $query = "SELECT * FROM user WHERE id = {$id}";
-$results = mysql_query($query, $connection);	
-$row = mysql_fetch_assoc($results);
+$results = $conn->query($query);	
+$row = mysqli_fetch_assoc($results);
 ?>
 <?php include("header.php"); ?>
 <?php include_once("notice.php"); ?>
@@ -70,11 +69,11 @@ $row = mysql_fetch_assoc($results);
             <div class="row">
                     <div class="panel panel-primary">
                         <div class="panel-heading">
-                            <i class="fa fa-key fa-fw"></i> <?php echo $LANG['change_password'] ?>
+                            <i class="fa fa-key fa-fw"></i> Change your password!!!
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-				<p > <?php echo $LANG['change_password_introtext']; ?>.  <p class="text-danger"> <strong>Do not use any special character i.e 
+				<p > Please enter your password details below.  <p class="text-danger"> <strong>Do not use any special character i.e 
 				' &nbsp;&nbsp; ` &nbsp;&nbsp; , &nbsp;&nbsp; & &nbsp;&nbsp; ? &nbsp;&nbsp; { &nbsp;&nbsp; } &nbsp;&nbsp; [ &nbsp;&nbsp; ] &nbsp;&nbsp; ( &nbsp;&nbsp; ) &nbsp;&nbsp; - &nbsp;&nbsp; &nbsp;&nbsp; ; &nbsp;&nbsp; ! &nbsp;&nbsp; ~ &nbsp;&nbsp; * &nbsp;&nbsp; % &nbsp;&nbsp; \ &nbsp;&nbsp; |</strong></p> 
                 <form method="post" action="<?php $PHP_SELF ?>" data-toggle="validator" role="form" >
 				
@@ -86,8 +85,6 @@ $row = mysql_fetch_assoc($results);
                 <input type="text" class="form-control" placeholder="User Name" value="<?php echo $row['username'] ;?>" disabled> 
                 </div>
 				
-
-
                 <div class="form-group"><label><?php echo $LANG['old_password']; ?></label>
                 <input class="form-control" type="password" class="form-control" placeholder="Old Password" value="" id="old_pass" name="old_pass" data-error="Old Password is Required" autocomplete="off" required> 
                 <div class="help-block with-errors"></div></div>
@@ -106,14 +103,11 @@ $row = mysql_fetch_assoc($results);
                         </div>
                         <!-- /.panel-body -->
 						<div class="panel-footer">
-
 <?php 
 $query="select * from weather";
-$result = mysql_query($query, $connection);
-confirm_query($result);
-$weather = mysql_fetch_array($result);
+$result = $conn->query($query);
+$weather = mysqli_fetch_array($result);
 ?>
-
 Outside: <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
 <span><img border="0" width="24" src="images/<?php echo $weather['img'];?>.png" title="<?php echo $weather['title'];?> - 
 <?php echo $weather['description'];?>"></span> <span><?php echo $weather['title'];?> - 
@@ -121,11 +115,9 @@ Outside: <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
                         </div>
                     </div>
                 </div>
-
                 <!-- /.col-lg-4 -->
             </div>
             <!-- /.row -->
         </div>
         <!-- /#page-wrapper -->
-		
 <?php include("footer.php");  ?>

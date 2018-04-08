@@ -18,18 +18,18 @@
 * WHAT YOU ARE DOING                                                    *"
 *************************************************************************"
 */
-require_once("st_inc/session.php"); 
+require_once(__DIR__.'/st_inc/session.php'); 
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
 
 if (isset($_POST['submit'])) {
 	$sc_en = isset($_POST['sc_en']) ? $_POST['sc_en'] : "0";
-	$start_time = mysql_prep($_POST['start_time']);
-	$end_time = mysql_prep($_POST['end_time']);
+	$start_time = mysqli_prep($_POST['start_time']);
+	$end_time = mysqli_prep($_POST['end_time']);
 	$query = "UPDATE schedule_night_climate_time SET status = '{$sc_en}', start_time = '{$start_time}', end_time = '{$end_time}'";
-	$timeresults = mysql_query($query, $connection);
-	if (isset($timeresults)) {$message_success = $LANG['record_add_success'];} else {$error = "<p>{$LANG['record_add_failed']}</p>"; $error .= "<p>" . mysql_error() . "</p>";}
+	$timeresults = $conn->query($query);
+	if (isset($timeresults)) {$message_success = $LANG['record_add_success'];} else {$error = "<p>{$LANG['record_add_failed']}</p>"; $error .= "<p>" . mysqli_error() . "</p>";}
 	
 	foreach($_POST['id'] as $id){
 		$id = $_POST['id'][$id];
@@ -38,7 +38,7 @@ if (isset($_POST['submit'])) {
 		$min = $_POST['min'][$id];
 		$max = $_POST['max'][$id];
 		$query = "UPDATE schedule_night_climat_zone SET status='$status', min_temperature='$min', max_temperature='$max' WHERE id='$id'";
-		$zoneresults = mysql_query($query, $connection);
+		$zoneresults = $conn->query($query);
 	}
 	$message_success = "Night Climate Schedule Modified Successfully!!!";
 	header("Refresh: 3; url=home.php");
@@ -60,10 +60,9 @@ if (isset($_POST['submit'])) {
                 <form data-toggle="validator" role="form" method="post" action="<?php $_SERVER['PHP_SELF'];?>" id="form-join">
 <?php
 				$query = "SELECT * FROM schedule_night_climate_time WHERE id = 1";
-				$results = mysql_query($query, $connection);	
-				$snct = mysql_fetch_assoc($results);
+				$results = $conn->query($query);	
+				$snct = mysqli_fetch_assoc($results);
 ?>
-
 				<div class="checkbox checkbox-default checkbox-circle">
                 <input id="checkbox0" class="styled" type="checkbox" name="sc_en" value="1" <?php $check = ($snct['status'] == 1) ? 'checked' : ''; echo $check; ?>>
                 <label for="checkbox0"> Enable Night Climate </label>
@@ -82,10 +81,9 @@ SELECT sncz.id, sncz.status, sncz.schedule_night_climate_id, sncz.zone_id, zone.
 FROM schedule_night_climat_zone sncz
 join zone on sncz.zone_id = zone.id
 order by zone.index_id";
-				$zoneresults = mysql_query($zquery, $connection);	
-				while ($sncz = mysql_fetch_assoc($zoneresults)) {
+				$zoneresults = $conn->query($zquery);
+				while ($sncz = mysqli_fetch_assoc($zoneresults)) {
 ?>
-
 				<input type="hidden" name="id[<?php echo $sncz["id"];?>]" value="<?php echo $sncz["id"];?>">
 
 				<div class="checkbox checkbox-default  checkbox-circle">
@@ -123,8 +121,7 @@ order by zone.index_id";
                 <div class="help-block with-errors"></div>
 				
 				</div></div>
-				
-				
+			
 				<?php }?>			
                 <input type="submit" name="submit" value="Submit" class="btn btn-default btn-sm">
 				<a href="home.php"><button type="button" class="btn btn-primary btn-sm">Cancel</button></a>
@@ -134,33 +131,23 @@ order by zone.index_id";
 						<div class="panel-footer">
 <?php 
 $query="select * from weather";
-$result = mysql_query($query, $connection);
-$weather = mysql_fetch_array($result);
+$result = $conn->query($query);
+$weather = mysqli_fetch_array($result);
 ?>
-
 Outside: <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
 <span><img border="0" width="24" src="images/<?php echo $weather['img'];?>.png" title="<?php echo $weather['title'];?> - 
 <?php echo $weather['description'];?>"></span> <span><?php echo $weather['title'];?> - 
 <?php echo $weather['description'];?></span>
-
-
                             <div class="pull-right">
                                 <div class="btn-group">
-
                                 </div>
                             </div>
-							
-
-
                         </div>
                     </div>
                 </div>
-
-
                 <!-- /.col-lg-4 -->
             </div>
             <!-- /.row -->
         </div>
         <!-- /#page-wrapper -->
-		
 <?php include("footer.php");  ?>

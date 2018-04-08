@@ -24,8 +24,8 @@ echo date('Y-m-d H:i:s'). " - Weather Update Script Started \n";
 
 //query to get system table
 $query = "SELECT * FROM system LIMIT 1";
-$result = mysql_query($query, $connection);
-$row = mysql_fetch_array($result);
+$result = $conn->query($query);
+$row = mysqli_fetch_array($result);
 $country = $row['country'];
 $city = $row['city'];
 $appid = $row['openweather_api'];
@@ -56,11 +56,11 @@ if ($weather_c != -272){
 	$time=date('H:i');
 	$date=date('y-m-d');
 	$query = "INSERT INTO messages_in (node_id, child_id, payload) VALUES ('1', '0', '{$weather_c}')";
-	mysql_query($query, $connection);
+	$conn->query($query);
 	echo date('Y-m-d H:i:s'). " - Database Updated \n"; 
 	//update weather table
 	$query = "update weather SET location = '{$location}', c = '{$weather_c}', wind_speed = '{$wind_speed}', title = '{$title}', description = '{$description}', sunrise = '{$sunrise}', sunset = '{$sunset}', img = '{$icon}' WHERE id = '1' LIMIT 1";
-	mysql_query($query, $connection);
+	$conn->query($query);
 }else {
 	echo date('Y-m-d H:i:s'). " - Current Weather data was not downloaded \n"; 
 }
@@ -124,4 +124,5 @@ foreach($weather_data['list'] as $day => $value) {
 
 echo "  \n"; 
 echo date('Y-m-d H:i:s'). " - Weather Update Script Finished \n"; 
+if(isset($conn)) { $conn->close();}
 ?>
