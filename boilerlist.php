@@ -27,10 +27,10 @@ sum(TIMESTAMPDIFF(MINUTE, start_datetime, stop_datetime)) as on_minuts,
 (sum(TIMESTAMPDIFF(MINUTE, start_datetime, expected_end_date_time)) - sum(TIMESTAMPDIFF(MINUTE, start_datetime, stop_datetime))) as save_minuts
 from boiler_logs WHERE start_datetime >= NOW() - INTERVAL 30 DAY GROUP BY date(start_datetime) desc";
 
-$result = mysql_query($query, $connection);
+$result = $conn->query($query);
 echo '<table id="example" class="table table-bordered table-hover dt-responsive" width="100%">';
 echo '<thead><tr><th>Date</th><th>T. Min</th><th class="all">On Min</th><th>S. Min</th><th> <i class="glyphicon glyphicon-leaf green"></th></tr></thead><tbody>';
-while ($row = mysql_fetch_assoc($result)) {
+while ($row = mysqli_fetch_assoc($result)) {
 	echo '
 	<tr>
 	<td class="all">' . $row['date'] . '</td>
@@ -42,6 +42,3 @@ while ($row = mysql_fetch_assoc($result)) {
 }
  echo '</tbody></table>';
 ;?>
-
-
- 

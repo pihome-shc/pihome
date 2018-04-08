@@ -18,7 +18,7 @@
 * WHAT YOU ARE DOING                                                    *"
 *************************************************************************"
 */
-require_once("st_inc/session.php"); 
+require_once(__DIR__.'/st_inc/session.php'); 
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
@@ -38,21 +38,19 @@ require_once(__DIR__.'/st_inc/functions.php');
                      <div class="chat-body clearfix">
                          <div class="header">
                              <strong class="primary-font">   </strong> 
-                             
 							 <small class="pull-right text-muted">
 								Add Schedule <i class="fa fa-chevron-right fa-fw"></i></a>
                              </small>
                          </div>
                      </div>
                 </li>
-
 <?php 
 //following variable set to 0 on start for array index. 
 $sch_time_index = '0';
 //$query = "SELECT * FROM schedule_daily_time_zone_view group by time_id ORDER BY start asc";
 $query = "SELECT time_id, time_status, `start`, `end`, tz_id, tz_status, zone_id, index_id, zone_name, temperature, max(temperature) as max_c FROM schedule_daily_time_zone_view group by time_id ORDER BY start asc";
-$results = mysql_query($query, $connection);
-while ($row = mysql_fetch_assoc($results)) {
+$results = $conn->query($query);
+while ($row = mysqli_fetch_assoc($results)) {
 
 	if($row["time_status"]=="0"){ $shactive="bluesch"; }else{ $shactive="orangesch"; }
 	$time = strtotime(date("G:i:s")); 
@@ -75,8 +73,8 @@ while ($row = mysql_fetch_assoc($results)) {
 
 	//zone listing of each time schedule 
 	$query="SELECT * FROM  schedule_daily_time_zone_view WHERE time_id = {$row['time_id']} order by index_id";
-	$result = mysql_query($query);	
-	while ($datarw=mysql_fetch_array($result)) {
+	$result = $conn->query($query);
+	while ($datarw=mysqli_fetch_array($result)) {
 	if($datarw["tz_status"]=="0"){ $status_icon="ion-close-circled"; $status_color="bluefa"; }else{ $status_icon="ion-checkmark-circled"; $status_color="orangefa"; }
 	echo '
 		<div class="list-group">
@@ -108,43 +106,27 @@ echo '
 	}
 	//end of schedule time while loop
 } ?>
-
-
 </ul>
-
-                        </div>
+                       </div>
                         <!-- /.panel-body -->
 						<div class="panel-footer">
 <?php 
 $query="select * from weather";
-$result = mysql_query($query, $connection);
-confirm_query($result);
-$weather = mysql_fetch_array($result);
+$result = $conn->query($query);
+$weather = mysqli_fetch_array($result);
 ?>
-
 <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
 <span><img border="0" width="24" src="images/<?php echo $weather['img'];?>.png" title="<?php echo $weather['title'];?> - 
 <?php echo $weather['description'];?>"></span> <span><?php echo $weather['title'];?>
 </span>
-
-
                             <div class="pull-right">
                                 <div class="btn-group">
 <?php
-//$date_time = date('Y-m-d H:i:s');
-
-//echo 'Total Schedule Minuts: ' .array_sum($schedule_time);
 echo '<i class="ionicons ion-ios-clock-outline"></i> All Schedule: '.secondsToWords((array_sum($schedule_time)*60));
-
-//echo date("H:i:s", strtotime(array_sum($schedule_time)));
-//echo date("H:i:s", array_sum($schedule_time));
 ?>
                                 </div>
                             </div>
-							
-
-
                         </div>
                     </div>
                 </div>
-<?php if(isset($connection)) { mysql_close($connection); } ?>
+<?php if(isset($conn)) { $conn->close();} ?>

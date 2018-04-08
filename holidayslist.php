@@ -18,7 +18,7 @@
 * WHAT YOU ARE DOING                                                    *"
 *************************************************************************"
 */
-require_once("st_inc/session.php"); 
+require_once(__DIR__.'/st_inc/session.php'); 
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
@@ -49,8 +49,8 @@ require_once(__DIR__.'/st_inc/functions.php');
                 </li>
 <?php 
 $query = "SELECT * FROM holidays ORDER BY start_date_time asc";
-$results = mysql_query($query, $connection);
-while ($row = mysql_fetch_assoc($results)) {
+$results = $conn->query($query);
+while ($row = mysqli_fetch_assoc($results)) {
 				echo '
 				<li class="left clearfix scheduleli">
 					<a href="javascript:active_holidays('.$row["id"].');">
@@ -73,39 +73,27 @@ while ($row = mysql_fetch_assoc($results)) {
 							 
 							 </div></div>';
 }
-		include("model.php");					 
+include("model.php");					 
 ?>
-
-
-
-
 </ul>
-
                         </div>
                         <!-- /.panel-body -->
 						<div class="panel-footer">
 <?php 
 $query="select * from weather";
-$result = mysql_query($query, $connection);
-confirm_query($result);
-$weather = mysql_fetch_array($result);
+$result = $conn->query($query);
+$weather = mysqli_fetch_array($result);
 ?>
-
 Outside: <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
 <span><img border="0" width="24" src="images/<?php echo $weather['img'];?>.png" title="<?php echo $weather['title'];?> - 
 <?php echo $weather['description'];?>"></span> <span><?php echo $weather['title'];?> - 
 <?php echo $weather['description'];?></span>
-
-
                             <div class="pull-right">
                                 <div class="btn-group">
 *
                                 </div>
                             </div>
-							
-
-
                         </div>
                     </div>
                 </div>
-<?php if(isset($connection)) { mysql_close($connection); } ?>
+<?php if(isset($conn)) { $conn->close();} ?>

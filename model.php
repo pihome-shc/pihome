@@ -21,8 +21,8 @@
 
 //query to frost protection temperature 
 $query = "SELECT * FROM frost_protection LIMIT 1 ";
-$result = mysql_query($query, $connection);
-$frosttemp = mysql_fetch_array($result);
+$result = $conn->query($query);
+$frosttemp = mysqli_fetch_array($result);
 $frost = $frosttemp['temperature'];
 echo '
 <div class="modal fade" id="add_frost" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -75,9 +75,9 @@ echo '
             <div class="modal-body">
 <p class="text-muted"> Boiler safety settings i.e. <small><i class="ionicons ion-ios-timer blue"></i> Hysteresis (Minimim delay between power off and on), <i class="fa fa-clock-o fa-1x orange"></i> Maximum operating time. </small></p>';
 $query = "SELECT * FROM boiler_view";
-$results = mysql_query($query, $connection);
+$results = $conn->query($query);
 echo '	<div class=\"list-group\">';
-while ($row = mysql_fetch_assoc($results)) {
+while ($row = mysqli_fetch_assoc($results)) {
 	echo " <a href=\"#\" class=\"list-group-item\">
 	<i class=\"ionicons ion-flame fa-1x red\"></i> ".$row['name']." - Node: ".$row['node_id']." Child: ".$row['node_child_id']."
 	<span class=\"pull-right \"><em>&nbsp;&nbsp;<i class=\"ionicons ion-ios-timer blue\"></i> ".$row['hysteresis_time']. " </em></span>
@@ -86,9 +86,8 @@ while ($row = mysql_fetch_assoc($results)) {
 }
 echo '</div></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
-				
-            </div>
+				<button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">Close</button>
+             </div>
         </div>
     </div>
 </div>';
@@ -105,15 +104,15 @@ echo '
             <div class="modal-body">
 <p class="text-muted"> Boost settings for each zone i.e. Maximum operating time, Maximum temperature.</p>';
 $query = "SELECT * FROM boost_view ORDER BY index_id asc";
-$results = mysql_query($query, $connection);
+$results = $conn->query($query);
 echo '	<div class=\"list-group\">';
-while ($row = mysql_fetch_assoc($results)) {
+while ($row = mysqli_fetch_assoc($results)) {
 	echo "<a href=\"#\" class=\"list-group-item\"><i class=\"fa fa-rocket fa-fw blueinfo\"></i> ".$row['name']."
 	<span class=\"pull-right text-muted small\"><em>".$row['minute']." minute ".$row['temperature']."&deg;  </em></span></a>"; 
 }
 echo '</div></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">Close</button>
 				
             </div>
         </div>
@@ -133,9 +132,9 @@ echo '
             <div class="modal-body">
 <p class="text-muted"> Override settings for each zone i.e. Maximum temperature. Override depend on schedule and only come into effect when schedule start for any other zone. </p>';
 $query = "SELECT * FROM override_view ORDER BY index_id asc";
-$results = mysql_query($query, $connection);
+$results = $conn->query($query);
 echo '	<div class=\"list-group\">';
-while ($row = mysql_fetch_assoc($results)) {
+while ($row = mysqli_fetch_assoc($results)) {
 	echo "<a href=\"#\" class=\"list-group-item\">
 	<i class=\"fa fa-refresh fa-1x blue\"></i> ".$row['name']." 
     <span class=\"pull-right text-muted small\"><em>".$row['temperature']."&deg; </em></span></a>";
@@ -161,12 +160,12 @@ echo '
             <div class="modal-body">
 <p class="text-muted"> Temperature sensor Node id, battery level and last seen. </p>';
 $query = "SELECT * FROM nodes where name = 'Temperature Sensor' ORDER BY node_id asc";
-$results = mysql_query($query, $connection);
+$results = $conn->query($query);
 echo '	<div class=\"list-group\">';
-while ($row = mysql_fetch_assoc($results)) {
+while ($row = mysqli_fetch_assoc($results)) {
 	$batquery = "select * from nodes_battery where node_id = {$row['node_id']} ORDER BY id desc limit 1;";
-	$batresults = mysql_query($batquery, $connection);
-	$brow = mysql_fetch_array($batresults);
+	$batresults = $conn->query($batquery);
+	$brow = mysqli_fetch_array($batresults);
 	if ($row['ms_version'] > 0){
 		echo "<a href=\"#\" class=\"list-group-item\">
 		<i class=\"ionicons ion-thermometer red\"></i> ".$row['node_id']." - <i class=\"fa fa-battery-full\"></i> ".round($brow ['bat_level'],0)."% - ".$brow ['bat_voltage']."v
@@ -178,7 +177,7 @@ while ($row = mysql_fetch_assoc($results)) {
 }
 echo '</div></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">Close</button>
 				
             </div>
         </div>
@@ -201,9 +200,9 @@ Maximum operating time <br>
 Maximum zone temperature. </p>';
 
 $query = "select * from zone_view order by index_id asc";
-$results = mysql_query($query, $connection);
+$results = $conn->query($query);
 echo '	<div class=\"list-group\">';
-while ($row = mysql_fetch_assoc($results)) {
+while ($row = mysqli_fetch_assoc($results)) {
 	if ($row['gpio_pin'] == 0){
 		echo "<div class=\"list-group-item\">
 		<i class=\"glyphicon glyphicon-th-large orange\"></i> ".$row['name']."
@@ -230,7 +229,7 @@ while ($row = mysql_fetch_assoc($results)) {
 echo '
 </div></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -247,14 +246,14 @@ echo '
                 <h5 class="modal-title">MySensors Gateway</h5>
             </div>
             <div class="modal-body">
-<p class="text-muted"> MySensors '.ucwords(gw_logs('type')).' Gateway Status</p>';
+<p class="text-muted"> MySensors '.ucwords(gw_logs($conn, 'type')).' Gateway Status</p>';
 echo '	<div class=\"list-group\">';
-echo "<a href=\"#\" class=\"list-group-item\"><i class=\"fa fa-heartbeat red\"></i> Gateway PID <span class=\"pull-right text-muted small\"><em> ".gw_logs('pid')."</em></span></a>
-<a href=\"#\" class=\"list-group-item\"><i class=\"fa fa-heartbeat red\"></i> Gateway Running Since: <span class=\"pull-right text-muted small\"><em>".gw_logs('pid_start_time')."</em></span></a>"; 
+echo "<a href=\"#\" class=\"list-group-item\"><i class=\"fa fa-heartbeat red\"></i> Gateway PID <span class=\"pull-right text-muted small\"><em> ".gw_logs($conn, 'pid')."</em></span></a>
+<a href=\"#\" class=\"list-group-item\"><i class=\"fa fa-heartbeat red\"></i> Gateway Running Since: <span class=\"pull-right text-muted small\"><em>".gw_logs($conn, 'pid_start_time')."</em></span></a>"; 
 echo '</div></div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
-				<a href="javascript:resetgw('.gw_logs('pid').')" class="btn btn-default login btn-sm btn-edit">Reset GW</a>
+				<a href="javascript:resetgw('.gw_logs($conn, 'pid').')" class="btn btn-default login btn-sm btn-edit">Reset GW</a>
             </div>
         </div>
     </div>
@@ -285,7 +284,7 @@ while (!feof($file_handle)) {
 fclose($file_handle);
 echo ' </div></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">Close</button>
 				
             </div>
         </div>
@@ -305,9 +304,9 @@ echo '
             <div class="modal-body">
 <p class="text-muted"> Last 5 CPU in-built temperature sensor reading. </p>';
 $query = "select * from messages_in where node_id = 0 order by datetime desc limit 5";
-$results = mysql_query($query, $connection);
+$results = $conn->query($query);
 echo '	<div class=\"list-group\">';
-while ($row = mysql_fetch_assoc($results)) {
+while ($row = mysqli_fetch_assoc($results)) {
 	echo "<a href=\"#\" class=\"list-group-item\">
 	<i class=\"fa fa-server fa-1x green\"></i> ".$row['datetime']." 
 	<span class=\"pull-right text-muted small\"><em>".$row['payload']."&deg;</em></span>
@@ -327,8 +326,7 @@ echo '</div></div>
 //$lines=file('/etc/os-release');
 $lines=array();
 $fp=fopen('/etc/os-release', 'r');
-while (!feof($fp))
-{
+while (!feof($fp)){
     $line=fgets($fp);
     //process line however you like
     $line=trim($line);
@@ -374,11 +372,11 @@ echo '
 echo '	<div class=\"list-group\">';
 echo "                            <a href=\"#\" class=\"list-group-item\">
                                     <i class=\"fa fa-server fa-1x blueinfo\"></i> Current System Version 
-                                    <span class=\"pull-right text-muted small\"><em>".settings('version')."</em>
+                                    <span class=\"pull-right text-muted small\"><em>".settings($conn, 'version')."</em>
                                     </span>
                                 </a>"; 
 ini_set('max_execution_time',90);
-$getVersions = file_get_contents(''.settings('update_location').''.settings('update_file').'');
+$getVersions = file_get_contents(''.settings($conn, 'update_location').''.settings($conn, 'update_file').'');
 if ($getVersions != ''){
 $versionList = explode("\n", $getVersions);	
 	foreach ($versionList as $aV)
@@ -543,8 +541,8 @@ echo '
 			<p class="text-muted"> PiHome User Accounts. </p>';
 echo '<div class=\"list-group\">';
 $query = "SELECT * FROM user";
-$results = mysql_query($query, $connection);
-while ($row = mysql_fetch_assoc($results)) {
+$results = $conn->query($query);
+while ($row = mysqli_fetch_assoc($results)) {
 	$full_name=$row['fullname'];
 	$username=$row['username'];
 	echo "<div href=\"settings.php?uid=".$row['id']."\"  class=\"list-group-item\"> 

@@ -18,7 +18,7 @@
 * WHAT YOU ARE DOING                                                    *"
 *************************************************************************"
 */
-require_once("st_inc/session.php"); 
+require_once(__DIR__.'/st_inc/session.php'); 
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
@@ -38,21 +38,7 @@ require_once(__DIR__.'/st_inc/functions.php');
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-						
 <?php
-/* 
-// read jaso weather data and present it using function. 
-$weather = getWeather(); 
-echo "<img src=\"images/".$weather['icon'].".png\">";
-echo "Location: ".$weather['location']."<br>";
-echo "Temperature: ".$weather['temp_celsius']."<br>";
-echo $weather['title']."- " .$weather['description']."<br>";
-*/
-
-//date_default_timezone_set("Europe/Dublin");
-//echo date_default_timezone_get();
-
-
 echo '<div class="list-group">';
 $weather_api = file_get_contents('weather_5days.json');
 $weather_data = json_decode($weather_api, true);
@@ -73,11 +59,6 @@ echo '<a href="#" class="list-group-item">'
 }
 ?>
 </div>
-
-
-
-
-
                         </div>
                         <!-- /.panel-body -->
 						<div class="panel-footer">
@@ -85,13 +66,9 @@ echo '<a href="#" class="list-group-item">'
                         </div>
                     </div>
                 </div>
-
                 <!-- /.col-lg-4 -->
             </div>
             <!-- /.row -->
         </div>
         <!-- /#page-wrapper -->
-		
 <?php include("footer.php");  ?> 
-
-

@@ -18,7 +18,7 @@
 * WHAT YOU ARE DOING                                                    *"
 *************************************************************************"
 */
-require_once("st_inc/session.php"); 
+require_once(__DIR__.'/st_inc/session.php');
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
@@ -33,8 +33,8 @@ require_once(__DIR__.'/st_inc/functions.php');
 <ul class="chat">
 <?php 
 $query = "SELECT override.id, override.status, override.zone_id, zone.index_id,  override.time, override.temperature FROM override join zone on override.zone_id = zone.id order by zone.index_id";
-$results = mysql_query($query, $connection);
-while ($row = mysql_fetch_assoc($results)) {
+$results = $conn->query($query);
+while ($row = mysqli_fetch_assoc($results)) {
 	echo '
 	<li class="left clearfix animated fadeIn">
 	<a href="javascript:active_override('.$row["zone_id"].');">
@@ -47,8 +47,8 @@ while ($row = mysql_fetch_assoc($results)) {
 
 	//query to search location device_id		
 	$query = "SELECT * FROM zone WHERE id = {$row['zone_id']} LIMIT 1";
-	$result = mysql_query($query, $connection);
-	$pi_device = mysql_fetch_array($result);
+	$result = $conn->query($query);
+	$pi_device = mysqli_fetch_array($result);
 	$zone = $pi_device['name'];	
 	$type = $pi_device['type'];	
 								
@@ -68,8 +68,8 @@ while ($row = mysql_fetch_assoc($results)) {
 						<div class="panel-footer">
 <?php 
 $query="select * from weather";
-$result = mysql_query($query, $connection);
-$weather = mysql_fetch_array($result);
+$result = $conn->query($query);
+$weather = mysqli_fetch_array($result);
 ?>
 Outside: <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
 <span><img border="0" width="24" src="images/<?php echo $weather['img'];?>.png" title="<?php echo $weather['title'];?> - 
@@ -77,4 +77,4 @@ Outside: <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
 <?php echo $weather['description'];?></span>
                         </div>
                     </div>
-<?php if(isset($connection)) { mysql_close($connection); } ?>
+<?php if(isset($conn)) { $conn->close();} ?>

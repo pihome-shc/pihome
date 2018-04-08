@@ -32,7 +32,7 @@
     <meta name="author" content="Waseem Javid">
 	<link rel="shortcut icon" href="images/favicon.ico" />
 	<link rel="apple-touch-icon" href="images/apple-touch-icon.png"/>
-    <title><?php  echo settings('name') ;?></title>
+    <title><?php  echo settings($conn, 'name') ;?></title>
 
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -94,6 +94,7 @@
     <div id="wrapper">
         <!-- Navigation -->
         <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+		<a class="navbar-brand" href="home.php"><img src="images/navi-logo.png" width="32"></a>
             <!-- /.navbar-header -->
             <ul class="nav navbar-top-links navbar-right">
                 <li class="dropdown">
@@ -140,9 +141,9 @@
         </nav>
 <?php 
 $query="select * from weather";
-$result = mysql_query($query, $connection);
-$weather = mysql_fetch_array($result);
-//$weather = getWeather(); ?>
+$conn->query($query);
+$weather = mysqli_fetch_array($result);
+?>
 
 <div class="modal fade" id="weather" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
     <div class="modal-dialog">

@@ -18,14 +18,13 @@
 * WHAT YOU ARE DOING                                                    *"
 *************************************************************************"
 */
-require_once("st_inc/session.php"); 
+require_once(__DIR__.'/st_inc/session.php'); 
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
 ?>
 <?php include("header.php");  ?>
 <?php include_once("notice.php"); ?>
-
  <div id="page-wrapper">
 <br>
             <div class="row">
@@ -35,11 +34,9 @@ require_once(__DIR__.'/st_inc/functions.php');
 				   <br><br><img src="images/loader.gif">
 				   </div>
 				   </div>
-
                 <!-- /.col-lg-4 -->
             </div>
             <!-- /.row -->
         </div>
         <!-- /#page-wrapper -->
-		
 <?php include("footer.php");  ?>

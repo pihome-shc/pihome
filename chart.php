@@ -18,7 +18,7 @@
 * WHAT YOU ARE DOING                                                    *"
 *************************************************************************"
 */
-require_once("st_inc/session.php"); 
+require_once(__DIR__.'/st_inc/session.php'); 
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
@@ -35,7 +35,7 @@ require_once(__DIR__.'/st_inc/functions.php');
                         </div>
                         <!-- /.panel-heading -->
  <div class="panel-body">
-                            <!-- Nav tabs -->
+                        <!-- Nav tabs -->
         <ul class="nav nav-pills">
             <button class="btn btn-default btn-circle active" href="#temperature-pills" data-toggle="tab"><i class="fa fa-bar-chart red"></i></i></button>
 			<button class="btn btn-default btn-circle" href="#boiler-pills" data-toggle="tab"><i class="glyphicon glyphicon-leaf green"></i></button>
@@ -47,16 +47,13 @@ require_once(__DIR__.'/st_inc/functions.php');
             <div class="tab-pane fade" id="boiler-pills"><br><?php include("boilerlist.php"); ?></div>
 			<div class="tab-pane fade" id="month-pills"><br><?php include("monthusage.php"); ?></div>
         </div>
-							
-			
 </div>
                        <!-- /.panel-body -->
 						<div class="panel-footer">
 <?php 
 $query="select * from weather";
-$result = mysql_query($query, $connection);
-confirm_query($result);
-$weather = mysql_fetch_array($result);
+$result = $conn->query($query);
+$weather = mysqli_fetch_array($result);
 ?>
 <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
 <span><img border="0" width="24" src="images/<?php echo $weather['img'];?>.png" title="<?php echo $weather['title'];?> - 
@@ -71,5 +68,4 @@ $weather = mysql_fetch_array($result);
             <!-- /.row -->
         </div>
         <!-- /#page-wrapper -->
-		
 		<?php include("footer.php"); ?>

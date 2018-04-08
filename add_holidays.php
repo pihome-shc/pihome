@@ -18,7 +18,7 @@
 * WHAT YOU ARE DOING                                                    *"
 *************************************************************************"
 */
-require_once("st_inc/session.php"); 
+require_once(__DIR__.'/st_inc/session.php');
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
@@ -56,17 +56,13 @@ require_once(__DIR__.'/st_inc/functions.php');
                 <a href="holidays.php"><button type="button" class="btn btn-primary btn-sm" >Cancel</button></a>
                 <input type="submit" name="submit" value="Submit" class="btn btn-default btn-sm">
 				</form>
-				
-				
-
 						</div>
                         <!-- /.panel-body -->
 						<div class="panel-footer">
 <?php 
 $query="select * from weather";
-$result = mysql_query($query, $connection);
-confirm_query($result);
-$weather = mysql_fetch_array($result);
+$result = $conn->query($query);
+$weather = mysqli_fetch_array($result);
 ?>
 
 Outside: <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
@@ -75,21 +71,10 @@ Outside: <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
 <?php echo $weather['description'];?></span>
                         </div>
                     </div>
-					
-					
-					
-					
                 </div>
-
                 <!-- /.col-lg-4 -->
             </div>
             <!-- /.row -->
         </div>
         <!-- /#page-wrapper -->
-		
 		<?php include("footer.php"); ?>
-		
-		
-		
-
-

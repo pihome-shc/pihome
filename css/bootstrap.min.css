@@ -8,19 +8,19 @@
  .table-bordered th,.table-bordered td{border:1px solid #ddd!important}}
  
  @font-face{font-family:'Glyphicons Halflings';
- src: url(../fonts/paid_fonts/glyphicons-halflings-regular.eot);
- src: url(../fonts/paid_fonts/glyphicons-halflings-regular.eot?#iefix) format('embedded-opentype'),
-	  url(../fonts/paid_fonts/glyphicons-halflings-regular.woff) format('woff'),
-	  url(../fonts/paid_fonts/glyphicons-halflings-regular.ttf) format('truetype'),
-	  url(../fonts/paid_fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular) format('svg')}
+ src: url(../fonts/glyphicons/glyphicons-halflings-regular.eot);
+ src: url(../fonts/glyphicons/glyphicons-halflings-regular.eot?#iefix) format('embedded-opentype'),
+	  url(../fonts/glyphicons/glyphicons-halflings-regular.woff) format('woff'),
+	  url(../fonts/glyphicons/glyphicons-halflings-regular.ttf) format('truetype'),
+	  url(../fonts/glyphicons/glyphicons-halflings-regular.svg#glyphicons_halflingsregular) format('svg')}
 
 @font-face {
   font-family: 'HelveticaNeue-Light';
-  src: url('../fonts/paid_fonts/HelveticaNeue-Light.eot'); /* IE9 Compat Modes */
-  src: url('../fonts/paid_fonts/HelveticaNeue-Light.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-       url('../fonts/paid_fonts/HelveticaNeue-Light.woff') format('woff'), /* Modern Browsers */
-       url('../fonts/paid_fonts/HelveticaNeue-Light.ttf')  format('truetype'), /* Safari, Android, iOS */
-       url('../fonts/paid_fonts/HelveticaNeue-Light.svg#7384ecabcada72f0e077cd45d8e1c705') format('svg'); /* Legacy iOS */      
+  src: url('../fonts/glyphicons/HelveticaNeue-Light.eot'); /* IE9 Compat Modes */
+  src: url('../fonts/glyphicons/HelveticaNeue-Light.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../fonts/glyphicons/HelveticaNeue-Light.woff') format('woff'), /* Modern Browsers */
+       url('../fonts/glyphicons/HelveticaNeue-Light.ttf')  format('truetype'), /* Safari, Android, iOS */
+       url('../fonts/glyphicons/HelveticaNeue-Light.svg#7384ecabcada72f0e077cd45d8e1c705') format('svg'); /* Legacy iOS */      
   font-style:   normal;
   font-weight:  200;
 }

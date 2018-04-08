@@ -18,20 +18,18 @@
 * WHAT YOU ARE DOING                                                    *"
 *************************************************************************"
 */
-require_once("st_inc/session.php"); 
+require_once(__DIR__.'/st_inc/session.php'); 
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
-
-	//query to frost protection temperature 
-	$query = "SELECT * FROM frost_protection LIMIT 1 ";
-	$result = mysql_query($query, $connection);
-	confirm_query($result);
-	$frosttemp = mysql_fetch_array($result);
-	$frost_temp = $frosttemp['temperature'];
-?>                        <div class="panel panel-primary">
+//query to frost protection temperature 
+$query = "SELECT * FROM frost_protection LIMIT 1 ";
+$result = $conn->query($query);
+$frosttemp = mysqli_fetch_array($result);
+$frost_temp = $frosttemp['temperature'];
+?>                      <div class="panel panel-primary">
                         <div class="panel-heading">
-                            <i class="fa fa-cog fa-fw"></i>   Settings    
+                        <i class="fa fa-cog fa-fw"></i>   Settings    
 						<div class="pull-right"> <div class="btn-group"><?php echo date("H:i"); ?></div> </div>
                         </div>
                         <!-- /.panel-heading -->
@@ -88,8 +86,8 @@ require_once(__DIR__.'/st_inc/functions.php');
 							</h3></button>
 <?php 
 	$query = "select * from messages_in where node_id = 0 order by datetime desc limit 1";
-	$result = mysql_query($query, $connection);
-	$result = mysql_fetch_array($result);
+	$result = $conn->query($query);
+	$result = mysqli_fetch_array($result);
 	$system_cc = $result['payload'];
 	if ($system_cc < 40){$system_cc="#0bb71b"; $fan=" ";}elseif ($system_cc < 50){$system_cc="#F0AD4E"; $fan="fa-pulse";}elseif ($system_cc > 50){$system_cc="#ff0000"; $fan="fa-pulse";}
 ?>							
@@ -160,25 +158,19 @@ require_once(__DIR__.'/st_inc/functions.php');
 							<h3 class="degre" ><i class="fa fa-power-off fa-1x red"></i></h3>
 							<h3 class="status"><small style="color:#fff;"><i class="fa"></i></small>
 							</h3></button>	
-					
-<?php include("add_frost.php");  ?>
+				
 <?php include("model.php");  ?>
-
                         </div>
                         <!-- /.panel-body -->
 						<div class="panel-footer">
 <?php 
 $query="select * from weather";
-$result = mysql_query($query, $connection);
-confirm_query($result);
-$weather = mysql_fetch_array($result);
+$result = $conn->query($query);
+$weather = mysqli_fetch_array($result);
 ?>
-
 <?php echo $weather['c'] ;?>&deg;C
 <span><img border="0" width="24" src="images/<?php echo $weather['img'];?>.png" title="<?php echo $weather['title'];?> - 
 <?php echo $weather['description'];?>"></span> <span><?php echo $weather['title'];?> - 
 <?php echo $weather['description'];?></span>
-
-
                         </div>
                     </div>
