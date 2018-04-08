@@ -12,7 +12,8 @@ echo " \033[0m \n";
 echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
 echo "***************************************************************\n";
-echo "*   PiHome Install Script Version 0.2 Build Date 31/01/2018   *\n";
+echo "*   PiHome Install Script Version 0.3 Build Date 31/01/2018   *\n";
+echo "*   Last Modified on 08/04/2018                               *\n";
 echo "*                                      Have Fun - PiHome.eu   *\n";
 echo "***************************************************************\n";
 echo "\033[0m";
@@ -40,12 +41,12 @@ if ($version[0] > 7){
 //*********************************************************
 $hostname = 'localhost';
 $dbname   = 'pihome';
-$dbusername = 'root';
-$dbpassword = 'passw0rd';
+$dbusername = 'pihome';
+$dbpassword = 'pihome2018';
 $connect_error = 'Sorry We are Experiencing MySQL Database Connection Problem...';
 
 //Test Connection to MySQL Server with Given Username & Password 
-$conn = new mysqli($hostname, $dbusername, $dbpassword, $dbname);
+$conn = new mysqli($hostname, $dbusername, $dbpassword);
 if ($conn->connect_error){
 	die('Database Connecction Failed with Error: '.$conn->connect_error);
 }
@@ -87,7 +88,7 @@ if (!$db_selected) {
 	// Name of the file
 	$filename = __DIR__.'/MySQL_Database/pihome_mysql_database.sql';
 	// Select database
-	mysqli_select_db($dbname) or die('Error Selecting MySQL Database: ' . mysqli_error($conn));
+	mysqli_select_db($conn, $dbname) or die('Error Selecting MySQL Database: ' . mysqli_error($conn));
 	// Temporary variable, used to store current query
 	$templine = '';
 	// Read in entire file
@@ -102,7 +103,8 @@ if (!$db_selected) {
 			// If it has a semicolon at the end, it's the end of the query
 			if (substr(trim($line), -1, 1) == ';'){
 				// Perform the query
-				mysql_query($templine) or print("MySQL Database Error with Query ".$templine.":". mysqli_error($conn)."\n");
+				$conn->query($templine) or print("MySQL Database Error with Query ".$templine.":". mysqli_error($conn)."\n");
+				//mysqli_query($templine) or print("MySQL Database Error with Query ".$templine.":". mysqli_error($conn)."\n");
 				// Reset temp variable to empty
 				$templine = '';
 			}
