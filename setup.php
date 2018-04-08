@@ -118,9 +118,9 @@ if (!$db_selected) {
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m schedule_daily_time_zone_view \033[0m Created \n"; }
 	
 	//Create Table View
-	$query = "CREATE VIEW schedule_daily_time_zone_view AS 
+	$query = "CREATE VIEW schedule_daily_time_zone_view AS
 	select ss.id as time_id, ss.status as time_status, sstart.start, send.end, 
-	sdtz.id as tz_id, sdtz.status as tz_status, 
+	sdtz.sync as tz_sync, sdtz.id as tz_id, sdtz.status as tz_status,
 	sdtz.zone_id, zone.index_id, zone.name as zone_name, temperature
 	from schedule_daily_time_zone sdtz
 	join schedule_daily_time ss on sdtz.schedule_daily_time_id = ss.id
@@ -131,13 +131,14 @@ if (!$db_selected) {
 	$result = $conn->query($query);
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m schedule_daily_time_zone_view \033[0m Created \n"; }
 
+	
 	//Drop Table View If Exist
 	$query = "Drop View if exists zone_view;";
 	$result = $conn->query($query);
 	
 	//Create Table View
 	$query = "CREATE VIEW zone_view AS
-	select zone.status, zone.id, zone.index_id, zone.name, zone.type, zone.max_c, zone.max_operation_time, zone.hysteresis_time, 
+	select zone.status, zone.sync, zone.id, zone.index_id, zone.name, zone.type, zone.max_c, zone.max_operation_time, zone.hysteresis_time, 
 	sid.node_id as sensors_id, zone.sensor_child_id, 
 	cid.node_id as controler_id, zone.controler_child_id, zone.gpio_pin,
 	bid.node_id as boiler_id, 
@@ -152,17 +153,19 @@ if (!$db_selected) {
 	$result = $conn->query($query);
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m zone_view \033[0m Created \n"; }
 
+	
 	//Drop Table View If Exist
 	$query = "Drop View if exists boiler_view;";
 	$result = $conn->query($query);
 	
 	//Create Table View
 	$query = "CREATE VIEW boiler_view AS
-	select boiler.status, boiler.fired_status, boiler.name, nodes.node_id, boiler.node_child_id, boiler.hysteresis_time, boiler.max_operation_time, boiler.gpio_pin
+	select boiler.status, boiler.sync, boiler.fired_status, boiler.name, nodes.node_id, boiler.node_child_id, boiler.hysteresis_time, boiler.max_operation_time, boiler.gpio_pin
 	from boiler
 	join nodes on boiler.node_id = nodes.id;";
 	$result = $conn->query($query);
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m boiler_view \033[0m Created \n"; }
+
 
 	//Drop Table View If Exist
 	$query = "Drop View if exists boost_view;";
@@ -170,33 +173,35 @@ if (!$db_selected) {
 	
 	//Create Table View
 	$query = "CREATE VIEW boost_view AS
-	select boost.`status`, boost.zone_id, zone_idx.index_id, zone.name, boost.temperature, boost.minute
+	select boost.`status`, boost.sync, boost.zone_id, zone_idx.index_id, zone.name, boost.temperature, boost.minute
 	from boost
 	join zone on boost.zone_id = zone.id
 	join zone zone_idx on boost.zone_id = zone_idx.id;";
 	$result = $conn->query($query);
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m boost_view \033[0m Created \n"; }
 	
+
 	//Drop Table View If Exist
 	$query = "Drop View if exists override_view;";
 	$result = $conn->query($query);
 	
 	//Create Table View
 	$query = "CREATE VIEW override_view AS
-	select override.`status`, override.zone_id, zone_idx.index_id, zone.name, override.time, override.temperature
+	select override.`status`, override.sync, override.zone_id, zone_idx.index_id, zone.name, override.time, override.temperature
 	from override
 	join zone on override.zone_id = zone.id
 	join zone zone_idx on override.zone_id = zone_idx.id;";
 	$result = $conn->query($query);
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m override_view \033[0m Created \n"; }
 	
+
 	//Drop Table View If Exist
 	$query = "Drop View if exists schedule_night_climat_zone_view;";
 	$result = $conn->query($query);
 	
 	//Create Table View
 	$query = "CREATE VIEW schedule_night_climat_zone_view AS 
-	select tnct.status as t_status, ncz.status as z_status, ncz.zone_id, snct.start_time, enct.end_time, ncz.min_temperature, ncz.max_temperature
+	select tnct.status as t_status, ncz.status as z_status, ncz.sync, ncz.zone_id, snct.start_time, enct.end_time, ncz.min_temperature, ncz.max_temperature
 	from schedule_night_climat_zone ncz
 	join schedule_night_climate_time snct on ncz.schedule_night_climate_id = snct.id
 	join schedule_night_climate_time enct on ncz.schedule_night_climate_id = enct.id
@@ -204,6 +209,7 @@ if (!$db_selected) {
 	$result = $conn->query($query);
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m schedule_night_climat_zone_view \033[0m Created \n"; }
 	
+
 	//Drop Table View If Exist
 	$query = "Drop View if exists messages_in_view_24h;";
 	$result = $conn->query($query);
@@ -216,13 +222,14 @@ if (!$db_selected) {
 	$result = $conn->query($query);
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m messages_in_view_24h \033[0m Created \n"; }
 	
+
 	//Drop Table View If Exist
 	$query = "Drop View if exists zone_log_view;";
 	$result = $conn->query($query);
 	
 	//Create Table View
 	$query = "CREATE VIEW zone_log_view AS
-	select zone_logs.id, zone_logs.zone_id, ztype.type, 
+	select zone_logs.id, zone_logs.sync, zone_logs.zone_id, ztype.type, 
 	zone_logs.boiler_log_id, blst.start_datetime, blet.stop_datetime, blext.expected_end_date_time, zone_logs.status
 	from zone_logs
 	join zone ztype on zone_logs.zone_id = ztype.id
