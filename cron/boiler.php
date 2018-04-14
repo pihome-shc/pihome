@@ -315,7 +315,7 @@ $start_time = '23:58:00';
 $end_time = '00:00:00';
 if (TimeIsBetweenTwoTimes($current_time, $start_time, $end_time)) {
 	echo "---------------------------------------------------------------------------------------- \n";
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Time to call Home \n";
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Calling Home \n";
 	$external_ip = file_get_contents('http://ddns.pihome.eu/myip.php');
 	$pi_serial = exec ("cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2");
 	$cpu_model = exec ("cat /proc/cpuinfo | grep 'model name' | cut -d ' ' -f 3-");
@@ -323,13 +323,17 @@ if (TimeIsBetweenTwoTimes($current_time, $start_time, $end_time)) {
 	$hardware = exec ("cat /proc/cpuinfo | grep Hardware | cut -d ' ' -f 2");
 	$revision = exec ("cat /proc/cpuinfo | grep Revision | cut -d ' ' -f 2");
 	$uid = UniqueMachineID($pi_serial);
+	$ph_version = settings($conn, 'version');
+	$ph_build = settings($conn, 'build');
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - External IP Address: ".$external_ip."\n";
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Raspberry Pi Serial: " .$pi_serial."\n";
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Raspberry Pi Hardware: " .$hardware."\n";
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Raspberry Pi CPU Model: " .$cpu_model."\n";
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Raspberry Pi Revision: " .$revision."\n";
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiHome Version: " .$ph_version."\n";
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiHome Build: " .$ph_build."\n";
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Raspberry Pi UID: " .$uid."\n";
-	$url="http://ddns.pihome.eu/home.php?ip=${external_ip}&serial=${uid}&cpu_model=${cpu_model}&hardware=${hardware}&revision=${revision}";
+	$url="http://ddns.pihome.eu/home.php?ip=${external_ip}&serial=${uid}&cpu_model=${cpu_model}&hardware=${hardware}&revision=${revision}&ph_version=${ph_version}&ph_build=${ph_build}";
 	echo $url."\n";
 	$result = url_get_contents($url);
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiHome Says: ".$result."\n";
