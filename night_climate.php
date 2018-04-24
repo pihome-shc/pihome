@@ -77,10 +77,10 @@ if (isset($_POST['submit'])) {
                 <div class="help-block with-errors"></div></div>				
 <?php
 $zquery = "
-SELECT sncz.id, sncz.status, sncz.schedule_night_climate_id, sncz.zone_id, zone.index_id, zone.name as zone_name,  sncz.min_temperature, sncz.max_temperature 
-FROM schedule_night_climat_zone sncz
+SELECT sncz.id, sncz.status, sncz.schedule_night_climate_id, sncz.zone_id, zone.index_id, zone.name as zone_name, zone.status as zone_status, sncz.min_temperature, sncz.max_temperature 
+FROM schedule_night_climat_zone sncz 
 join zone on sncz.zone_id = zone.id
-order by zone.index_id";
+where zone.status = 1 order by zone.index_id;";
 				$zoneresults = $conn->query($zquery);
 				while ($sncz = mysqli_fetch_assoc($zoneresults)) {
 ?>
