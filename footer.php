@@ -43,7 +43,7 @@
 	<script src="js/plugins/waitingfor/bootstrap-waitingfor.min.js"></script>
 
 <script>	
-	$(document).ready(function() {
+$(document).ready(function() {
 //delete record 
 $('#confirm-delete').on('show.bs.modal', function(e) {
     $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
@@ -56,47 +56,35 @@ window.setTimeout(function() {
     });
 }, 10000);
 
-/*
-$(document).ready(function() {
-			//date picker java
-			$('#start_date_time').datepicker({
-            icons: {time: "fa fa-clock-o",date: "fa fa-calendar", up: "fa fa-arrow-up", down: "fa fa-arrow-down"},
-			todayHighlight: true,
-			format: "yyyy/mm/dd",
-            autoclose: true
-            });
-			$('#end_date_time').datepicker({
-            todayHighlight: true,
-			format: "yyyy/mm/dd",
-            autoclose: true
-            });
-} );
-*/
+<?php if ($_SERVER['REQUEST_URI'] == '/home.php'){ ?>
+	//load homelist.php  
+	$(document).ready(function(){
+		$.get('homelist.php', function(output) {
+			$('#homelist').html(output).fadeIn(50);
+		});
+	});
+<?php } ?>
 
+<?php if ($_SERVER['REQUEST_URI'] == '/schedule.php'){ ?>
 //load schedulelist.php  
 $(document).ready(function(){
 	$.get('schedulelist.php', function(output) {
 		$('#schedulelist').html(output).fadeIn(50);
 	});
  });
- //$('#schedulelist').load('schedulelist.php');
+<?php } ?>
 
-//load schedulelist.php  
-$('#overridelist').load('overridelist.php');
-
-//load homelist.php  
-$(document).ready(function(){
-	$.get('homelist.php', function(output) {
-		$('#homelist').html(output).fadeIn(50);
-	});
- });
- 
+<?php if ($_SERVER['REQUEST_URI'] == '/settings.php'){ ?>
 //load settingslist
 $(document).ready(function(){
 	$.get('settingslist.php', function(output) {
 		$('#settingslist').html(output).fadeIn(50);
 	});
  });
+<?php } ?>
+
+//load schedulelist.php  
+$('#overridelist').load('overridelist.php');
 
 //load boostlist.php 
 $('#boostlist').load('boostlist.php');
@@ -125,7 +113,7 @@ $(document).ready(function(){
 	}, 15000);
 });
 </script>
-<?php if (isset($graphs_page)){include("chartfooter.php");} ?>
+<?php if ($_SERVER['REQUEST_URI'] == '/chart.php'){include("chartfooter.php");} ?>
 </body>
 </html>
 <?php if(isset($conn)) { $conn->close();} ?>

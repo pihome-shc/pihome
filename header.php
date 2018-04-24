@@ -140,8 +140,8 @@
             </ul>
         </nav>
 <?php 
-$query="select * from weather";
-$conn->query($query);
+$query="select * from weather;";
+$result=$conn->query($query);
 $weather = mysqli_fetch_array($result);
 ?>
 
