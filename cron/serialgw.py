@@ -16,11 +16,13 @@ print " | |      | | | |  | | | (_) | | | | | | | |  __/"
 print " |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___|"
 print " "
 print "    S M A R T   H E A T I N G   C O N T R O L "
-print "*******************************************************"
-print "*  Serial Gateway Build for Wireless sensors using    *"
-print "*  MySeonsors serial API Build Date: 18/09/2017       *"
-print "*                                Have Fun - PiHome.eu *"
-print "*******************************************************"
+print "********************************************************"
+print "* MySensors 2.2 Serial Gateway Communication Script    *"
+print "* to communicate with MySensors Nodes, for more info   *"
+print "* please check MySensors API. Build Date: 18/09/2017   *"
+print "*      Version 0.04 - Last Modified 11/05/2018         *"
+print "*                                 Have Fun - PiHome.eu *"
+print "********************************************************"
 print " "
 print " " + bcolors.ENDC
 
@@ -29,14 +31,30 @@ import sys
 import serial
 import time
 
+#PiHome Database Settings Variables 
+dbhost = 'localhost'
+dbuser = 'pihomedbadmin'
+dbpass = 'pihome2018'
+dbname = 'pihome'
+
+con = mdb.connect(dbhost, dbuser, dbpass, dbname)
+cur = con.cursor()
+cur.execute('SELECT * FROM gateway where status = 1 order by id asc limit 1')
+row = cur.fetchone();
+gatewaysp = row[5]
+gatewayspeed = row[6]
+print bc.grn + "MySensors Location   : ",gatewayip, bc.ENDC 
+print bc.grn + "MySensors Port : ",gatewayport, bc.ENDC
+
 # ps. you can troubleshoot with "screen" 
 #screen /dev/ttyAMA0 115200
-ser = serial.Serial('/dev/ttyAMA0', 115200, timeout=0)
+# ser = serial.Serial('/dev/ttyAMA0', 115200, timeout=0)
+ser = serial.Serial(gatewaysp, gatewayspeed, timeout=0)
 in_str = ser.readline()
 print in_str
 while 1:
 	try:
-		con = mdb.connect('localhost', 'root', 'passw0rd', 'pihome') # MySQL Database Connection Settings
+		con = mdb.connect(dbhost, dbuser, dbpass, dbname)# MySQL Database Connection Settings
 		cur = con.cursor() # Cursor object to Current Connection
 		cur.execute('SELECT COUNT(*) FROM `messages_out` where sent = 0') # MySQL query statement
 		count = cur.fetchone() # Grab all messages from database for Outgoing. 
@@ -110,79 +128,98 @@ while 1:
 		payload = statement[5]
 		print "Pay Load:                    ",payload
 		try:
-			con = mdb.connect('localhost', 'root', 'passw0rd', 'pihome')#Database Connection Settings 
+			con = mdb.connect(dbhost, dbuser, dbpass, dbname))#Database Connection Settings 
 			cur = con.cursor()
 
 			# ..::Step One::..
-			# First time sensor comes online and add node to nodes table, 
-			if (child_sensor_id != 255 and message_type == 0):
-				cur.execute('SELECT COUNT(*) FROM `nodes` where node_id = (%s)', (node_id)) 
+			# First time MySensors Node Comes online: Add Node to The Nodes Table.
+			if (node_id != 0 and child_sensor_id == 255 and message_type == 0 and sub_type == 17):
+			#if (child_sensor_id != 255 and message_type == 0):
+				cur.execute('SELECT COUNT(*) FROM `nodes` where node_id = (%s)', (node_id, )) 
 				row = cur.fetchone()  
 				row = int(row[0])
 				if (row == 0):
-					print "1 Add Node: ", node_id, " Child Sensor ID:", child_sensor_id
-					cur.execute('INSERT INTO nodes(node_id, child_id_1) VALUES(%s,%s)', (node_id,child_sensor_id))
+					print "1: Adding Node ID:",node_id, "MySensors Version:", payload, "\n\n"
+					cur.execute('INSERT INTO nodes(node_id, ms_version) VALUES(%s, %s)', (node_id, payload))
 					con.commit()
+				else: 
+					print "1: Node ID:",node_id," Already Exist In Node Table \n\n"
 					
 			# ..::Step Two ::..
-			# Add Nodes name ie. relay, temperature sensor etc... to Database
+			# Add Nodes Name i.e. Relay, Temperature Sensor etc. to Nodes Table.
 			if (child_sensor_id == 255 and message_type == 3 and sub_type == 11):
 				payload = payload[:-1] # remove \n from payload otherwise you will endup two lines sensors name in database. 
-				print "2 Update NodeID:", node_id, "Child Sensor ID:", child_sensor_id, " Sensor Type:", payload
+				print "2: Update Node Record for Node ID:", node_id, " Sensor Type:", payload, "\n\n"
 				cur.execute('UPDATE nodes SET name = %s where node_id = %s', (payload, node_id))
 				con.commit()
 
 			# ..::Step Three ::..
-			# Add Nodes MySensors Version to database 
-			if (node_id != 0 and child_sensor_id == 255 and message_type == 0 and sub_type == 17):
-				payload = payload[:-1] # remove \n from payload otherwise you will endup two lines sensors name in database. 
-				print "3 Update NodeID:", node_id, "Child Sensor ID:", child_sensor_id, " Sensor Type:", payload
-				cur.execute('UPDATE nodes SET ms_version = %s where node_id = %s', (payload, node_id))
-				con.commit()
-
-			# ..::Step Four ::..
-			# Add Nodes MySensors Version to database 
+			# Add Nodes Sketch Version to Nodes Table.  
 			if (node_id != 0 and child_sensor_id == 255 and message_type == 3 and sub_type == 12):
 				payload = payload[:-1] # remove \n from payload otherwise you will endup two lines sensors name in database. 
-				print "4 Update NodeID:", node_id, "Child Sensor ID:", child_sensor_id, " Sensor Type:", payload
+				print "3: Update Node ID: ", node_id, " Node Sketch Version: ", payload, "\n\n"
 				cur.execute('UPDATE nodes SET sketch_version = %s where node_id = %s', (payload, node_id))
 				con.commit()
 				
+			# ..::Step Four::..
+			# Add Node Child ID to Node Table
+			#25;0;0;0;6;
+			if (node_id != 0 and child_sensor_id != 255 and message_type == 0 and sub_type == 6):
+				print "4: Adding Node's Child ID for Node ID:", node_id, " Child Sensor ID:", child_sensor_id, "\n\n"
+				cur.execute('UPDATE nodes SET child_id_1 = %s WHERE node_id = %s', [child_sensor_id, node_id])
+				con.commit()
+
 			# ..::Step Five::..
-			# Add temperature Reading to database 
+			# Add Temperature Reading to database 
 			if (node_id != 0 and child_sensor_id != 255 and message_type == 1 and sub_type == 0):
-				print "5. Adding Database Record: Node ID:", node_id, " Child Sensor ID:", child_sensor_id, " PayLoad:", payload, "\n"
+				print "5: Adding Temperature Reading From Node ID:", node_id, " Child Sensor ID:", child_sensor_id, " PayLoad:", payload, "\n\n"
 				cur.execute('INSERT INTO messages_in(node_id, child_id, sub_type, payload) VALUES(%s,%s,%s,%s)', (node_id,child_sensor_id,sub_type,payload))
 				con.commit()
 				cur.execute('UPDATE `nodes` SET `last_seen`=now() WHERE node_id = %s', [node_id])
 				con.commit()
 
 			# ..::Step Six::..
-			# Add Battery Level to Database
-			# 20;255;3;0;0;102
-			if (child_sensor_id == 255 and message_type == 3 and sub_type == 0):  #BATTERY Level
-				print "6. Adding Database Record: Node ID:", node_id, " Battery Level:", payload, "Battery Voltage ", b_volt, "\n"
-				cur.execute('INSERT INTO nodes_battery(node_id, bat_level, bat_voltage) VALUES(%s,%s,%s)', (node_id,payload,b_volt))
-				cur.execute('UPDATE `nodes` SET `last_seen`=now() WHERE node_id = %s', [node_id])
-				con.commit()
+			# Add Battery Voltage Nodes Battery Table
+			# Example: 25;1;1;0;38;4.39
+			if (node_id != 0 and child_sensor_id != 255 and message_type == 1 and sub_type == 38):
+				print "6: Battery Voltage for Node ID:", node_id, " Battery Voltage:", payload, "\n\n"
+				b_volt = payload # dont add record to table insted add record with battery voltage and level in next step
+				##cur.execute('INSERT INTO nodes_battery(node_id, bat_level) VALUES(%s,%s)', (node_id,payload))
+				##cur.execute('UPDATE `nodes` SET `last_seen`=now() WHERE node_id = %s', [node_id])
+				##con.commit()
 
 			# ..::Step Seven::..
-			# Add Battery Voltage to Database
-			# 20;1;1;0;38;3.78
-			# node-id ; child-sensor-id ; command ; ack ; type ; payload \n
-			if (child_sensor_id != 255 and message_type == 1 and sub_type == 38):  #BATTERY VOLTAGE
-				b_volt = payload
+			# Add Battery Level Nodes Battery Table
+			# Example: 25;255;3;0;0;104
+			if (node_id != 0 and child_sensor_id == 255 and message_type == 3 and sub_type == 0):
+				print "7: Adding Battery Level & Voltage for Node ID:", node_id, "Battery Voltage:",b_volt,"Battery Level:",payload,"\n\n"
+				cur.execute('INSERT INTO nodes_battery(node_id, bat_voltage, bat_level) VALUES(%s,%s,%s)', (node_id, b_volt, payload))
+				cur.execute('UPDATE nodes SET last_seen=now() WHERE node_id = %s', [node_id])
+				con.commit()
 
 				# ..::Step Eight::..
-			# Add Bost Status Level to Database 
+			# Add Boost Status Level to Database/Relay Last seen gets added here as well when ACK is set to 1 in messages_out table. 
 			if (node_id != 0 and child_sensor_id != 255 and message_type == 1 and sub_type == 2):
 			# print "2 insert: ", node_id, " , ", child_sensor_id, "payload", payload
-				print "8. Adding Database Record: Node ID:", node_id, " Child Sensor ID:", child_sensor_id, " PayLoad:", payload, "\n"
+				print "8. Adding Database Record: Node ID:",node_id," Child Sensor ID:", child_sensor_id, " PayLoad:", payload, "\n"
 				xboost = "UPDATE boost SET status=%s WHERE boost_button_id=%s AND boost_button_child_id = %s"
 				cur.execute(xboost, (payload, node_id,child_sensor_id,))
 				con.commit()
 				cur.execute('UPDATE `nodes` SET `last_seen`=now() WHERE node_id = %s', [node_id])
-				con.commit()				
+				con.commit()
+
+				# ..::Step Nine::..
+			# Add Away Status Level to Database 
+			if (node_id != 0 and child_sensor_id != 255 and child_sensor_id == 4 and message_type == 1 and sub_type == 2):
+			# print "2 insert: ", node_id, " , ", child_sensor_id, "payload", payload
+				print "9. Adding Database Record: Node ID:", node_id, " Child Sensor ID:", child_sensor_id, " PayLoad:", payload, "\n"
+				xaway = "UPDATE away SET status=%s WHERE away_button_id=%s AND away_button_child_id = %s"
+				cur.execute(xaway, (payload, node_id,child_sensor_id,))
+				con.commit()
+				cur.execute('UPDATE `nodes` SET `last_seen`=now() WHERE node_id = %s', [node_id])
+				con.commit()
+			#else: 
+				#print bc.WARN+ "No Action Defined Incomming Node Message Ignored \n\n" +bc.ENDC
 		except mdb.Error, e:
 				print "Error %d: %s" % (e.args[0], e.args[1])
 				sys.exit(1)
