@@ -66,13 +66,13 @@ while 1:
 			cur.execute('SELECT * FROM `messages_out` where sent = 0') #grab all messages that where not send yet (sent ==0)
 			msg = cur.fetchone(); 	#Grab first record and build a message: if you change table fields order you need to change following lines as well. 
 			out_id = int(msg[0]) 	#Record ID - only DB info,
-			out_node_id = msg[1] 	#Node ID 
-			out_child_id = msg[2] 	#Child ID of the node where sensor/relay is attached.
-			out_sub_type = msg[3] 	#Command Type  
-			out_ack = msg[4] 		#Ack req/resp
-			out_type = msg[5]  		#Type  
-			out_payload = msg[6] 	#Payload to send out. 
-			sent = msg[7] 			#Status of message either its sent or not. (1 for sent, 0 for not sent yet)
+			out_node_id = msg[3] 	#Node ID 
+			out_child_id = msg[4] 	#Child ID of the node where sensor/relay is attached.
+			out_sub_type = msg[5] 	#Command Type  
+			out_ack = msg[6] 		#Ack req/resp
+			out_type = msg[7]  		#Type  
+			out_payload = msg[8] 	#Payload to send out. 
+			sent = msg[9] 			#Status of message either its sent or not. (1 for sent, 0 for not sent yet)
 			print "Date & Time:            ",time.ctime()
 			print "Message From Database:  ",out_id, out_node_id, out_child_id, out_sub_type, out_ack, out_type, out_payload, sent #Print what will be sent including record id and sent status.
 			msg = str(out_node_id) 	#Node ID

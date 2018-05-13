@@ -1,4 +1,23 @@
 
+/*
+   _____    _   _    _                             
+  |  __ \  (_) | |  | |                            
+  | |__) |  _  | |__| |   ___    _ __ ___     ___  
+  |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \ 
+  | |      | | | |  | | | (_) | | | | | | | |  __/ 
+  |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___| 
+
+     S M A R T   H E A T I N G   C O N T R O L 
+
+*************************************************************************"
+* PiHome is Raspberry Pi based Central Heating Control systems. It runs *"
+* from web interface and it comes with ABSOLUTELY NO WARRANTY, to the   *"
+* extent permitted by applicable law. I take no responsibility for any  *"
+* loss or damage to you or your property.                               *"
+* DO NOT MAKE ANY CHANGES TO YOUR HEATING SYSTEM UNTILL UNLESS YOU KNOW *"
+* WHAT YOU ARE DOING                                                    *"
+*************************************************************************"
+*/
 
 -- You Must create following View Talbes in MySQL for PiHome Smart Heating to work 
 
@@ -14,7 +33,7 @@ join schedule_daily_time ss on sdtz.schedule_daily_time_id = ss.id
 join schedule_daily_time sstart on sdtz.schedule_daily_time_id = sstart.id
 join schedule_daily_time send on sdtz.schedule_daily_time_id = send.id
 join zone on sdtz.zone_id = zone.id
-order by zone.index_id;
+where sdtz.`purge` = '0' order by zone.index_id 
 
 
 --Zone View version 2
@@ -31,14 +50,16 @@ join nodes cid on zone.controler_id = cid.id
 join nodes bid on zone.boiler_id = bid.id
 join nodes lasts on zone.sensor_id = lasts.id
 join nodes msv on zone.sensor_id = msv.id
-join nodes skv on zone.sensor_id = skv.id;
+join nodes skv on zone.sensor_id = skv.id 
+where zone.`purge` = '0';
 
 --Boiler View
 Drop View if exists boiler_view; 
 CREATE VIEW boiler_view AS
-select boiler.status, boiler.sync, boiler.fired_status, boiler.name, nodes.node_id, boiler.node_child_id, boiler.hysteresis_time, boiler.max_operation_time, boiler.gpio_pin
+select boiler.status, boiler.sync, boiler.`purge`, boiler.fired_status, boiler.name, nodes.node_id, boiler.node_child_id, boiler.hysteresis_time, boiler.max_operation_time, boiler.gpio_pin
 from boiler
-join nodes on boiler.node_id = nodes.id;
+join nodes on boiler.node_id = nodes.id 
+where boiler.`purge` = '0';
 
 
 --Boost View
