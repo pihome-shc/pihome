@@ -16,6 +16,7 @@ PiHome – Smart Heating Control is home automation system or you can say centra
 
 <p style="color:red;">Before we deep dive into this project something very important: PiHome comes with ABSOLUTELY NO WARRANTY, to the extent permitted by applicable law. DO NOT MAKE ANY CHANGES TO YOUR HEATING SYSTEM UNTIL UNLESS YOU KNOW WHAT YOU ARE DOING, contents provided here are for information and education purpose only, I take no responsibility for any loss or damage to you or your property.”</p3>
 
+###If you want to download SD card image for Raspberry Pi please visit http://www.pihome.eu 
 
 ## Smart Heating Control – Features:
 * Support Serial Gateway
@@ -54,7 +55,7 @@ sudo apt-get install git
 sudo git clone https://github.com/pihome-shc/pihome "/var/www"
 
 
-## Secial Thanks to:
+## Secial Thanks to
 
 * [SB Admin 2 Template](http://startbootstrap.com/template-overviews/sb-admin-2 "SB Admin 2 Template ")
 * [Pretty Checkbox](http://www.cssscript.com/pretty-checkbox-radio-inputs-bootstrap-awesome-bootstrap-checkbox-css "Pretty Checkbox ")
