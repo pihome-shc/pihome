@@ -19,6 +19,7 @@
 *************************************************************************"
 */
 ?>
+
 <?php  if(isset($message_success)) { echo '<div class="notice notice-success"><i class="glyphicon glyphicon-ok-circle fa-lg"></i> ' . $message_success . '</div>' ;}  ?>
 <?php  if(isset($error_message)) { echo '<div class="notice notice-danger"> <i class="fa fa-exclamation-triangle fa-lg"></i> ' . $error_message . '</div>' ;}  ?>
 <?php  if(isset($error)) { echo '<div class="notice notice-danger"><i class="fa fa-exclamation-triangle fa-lg"></i> ' . $error . '</div>' ;} ?>

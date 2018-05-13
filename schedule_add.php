@@ -83,7 +83,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 ?>
 
 	<input type="hidden" name="id[<?php echo $row["id"];?>]" value="<?php echo $row["id"];?>">
-	
+
 	<div class="checkbox checkbox-default  checkbox-circle">
     <input id="checkbox<?php echo $row["id"];?>" class="styled" type="checkbox" name="status[<?php echo $row["id"];?>]" value="1" onclick="$('#<?php echo $row["id"];?>').toggle();">
     <label for="checkbox<?php echo $row["id"];?>"><?php echo $row["name"];?></label>

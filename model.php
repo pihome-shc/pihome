@@ -119,7 +119,6 @@ echo '</div></div>
     </div>
 </div>';
 
-
 //override model
 echo '
 <div class="modal fade" id="override_setup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -146,7 +145,6 @@ echo '</div></div>
         </div>
     </div>
 </div>';
-
 
 //Sensor location model
 echo '
@@ -235,7 +233,6 @@ echo '
     </div>
 </div>';
 
-
 //sensor gateway model
 echo '
 <div class="modal fade" id="sensor_gateway" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -258,7 +255,6 @@ echo '</div></div>
         </div>
     </div>
 </div>';
-
 
 //cronetab model	
 echo '
@@ -291,7 +287,6 @@ echo ' </div></div>
     </div>
 </div>';
 
-
 //System temperature
 echo '
 <div class="modal fade" id="system_c" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -319,7 +314,6 @@ echo '</div></div>
         </div>
     </div>
 </div>';
-
 
 //OS version model
 //$osversion = exec ("cat /etc/os-release");
@@ -354,7 +348,6 @@ echo '
         </div>
     </div>
 </div>';
-
 
 //Pihome Update
 echo '
@@ -394,8 +387,6 @@ echo '</div></div>
         </div>
     </div>
 </div>';
-
-
 
 // systems up time
 echo '
@@ -443,7 +434,6 @@ echo '            </div>
         </div>
     </div>
 </div>';
-
 
 //wifi model
 $rxwifidata = exec ("cat /sys/class/net/wlan0/statistics/rx_bytes");
@@ -526,8 +516,6 @@ echo '
     </div>
 </div>';
 
-
-
 //user accounts model 
 echo '
 <div class="modal fade" id="user_setup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -560,7 +548,6 @@ echo '</div></div>
     </div>
 </div>';
 
-
 //Big Thank you 	
 echo '
 <div class="modal fade" id="big_thanks" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -585,7 +572,6 @@ echo "
 <a href=\"http://www.pihome.eu\" class=\"list-group-item\"><i class=\"ionicons ion-help-buoy blueinfo\"></i> All others if forget them... <span class=\"pull-right text-muted small\"><em>...</em></span></a>
 <a href=\"http://pihome.harkemedia.de\" class=\"list-group-item\"><i class=\"ionicons ion-help-buoy blueinfo\"></i> RaspberryPi Home Automation <span class=\"pull-right text-muted small\"><em>...</em></span></a>
 ";
-
 
 echo '</div></div>
             <div class="modal-footer">

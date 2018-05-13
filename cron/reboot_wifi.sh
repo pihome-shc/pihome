@@ -3,7 +3,7 @@
 # Script Variables Settings
 clear
 wlan='wlan0'
-gateway='192.168.99.1'
+gateway='192.168.1.1'
 alias ifup='/sbin/ifup'
 alias ifdown='/sbin/ifdown'
 alias ifconfig='/sbin/ifconfig'
@@ -29,7 +29,6 @@ echo "                                                           Have Fun - PiHo
 date
 echo " - Auto Reconnect Wi-Fi Status for $wlan Script Started ";
 echo
-
 # Only send two pings, sending output to /dev/null as we don't want to fill logs on our sd card. 
 # If you want to force ping from your wlan0 you can connect next line and uncomment second line 
 ping -c2 ${gateway} > /dev/null # ping to gateway from Wi-Fi or from Ethernet

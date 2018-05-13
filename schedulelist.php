@@ -61,15 +61,12 @@ while ($row = mysqli_fetch_assoc($results)) {
 	//time shchedule listing
 	echo '
 	<li class="left clearfix scheduleli animated fadeIn">
-	
 	<a href="javascript:active_schedule('.$row["time_id"].');"><span class="chat-img pull-left"><div class="circle '. $shactive.'"> <p class="schdegree">'.$row["max_c"].'&deg;</p></div></span></a>
-	
 	<a style="color: #333; cursor: pointer; text-decoration: none;" data-toggle="collapse" data-parent="#accordion" href="#collapse'.$row['tz_id'].'">
 	<div class="chat-body clearfix">
 	<div class="header"><div class="text-info">&nbsp;&nbsp;'. $row['start'].' - ' .$row['end'].' &nbsp;&nbsp;<i class="fa fa-angle-double-right fa-fw"></i></div></a>
 	<div id="collapse'.$row["tz_id"].'" class="panel-collapse collapse">
 	<br>';
-
 
 	//zone listing of each time schedule 
 	$query="SELECT * FROM  schedule_daily_time_zone_view WHERE time_id = {$row['time_id']} order by index_id";

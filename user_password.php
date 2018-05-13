@@ -49,7 +49,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 						// Success!
 						$message_success = "Password is successfully changed.";
 						header("Refresh: 3; url=settings.php");
-					} else {$error = "<p>Password chaneg failed.</p> <p>" . mysql_error() . "</p>";}
+					} else {$error = "<p>Password chaneg failed.</p> <p>".mysqli_error($conn)."</p>";}
 		} 
 
 		}
@@ -99,7 +99,6 @@ $query="select * from weather";
 $result = $conn->query($query);
 $weather = mysqli_fetch_array($result);
 ?>
-
 Outside: <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
 <span><img border="0" width="24" src="images/<?php echo $weather['img'];?>.png" title="<?php echo $weather['title'];?> - 
 <?php echo $weather['description'];?>"></span> <span><?php echo $weather['title'];?> - 

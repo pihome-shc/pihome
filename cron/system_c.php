@@ -25,6 +25,7 @@ $time=date('H:i');
 $date=date('y-m-d');
 $system_c = exec ("vcgencmd measure_temp | cut -c6,7,8,9");
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - System Temperature: ". $system_c."\n";
+
 if ($system_c == 0) {
 	//do nothing
 }else {

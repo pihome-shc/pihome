@@ -28,7 +28,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 	} else {
 		redirect_to("home.php");
 	}
-
+//when form is submit 
 if (isset($_POST['submit'])) {
 	$zone_status = isset($_POST['zone_status']) ? $_POST['zone_status'] : "0";
 	$index_id = mysqli_prepare($_POST['index_id']);

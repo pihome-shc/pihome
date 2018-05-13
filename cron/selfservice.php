@@ -883,7 +883,6 @@ if ($api_result == "OK"){
 	}
 	//Weather Data sync End Here 
 
-
 //api key validation else option
 }else{
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Your API Key isnt valid please contact PiHome at http://www.pihome.eu \n";

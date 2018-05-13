@@ -67,8 +67,7 @@ if (isset($_POST['submit'])) {
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-
-	<form data-toggle="validator" role="form" method="post" action="<?php $_SERVER['PHP_SELF'];?>" id="form-join">
+<form data-toggle="validator" role="form" method="post" action="<?php $_SERVER['PHP_SELF'];?>" id="form-join">
 <?php 
 $query = "SELECT * FROM schedule_daily_time WHERE id = {$time_id}";
 $results = $conn->query($query);	

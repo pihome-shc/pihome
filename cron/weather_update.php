@@ -60,7 +60,7 @@ if ($row['openweather_api'] != NULL){
 		$conn->query($query);
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Database Updated \n"; 
 		//update weather table
-		$query = "update weather SET location = '{$location}', c = '{$weather_c}', wind_speed = '{$wind_speed}', title = '{$title}', description = '{$description}', sunrise = '{$sunrise}', sunset = '{$sunset}', img = '{$icon}' WHERE id = '1' LIMIT 1";
+		$query = "update weather SET sync = '0', location = '{$location}', c = '{$weather_c}', wind_speed = '{$wind_speed}', title = '{$title}', description = '{$description}', sunrise = '{$sunrise}', sunset = '{$sunset}', img = '{$icon}' WHERE id = '1' LIMIT 1";
 		$conn->query($query);
 	}else {
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m  -Current Weather data was not downloaded \n"; 
@@ -120,6 +120,7 @@ if ($row['openweather_api'] != NULL){
 	}
 	*/
 // end if 
+
 }
 echo "  \n"; 
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Weather Update Script Finished \n"; 

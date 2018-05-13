@@ -48,5 +48,3 @@ iptables -A FORWARD -i wlan0 -o tun+ -m state --state RELATED,ESTABLISHED -j ACC
 # iptables -A INPUT -m limit --limit 3/min -j LOG --log-prefix "iptables_INPUT_denied: " --log-level 4
 # iptables -A FORWARD -m limit --limit 3/min -j LOG --log-prefix "iptables_FORWARD_denied: " --log-level 4
 # iptables -A OUTPUT -m limit --limit 3/min -j LOG --log-prefix "iptables_OUTPUT_denied: " --log-level 4
-
-

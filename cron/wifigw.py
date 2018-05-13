@@ -229,7 +229,6 @@ while 1:
 			#else: 
 				#print bc.WARN+ "No Action Defined Incomming Node Message Ignored \n\n" +bc.ENDC
 			
-
 		except mdb.Error, e:
 				print "Error %d: %s" % (e.args[0], e.args[1])
 				sys.exit(1)

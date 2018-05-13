@@ -13,7 +13,7 @@ echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
 echo "***************************************************************\n";
 echo "*   PiHome Install Script Version 0.3 Build Date 31/01/2018   *\n";
-echo "*   Last Modified on 08/04/2018                               *\n";
+echo "*   Last Modified on 13/05/2018                               *\n";
 echo "*                                      Have Fun - PiHome.eu   *\n";
 echo "***************************************************************\n";
 echo "\033[0m";
@@ -118,7 +118,7 @@ if (!$db_selected) {
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m schedule_daily_time_zone_view \033[0m Created \n"; }
 	
 	//Create Table View
-	$query = "CREATE VIEW schedule_daily_time_zone_view AS
+	$query = "CREATE VIEW schedule_daily_time_zone_view AS 
 	select ss.id as time_id, ss.status as time_status, sstart.start, send.end, 
 	sdtz.sync as tz_sync, sdtz.id as tz_id, sdtz.status as tz_status,
 	sdtz.zone_id, zone.index_id, zone.name as zone_name, temperature
@@ -127,7 +127,7 @@ if (!$db_selected) {
 	join schedule_daily_time sstart on sdtz.schedule_daily_time_id = sstart.id
 	join schedule_daily_time send on sdtz.schedule_daily_time_id = send.id
 	join zone on sdtz.zone_id = zone.id
-	order by zone.index_id;";
+	where sdtz.`purge` = '0' order by zone.index_id;";
 	$result = $conn->query($query);
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m schedule_daily_time_zone_view \033[0m Created \n"; }
 
@@ -149,7 +149,8 @@ if (!$db_selected) {
 	join nodes bid on zone.boiler_id = bid.id
 	join nodes lasts on zone.sensor_id = lasts.id
 	join nodes msv on zone.sensor_id = msv.id
-	join nodes skv on zone.sensor_id = skv.id;";
+	join nodes skv on zone.sensor_id = skv.id 
+	where zone.`purge` = '0';";
 	$result = $conn->query($query);
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m zone_view \033[0m Created \n"; }
 
@@ -160,9 +161,10 @@ if (!$db_selected) {
 	
 	//Create Table View
 	$query = "CREATE VIEW boiler_view AS
-	select boiler.status, boiler.sync, boiler.fired_status, boiler.name, nodes.node_id, boiler.node_child_id, boiler.hysteresis_time, boiler.max_operation_time, boiler.gpio_pin
+	select boiler.status, boiler.sync, boiler.`purge`, boiler.fired_status, boiler.name, nodes.node_id, boiler.node_child_id, boiler.hysteresis_time, boiler.max_operation_time, boiler.gpio_pin
 	from boiler
-	join nodes on boiler.node_id = nodes.id;";
+	join nodes on boiler.node_id = nodes.id 
+	where boiler.`purge` = '0';";
 	$result = $conn->query($query);
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m boiler_view \033[0m Created \n"; }
 
@@ -190,7 +192,7 @@ if (!$db_selected) {
 	select override.`status`, override.sync, override.zone_id, zone_idx.index_id, zone.name, override.time, override.temperature
 	from override
 	join zone on override.zone_id = zone.id
-	join zone zone_idx on override.zone_id = zone_idx.id;";
+	join zone zone_idx on override.zone_id = zone_idx.id;"
 	$result = $conn->query($query);
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m override_view \033[0m Created \n"; }
 	

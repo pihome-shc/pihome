@@ -64,7 +64,6 @@ $boiler_stop_datetime = $row['stop_datetime'];
 $boiler_expoff_datetime = $row['expected_end_date_time'];
 
 echo "---------------------------------------------------------------------------------------- \n";
-
 //following variable set to 0 on start for array index. 
 $boiler_index = '0';
 $zone_index = '0';
@@ -237,7 +236,7 @@ if (in_array("1", $boiler)) {
 	$new_boiler_status='1';
 	
 	//update boiler fired status to 1
-	$query = "UPDATE boiler SET fired_status = '{$new_boiler_status}' WHERE id ='1' LIMIT 1";
+	$query = "UPDATE boiler SET sync = '0', fired_status = '{$new_boiler_status}' WHERE id ='1' LIMIT 1";
 	$conn->query($query);
 	
 	/***************************************************************************************
@@ -277,7 +276,7 @@ if (in_array("1", $boiler)) {
 }else{
 	$new_boiler_status='0';
 	//update boiler fired status to 0
-	$query = "UPDATE boiler SET fired_status = '{$new_boiler_status}' WHERE id ='1' LIMIT 1";
+	$query = "UPDATE boiler SET sync = '0', fired_status = '{$new_boiler_status}' WHERE id ='1' LIMIT 1";
 	$conn->query($query);
 	
 	/***************************************************************************************

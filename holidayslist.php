@@ -18,6 +18,7 @@
 * WHAT YOU ARE DOING                                                    *"
 *************************************************************************"
 */
+
 require_once(__DIR__.'/st_inc/session.php'); 
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
@@ -56,8 +57,6 @@ while ($row = mysqli_fetch_assoc($results)) {
 					<a href="javascript:active_holidays('.$row["id"].');">
 					 <span class="chat-img pull-left">';
 					if($row["active"]=="0"){ $shactive="bluesch"; }else{ $shactive="orangesch"; }
-
-						
 						$time = strtotime(date("G:i:s")); 
 						$start_date_time = strtotime($row['start_date_time']);
 						$end_date_time = strtotime($row['end_date_time']);
@@ -70,7 +69,6 @@ while ($row = mysqli_fetch_assoc($results)) {
                          <div class="header">
                              <strong class="primary-font">&nbsp;&nbsp;'. date('Y-m-d', $start_date_time).' - '.date('Y-m-d', $end_date_time).' </strong></a> 
 <a class="btn btn-danger btn-xs" href="holidays.php?id=' . $row['id'] . '" ><span class="glyphicon glyphicon-trash"></span></a>
-							 
 							 </div></div>';
 }
 include("model.php");					 

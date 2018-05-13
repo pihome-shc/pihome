@@ -33,8 +33,8 @@ import time
 
 #PiHome Database Settings Variables 
 dbhost = 'localhost'
-dbuser = 'pihomedbadmin'
-dbpass = 'pihome2018'
+dbuser = 'root'
+dbpass = 'passw0rd'
 dbname = 'pihome'
 
 con = mdb.connect(dbhost, dbuser, dbpass, dbname)

@@ -19,12 +19,12 @@ echo " \033[0m \n";
 
 require_once(__DIR__.'../../st_inc/connection.php');
 require_once(__DIR__.'../../st_inc/functions.php'); 
-//Set php script execution time in seconds
 
+//Set php script execution time in seconds
 ini_set('max_execution_time', 40); 
 
 //query to get gateway information 
-$query = "SELECT * FROM gateway order by id asc limit 1;";
+$query = "SELECT * FROM gateway where status = 1 order by id asc limit 1;";
 $result = $conn->query($query);
 $row = mysqli_fetch_array($result);
 $gw_type = $row['type'];

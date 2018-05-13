@@ -29,7 +29,7 @@ print "* loss or damage to you or your property.                               *
 print "* DO NOT MAKE ANY CHANGES TO YOUR HEATING SYSTEM UNTILL UNLESS YOU KNOW *"
 print "* WHAT YOU ARE DOING                                                    *"
 print "*************************************************************************"
-print bc.GREEN +"                                                           Have Fun - PiHome"  + bc.ENDC
+print bc.GREEN +"                                                      Have Fun - PiHome"  + bc.ENDC
 
 df = subprocess.Popen(["df", "-h"], stdout=subprocess.PIPE)
 output = df.communicate()[0]
@@ -49,8 +49,3 @@ end = re.search('^[\d]{1,3}.[\d]{1,3}.[\d]{1,3}.[\d]{1,3}', ip)
 create_ip = re.search('^[\d]{1,3}.[\d]{1,3}.[\d]{1,3}.', ip)
 print "WebServer:  "+bc.GREEN +"http://"+str(end.group(0))+"/"+ bc.ENDC
 print "PhpMyAdmin: "+bc.GREEN +"http://"+str(end.group(0))+"/phpmyadmin"+ bc.ENDC
-
-
-
-
-

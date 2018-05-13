@@ -121,7 +121,6 @@ where zone.status = 1 order by zone.index_id;";
                 <div class="help-block with-errors"></div>
 				
 				</div></div>
-			
 				<?php }?>			
                 <input type="submit" name="submit" value="Submit" class="btn btn-default btn-sm">
 				<a href="home.php"><button type="button" class="btn btn-primary btn-sm">Cancel</button></a>

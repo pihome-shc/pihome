@@ -32,7 +32,6 @@ $zone2 = $row['device'];
 $zone3 = $row['device'];
 $zone4 = $row['device'];
 */
-
  
 $arr_name='ground_floor';
 $query="select * from messages_in_view_24h where node_id= 21";

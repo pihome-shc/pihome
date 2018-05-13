@@ -18,6 +18,7 @@
 * WHAT YOU ARE DOING                                                    *"
 *************************************************************************"
 */
+
 require_once(__DIR__.'/st_inc/session.php');
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
@@ -87,11 +88,6 @@ if($what=="schedule"){
 		$conn->query($query);
 		$query  = "UPDATE schedule_daily_time SET schedule_daily_time.purge = '1', schedule_daily_time.sync = '0' WHERE id = '".$wid."';";
 		$conn->query($query);
-		
-		//$query = "DELETE FROM schedule_daily_time_zone WHERE schedule_daily_time_id ='".$wid."'";
-		//$conn->query($query);
-		//$query = "DELETE FROM schedule_daily_time WHERE id ='".$wid."'";
-		//$conn->query($query);
 	}
 }
 

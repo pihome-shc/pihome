@@ -22,7 +22,7 @@ require_once(__DIR__.'/st_inc/session.php');
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
-
+//Form submit
 if (isset($_POST['submit'])) {
 	$zone_status = isset($_POST['zone_status']) ? $_POST['zone_status'] : "0";
 	$index_id = $_POST['index_id'];

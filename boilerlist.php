@@ -40,5 +40,4 @@ while ($row = mysqli_fetch_assoc($result)) {
 	<td class="all">'.number_format(($row['save_minuts']/$row['total_minuts'])*100,0).'%</td>
 	</tr>';
 }
- echo '</tbody></table>';
-;?>
+ echo '</tbody></table>';?>

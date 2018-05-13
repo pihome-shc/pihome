@@ -13,7 +13,7 @@ echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
 echo "***************************************************************\n";
 echo "*   PiHome Datase Script Version 0.4 Build Date 31/01/2018    *\n";
-echo "*   Last Modified on 08/04/2018                               *\n";
+echo "*   Last Modified on 13/05/2018                               *\n";
 echo "*                                      Have Fun - PiHome.eu   *\n";
 echo "***************************************************************\n";
 echo "\033[0m";

@@ -32,7 +32,6 @@ if (logged_in()) {
 }
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
- 
 
  // start process if data is passed from url  http://192.168.99.9/index.php?user=username&pass=password
     if(isset($_GET['user']) && isset($_GET['pass'])) {
@@ -256,7 +255,6 @@ html {
 	<h6><a style="color: #707070;" href="https://en.wikipedia.org/wiki/Sudan_(rhinoceros)" target="_blank" >Dedicated to Sudan (Rhinoceros) 1973 - 2018</a></h6>
 	</div>
 	</div>
-
 </div>
 
     <!-- jQuery -->
@@ -264,9 +262,6 @@ html {
 
     <!-- Bootstrap Core JavaScript -->
     <script src="js/bootstrap.min.js"></script>
-
-    <!-- Metis Menu Plugin JavaScript -->
-    <script src="js/plugins/metisMenu/metisMenu.min.js"></script>
 
     <!-- Custom Theme JavaScript -->
     <script src="js/sb-admin-2.js"></script>

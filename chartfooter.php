@@ -18,8 +18,7 @@
 * WHAT YOU ARE DOING                                                    *"
 *************************************************************************"
 */
-?>
-<?php
+
 // weather table to get sunrise and sun set time 
 $query="select * from weather";
 $result = $conn->query($query);

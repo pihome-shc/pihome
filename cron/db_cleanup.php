@@ -35,6 +35,4 @@ if (isset($result)) {
 echo date('Y-m-d H:i:s'). " - Database Cleanup Script Ended \n"; 
 echo "\033[32m**************************************************************\033[0m  \n";
 if(isset($conn)) { $conn->close();}
-
-
 ?>

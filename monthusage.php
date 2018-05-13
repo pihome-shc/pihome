@@ -51,7 +51,6 @@ while ($row = mysqli_fetch_assoc($result)) {
 	$bon_minuts[] = array(strtotime($row['month']) * 1000, (int) $row['on_minuts'] );
 	$bsave_minuts[] = array(strtotime($row['month']) * 1000, (int) $row['save_minuts'] );
 }
-
 ;?>
 <div class="flot-chart">
    <div class="flot-chart-content" id="month_usage"></div>
