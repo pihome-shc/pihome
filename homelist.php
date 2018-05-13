@@ -51,7 +51,7 @@ $result = $conn->query($query);
 $away = mysqli_fetch_array($result);
 $away_active = $away['status'];
 
-$query = "SELECT * FROM zone ORDER BY index_id asc";
+$query = "SELECT * FROM zone where zone.purge = '0' ORDER BY index_id asc; ";
 $results = $conn->query($query);
 while ($row = mysqli_fetch_assoc($results)) {
 	$max_room_c=$row['max_c'];
@@ -60,7 +60,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$zone_enable=$row['status'];
 
 	//query to get node id from nodes table
-	$query = "SELECT * FROM nodes WHERE id = {$row['sensor_id']} LIMIT 1 ";
+	$query = "SELECT * FROM nodes WHERE id = {$row['sensor_id']} AND nodes.`purge` = '0' LIMIT 1;";
 	$result = $conn->query($query);
 	$sensor = mysqli_fetch_array($result);
 	$sensor_id = $sensor['node_id'];

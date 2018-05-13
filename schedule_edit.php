@@ -34,14 +34,14 @@ if (isset($_POST['submit'])) {
 	$start_time = $_POST['start_time'];
 	$end_time = $_POST['end_time'];
 	
-	$query = "UPDATE schedule_daily_time SET status = '{$sc_en}', start = '{$start_time}', end = '{$end_time}' WHERE id = '{$time_id}' LIMIT 1";
+	$query = "UPDATE schedule_daily_time SET sync = '0',  status = '{$sc_en}', start = '{$start_time}', end = '{$end_time}' WHERE id = '{$time_id}' LIMIT 1";
 	$result = $conn->query($query);
 	$schedule_daily_time_id = mysqli_insert_id($conn);
 	if ($result) {
 		$message_success = "Schedule Modified Successfully!!!";
 		header("Refresh: 3; url=schedule.php");
 	} else {
-		$error = "<p>{$LANG['username_create_failed']}</p><p>" . mysqli_error() . "</p>";
+		$error = "<p>{$LANG['username_create_failed']}</p><p>".mysqli_error()."</p>";
 	}
 
 	foreach($_POST['id'] as $id){
@@ -49,7 +49,7 @@ if (isset($_POST['submit'])) {
 		$status = isset($_POST['status'][$id]) ? $_POST['status'][$id] : "0";
 		$status = $_POST['status'][$id];
 		$temp = $_POST['temp'][$id];
-		$query = "UPDATE schedule_daily_time_zone SET status = '{$status}', temperature = '{$temp}' WHERE id = '{$id}' LIMIT 1";
+		$query = "UPDATE schedule_daily_time_zone SET sync = '0', status = '{$status}', temperature = '{$temp}' WHERE id = '{$id}' LIMIT 1";
 		$zoneresults = $conn->query($query);
 	}
 }

@@ -27,7 +27,7 @@ if (isset($_POST['submit'])) {
 	$sc_en = isset($_POST['sc_en']) ? $_POST['sc_en'] : "0";
 	$start_time = $_POST['start_time'];
 	$end_time = $_POST['end_time'];
-	$query = "INSERT INTO schedule_daily_time( status, start, end) VALUES ('{$sc_en}', '{$start_time}','{$end_time}')"; 
+	$query = "INSERT INTO schedule_daily_time(sync, status, start, end) VALUES ('0', '{$sc_en}', '{$start_time}','{$end_time}')"; 
 	$result = $conn->query($query);
 	$schedule_daily_time_id = mysqli_insert_id($conn);
 	
@@ -42,7 +42,7 @@ if (isset($_POST['submit'])) {
 		$status = isset($_POST['status'][$id]) ? $_POST['status'][$id] : "0";
 		$status = $_POST['status'][$id];
 		$temp = $_POST['temp'][$id];
-		$query = "INSERT INTO schedule_daily_time_zone(status, schedule_daily_time_id, zone_id, temperature) VALUES ('{$status}', '{$schedule_daily_time_id}','{$id}','{$temp}')"; 
+		$query = "INSERT INTO schedule_daily_time_zone(sync, status, schedule_daily_time_id, zone_id, temperature) VALUES ('0', '{$status}', '{$schedule_daily_time_id}','{$id}','{$temp}')"; 
 		$zoneresults = $conn->query($query);
 	}
 }

@@ -80,13 +80,18 @@ if($what=="schedule"){
 		$row = mysqli_fetch_assoc($results);
 		$da= $row['status'];
 		if($da=="1"){ $set="0"; }else{ $set="1"; }
-		$query  = "UPDATE schedule_daily_time SET status='".$set."' WHERE id = '".$wid."'";
+		$query  = "UPDATE schedule_daily_time SET sync = '0', status='".$set."' WHERE id = '".$wid."'";
 		$conn->query($query);
 	}elseif ($opp=="delete") {
-		$query = "DELETE FROM schedule_daily_time_zone WHERE schedule_daily_time_id ='".$wid."'";
+		$query  = "UPDATE schedule_daily_time_zone SET schedule_daily_time_zone.purge = '1', schedule_daily_time_zone.sync = '0' WHERE schedule_daily_time_id = '".$wid."';";
 		$conn->query($query);
-		$query = "DELETE FROM schedule_daily_time WHERE id ='".$wid."'";
+		$query  = "UPDATE schedule_daily_time SET schedule_daily_time.purge = '1', schedule_daily_time.sync = '0' WHERE id = '".$wid."';";
 		$conn->query($query);
+		
+		//$query = "DELETE FROM schedule_daily_time_zone WHERE schedule_daily_time_id ='".$wid."'";
+		//$conn->query($query);
+		//$query = "DELETE FROM schedule_daily_time WHERE id ='".$wid."'";
+		//$conn->query($query);
 	}
 }
 
@@ -98,7 +103,7 @@ if($what=="schedule_zone"){
 		$row = mysqli_fetch_assoc($results);
 		$da= $row['status'];
 		if($da=="1"){ $set="0"; }else{ $set="1"; }
-		$query  = "UPDATE schedule_daily_time_zone SET status='".$set."' WHERE id = '".$wid."'";
+		$query  = "UPDATE schedule_daily_time_zone SET sync = '0', status='".$set."' WHERE id = '".$wid."'";
 		$conn->query($query);
 	}
 }
@@ -112,7 +117,7 @@ if($what=="override"){
 		$row = mysqli_fetch_assoc($results);
 		$da= $row['status'];
 		if($da=="1"){ $set="0"; }else{ $set="1"; }
-		$query = "UPDATE override SET status = '{$set}', time = '{$time}' WHERE zone_id = '{$wid}' LIMIT 1";
+		$query = "UPDATE override SET status = '{$set}', sync = '0', time = '{$time}' WHERE zone_id = '{$wid}' LIMIT 1";
 		$conn->query($query);
 	}
 }
@@ -135,7 +140,7 @@ if($what=="boost"){
 		$row = mysqli_fetch_assoc($results);
 		$boost_status= $row['status'];
 		if($boost_status=="1"){ $set="0"; }else{ $set="1";}
-		$query = "UPDATE boost SET status = '{$set}', time = '{$time}' WHERE zone_id = '{$wid}' LIMIT 1";
+		$query = "UPDATE boost SET status = '{$set}', sync = '0', time = '{$time}' WHERE zone_id = '{$wid}' LIMIT 1";
 		$conn->query($query);
 		/* Following is commented out to test wireless communication to zone relay module.
 		$query = "UPDATE messages_out SET payload = '{$set}', datetime = '{$time}', sent = '0' WHERE zone_id = '{$wid}' AND node_id = {$row['boost_button_id']} AND child_id = {$row['boost_button_child_id']} LIMIT 1";
@@ -152,7 +157,7 @@ if($what=="away"){
 		$row = mysqli_fetch_assoc($results);
 		$da= $row['status'];
 		if($da=="1"){ $set="0"; }else{ $set="1"; }
-		$query = "UPDATE away SET status = '{$set}', start_datetime = '{$time}' LIMIT 1";
+		$query = "UPDATE away SET status = '{$set}', sync = '0', start_datetime = '{$time}' LIMIT 1";
 		$conn->query($query);
 		
 		$query = "UPDATE messages_out SET payload = '{$set}', datetime = '{$time}', sent = '0' WHERE zone_id = '0' AND node_id = {$row['away_button_id']} AND child_id = {$row['away_button_child_id']} LIMIT 1";
