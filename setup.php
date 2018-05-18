@@ -274,8 +274,8 @@ $message = '*/10 * * * * /usr/bin/php /var/www/cron/system_c.php >/dev/null 2>&1
 */2 * * * * sh /var/www/cron/reboot_wifi.sh >/dev/null 2>&1
 */2 * * * * php /var/www/cron/check_gw.php >/dev/null 2>&1
 */1 * * * * /usr/bin/php /var/www/cron/boiler.php >/dev/null 2>&1
+*/1 * * * * /usr/bin/php /var/www/cron/selfservice.php >/dev/null 2>&1
 # @reboot sh /var/www/cron/gw.sh >/dev/null 2>&1
-*/10 * * * * /usr/bin/php /var/www/cron/update_rates.php >/dev/null 2>&1
 ';
 
 //Save Existing CronJobs to File 

@@ -31,27 +31,49 @@ $frost_temp = $_GET['frost_temp']; #update frost temperature
 
 //Delete Zone and all related records
 if(($what=="zone") && ($opp=="delete")){
+
 	//Delete Boost Records
-	$query = "DELETE FROM boost WHERE zone_id = '".$wid."'";
+	$query = "UPDATE boost SET boost.purge='1' WHERE zone_id = '".$wid."'";
 	$conn->query($query);
+	//$query = "DELETE FROM boost WHERE zone_id = '".$wid."'";
+	//$conn->query($query);
+	
 	//Delete All Message Out records
+	//$query = "UPDATE messages_out SET messages_out.purge='1' WHERE zone_id = '".$wid."'";
+	//$conn->query($query);
 	$query = "DELETE FROM messages_out WHERE zone_id = '".$wid."'";
 	$conn->query($query);
+	
 	//Delete Override records
-	$query = "DELETE FROM override WHERE zone_id = '".$wid."'";
+	$query = "UPDATE override SET override.purge='1' WHERE zone_id = '".$wid."'";
 	$conn->query($query);
+	//$query = "DELETE FROM override WHERE zone_id = '".$wid."'";
+	//$conn->query($query);
+	
 	//Delete Daily Time records
-	$query = "DELETE FROM schedule_daily_time_zone WHERE zone_id = '".$wid."'";
+	$query = "UPDATE schedule_daily_time_zone SET schedule_daily_time_zone.purge='1' WHERE zone_id = '".$wid."'";
 	$conn->query($query);
+	//$query = "DELETE FROM schedule_daily_time_zone WHERE zone_id = '".$wid."'";
+	//$conn->query($query);
+	
 	//Delete Night Climat records
-	$query = "DELETE FROM schedule_night_climat_zone WHERE zone_id = '".$wid."'";
+	$query = "UPDATE schedule_night_climat_zone SET schedule_night_climat_zone.purge='1' WHERE zone_id = '".$wid."'";
 	$conn->query($query);
+	//$query = "DELETE FROM schedule_night_climat_zone WHERE zone_id = '".$wid."'";
+	//$conn->query($query);
+	
 	//Delete All Zone Logs records
-	$query = "DELETE FROM zone_logs WHERE zone_id = '".$wid."'";
+	$query = "UPDATE zone_logs SET zone_logs.purge='1' WHERE zone_id = '".$wid."'";
 	$conn->query($query);
+	
+	//$query = "DELETE FROM zone_logs WHERE zone_id = '".$wid."'";
+	//$conn->query($query);
+	
 	//Delete Zone record
-	$query = "DELETE FROM zone WHERE id = '".$wid."'";
+	$query = "UPDATE zone SET zone.purge='1', zone.sync='0' WHERE id = '".$wid."'";
 	$conn->query($query);
+	//$query = "DELETE FROM zone WHERE id = '".$wid."'";
+	//$conn->query($query); 
 }	
 
 if($what=="holidays"){
@@ -138,10 +160,9 @@ if($what=="boost"){
 		if($boost_status=="1"){ $set="0"; }else{ $set="1";}
 		$query = "UPDATE boost SET status = '{$set}', sync = '0', time = '{$time}' WHERE zone_id = '{$wid}' LIMIT 1";
 		$conn->query($query);
-		/* Following is commented out to test wireless communication to zone relay module.
-		$query = "UPDATE messages_out SET payload = '{$set}', datetime = '{$time}', sent = '0' WHERE zone_id = '{$wid}' AND node_id = {$row['boost_button_id']} AND child_id = {$row['boost_button_child_id']} LIMIT 1";
-		mysql_query($query, $connection);
-		*/
+		//this line update message out 
+		$query = "UPDATE messages_out SET payload = '{$set}', datetime = '{$time}', sent = '0', sync = '0' WHERE zone_id = '{$wid}' AND node_id = {$row['boost_button_id']} AND child_id = {$row['boost_button_child_id']} LIMIT 1";
+		$conn->query($query);
 	}
 }
 

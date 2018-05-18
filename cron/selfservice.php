@@ -300,15 +300,44 @@ if ($api_result == "OK"){
 			echo "\033[1;33m GPIO Pin:\033[0m              \033[1;32m".$gpio_pin."\033[0m \n";
 			//call out to PiHome with data 
 			$url=$api_url."mypihome.php?api=${pihome_api}&ip=${my_ip}&data=${data}&table=zone&id=${id}&purge=${purge}&status=${status}&index_id=${index_id}&name=${name}&type=${type}&max_c=${max_c}&max_operation_time=${max_operation_time}&hysteresis_time=${hysteresis_time}&sensor_id=${sensor_id}&sensor_child_id=${sensor_child_id}&controler_id=${controler_id}&controler_child_id=${controler_child_id}&boiler_id=${boiler_id}&gpio_pin=${gpio_pin}";
+			//echo $url."\n"; 
 			$result = url_get_contents($url);
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Result from PiHome: \033[1;32m".$result."\033[0m \n";
-			if ($result == 'Success'){
+			if ($result == 'Update'){
 				$query = "UPDATE zone SET sync = '1' WHERE id ='{$id}' LIMIT 1;";
 				$conn->query($query);
-				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone sync status updated in local database.\n";
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Sync Status Updated in Local Database.\n";
+			}elseif ($result == 'Purge'){
+				//Delete Boost Records
+				$query = "DELETE FROM boost WHERE zone_id = '{$id}' LIMIT 1;";
+				$conn->query($query);
+				//Delete All Message Out records
+				$query = "DELETE FROM messages_out WHERE zone_id = '{$id}' LIMIT 1;";
+				$conn->query($query);
+				//Delete Override records
+				$query = "DELETE FROM override WHERE zone_id = '{$id}' LIMIT 1;";
+				$conn->query($query);
+				//Delete Daily Time records
+				$query = "DELETE FROM schedule_daily_time_zone WHERE zone_id = '{$id}';";
+				$conn->query($query);
+				//Delete Night Climat records
+				$query = "DELETE FROM schedule_night_climat_zone WHERE zone_id = '{$id}';";
+				$conn->query($query);
+				//Delete All Zone Logs records
+				$query = "DELETE FROM zone_logs WHERE zone_id = '{$id}';";
+				$conn->query($query);
+				//Delete Zone record
+				$query = "DELETE FROM zone WHERE id = '{$id}' LIMIT 1;";
+				$conn->query($query);
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Record Purged in Local Database \n";
+			}elseif ($result == 'Success'){
+				$query = "UPDATE zone SET sync = '1' WHERE id ='{$id}' LIMIT 1;";
+				$conn->query($query);
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Sync Status Updated in Local Database.\n";
 			}elseif($result == 'Failed'){
 				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Result from PiHome: \033[31m".$result."\033[0m \n";
 			}
+				
 			echo $line;
 		}
 	} else {
