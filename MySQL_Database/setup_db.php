@@ -192,7 +192,7 @@ if (!$db_selected) {
 	select override.`status`, override.sync, override.zone_id, zone_idx.index_id, zone.name, override.time, override.temperature
 	from override
 	join zone on override.zone_id = zone.id
-	join zone zone_idx on override.zone_id = zone_idx.id;"
+	join zone zone_idx on override.zone_id = zone_idx.id;";
 	$result = $conn->query($query);
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m override_view \033[0m Created \n"; }
 	
