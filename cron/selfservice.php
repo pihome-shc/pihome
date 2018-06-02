@@ -60,7 +60,7 @@ if ($api_result == "OK"){
 			echo "\033[1;33m Data Comm:\033[0m            \033[1;32m".$data."\033[0m \n";
 			echo "\033[1;33m Table ID:\033[0m             \033[1;32m".$id."\033[0m \n";
 			echo "\033[1;33m Status:\033[0m               \033[1;32m".$status."\033[0m \n";
-			echo "\033[1;33m Date & Time:\033[0m          \033[1;32m".$start_datetime."\033[0m \n";
+			echo "\033[1;33m Date & Time:\033[0m          \033[1;32m".$row['start_datetime']."\033[0m \n";
 			//call out to PiHome with data 
 			$url=$api_url."mypihome.php?api=${pihome_api}&ip=${my_ip}&data=push&table=away&id=${id}&purge=${purge}&status=${status}&start_datetime=${start_datetime}";
 			$result = url_get_contents($url);
@@ -134,8 +134,8 @@ if ($api_result == "OK"){
 			echo "\033[1;33m Purge:\033[0m              \033[1;32m".$purge."\033[0m \n";
 			echo "\033[1;33m Node ID:\033[0m            \033[1;32m".$node_id."\033[0m \n";
 			echo "\033[1;33m Child ID:\033[0m           \033[1;32m".$child_id_1."\033[0m \n";
-			echo "\033[1;33m Name:\033[0m               \033[1;32m".$name."\033[0m \n";
-			echo "\033[1;33m Last Seen:\033[0m          \033[1;32m".$last_seen."\033[0m \n";
+			echo "\033[1;33m Name:\033[0m               \033[1;32m".$row['name']."\033[0m \n";
+			echo "\033[1;33m Last Seen:\033[0m          \033[1;32m".$row['last_seen']."\033[0m \n";
 			//call out to PiHome with data 
 			$url=$api_url."mypihome.php?api=${pihome_api}&ip=${my_ip}&data=${data}&table=nodes&id=${id}&purge=${purge}&node_id=${node_id}&child_id_1=${child_id_1}&name=${name}&last_seen=${last_seen}";
 			$result = url_get_contents($url);
@@ -182,12 +182,12 @@ if ($api_result == "OK"){
 			echo "\033[1;33m Purge:\033[0m               \033[1;32m".$purge."\033[0m \n";
 			echo "\033[1;33m Status:\033[0m              \033[1;32m".$status."\033[0m \n";
 			echo "\033[1;33m Fired Status:\033[0m        \033[1;32m".$fired_status."\033[0m \n";
-			echo "\033[1;33m Name:\033[0m                \033[1;32m".$name."\033[0m \n";
+			echo "\033[1;33m Name:\033[0m                \033[1;32m".$row['name']."\033[0m \n";
 			echo "\033[1;33m ID:\033[0m                  \033[1;32m".$node_id."\033[0m \n";
 			echo "\033[1;33m Node Child ID:\033[0m       \033[1;32m".$node_child_id."\033[0m \n";
 			echo "\033[1;33m Hysteresis Time:\033[0m     \033[1;32m".$hysteresis_time."\033[0m \n";
 			echo "\033[1;33m Max Operation Time:\033[0m  \033[1;32m".$max_operation_time."\033[0m \n";
-			echo "\033[1;33m Date & Time:\033[0m         \033[1;32m".$datetime."\033[0m \n";
+			echo "\033[1;33m Date & Time:\033[0m         \033[1;32m".$row['datetime']."\033[0m \n";
 			echo "\033[1;33m GPIO Pin:\033[0m            \033[1;32m".$gpio_pin."\033[0m \n";
 			//call out to PiHome with data 
 			$url=$api_url."mypihome.php?api=${pihome_api}&ip=${my_ip}&data=${data}&table=boiler&id=${id}&purge=${purge}&status=${status}&fired_status=${fired_status}&name=${name}&node_id=${node_id}&node_child_id=${node_child_id}&hysteresis_time=${hysteresis_time}&max_operation_time=${max_operation_time}&datetime=${datetime}&gpio_pin=${gpio_pin}";
@@ -207,7 +207,7 @@ if ($api_result == "OK"){
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - No Boiler Data to Sync with PiHome \n";
 	}
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Data Sync Finished. \n";
-	//zone sync end here 
+	//Boiler sync end here 
 
 /*****************************************************************************************************************************************************/
 	//start syncing boiler Logs table with PiHome. 
@@ -229,11 +229,11 @@ if ($api_result == "OK"){
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Table details to sync with PiHome: \n";
 			echo "\033[1;33m Data Comm:\033[0m           \033[1;32m".$data."\033[0m \n";
 			echo "\033[1;33m Table ID:\033[0m            \033[1;32m".$id."\033[0m \n";
-			echo "\033[1;33m Start DateTime:\033[0m      \033[1;32m".$start_datetime."\033[0m \n";
-			echo "\033[1;33m Start Cause:\033[0m         \033[1;32m".$start_cause."\033[0m \n";
-			echo "\033[1;33m Stop DateTime:\033[0m       \033[1;32m".$stop_datetime."\033[0m \n";
-			echo "\033[1;33m Stop Cause:\033[0m          \033[1;32m".$stop_cause."\033[0m \n";
-			echo "\033[1;33m Expected End Time:\033[0m   \033[1;32m".$expected_end_date_time."\033[0m \n";
+			echo "\033[1;33m Start DateTime:\033[0m      \033[1;32m".$row['start_datetime']."\033[0m \n";
+			echo "\033[1;33m Start Cause:\033[0m         \033[1;32m".$row['start_cause']."\033[0m \n";
+			echo "\033[1;33m Stop DateTime:\033[0m       \033[1;32m".$row['stop_datetime']."\033[0m \n";
+			echo "\033[1;33m Stop Cause:\033[0m          \033[1;32m".$row['stop_cause']."\033[0m \n";
+			echo "\033[1;33m Expected End Time:\033[0m   \033[1;32m".$row['expected_end_date_time']."\033[0m \n";
 			
 			//call out to PiHome with data 
 			$url=$api_url."mypihome.php?api=${pihome_api}&ip=${my_ip}&data=${data}&table=boiler_logs&id=${id}&purge=${purge}&start_datetime=${start_datetime}&start_cause=${start_cause}&stop_datetime=${stop_datetime}&stop_cause=${stop_cause}&expected_end_date_time=${expected_end_date_time}";
@@ -287,7 +287,7 @@ if ($api_result == "OK"){
 			echo "\033[1;33m Purge:\033[0m                 \033[1;32m".$purge."\033[0m \n";
 			echo "\033[1;33m Status:\033[0m                \033[1;32m".$status."\033[0m \n";
 			echo "\033[1;33m Index ID:\033[0m              \033[1;32m".$index_id."\033[0m \n";
-			echo "\033[1;33m Zone Name:\033[0m             \033[1;32m".$name."\033[0m \n";
+			echo "\033[1;33m Zone Name:\033[0m             \033[1;32m".$row['name']."\033[0m \n";
 			echo "\033[1;33m Zone Type:\033[0m             \033[1;32m".$type."\033[0m \n";
 			echo "\033[1;33m Zone Max C:\033[0m            \033[1;32m".$max_c."\033[0m \n";
 			echo "\033[1;33m Operation Time:\033[0m        \033[1;32m".$max_operation_time."\033[0m \n";
@@ -351,6 +351,15 @@ if ($api_result == "OK"){
 	//start syncing Zone Logs table with PiHome. 
 	$query = "SELECT * FROM zone_logs where sync = 0 order by id asc;";
 	$results = $conn->query($query);
+	$row = mysqli_fetch_array($results);
+	$boiler_log_id = $row['boiler_log_id'];
+	
+	//check if boiler log is synced
+	//$query = "SELECT * FROM boiler_logs where sync = 0 AND id = '{$boiler_log_id}' AND stop_datetime IS NOT NULL order by id asc;";
+	$query = "SELECT * FROM boiler_logs where sync = 1 AND id = '{$boiler_log_id}';";
+	$result = $conn->query($query);
+ 		
+	
 	if (mysqli_num_rows($results) != 0){
 		echo $line;
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Logs Data to Sync with PiHome: \033[32m". mysqli_num_rows($results)."\033[0m\n"; 
@@ -361,6 +370,7 @@ if ($api_result == "OK"){
 			$zone_id=$row['zone_id'];
 			$boiler_log_id=$row['boiler_log_id'];
 			$status=$row['status'];
+			
 			//echo row data to console 
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Table details to sync with PiHome: \n";
 			echo "\033[1;33m Data Comm:\033[0m           \033[1;32m".$data."\033[0m \n";
@@ -410,8 +420,8 @@ if ($api_result == "OK"){
 			echo "\033[1;33m Table ID:\033[0m             \033[1;32m".$id."\033[0m \n";
 			echo "\033[1;33m Purge:\033[0m                \033[1;32m".$purge."\033[0m \n";
 			echo "\033[1;33m Status:\033[0m               \033[1;32m".$status."\033[0m \n";
-			echo "\033[1;33m Start Time:\033[0m           \033[1;32m".$start."\033[0m \n";
-			echo "\033[1;33m End Time:\033[0m             \033[1;32m".$end."\033[0m \n";
+			echo "\033[1;33m Start Time:\033[0m           \033[1;32m".$row['start']."\033[0m \n";
+			echo "\033[1;33m End Time:\033[0m             \033[1;32m".$row['end']."\033[0m \n";
 			//call out to PiHome with data 
 			$url=$api_url."mypihome.php?api=${pihome_api}&ip=${my_ip}&data=${data}&table=schedule_daily_time&id=${id}&purge=${purge}&status=${status}&start=${start}&end=${end}";
 			$result = url_get_contents($url);
@@ -497,7 +507,7 @@ if ($api_result == "OK"){
 			echo "\033[1;33m Table ID:\033[0m             \033[1;32m".$id."\033[0m \n";
 			echo "\033[1;33m Purge:\033[0m                \033[1;32m".$purge."\033[0m \n";
 			echo "\033[1;33m Status:\033[0m               \033[1;32m".$status."\033[0m \n";
-			echo "\033[1;33m Schedule Time ID:\033[0m     \033[1;32m".$schedule_daily_time_id."\033[0m \n";
+			echo "\033[1;33m Schedule Time ID:\033[0m     \033[1;32m".$row['schedule_daily_time_id']."\033[0m \n";
 			echo "\033[1;33m Zone ID:\033[0m              \033[1;32m".$zone_id."\033[0m \n";
 			echo "\033[1;33m Temperature:\033[0m          \033[1;32m".$temperature."\033[0m \n";
 			//call out to PiHome with data 
@@ -572,7 +582,7 @@ if ($api_result == "OK"){
 			echo "\033[1;33m Purge:\033[0m                \033[1;32m".$purge."\033[0m \n";
 			echo "\033[1;33m Status:\033[0m               \033[1;32m".$status."\033[0m \n";
 			echo "\033[1;33m Zone ID:\033[0m              \033[1;32m".$zone_id."\033[0m \n";
-			echo "\033[1;33m Time:\033[0m                 \033[1;32m".$time."\033[0m \n";
+			echo "\033[1;33m Time:\033[0m                 \033[1;32m".$row['time']."\033[0m \n";
 			echo "\033[1;33m Temperature:\033[0m          \033[1;32m".$temperature."\033[0m \n";
 			//call out to PiHome with data 
 			$url=$api_url."mypihome.php?api=${pihome_api}&ip=${my_ip}&data=${data}&table=override&id=${id}&purge=${purge}&status=${status}&zone_id=${zone_id}&time=${time}&temperature=${temperature}";
@@ -656,7 +666,7 @@ if ($api_result == "OK"){
 			echo "\033[1;33m Purge:\033[0m               \033[1;32m".$purge."\033[0m \n";
 			echo "\033[1;33m Status:\033[0m              \033[1;32m".$status."\033[0m \n";
 			echo "\033[1;33m Zone ID:\033[0m             \033[1;32m".$zone_id."\033[0m \n";
-			echo "\033[1;33m Time:\033[0m                \033[1;32m".$time."\033[0m \n";
+			echo "\033[1;33m Time:\033[0m                \033[1;32m".$row['time']."\033[0m \n";
 			echo "\033[1;33m Temperature:\033[0m         \033[1;32m".$temperature."\033[0m \n";
 			//call out to PiHome with data 
 			$url=$api_url."mypihome.php?api=${pihome_api}&ip=${my_ip}&data=${data}&table=boost&id=${id}&purge=${purge}&status=${status}&zone_id=${zone_id}&time=${time}&temperature=${temperature}&time=${time}";
@@ -750,8 +760,8 @@ if ($api_result == "OK"){
 		echo "\033[1;33m Table ID:\033[0m             \033[1;32m".$id."\033[0m \n";
 		echo "\033[1;33m Purge:\033[0m                \033[1;32m".$purge."\033[0m \n";
 		echo "\033[1;33m Status:\033[0m               \033[1;32m".$status."\033[0m \n";
-		echo "\033[1;33m Start Time:\033[0m           \033[1;32m".$start_time."\033[0m \n";
-		echo "\033[1;33m End Time:\033[0m             \033[1;32m".$end_time."\033[0m \n";
+		echo "\033[1;33m Start Time:\033[0m           \033[1;32m".$row['start_time']."\033[0m \n";
+		echo "\033[1;33m End Time:\033[0m             \033[1;32m".$row['end_time']."\033[0m \n";
 		//call out to PiHome with data 
 		$url=$api_url."mypihome.php?api=${pihome_api}&ip=${my_ip}&data=${data}&table=schedule_night_climate_time&id=${id}&purge=${purge}&status=${status}&start_time=${start_time}&end_time=${end_time}";
 		$result = url_get_contents($url);
@@ -842,7 +852,7 @@ if ($api_result == "OK"){
 			echo "\033[1;33m Child ID:\033[0m            \033[1;32m".$child_id."\033[0m \n";
 			echo "\033[1;33m Sub Type:\033[0m            \033[1;32m".$sub_type."\033[0m \n";
 			echo "\033[1;33m PayLoad:\033[0m             \033[1;32m".$payload."\033[0m \n";
-			echo "\033[1;33m Date & Time:\033[0m         \033[1;32m".$datetime."\033[0m \n";
+			echo "\033[1;33m Date & Time:\033[0m         \033[1;32m".$row['datetime']."\033[0m \n";
 			//call out to PiHome with data 
 			$url=$api_url."mypihome.php?api=${pihome_api}&ip=${my_ip}&data=${data}&table=messages_in&id=${id}&purge=${purge}&node_id=${node_id}&child_id=${child_id}&sub_type=${sub_type}&payload=${payload}&datetime=${datetime}";
 			$result = url_get_contents($url);
@@ -885,15 +895,15 @@ if ($api_result == "OK"){
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Table details to sync with PiHome: \n";
 			echo "\033[1;33m Data Comm:\033[0m           \033[1;32m".$data."\033[0m \n";
 			echo "\033[1;33m Table ID:\033[0m            \033[1;32m".$id."\033[0m \n";
-			echo "\033[1;33m Location:\033[0m            \033[1;32m".$location."\033[0m \n";
+			echo "\033[1;33m Location:\033[0m            \033[1;32m".$row['location']."\033[0m \n";
 			echo "\033[1;33m Temperature:\033[0m         \033[1;32m".$c."\033[0m \n";
-			echo "\033[1;33m Wind Speed:\033[0m          \033[1;32m".$wind_speed."\033[0m \n";
-			echo "\033[1;33m Title:\033[0m               \033[1;32m".$title."\033[0m \n";
-			echo "\033[1;33m Description:\033[0m         \033[1;32m".$description."\033[0m \n";
+			echo "\033[1;33m Wind Speed:\033[0m          \033[1;32m".$row['wind_speed']."\033[0m \n";
+			echo "\033[1;33m Title:\033[0m               \033[1;32m".$row['title']."\033[0m \n";
+			echo "\033[1;33m Description:\033[0m         \033[1;32m".$row['description']."\033[0m \n";
 			echo "\033[1;33m Sunrise:\033[0m             \033[1;32m".$sunrise."\033[0m \n";
 			echo "\033[1;33m Sunset:\033[0m              \033[1;32m".$sunset."\033[0m \n";
 			echo "\033[1;33m img:\033[0m                 \033[1;32m".$img."\033[0m \n";
-			echo "\033[1;33m Date & Time:\033[0m         \033[1;32m".$last_update."\033[0m \n";
+			echo "\033[1;33m Date & Time:\033[0m         \033[1;32m".$row['last_update']."\033[0m \n";
 			//call out to PiHome with data 
 			$url=$api_url."mypihome.php?api=${pihome_api}&ip=${my_ip}&data=${data}&table=weather&id=${id}&location=${location}&c=${c}&wind_speed=${wind_speed}&title=${title}&description=${description}&sunrise=${sunrise}&sunset=${sunset}&img=${img}&last_update=${last_update}";
 			$result = url_get_contents($url);

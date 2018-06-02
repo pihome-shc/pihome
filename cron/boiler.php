@@ -141,10 +141,10 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$now=strtotime(date('Y-m-d H:i:s'));
 	if (($boost_time > $now) && ($boost_status=='1')){
 		$boost_active='1';
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boost is Active for This Zone \n";
-	}else {
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boost is Active for This Zone \n";
+	}elseif (($boost_time < $now) && ($boost_status=='1')){
 		$boost_active='0';
-		$query = "UPDATE boost SET status = '{$boost_active}' WHERE zone_id = {$row['id']} LIMIT 1";
+		$query = "UPDATE boost SET status = '{$boost_active}', sync = '0' WHERE zone_id = {$row['id']} LIMIT 1";
 		$conn->query($query);
 		/* 
 		Following is commented out if you dont have Boost Console Build. 
@@ -156,6 +156,8 @@ while ($row = mysqli_fetch_assoc($results)) {
 		$query = "UPDATE messages_out SET payload = '{$boost_active}', sent = '0' WHERE zone_id = {$row['id']} AND node_id = {$brow['boost_button_id']} AND child_id = {$brow['boost_button_child_id']} LIMIT 1";
 		mysql_query($query, $connection);
 		*/
+	}else {
+		$boost_active='0';
 	}
 	
 	//Following line to decide which temperature is target temperature 
