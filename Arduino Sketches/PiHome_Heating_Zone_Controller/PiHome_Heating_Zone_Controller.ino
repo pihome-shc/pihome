@@ -13,7 +13,6 @@
 // *****************************************************************
 
 
-
 // Enable debug prints to serial monitor
 #define MY_DEBUG
 
@@ -34,7 +33,7 @@
 // Enable repeater functionality for this node
 #define MY_REPEATER_FEATURE
 
-//PiHome Node ID If you are following PiHome project then leave this ID 101 otherwise you have to make changes in MySQL Database. 
+//PiHome Node ID
 #define MY_NODE_ID 101
 
 #include <MySensors.h>
@@ -43,6 +42,12 @@
 #define NUMBER_OF_RELAYS 4 // Total number of attached relays
 #define RELAY_ON 0  // GPIO value to write to turn on attached relay
 #define RELAY_OFF 1 // GPIO value to write to turn off attached relay
+
+//Following LED Blind didnt working need to modify C:\Program Files (x86)\Arduino\libraries\MySensors_2_1_1\MyConfig.h 
+#define MY_DEFAULT_ERR_LED_PIN 8
+#define MY_DEFAULT_TX_LED_PIN 6
+#define MY_DEFAULT_RX_LED_PIN 7
+#define MY_WITH_LEDS_BLINKING_INVERSE
 
 void before()
 {
