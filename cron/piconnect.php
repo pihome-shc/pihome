@@ -12,19 +12,19 @@ echo " \033[0m \n";
 echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
 echo "*************************************************************\n";
-echo "*   Self Service Script Version 0.1 Build Date 16/04/2018   *\n";
-echo "*   Update on 16/04/218                                     *\n";
+echo "*   PiConnect Script Version 0.1 Build Date 16/04/2018      *\n";
+echo "*   Update on 16/07/218                                     *\n";
 echo "*                                      Have Fun - PiHome.eu *\n";
 echo "*************************************************************\n";
 echo " \033[0m \n";
 
 require_once(__DIR__.'../../st_inc/connection.php');
 require_once(__DIR__.'../../st_inc/functions.php');
-echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiHome SelfService Script Started \n";
+echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiHome PiConnect Script Started \n";
 
 //api url to call 
-$api_url = "http://www.pihome.eu/selfservice/";
-$my_ip = file_get_contents('http://ddns.pihome.eu/myip.php');
+$api_url = "http://www.pihome.eu/piconnect/";
+$my_ip = file_get_contents('http://www.pihome.eu/piconnect/myip.php');
 
 //Set php script execution time in seconds
 ini_set('max_execution_time', 40); 
@@ -928,7 +928,7 @@ if ($api_result == "OK"){
 }
 
 echo "\n"; 
-echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - SelfService Script Ended \n"; 
+echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiConnect Script Ended \n"; 
 echo "\033[32m**************************************************************\033[0m  \n";
 
 if(isset($conn)) { $conn->close();}

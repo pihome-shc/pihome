@@ -488,7 +488,7 @@ CREATE TABLE IF NOT EXISTS `system` (
 -- Dumping data for table pihome.system: ~1 rows (approximately)
 /*!40000 ALTER TABLE `system` DISABLE KEYS */;
 REPLACE INTO `system` (`id`, `sync`, `purge`, `name`, `version`, `build`, `update_location`, `update_file`, `update_alias`, `country`, `city`, `openweather_api`, `pihome_api`, `backup_email`, `ping_home`, `pi_serial`, `timezone`) VALUES
-	(2, 0, 0, 'PiHome - Smart Heating Control', '1.0', '070418', 'http://www.pihome.eu/updates/', 'current-release-versions.php', 'pihome', 'IE', '', '', '', '', b'1', '1', 'Europe/Dublin');
+	(2, 0, 0, 'PiHome - Smart Heating Control', '1.1', '290718', 'http://www.pihome.eu/updates/', 'current-release-versions.php', 'pihome', 'IE', '', '', '', '', b'1', '1', 'Europe/Dublin');
 /*!40000 ALTER TABLE `system` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.user
