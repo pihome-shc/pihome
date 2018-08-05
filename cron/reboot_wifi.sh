@@ -3,10 +3,14 @@
 # Script Variables Settings
 clear
 wlan='wlan0'
-gateway='192.168.1.1'
+gateway='192.168.99.1'
 alias ifup='/sbin/ifup'
 alias ifdown='/sbin/ifdown'
 alias ifconfig='/sbin/ifconfig'
+
+# Where and what you want to call the Lockfile
+lockfile='/var/www/cron/reboot_wifi.pid'
+
 #=================================================================
 echo "  _____    _   _    _                            "
 echo " |  __ \  (_) | |  | |                           "
@@ -29,21 +33,55 @@ echo "                                                           Have Fun - PiHo
 date
 echo " - Auto Reconnect Wi-Fi Status for $wlan Script Started ";
 echo
-# Only send two pings, sending output to /dev/null as we don't want to fill logs on our sd card. 
-# If you want to force ping from your wlan0 you can connect next line and uncomment second line 
-ping -c2 ${gateway} > /dev/null # ping to gateway from Wi-Fi or from Ethernet
-# ping -I ${wlan} -c2 ${gateway} > /dev/null # only ping through Wi-Fi 
+echo "*************************************************************************"
+date
 
+echo 
+echo "Starting WiFi check for $wlan"
+echo 
+# Check to see if there is a lock file
+if [ -e $lockfile ]; then
+    # A lockfile exists... Lets check to see if it is still valid
+    pid=`cat $lockfile`
+    # if kill -0 &>1 > /dev/null $pid; then
+	if kill -0 &>1 $pid; then
+        # Still Valid... lets let it be...
+        echo "Process still running, Lockfile valid"
+        exit 1
+    else
+        # Old Lockfile, Remove it
+        echo "Old lockfile, Removing Lockfile"
+        rm $lockfile
+    fi
+fi
+# If we get here, set a lock file using our current PID#
+echo "Setting Lockfile"
+echo $$ > $lockfile
+
+# We can perform check
+echo "Performing Network check for $wlan"
+# Only send two pings, sending output to /dev/null
+
+ping -c2 ${gateway} #> /dev/null 
 # If the return code from ping ($?) is not 0 (meaning there was an error)
 if [ $? != 0 ]
 then
     # Restart the wireless interface
-    ifdown --force wlan0
-    ifup wlan0
+    ip link set wlan0 down 
+	ifdown --force wlan0
 	sleep 5
-	ifup wlan0
+    ifup wlan0
+	ip link set wlan0 up 
 fi
 ping -I ${wlan} -c2 ${gateway} > /dev/null
+
+# Check is complete, Remove Lock file and exit
+#echo "process is complete, removing lockfile"
+rm $lockfile
+echo "Reboot WiFi Script Ended"
 date
-echo 
-echo " - Auto Reconnect Wi-Fi Status for $wlan Script Ended ";
+exit 0
+
+##################################################################
+# End of Script
+##################################################################
