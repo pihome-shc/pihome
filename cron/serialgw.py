@@ -1,13 +1,16 @@
 #!/usr/bin/python
-class bcolors:
-	HEADER = '\033[95m'
-	OKBLUE = '\033[94m'
-	OKGREEN = '\033[92m'
-	YELLOW = '\033[93m'
-	FAIL = '\033[91m'
+class bc:
+	hed = '\033[95m'
+	dtm = '\033[0;36;40m'
 	ENDC = '\033[0m'
+	SUB = '\033[3;30;45m'
+	WARN = '\033[0;31;40m'
+	grn = '\033[0;32;40m'
+	wht = '\033[0;37;40m'
+	ylw = '\033[93m'
+	fail = '\033[91m'
 	
-print bcolors.HEADER + " "
+print bc.hed + " "
 print "  _____    _   _    _                            "
 print " |  __ \  (_) | |  | |                           "
 print " | |__) |  _  | |__| |   ___    _ __ ___     ___ "
@@ -24,12 +27,13 @@ print "*      Version 0.04 - Last Modified 11/05/2018         *"
 print "*                                 Have Fun - PiHome.eu *"
 print "********************************************************"
 print " "
-print " " + bcolors.ENDC
+print " " + bc.ENDC
 
-import MySQLdb as mdb
-import sys
-import serial
-import time
+import MySQLdb as mdb, sys, serial, time
+
+# ref: https://forum.mysensors.org/topic/7818/newline-of-debug-output/2
+# stty -F /dev/ttyUSB0 115200
+# cat /dev/ttyUSB0
 
 #PiHome Database Settings Variables 
 dbhost = 'localhost'
@@ -41,14 +45,15 @@ con = mdb.connect(dbhost, dbuser, dbpass, dbname)
 cur = con.cursor()
 cur.execute('SELECT * FROM gateway where status = 1 order by id asc limit 1')
 row = cur.fetchone();
-gatewaysp = row[5]
-gatewayspeed = row[6]
-print bc.grn + "MySensors Location   : ",gatewayip, bc.ENDC 
-print bc.grn + "MySensors Port : ",gatewayport, bc.ENDC
+
+gatewaysp=row[5]
+gatewayspeed=row[6]
+print bc.grn + "Gateway Serial Port: ",gatewaysp, bc.ENDC 
+print bc.grn + "Baud Rate:           ",gatewayspeed, bc.ENDC
 
 # ps. you can troubleshoot with "screen" 
-#screen /dev/ttyAMA0 115200
-# ser = serial.Serial('/dev/ttyAMA0', 115200, timeout=0)
+# screen /dev/ttyAMA0 115200
+# ser = serial.Serial('/dev/ttyMySensorsGateway', 115200, timeout=0)
 ser = serial.Serial(gatewaysp, gatewayspeed, timeout=0)
 in_str = ser.readline()
 print in_str
@@ -60,7 +65,7 @@ while 1:
 		count = cur.fetchone() # Grab all messages from database for Outgoing. 
 		count = count[0] # Parse first and the only one part of data table named "count" - there is number of records grabbed in SELECT above
 		if count > 0: #If greater then 0 then we have something to send out. 
-			print bcolors.OKGREEN + "Total Messages to Sent : ",count, bcolors.ENDC # Print how many Messages we have to send out.
+			print bc.grn + "Total Messages to Sent : ",count, bc.grn # Print how many Messages we have to send out.
 			cur.execute('SELECT * FROM `messages_out` where sent = 0') #grab all messages that where not send yet (sent ==0)
 			msg = cur.fetchone(); 	#Grab first record and build a message: if you change table fields order you need to change following lines as well. 
 			out_id = int(msg[0]) 	#Record ID - only DB info,
@@ -110,7 +115,7 @@ while 1:
 	# print "String as Received:      ",in_str," \n"
 	if not sys.getsizeof(in_str) <= 22 : # and in_str[:1] == '0': #here is the line where sensor IDs over 100 are processed
 
-		print bcolors.YELLOW + "Size of the String Received:      ", sys.getsizeof(in_str), bcolors.ENDC
+		print bc.ylw + "Size of the String Received:      ", sys.getsizeof(in_str), bc.ENDC
 		print "Date & Time:                 ",time.ctime()
 		print "Full String Received:        ",in_str 
 		statement = in_str.split(";")
@@ -128,9 +133,9 @@ while 1:
 		payload = statement[5]
 		print "Pay Load:                    ",payload
 		try:
-			con = mdb.connect(dbhost, dbuser, dbpass, dbname))#Database Connection Settings 
+			con = mdb.connect(dbhost, dbuser, dbpass, dbname)
 			cur = con.cursor()
-
+			
 			# ..::Step One::..
 			# First time MySensors Node Comes online: Add Node to The Nodes Table.
 			if (node_id != 0 and child_sensor_id == 255 and message_type == 0 and sub_type == 17):

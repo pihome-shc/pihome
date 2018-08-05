@@ -278,7 +278,7 @@ while ($datarw=mysqli_fetch_array($result)) {
 echo "<option>$boiler_id</option>";} ?>
 </select>				
 <div class="help-block with-errors"></div></div>
-<input type="submit" name="submit" value="Submit" class="btn btn-default btn-sm">
+
 <a href="home.php"><button type="button" class="btn btn-primary btn-sm">Cancel</button></a>
 </form>
                         </div>
