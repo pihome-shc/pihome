@@ -317,7 +317,7 @@ $end_time = '00:00:00';
 if (TimeIsBetweenTwoTimes($current_time, $start_time, $end_time)) {
 	echo "---------------------------------------------------------------------------------------- \n";
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Calling Home \n";
-	$external_ip = file_get_contents('http://ddns.pihome.eu/myip.php');
+	$external_ip = file_get_contents('http://www.pihome.eu/piconnect/myip.php');
 	$pi_serial = exec ("cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2");
 	$cpu_model = exec ("cat /proc/cpuinfo | grep 'model name' | cut -d ' ' -f 3-");
 	$cpu_model = urlencode($cpu_model);
@@ -334,12 +334,26 @@ if (TimeIsBetweenTwoTimes($current_time, $start_time, $end_time)) {
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiHome Version: " .$ph_version."\n";
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiHome Build: " .$ph_build."\n";
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Raspberry Pi UID: " .$uid."\n";
-	$url="http://ddns.pihome.eu/home.php?ip=${external_ip}&serial=${uid}&cpu_model=${cpu_model}&hardware=${hardware}&revision=${revision}&ph_version=${ph_version}&ph_build=${ph_build}";
-	echo $url."\n";
+	$url="http://www.pihome.eu/piconnect/callhome.php?ip=${external_ip}&serial=${uid}&cpu_model=${cpu_model}&hardware=${hardware}&revision=${revision}&ph_version=${ph_version}&ph_build=${ph_build}";
+	//echo $url."\n";
 	$result = url_get_contents($url);
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiHome Says: ".$result."\n";
 	echo "---------------------------------------------------------------------------------------- \n";
+	
+
+	//Updating PiConnect API Key to System Table
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiConnect Saving API Key to System Settings \n";
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiConnect API: \033[1;33m".$uid."\033[0m \n";
+	$query = "UPDATE system SET pihome_api = '{$uid}' LIMIT 1";
+	$result = $conn->query($query);
+	if ($result) {
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiConnect API Key Updated Successfully. \n";
+	}else {
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiConnect API Key Update Failed.".mysqli_error($conn)." \n";
+	}
+
 }
+
 
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Fired Status: ".$new_boiler_status."\n";	
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Hysteresis Status: ".$hysteresis."\n";
