@@ -68,9 +68,9 @@ if [ $? != 0 ]
 then
     # Restart the wireless interface
     ip link set wlan0 down 
-	ifdown --force wlan0
+	#ifdown --force wlan0
 	sleep 5
-    ifup wlan0
+    #ifup wlan0
 	ip link set wlan0 up 
 fi
 ping -I ${wlan} -c2 ${gateway} > /dev/null

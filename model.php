@@ -18,6 +18,34 @@
 * WHAT YOU ARE DOING                                                    *"
 *************************************************************************"
 */
+//PiConnect Settings
+echo '
+<div class="modal fade" id="piconnect" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                <h5 class="modal-title">PiConnect Settings</h5>
+            </div>
+            <div class="modal-body">
+<p class="text-muted"> Manage your PiHome Smart Heating from anywhere in the world without opening any ports or having to do any vpn to your home network. To Enable this feature visit <a class="green" target="_blank" href="http://www.pihome.eu/piconnect/"> http://www.pihome.eu/piconnect/</p>';
+$query = "SELECT * FROM system";
+$results = $conn->query($query);
+echo '	<div class=\"list-group\">';
+while ($row = mysqli_fetch_assoc($results)) {
+	echo " <a target=\"_blank\" href=\"http://www.pihome.eu/piconnect/\" class=\"list-group-item\">
+	<i class=\"fa fa-plug green\"></i> API: ".$row['pihome_api']."</a>";
+}
+echo '<br><br>
+<h5 class="strong red" >PiConnect - Simplify the Connected Smart Heating is in beta mode.</h5>';
+echo '</div></div>
+            <div class="modal-footer">
+				<button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">Close</button>
+             </div>
+        </div>
+    </div>
+</div>';
+
 
 //query to frost protection temperature 
 $query = "SELECT * FROM frost_protection LIMIT 1 ";

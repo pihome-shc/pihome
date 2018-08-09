@@ -52,8 +52,8 @@ mysgw = "192.168.99.3" 	#ip address of your MySensors gateway
 mysport = "5003" 		#UDP port number for MySensors gateway
 timeout = 3    			#Connection timout in Seconds
 
-tn = telnetlib.Telnet(gatewayip, gatewayport, timeout) # Connect mysensors gateway 
-# tn = telnetlib.Telnet(mysgw, mysport, timeout) # Connect mysensors gateway 
+tn = telnetlib.Telnet(gatewayip, gatewayport, timeout) # Connect mysensors gateway from MySQL Database
+#tn = telnetlib.Telnet(mysgw, mysport, timeout) # Connect mysensors gateway 
 while 1:
 	try:
 		con = mdb.connect(dbhost, dbuser, dbpass, dbname) # MySQL Database Connection Settings
