@@ -39,7 +39,7 @@
 unsigned long SLEEP_TIME = 56000; // Sleep time between reads (in milliseconds)
 
 // Battery related init
-int BATTERY_SENSE_PIN = A0;  // select the input pin for the battery sense point
+int BATTERY_SENSE_PIN = A3;  // select the input pin for the battery sense point
 float oldBatteryV = 0;
 MyMessage msgBatt(CHILD_ID_BATT, V_VOLTAGE);
 

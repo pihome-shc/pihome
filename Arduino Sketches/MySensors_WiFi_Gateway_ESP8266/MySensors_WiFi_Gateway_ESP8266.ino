@@ -91,7 +91,9 @@
 // Enables and select radio type (if attached)
 #define MY_RADIO_NRF24
 //#define MY_RADIO_RFM69
+//#define MY_RADIO_RFM95
 
+//NRF Radio Related Custom Configuration. 
 #define MY_RF24_PA_LEVEL RF24_PA_MAX
 //#define MY_DEBUG_VERBOSE_RF24
 // RF channel for the sensor net, 0-127
@@ -99,14 +101,13 @@
 //RF24_250KBPS for 250kbs, RF24_1MBPS for 1Mbps, or RF24_2MBPS for 2Mbps
 #define RF24_DATARATE 	   RF24_250KBPS
 
-
 #define MY_GATEWAY_ESP8266
 
 #define MY_ESP8266_SSID "my_wifi_id"
 #define MY_ESP8266_PASSWORD "my_wifi_password"
 
 // Enable UDP communication
-//#define MY_USE_UDP
+//#define MY_USE_UDP // If using UDP you need to set MY_CONTROLLER_IP_ADDRESS below
 
 // Set the hostname for the WiFi Client. This is the hostname
 // it will pass to the DHCP server if not static.
@@ -130,18 +131,18 @@
 //#define MY_CONTROLLER_IP_ADDRESS 192, 168, 178, 68
 
 // Enable inclusion mode
-#define MY_INCLUSION_MODE_FEATURE
+//#define MY_INCLUSION_MODE_FEATURE
 
 // Enable Inclusion mode button on gateway
 // #define MY_INCLUSION_BUTTON_FEATURE
 // Set inclusion mode duration (in seconds)
-#define MY_INCLUSION_MODE_DURATION 60
+//#define MY_INCLUSION_MODE_DURATION 60
 // Digital pin used for inclusion mode button
-#define MY_INCLUSION_MODE_BUTTON_PIN  3
+//#define MY_INCLUSION_MODE_BUTTON_PIN  3
 
 
 // Set blinking period
-// #define MY_DEFAULT_LED_BLINK_PERIOD 300
+#define MY_DEFAULT_LED_BLINK_PERIOD 300
 
 // Flash leds on rx/tx/err
 // Led pins used if blinking feature is enabled above

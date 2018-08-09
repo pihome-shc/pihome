@@ -13,7 +13,7 @@ echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
 echo "*******************************************************\n";
 echo "*   Boiler Script Version 0.5 Build Date 31/01/2018   *\n";
-echo "*   Update on 10/04/218                               *\n";
+echo "*   Update on 01/08/218                               *\n";
 echo "*                                Have Fun - PiHome.eu *\n";
 echo "*******************************************************\n";
 echo " \033[0m \n";
@@ -202,8 +202,8 @@ if ($zone_status=='0') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".
 /***************************************************************************************
 Zone Vole Wired to Raspberry Pi GPIO Section: Zone Vole Connected Raspberry Pi GPIO. 
 ****************************************************************************************/
-$relay_status = ($zone_status == '1') ? $relay_off : $relay_on;
-echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone:  GIOP Relay Status: \033[41m".$relay_status. "\033[0m (1=On, 0=Off) \n";
+$relay_status = ($zone_status == '1') ? $relay_on : $relay_off;
+echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone:  GIOP Relay Status: \033[41m".$relay_status. "\033[0m (0=On, 1=Off) \n";
 exec("/usr/local/bin/gpio write ".$zone_gpio_pin." ".$relay_status ); 
 exec("/usr/local/bin/gpio mode ".$zone_gpio_pin." out");
 
