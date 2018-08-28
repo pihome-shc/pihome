@@ -27,11 +27,21 @@ echo date('Y-m-d H:i:s'). " - Database Cleanup Script Started \n";
 $query = "DELETE FROM messages_in WHERE datetime < DATE_SUB(curdate(), INTERVAL 3 DAY);";
 $result = $conn->query($query);
 if (isset($result)) {
-	echo date('Y-m-d H:i:s'). " - Records Delete from Tables \n"; 
+	echo date('Y-m-d H:i:s'). " - Temperature Records Delete from Tables \n"; 
 }else {
-	echo date('Y-m-d H:i:s'). " - Records Delete from Tables Failed\n";
+	echo date('Y-m-d H:i:s'). " - Temperature Records Delete from Tables Failed\n";
 	echo mysql_error();
 }
+
+$query = "DELETE FROM gateway_logs WHERE pid_start_time < DATE_SUB(curdate(), INTERVAL 3 DAY);";
+$result = $conn->query($query);
+if (isset($result)) {
+	echo date('Y-m-d H:i:s'). " - Gateway Logs Records Delete from Tables \n"; 
+}else {
+	echo date('Y-m-d H:i:s'). " - Gateway Logs Records Delete from Tables Failed\n";
+	echo mysql_error();
+}
+
 echo date('Y-m-d H:i:s'). " - Database Cleanup Script Ended \n"; 
 echo "\033[32m**************************************************************\033[0m  \n";
 if(isset($conn)) { $conn->close();}

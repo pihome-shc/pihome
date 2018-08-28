@@ -340,11 +340,10 @@ if (TimeIsBetweenTwoTimes($current_time, $start_time, $end_time)) {
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiHome Says: ".$result."\n";
 	echo "---------------------------------------------------------------------------------------- \n";
 	
-
 	//Updating PiConnect API Key to System Table
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiConnect Saving API Key to System Settings \n";
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiConnect API: \033[1;33m".$uid."\033[0m \n";
-	$query = "UPDATE system SET pihome_api = '{$uid}' LIMIT 1";
+	$query = "UPDATE piconnect SET api_key = '{$uid}' LIMIT 1";
 	$result = $conn->query($query);
 	if ($result) {
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiConnect API Key Updated Successfully. \n";

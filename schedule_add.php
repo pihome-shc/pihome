@@ -35,7 +35,7 @@ if (isset($_POST['submit'])) {
 		$message_success = "Schedule Time Added Successfully!!!";
 		header("Refresh: 3; url=schedule.php");
 	} else {
-		$error = "<p>{$LANG['username_create_failed']}</p><p>" . mysqli_error() . "</p>";
+		$error = "<p>Schedule Addtion failed with error </p><p>" . mysqli_error() . "</p>";
 	}
 	foreach($_POST['id'] as $id){
 		$id = $_POST['id'][$id];
@@ -77,7 +77,7 @@ if (isset($_POST['submit'])) {
 				<input class="form-control input-sm" type="time" id="end_time" name="end_time" value="<?php if(isset($_POST['end_time'])) { echo $_POST['end_time']; } ?>" placeholder="End Time" required>
                 <div class="help-block with-errors"></div></div>				
 <?php 
-$query = "select * from zone";
+$query = "select * from zone where status = 1;";
 $results = $conn->query($query);	
 while ($row = mysqli_fetch_assoc($results)) {
 ?>

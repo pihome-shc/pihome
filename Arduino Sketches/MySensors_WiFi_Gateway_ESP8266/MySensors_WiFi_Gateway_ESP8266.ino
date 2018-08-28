@@ -146,9 +146,9 @@
 
 // Flash leds on rx/tx/err
 // Led pins used if blinking feature is enabled above
-#define MY_DEFAULT_ERR_LED_PIN 16  // Error led pin
+#define MY_DEFAULT_ERR_LED_PIN 5  // Error led pin
 #define MY_DEFAULT_RX_LED_PIN  16  // Receive led pin
-#define MY_DEFAULT_TX_LED_PIN  16  // the PCB, on board LED
+#define MY_DEFAULT_TX_LED_PIN  2  // the PCB, on board LED
 
 #if defined(MY_USE_UDP)
 #include <WiFiUdp.h>

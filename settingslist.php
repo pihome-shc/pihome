@@ -36,6 +36,13 @@ $frost_temp = $frosttemp['temperature'];
                         <!-- /.panel-heading -->
                         <div class="panel-body">
 						
+							<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-href="edit_piconnect.php" data-toggle="modal" data-target="#piconnect">
+							<h3 class="buttontop"><small>PiConnect</small></h3>
+							<h3 class="degre" ><i class="fa fa-plug green"></i></i></h3>
+							<h3 class="status"><small style="color:#fff;"><i class="fa"></i></small>
+							</h3></button>
+
+
 							<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-toggle="modal" data-target="#add_frost">
 							<h3 class="buttontop"><small>Frost</small></h3>
 							<i class="ion-ios-snowy larger blue"></i>

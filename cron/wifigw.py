@@ -42,15 +42,17 @@ con = mdb.connect(dbhost, dbuser, dbpass, dbname)
 cur = con.cursor()
 cur.execute('SELECT * FROM gateway where status = 1 order by id asc limit 1')
 row = cur.fetchone();
-gatewayip = row[5]
-gatewayport = row[6]
+gatewayip = row[5]     #ip address of your MySensors gateway
+gatewayport = row[6]   #UDP port number for MySensors gateway
+timeout = 3    		   #Connection timout in Seconds
+
 print bc.grn + "MySensors IP   : ",gatewayip, bc.ENDC 
 print bc.grn + "MySensors Port : ",gatewayport, bc.ENDC
 
 #MySensors Wifi/Ethernet Gateway Manuall override to specific ip Otherwise ip from MySQL Databased is used. 
 #mysgw = "192.168.99.3" 	#ip address of your MySensors gateway
 #mysport = "5003" 		#UDP port number for MySensors gateway
-#timeout = 3    			#Connection timout in Seconds
+
 
 tn = telnetlib.Telnet(gatewayip, gatewayport, timeout) # Connect mysensors gateway from MySQL Database
 #tn = telnetlib.Telnet(mysgw, mysport, timeout) # Connect mysensors gateway 
