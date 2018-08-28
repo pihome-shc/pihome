@@ -36,7 +36,12 @@ while ($row = mysqli_fetch_assoc($results)) {
 	echo " <a target=\"_blank\" href=\"http://www.pihome.eu/piconnect/\" class=\"list-group-item\">
 	<i class=\"fa fa-plug green\"></i> API: ".$row['pihome_api']."</a>";
 }
+<<<<<<< HEAD
+echo '<br><br>
+<h5 class="strong red" >PiConnect - Simplify the Connected Smart Heating is in beta mode.</h5>';
+=======
 
+>>>>>>> 9f827515309fc9c6a7fcf6893f8ad2bb73ebee07
 echo '</div></div>
             <div class="modal-footer">
 				<button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">Close</button>

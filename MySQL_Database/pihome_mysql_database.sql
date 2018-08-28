@@ -477,7 +477,7 @@ CREATE TABLE IF NOT EXISTS `system` (
   `country` char(2) CHARACTER SET latin1 DEFAULT NULL,
   `city` char(100) CHARACTER SET latin1 DEFAULT NULL,
   `openweather_api` char(100) CHARACTER SET latin1 DEFAULT NULL,
-  `pihome_api` char(100) COLLATE utf16_bin DEFAULT NULL,
+  `pihome_api` char(200) COLLATE utf16_bin DEFAULT NULL,
   `backup_email` char(100) COLLATE utf16_bin DEFAULT NULL,
   `ping_home` bit(1) DEFAULT b'1',
   `pi_serial` varchar(50) COLLATE utf16_bin DEFAULT '0',
