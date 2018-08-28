@@ -37,7 +37,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 							</button></a>
 <?php 
 //query to get frost protection temperature
-$query = "SELECT * FROM frost_protection ORDER BY id desc LIMIT 1 ";
+$query = "SELECT * FROM frost_protection ORDER BY id desc LIMIT 1; ";
 $result = $conn->query($query);
 $frost_q = mysqli_fetch_array($result);
 $frost_c = $frost_q['temperature'];

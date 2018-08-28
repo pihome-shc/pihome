@@ -211,6 +211,8 @@ if($what=="shutdown"){
 //Restart MySensors Gateway
 if($what=="resetgw"){
 	//shell_exec('kill -9 '.$wid.' '); 
+	//exec("kill -9 $wid");
+	exec('kill -9 '.$wid.' '); 
 	//exec('sh /var/www/cron/restart_gw.sh 'sudo python /var/www/cron/wifigw.py')
 	//shell_exec('sh /var/www/cron/restart_gw.sh '.$wid.'');
 	//exec('kill -9 '.$wid.' ');
