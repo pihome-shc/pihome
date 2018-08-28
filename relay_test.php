@@ -13,7 +13,7 @@ echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
 echo "***********************************************************\n";
 echo "* Zone/Boiler Relay Testing Script for PiHome Version 0.1 *\n";
-echo "* Build Date 27/02/2018 -  Update on 27/02/218            *\n";
+echo "* Build Date 27/02/2018 -  Update on 05/08/218            *\n";
 echo "*                                    Have Fun - PiHome.eu *\n";
 echo "***********************************************************\n";
 echo " \033[0m \n";
@@ -26,8 +26,8 @@ require_once(__DIR__.'/st_inc/functions.php');
 ini_set('max_execution_time', 40); 
 
 //GPIO Value for SainSmart Relay Board to turn on  or off 
-$relay_on = '1'; //GPIO value to write to turn on attached relay
-$relay_off = '0'; // GPIO value to write to turn off attached relay
+$relay_on = '0'; //GPIO value to write to turn on attached relay
+$relay_off = '1'; // GPIO value to write to turn off attached relay
 
 $query = "SELECT * FROM zone_view where status = 1 order by index_id asc;";
 $results = $conn->query($query);
