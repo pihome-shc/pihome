@@ -8,7 +8,7 @@
 //    S M A R T   H E A T I N G   C O N T R O L 
 // *****************************************************************
 // *    PiHome MySensors WiFi Gateway Based on ESP82666 Sketch     *
-// *            Version 0.1 Build Date 06/11/2017                  *
+// *            Version 0.2 Build Date 06/11/2017                  *
 // *                                          Have Fun - PiHome.eu *
 // *****************************************************************
 
@@ -96,8 +96,9 @@
 //NRF Radio Related Custom Configuration. 
 #define MY_RF24_PA_LEVEL RF24_PA_MAX
 //#define MY_DEBUG_VERBOSE_RF24
+
 // RF channel for the sensor net, 0-127
-#define RF24_CHANNEL     125
+#define MY_RF24_CHANNEL	74
 //RF24_250KBPS for 250kbs, RF24_1MBPS for 1Mbps, or RF24_2MBPS for 2Mbps
 #define RF24_DATARATE 	   RF24_250KBPS
 

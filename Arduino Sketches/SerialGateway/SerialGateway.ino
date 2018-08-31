@@ -1,3 +1,17 @@
+//  _____    _   _    _                             
+// |  __ \  (_) | |  | |                           
+// | |__) |  _  | |__| |   ___    _ __ ___     ___ 
+// |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \ 
+// | |      | | | |  | | | (_) | | | | | | | |  __/
+// |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___|
+//
+//    S M A R T   H E A T I N G   C O N T R O L 
+// *****************************************************************
+// *    PiHome MySensors Serial Gateway Based on Arudino Mini Pro  *
+// *            Version 0.2 Build Date 06/11/2017                  *
+// *                                          Have Fun - PiHome.eu *
+// *****************************************************************
+
 /**
 * The MySensors Arduino library handles the wireless radio link and protocol
 * between your home built sensors/actuators and HA controller of choice.
@@ -49,8 +63,9 @@
 // #define MY_RF24_PA_LEVEL RF24_PA_LOW
 #define MY_RF24_PA_LEVEL RF24_PA_MAX
 //#define MY_DEBUG_VERBOSE_RF24
+
 // RF channel for the sensor net, 0-127
-#define RF24_CHANNEL     125
+#define MY_RF24_CHANNEL	74
 //RF24_250KBPS for 250kbs, RF24_1MBPS for 1Mbps, or RF24_2MBPS for 2Mbps
 #define RF24_DATARATE 	   RF24_250KBPS
 

@@ -27,9 +27,10 @@
 //#define MY_DEBUG_VERBOSE_RF24
 
 // RF channel for the sensor net, 0-127
-#define RF24_CHANNEL     125
-//PiHome - Make Sure you change Node ID, for each temperature sensor. 
-#define MY_NODE_ID 25
+#define MY_RF24_CHANNEL	74
+
+//PiHome - Make Sure you change Node ID, for each temperature sensor. 21 for Ground Floor, 20 for First Floor, 30 for Domastic Hot Water.
+#define MY_NODE_ID 21
 
 //RF24_250KBPS for 250kbs, RF24_1MBPS for 1Mbps, or RF24_2MBPS for 2Mbps
 #define RF24_DATARATE 	   RF24_250KBPS
@@ -92,7 +93,7 @@ void setup(){
 
 void presentation() {
 	// Send the sketch version information to the gateway and Controller
-	sendSketchInfo("Temperature Sensor", "1.35");
+	sendSketchInfo("Temperature Sensor", "1.36");
 	// Fetch the number of attached temperature sensors  
 	numSensors = sensors.getDeviceCount();
 	//Blink LED as number of sensors attached

@@ -8,7 +8,7 @@
 //    S M A R T   H E A T I N G   C O N T R O L 
 // *****************************************************************
 // *           Heating Zone Controller Relay Sketch                *
-// *            Version 1.2 Build Date 06/11/2017                  *
+// *            Version 1.3 Build Date 06/11/2017                  *
 // *                                          Have Fun - PiHome.eu *
 // *****************************************************************
 
@@ -25,8 +25,9 @@
 //#define MY_RF24_PA_LEVEL RF24_PA_LOW
 #define MY_RF24_PA_LEVEL RF24_PA_MAX
 //#define MY_DEBUG_VERBOSE_RF24
-//RF channel for the sensor net, 0-127
-#define RF24_CHANNEL     125
+
+// RF channel for the sensor net, 0-127
+#define MY_RF24_CHANNEL	74
 //RF24_250KBPS for 250kbs, RF24_1MBPS for 1Mbps, or RF24_2MBPS for 2Mbps
 #define RF24_DATARATE 	   RF24_250KBPS
 
@@ -67,7 +68,7 @@ void setup()
 void presentation()
 {
 	// Send the sketch version information to the gateway and Controller
-	sendSketchInfo("Zone Controller Relay", "1.2");
+	sendSketchInfo("Zone Controller Relay", "1.3");
 
 	for (int sensor=1, pin=RELAY_1; sensor<=NUMBER_OF_RELAYS; sensor++, pin++) {
 		// Register all sensors to gw (they will be created as child devices)

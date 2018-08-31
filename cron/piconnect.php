@@ -209,6 +209,10 @@ if ($api_result == "OK"){
 			$child_id_1=$row['child_id_1'];
 			$name=rawurlencode($row['name']);
 			$last_seen=rawurlencode($row['last_seen']);
+			$status=$row['status'];
+			$ms_version=$row['ms_version'];
+			$sketch_version=$row['sketch_version'];
+			
 			//echo row data to console 
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Data to Sync with PiConnect: \n";
 			echo "\033[1;33m Data Comm:\033[0m          \033[1;32m".$data."\033[0m \n";
@@ -218,6 +222,11 @@ if ($api_result == "OK"){
 			echo "\033[1;33m Child ID:\033[0m           \033[1;32m".$child_id_1."\033[0m \n";
 			echo "\033[1;33m Name:\033[0m               \033[1;32m".$row['name']."\033[0m \n";
 			echo "\033[1;33m Last Seen:\033[0m          \033[1;32m".$row['last_seen']."\033[0m \n";
+			
+			echo "\033[1;33m Status:\033[0m             \033[1;32m".$row['status']."\033[0m \n";
+			echo "\033[1;33m MySensors version:\033[0m  \033[1;32m".$row['ms_version']."\033[0m \n";
+			echo "\033[1;33m Sketch version:\033[0m     \033[1;32m".$row['sketch_version']."\033[0m \n";
+			
 			//call out to PiConnect with data 
 			$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=nodes&id=${id}&purge=${purge}&node_id=${node_id}&child_id_1=${child_id_1}&name=${name}&last_seen=${last_seen}";
 			$result = url_get_contents($url);
