@@ -340,6 +340,7 @@ if (TimeIsBetweenTwoTimes($current_time, $start_time, $end_time)) {
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiHome Says: ".$result."\n";
 	echo "---------------------------------------------------------------------------------------- \n";
 	
+/*
 	//Updating PiConnect API Key to System Table
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiConnect Saving API Key to System Settings \n";
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiConnect API: \033[1;33m".$uid."\033[0m \n";
@@ -350,6 +351,8 @@ if (TimeIsBetweenTwoTimes($current_time, $start_time, $end_time)) {
 	}else {
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiConnect API Key Update Failed.".mysqli_error($conn)." \n";
 	}
+	
+*/
 
 }
 

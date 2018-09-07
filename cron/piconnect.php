@@ -103,10 +103,10 @@ if ($api_result == "OK"){
 			$jasonarray = json_decode($resulta, true);
 			foreach ($jasonarray as $key => $value) {
 				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Frost Protection Data from PiConnect: \n";
-				$id = $value["id"];
+				$id=$value["id"];
 				$purge=$value['purge'];
-				$datetime = $value["datetime"];
-				$temperature=$row['temperature'];
+				$datetime=$value["datetime"];
+				$temperature=$value['temperature'];
 				echo "\033[1;33m Data Comm:\033[0m            \033[1;32m".$data."\033[0m \n";
 				echo "\033[1;33m Table ID:\033[0m             \033[1;32m".$id."\033[0m \n";
 				echo "\033[1;33m Purge:\033[0m                \033[1;32m".$purge."\033[0m \n";
@@ -194,6 +194,156 @@ if ($api_result == "OK"){
 	}
 	//Away sync end here 
 /*****************************************************************************************************************************************************/	
+
+	//Start Syncing Gateway Table with PiConnect. 
+	$query = "SELECT * FROM gateway where sync = 0 order by id asc limit 1;";
+	$results = $conn->query($query);
+	if (mysqli_num_rows($results) != 0){
+		echo $line;
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Gateway Data to Sync with PiConnect: \033[32m". mysqli_num_rows($results)."\033[0m\n"; 
+		while ($row = mysqli_fetch_assoc($results)) {
+			$data='push';
+			$id=$row['id'];
+			$sync=$row['sync'];
+			$purge=$row['purge'];
+			$type=$row['type'];
+			$location=rawurlencode($row['location']);
+			$port=rawurlencode($row['port']);
+			$timout=$row['timout'];
+			$pid=$row['pid'];
+			$pid_running_since=rawurlencode($row['pid_running_since']);
+			$reboot=$row['reboot'];
+			$find_gw=$row['find_gw'];
+			$version=rawurlencode($row['version']);
+			
+			//echo row data to console 
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Data to sync with PiConnect: \n";
+			echo "\033[1;33m Data Comm:\033[0m            \033[1;32m".$data."\033[0m \n";
+			echo "\033[1;33m Table ID:\033[0m             \033[1;32m".$id."\033[0m \n";
+			echo "\033[1;33m Purge:\033[0m                \033[1;32m".$purge."\033[0m \n";
+			echo "\033[1;33m Type:\033[0m                 \033[1;32m".$type."\033[0m \n";
+			echo "\033[1;33m Location:\033[0m             \033[1;32m".$row['location']."\033[0m \n";
+			echo "\033[1;33m Port:\033[0m                 \033[1;32m".$row['port']."\033[0m \n";
+			echo "\033[1;33m Timout:\033[0m               \033[1;32m".$timout."\033[0m \n";
+			echo "\033[1;33m PID:\033[0m                  \033[1;32m".$pid."\033[0m \n";
+			echo "\033[1;33m PID Running Since:\033[0m    \033[1;32m".$row['pid_running_since']."\033[0m \n";
+			echo "\033[1;33m Reboot:\033[0m               \033[1;32m".$reboot."\033[0m \n";
+			echo "\033[1;33m Search Gateway:\033[0m       \033[1;32m".$find_gw."\033[0m \n";
+			echo "\033[1;33m Version:\033[0m              \033[1;32m".$row['version']."\033[0m \n";
+
+			//call out to PiConnect with data 
+			$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=gateway&id=${id}&purge=${purge}&type=${type}&location=${location}&port=${port}&timout=${timout}&pid=${pid}&pid_running_since=${pid_running_since}&reboot=${reboot}&find_gw=${find_gw}&version=${version}";
+			$result = url_get_contents($url);
+			//echo $url."\n";
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Result from PiConnect: \033[1;32m".$result."\033[0m \n";
+			if ($result == 'Success'){
+				$query = "UPDATE gateway SET sync = '1' WHERE id ='{$id}' LIMIT 1;";
+				$conn->query($query);
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Gateway Status Updated in Local Database.\n";
+			}elseif($result == 'Failed'){
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Result from PiConnect: \033[31m".$result."\033[0m \n";
+			}
+			echo $line;
+		}
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Gateway Data to Push to PiConnect \n";
+	} else {
+		echo $line;
+		//Start Pulling Gateway Data from PiConnect.
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Checking Gateway Data to Pull from PiConnect \n";	
+		$data='pull';
+		$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=gateway&id=0";
+		//echo $url."\n";
+		$resulta = url_get_contents($url);
+		if ($resulta != 'no-data'){
+			// Convert JSON string to Array
+			$jasonarray = json_decode($resulta, true);
+			foreach ($jasonarray as $key => $value) {
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Gateway Data from PiConnect: \n";
+				$id=$value['id'];
+				$sync=$value['sync'];
+				$purge=$value['purge'];
+				$type=$value['type'];
+				$location=$value['location'];
+				$port=$value['port'];
+				$timout=$value['timeout'];
+				$pid=$value['pid'];
+				$pid_running_since=$value['pid_running_since'];
+				$reboot=$value['reboot'];
+				$find_gw=$value['find_gw'];
+				$version=$value['version'];
+				//echo row data to console 
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Data to sync with PiConnect: \n";
+				echo "\033[1;33m Table ID:\033[0m             \033[1;32m".$id."\033[0m \n";
+				echo "\033[1;33m Purge:\033[0m                \033[1;32m".$purge."\033[0m \n";
+				echo "\033[1;33m Type:\033[0m                 \033[1;32m".$type."\033[0m \n";
+				echo "\033[1;33m Location:\033[0m             \033[1;32m".$row['location']."\033[0m \n";
+				echo "\033[1;33m Port:\033[0m                 \033[1;32m".$row['port']."\033[0m \n";
+				echo "\033[1;33m Timout:\033[0m               \033[1;32m".$timout."\033[0m \n";
+				echo "\033[1;33m PID:\033[0m                  \033[1;32m".$pid."\033[0m \n";
+				echo "\033[1;33m PID Running Since:\033[0m    \033[1;32m".$row['pid_running_since']."\033[0m \n";
+				echo "\033[1;33m Reboot:\033[0m               \033[1;32m".$reboot."\033[0m \n";
+				echo "\033[1;33m Search Gateway:\033[0m       \033[1;32m".$find_gw."\033[0m \n";
+				echo "\033[1;33m Version:\033[0m              \033[1;32m".$row['version']."\033[0m \n";
+				$query = "UPDATE gateway SET sync = '1', `purge` = '{$purge}', type = '{$type}', location = '{$location}', port = '{$port}', timout = '{$timout}', reboot = '{$reboot}', find_gw = '{$find_gw}' where id = '{$id}' ;";
+				$conn->query($query);
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Gateway Data Pull from PiConnect Finished. \n";
+				echo $line;
+			}
+		}else{
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Gateway Data From PiConnect: \033[1;32m".$resulta."\033[0m \n";
+		}
+	}
+	//Gateway Data Sync end here 
+	
+/*****************************************************************************************************************************************************/	
+	//Start Syncing Gateway Logs Table with PiConnect. 
+	$query = "SELECT * FROM gateway_logs where sync = 0 order by id asc;";
+	$results = $conn->query($query);
+	if (mysqli_num_rows($results) != 0){
+		echo $line;
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Gateway Log Data to Sync with PiConnect: \033[32m". mysqli_num_rows($results)."\033[0m\n"; 
+		while ($row = mysqli_fetch_assoc($results)) {
+			$data='push';
+			$id=$row['id'];
+			$sync=$row['sync'];
+			$purge=$row['purge'];
+			$type=$row['type'];
+			$location=rawurlencode($row['location']);
+			$port=rawurlencode($row['port']);
+			$pid=$row['pid'];
+			$pid_start_time=rawurlencode($row['pid_start_time']);
+			$pid_datetime=rawurlencode($row['pid_datetime']);
+
+			//echo row data to console 
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Data to sync with PiConnect: \n";
+			echo "\033[1;33m Data Comm:\033[0m            \033[1;32m".$data."\033[0m \n";
+			echo "\033[1;33m Table ID:\033[0m             \033[1;32m".$id."\033[0m \n";
+			echo "\033[1;33m Purge:\033[0m                \033[1;32m".$purge."\033[0m \n";
+			echo "\033[1;33m Type:\033[0m                 \033[1;32m".$type."\033[0m \n";
+			echo "\033[1;33m Location:\033[0m             \033[1;32m".$row['location']."\033[0m \n";
+			echo "\033[1;33m Port:\033[0m                 \033[1;32m".$row['port']."\033[0m \n";
+			echo "\033[1;33m PID:\033[0m                  \033[1;32m".$pid."\033[0m \n";
+			echo "\033[1;33m PID Running Since:\033[0m    \033[1;32m".$row['pid_datetime']."\033[0m \n";
+
+			//call out to PiConnect with data 
+			$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=gateway&id=${id}&purge=${purge}&type=${type}&location=${location}&port=${port}pid=${pid}&pid_datetime=${pid_datetime}";
+			$result = url_get_contents($url);
+			//echo $url."\n";
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Result from PiConnect: \033[1;32m".$result."\033[0m \n";
+			if ($result == 'Success'){
+				$query = "UPDATE gateway SET sync = '1' WHERE id ='{$id}' LIMIT 1;";
+				$conn->query($query);
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Gateway Log Status Updated in Local Database.\n";
+			}elseif($result == 'Failed'){
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Result from PiConnect: \033[31m".$result."\033[0m \n";
+			}
+			echo $line;
+		}
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Gateway Log Data to Push to PiConnect \n";
+	} 
+	//Gateway Logs Sync end here 
+	
+/*****************************************************************************************************************************************************/		
 
 	//start syncing nodes table with PiConnect. 
 	$query = "SELECT * FROM nodes where sync = 0 order by id asc;";

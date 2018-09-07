@@ -30,6 +30,16 @@ $row = mysqli_fetch_array($result);
 $gw_type = $row['type'];
 $gw_location = $row['location'];
 $gw_port = $row['port'];
+$gw_pid = $row['pid'];
+$gw_reboot = $row['reboot'];
+
+//if reboot set to 1 then kill gateway PID and set reboot status to 0
+if ($gw_reboot == '1') {
+	exec("kill -9 $gw_pid");
+	$query = "UPDATE gateway SET reboot = '0' LIMIT 1;";
+	$conn->query($query);
+	echo mysqli_error($conn)."\n";
+}
 
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Python Gateway Script Status Check Script Started \n"; 
 if ($gw_type == 'wifi'){
@@ -47,9 +57,10 @@ if ($gw_type == 'wifi'){
 		$pid_details = exec("ps -p '$out[0]' -o lstart=");
 		$query = "UPDATE gateway SET pid = '{$out[0]}', pid_running_since = '{$pid_details}' LIMIT 1";
 		$conn->query($query);
+		echo mysqli_error($conn)."\n";
 		$query = "INSERT INTO gateway_logs (type, location, port, pid, pid_start_time) VALUES ( '{$gw_type}', '{$gw_location}', '{$gw_port}', '{$out[0]}', '{$pid_details}' )";
 		$conn->query($query);
-		
+		echo mysqli_error($conn)."\n";
 	} else {
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Python Script for WiFi Gateway is \033[42mRunning\033[0m \n";
 		exec("ps aux | grep '$gw_script_txt' | grep -v grep | awk '{ print $2 }' | head -1", $out);
@@ -58,6 +69,7 @@ if ($gw_type == 'wifi'){
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Gateway Process Running Since: ".$pid_details."\n";
 		$query = "UPDATE gateway SET pid = '{$out[0]}', pid_running_since = '{$pid_details}' LIMIT 1";
 		$conn->query($query);
+		echo mysqli_error($conn)."\n";
 	}
 } elseif ($gw_type == 'serial'){
 	exec("ps ax | grep serialgw.py", $pids); 

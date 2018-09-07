@@ -23,7 +23,7 @@ print "********************************************************"
 print "* MySensors Wifi/Ethernet Gateway Communication Script *"
 print "* to communicate with MySensors Nodes, for more info   *"
 print "* please check MySensors API. Build Date: 18/09/2017   *"
-print "*      Version 0.04 - Last Modified 11/05/2018         *"
+print "*      Version 0.05 - Last Modified 11/05/2018         *"
 print "*                                 Have Fun - PiHome.eu *"
 print "********************************************************"
 print " " + bc.ENDC
@@ -231,6 +231,13 @@ while 1:
 			#else: 
 				#print bc.WARN+ "No Action Defined Incomming Node Message Ignored \n\n" +bc.ENDC
 			
+			# ..::Step Ten::..
+			# When Gateway Startup Completes
+			if (node_id == 0 and child_sensor_id == 255 and message_type == 0 and sub_type == 18):
+				print "10: PiHome MySensors Gateway Version :", payload, "\n\n"
+				cur.execute('UPDATE gateway SET version = %s', [payload])
+				con.commit()	
+
 		except mdb.Error, e:
 				print "Error %d: %s" % (e.args[0], e.args[1])
 				sys.exit(1)
