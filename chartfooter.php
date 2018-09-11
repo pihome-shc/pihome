@@ -100,7 +100,7 @@ echo "{ xaxis: { from: ".$boiler_stop.", to: ".$boiler_start." }, color: \"#ffe9
 var options_two = {
     xaxis: { mode: "time", timeformat: "%H:%M"},
     series: { lines: { show: true, lineWidth: 1, fill: false}, curvedLines: { apply: true,  active: true,  monotonicFit: true } },
-    grid: { hoverable: true, borderWidth: 1,  backgroundColor: { colors: ["#ffffff", "#fdf7f4"] }, borderColor: "#ff8839", markings: markings_chwater, },
+    grid: { hoverable: true, borderWidth: 1,  backgroundColor: { colors: ["#ffffff", "#fdf7f4"] }, borderColor: "#ff8839", markings: markings_chwater,},
     legend: { noColumns: 3, labelBoxBorderColor: "#ffff", position: "nw" }
 };
 $(document).ready(function () {

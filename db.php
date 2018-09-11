@@ -208,14 +208,17 @@ if($what=="shutdown"){
 	$info_message = "Server is Shutting down <small> Please Do not Refresh... </small>";
 }
 
+//Search for network gateway
+if($what=="find_gw"){
+	shell_exec("nohup python /var/www/cron/find_mygw/find_mygw.py");
+	$info_message = "Searching for PiHome Netwotk gateway on your local network <small> Please Do not Refresh... </small>";
+}
+
+
 //Restart MySensors Gateway
 if($what=="resetgw"){
-	//shell_exec('kill -9 '.$wid.' '); 
-	//exec("kill -9 $wid");
-	exec('kill -9 '.$wid.' '); 
-	//exec('sh /var/www/cron/restart_gw.sh 'sudo python /var/www/cron/wifigw.py')
-	//shell_exec('sh /var/www/cron/restart_gw.sh '.$wid.'');
-	//exec('kill -9 '.$wid.' ');
+	$query = "UPDATE gateway SET reboot = '1';";
+	$conn->query($query);
 }
 
 ?>

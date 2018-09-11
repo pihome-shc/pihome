@@ -20,7 +20,13 @@
 */
 
 ?>
-<?php //$start_time = microtime(TRUE);?>
+<?php //$start_time = microtime(TRUE);
+
+require_once(__DIR__.'/st_inc/session.php');
+confirm_logged_in();
+require_once(__DIR__.'/st_inc/connection.php');
+require_once(__DIR__.'/st_inc/functions.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,7 +39,7 @@
     <meta name="author" content="Waseem Javid">
 	<link rel="shortcut icon" href="images/favicon.ico" />
 	<link rel="apple-touch-icon" href="images/apple-touch-icon.png"/>
-    <title><?php  echo settings($conn, 'name') ;?></title>
+    <title><?php echo settings($conn, 'name') ;?></title>
 
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -103,6 +109,14 @@
                         <i class="fa fa-home fa-fw"></i>
                     </a>
                 </li>
+				<?php // Alert icon need some thinking: May be table with list of alerts and one cron job to check if any thing not communicating. 
+				/*<li class="dropdown">
+                    <a class="dropdown-toggle" href="#">
+                        <i class="fa fa-exclamation-triangle fa-fw"></i>  
+                    </a>
+                </li>
+				*/
+				?>
                 <li class="dropdown">
                     <a class="dropdown-toggle" href="schedule.php">
                         <i class="fa fa-clock-o fa-fw"></i>  
@@ -120,7 +134,6 @@
                     </a>
                 </li>
                 <li class="dropdown">
-				
                     <a class="dropdown-toggle" href="settings.php">
                         <i class="fa fa-cog fa-fw"></i>  
                     </a>

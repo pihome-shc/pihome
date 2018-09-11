@@ -29,19 +29,16 @@ echo '
             </div>
             <div class="modal-body">
 <p class="text-muted"> Manage your PiHome Smart Heating from anywhere in the world without opening any ports or having to do any vpn to your home network. To Enable this feature visit <a class="green" target="_blank" href="http://www.pihome.eu/piconnect/"> http://www.pihome.eu/piconnect/</p>';
-$query = "SELECT * FROM system";
+$query = "SELECT * FROM piconnect";
 $results = $conn->query($query);
 echo '	<div class=\"list-group\">';
 while ($row = mysqli_fetch_assoc($results)) {
 	echo " <a target=\"_blank\" href=\"http://www.pihome.eu/piconnect/\" class=\"list-group-item\">
-	<i class=\"fa fa-plug green\"></i> API: ".$row['pihome_api']."</a>";
+	<i class=\"fa fa-plug green\"></i> API: ".$row['api_key']."</a>";
 }
-<<<<<<< HEAD
 echo '<br><br>
 <h5 class="strong red" >PiConnect - Simplify the Connected Smart Heating is in beta mode.</h5>';
-=======
 
->>>>>>> 9f827515309fc9c6a7fcf6893f8ad2bb73ebee07
 echo '</div></div>
             <div class="modal-footer">
 				<button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">Close</button>
@@ -277,16 +274,29 @@ echo '
             <div class="modal-body">
 <p class="text-muted"> MySensors '.ucwords(gw_logs($conn, 'type')).' Gateway Status</p>';
 echo '	<div class=\"list-group\">';
-echo "<a href=\"#\" class=\"list-group-item\"><i class=\"fa fa-heartbeat red\"></i> Gateway PID <span class=\"pull-right text-muted small\"><em> ".gw_logs($conn, 'pid')."</em></span></a>
-<a href=\"#\" class=\"list-group-item\"><i class=\"fa fa-heartbeat red\"></i> Gateway Running Since: <span class=\"pull-right text-muted small\"><em>".gw_logs($conn, 'pid_start_time')."</em></span></a>"; 
+echo "
+<a href=\"#\" class=\"list-group-item\"><i class=\"fa fa-heartbeat red\"></i> Gateway Location: <span class=\"pull-right text-muted small\"><em> ".gw_logs($conn, 'location')."</em></span></a>
+<a href=\"#\" class=\"list-group-item\"><i class=\"fa fa-heartbeat red\"></i> Gateway PID <span class=\"pull-right text-muted small\"><em> ".gw_logs($conn, 'pid')."</em></span></a>
+<a href=\"#\" class=\"list-group-item\"><i class=\"fa fa-heartbeat red\"></i> Gateway Running Since: <span class=\"pull-right text-muted small\"><em>".gw_logs($conn, 'pid_start_time')."</em></span></a>";
+
+$query = "select * FROM gateway_logs WHERE pid_datetime >= NOW() - INTERVAL 5 MINUTE;";
+$result = $conn->query($query);
+if (mysqli_num_rows($result) != 0){
+	$gw_restarted = mysqli_num_rows($result);
+} else {
+	$gw_restarted = '0';
+}
+echo "<a href=\"#\" class=\"list-group-item\"><i class=\"fa fa-heartbeat red\"></i> Gateway Script Re-Started in Last 5 Minute: <span class=\"pull-right text-muted small\"><em>".$gw_restarted."</em></span></a>";
 echo '</div></div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
 				<a href="javascript:resetgw('.gw_logs($conn, 'pid').')" class="btn btn-default login btn-sm btn-edit">Reset GW</a>
+				<a href="javascript:find_gw()" class="btn btn-default login btn-sm btn-edit">Search GW</a>
             </div>
         </div>
     </div>
 </div>';
+
 
 //cronetab model	
 echo '

@@ -55,64 +55,59 @@ if ($api_result == "OK"){
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - You have valid API for PiHome \n";
 	
 	
-/*****************************************************************************************************************************************************/
+
+	
+	
+	
+/*****************************************************************************************************************************************************/	
+	//Start Syncing Gateway Logs Table with PiConnect. 
+	$query = "SELECT * FROM gateway_logs where sync = 0 order by id asc;";
+	$results = $conn->query($query);
+	if (mysqli_num_rows($results) != 0){
 		echo $line;
-		//Start Pull Request for Schedul Time From PiConnect.
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Checking New Schedul Time Data to Pull from PiConnect \n";	
-		$data='new';
-		$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=schedule_daily_time&id=0";
-		//echo $url."\n";
-		$resulta = url_get_contents($url);
-		if ($resulta != 'no-data'){
-			// Convert JSON string to Array
-			$jasonarray = json_decode($resulta, true);
-			//print_r($jasonarray);
-			foreach ($jasonarray as $key => $value) {
-				if (isset($value["purge"])){
-					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Start Pulling New Schedule Time Data From PiConnect \n";
-					$id = $value["id"];
-					$purge = $value["purge"];
-					$sync = $value["sync"];
-					$status = $value["status"];
-					$start = $value["start"];
-					$end = $value["end"];
-					echo "\033[1;33m Data Comm:\033[0m            \033[1;32m".$data."\033[0m \n";
-					echo "\033[1;33m Table ID:\033[0m             \033[1;32m".$id."\033[0m \n";
-					echo "\033[1;33m Purge:\033[0m                \033[1;32m".$purge."\033[0m \n";
-					echo "\033[1;33m Status:\033[0m               \033[1;32m".$status."\033[0m \n";
-					echo "\033[1;33m Start Time:\033[0m           \033[1;32m".$start."\033[0m \n";
-					echo "\033[1;33m End Time:\033[0m             \033[1;32m".$end."\033[0m \n";
-					if ($id == '0' && $purge == '0' && $sync == '0' ){
-						// Add schedule_daily_time record and set to sync 0
-						$query = "INSERT INTO schedule_daily_time (sync, `purge`, status, start, end) VALUES ('{$sync}', '{$purge}', '{$status}', '{$start}', '{$end}');";
-						$result = $conn->query($query);
-						$schedule_daily_time_id = mysqli_insert_id($conn);
-					}
-					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - New Shedule Daily Time from PiConnect added to Database. \n";
-					echo $line;
-				}elseif (isset($value["schedule_daily_time_id"])){
-					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Start New Schedule Zone Data From PiConnect \n";
-					$id = $value["id"];
-					$status = $value["status"];
-					$temperature = $value["temperature"];
-					$zone_id = $value["zone_id"];
-					echo "\033[1;33m Data Comm:\033[0m            \033[1;32m".$data."\033[0m \n";
-					echo "\033[1;33m Table ID:\033[0m             \033[1;32m".$id."\033[0m \n";
-					echo "\033[1;33m Schedule Time ID:\033[0m     \033[1;32m".$schedule_daily_time_id."\033[0m \n";
-					echo "\033[1;33m Temperature:\033[0m          \033[1;32m".$temperature."\033[0m \n";
-					echo "\033[1;33m Zone ID:\033[0m              \033[1;32m".$zone_id."\033[0m \n";
-					$query = "INSERT INTO schedule_daily_time_zone(sync, `purge`, status, schedule_daily_time_id, zone_id, temperature) VALUES ('0', '0', '{$status}', '{$schedule_daily_time_id}','{$zone_id}','{$temperature}')"; 
-					$results = $conn->query($query);
-					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - New Schedule Zone Data From PiConnect added to Database. \n";
-					echo $line;
-				}
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Gateway Log Data to Sync with PiConnect: \033[32m". mysqli_num_rows($results)."\033[0m\n"; 
+		while ($row = mysqli_fetch_assoc($results)) {
+			$data='push';
+			$id=$row['id'];
+			$sync=$row['sync'];
+			$purge=$row['purge'];
+			$type=$row['type'];
+			$location=rawurlencode($row['location']);
+			$port=rawurlencode($row['port']);
+			$pid=$row['pid'];
+			$pid_start_time=rawurlencode($row['pid_start_time']);
+			$pid_datetime=rawurlencode($row['pid_datetime']);
+
+			//echo row data to console 
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Data to sync with PiConnect: \n";
+			echo "\033[1;33m Data Comm:\033[0m            \033[1;32m".$data."\033[0m \n";
+			echo "\033[1;33m Table ID:\033[0m             \033[1;32m".$id."\033[0m \n";
+			echo "\033[1;33m Purge:\033[0m                \033[1;32m".$purge."\033[0m \n";
+			echo "\033[1;33m Type:\033[0m                 \033[1;32m".$type."\033[0m \n";
+			echo "\033[1;33m Location:\033[0m             \033[1;32m".$row['location']."\033[0m \n";
+			echo "\033[1;33m Port:\033[0m                 \033[1;32m".$row['port']."\033[0m \n";
+			echo "\033[1;33m PID:\033[0m                  \033[1;32m".$pid."\033[0m \n";
+			echo "\033[1;33m PID Running Since:\033[0m    \033[1;32m".$row['pid_datetime']."\033[0m \n";
+
+			//call out to PiConnect with data 
+			$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=gateway&id=${id}&purge=${purge}&type=${type}&location=${location}&port=${port}pid=${pid}&pid_datetime=${pid_datetime}";
+			$result = url_get_contents($url);
+			//echo $url."\n";
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Result from PiConnect: \033[1;32m".$result."\033[0m \n";
+			if ($result == 'Success'){
+				$query = "UPDATE gateway SET sync = '1' WHERE id ='{$id}' LIMIT 1;";
+				$conn->query($query);
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Gateway Log Status Updated in Local Database.\n";
+			}elseif($result == 'Failed'){
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Result from PiConnect: \033[31m".$result."\033[0m \n";
 			}
-		}else {
-			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Shedule Daily Time from PiConnect: \033[1;32m".$resulta."\033[0m \n";
+			echo $line;
 		}
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - New Schedule Time Data Sync Finished. \n";
-	//New Schedul Time sync end here 
-/*****************************************************************************************************************************************************/
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Gateway Log Data to Push to PiConnect \n";
+	} 
+	//Gateway Logs Sync end here 
+	
+/*****************************************************************************************************************************************************/		
 
 
 
