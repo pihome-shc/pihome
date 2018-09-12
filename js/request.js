@@ -109,6 +109,12 @@ function shutdown() {
     //window.location="settings.php?status=reboot";  
 }
 
+function find_gw() {  
+  	var quest = "?w=find_gw" + "&o=0" + "&frost_temp=0" + "&wid=0";
+	request('db.php', 'GET', quest, function(){ window.location="settings.php?find_gw"; });
+    //window.location="settings.php?status=reboot";  
+}
+
 function db_backup() {  
   	var quest = "?w=db_backup" + "&o=0" + "&frost_temp=0" + "&wid=0";
 	request('db.php', 'GET', quest, function(){ window.location="settings.php?db_backup"; });

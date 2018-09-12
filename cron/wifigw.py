@@ -185,7 +185,7 @@ while 1:
 				print "5: Adding Temperature Reading From Node ID:", node_id, " Child Sensor ID:", child_sensor_id, " PayLoad:", payload, "\n\n"
 				cur.execute('INSERT INTO messages_in(node_id, child_id, sub_type, payload) VALUES(%s,%s,%s,%s)', (node_id,child_sensor_id,sub_type,payload))
 				con.commit()
-				cur.execute('UPDATE `nodes` SET `last_seen`=now() WHERE node_id = %s', [node_id])
+				cur.execute('UPDATE `nodes` SET `last_seen`=now(), `sync`=0  WHERE node_id = %s', [node_id])
 				con.commit()
 
 			# ..::Step Six::..
@@ -204,7 +204,7 @@ while 1:
 			if (node_id != 0 and child_sensor_id == 255 and message_type == 3 and sub_type == 0):
 				print "7: Adding Battery Level & Voltage for Node ID:", node_id, "Battery Voltage:",b_volt,"Battery Level:",payload,"\n\n"
 				cur.execute('INSERT INTO nodes_battery(node_id, bat_voltage, bat_level) VALUES(%s,%s,%s)', (node_id, b_volt, payload))
-				cur.execute('UPDATE nodes SET last_seen=now() WHERE node_id = %s', [node_id])
+				cur.execute('UPDATE nodes SET last_seen=now(), `sync`=0 WHERE node_id = %s', [node_id])
 				con.commit()
 
 				# ..::Step Eight::..
@@ -215,7 +215,7 @@ while 1:
 				xboost = "UPDATE boost SET status=%s WHERE boost_button_id=%s AND boost_button_child_id = %s"
 				cur.execute(xboost, (payload, node_id,child_sensor_id,))
 				con.commit()
-				cur.execute('UPDATE `nodes` SET `last_seen`=now() WHERE node_id = %s', [node_id])
+				cur.execute('UPDATE `nodes` SET `last_seen`=now(), `sync`=0 WHERE node_id = %s', [node_id])
 				con.commit()
 
 				# ..::Step Nine::..
@@ -226,7 +226,7 @@ while 1:
 				xaway = "UPDATE away SET status=%s WHERE away_button_id=%s AND away_button_child_id = %s"
 				cur.execute(xaway, (payload, node_id,child_sensor_id,))
 				con.commit()
-				cur.execute('UPDATE `nodes` SET `last_seen`=now() WHERE node_id = %s', [node_id])
+				cur.execute('UPDATE `nodes` SET `last_seen`=now(), `sync`=0  WHERE node_id = %s', [node_id])
 				con.commit()
 			#else: 
 				#print bc.WARN+ "No Action Defined Incomming Node Message Ignored \n\n" +bc.ENDC
