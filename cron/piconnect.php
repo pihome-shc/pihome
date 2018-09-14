@@ -446,7 +446,7 @@ if ($status == "1"){
 				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Checking Gateway Data to Pull from PiConnect \n";	
 				$data='pull';
 				$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=gateway&id=0";
-				//echo $url."\n";
+				echo $url."\n";
 				$resulta = url_get_contents($url);
 				if ($resulta != 'no-data'){
 					// Convert JSON string to Array

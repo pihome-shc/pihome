@@ -72,11 +72,11 @@ def ping(ip):
 			row = int(row[0])
 			if (row == 0):
 				print bc.dtm + time.ctime() + bc.ENDC + ' - Adding Gateway Record to Database \n\n'
-				cur.execute('INSERT INTO `gateway` (location) VALUES(%s)', (ip))
+				cur.execute('INSERT INTO `gateway` (location, reboot) VALUES(%s, %s)', (ip, 1))
 				con.commit()
 			else:
 				print bc.dtm + time.ctime() + bc.ENDC + ' - Updating Gateway Record to Database \n\n'
-				cur.execute('UPDATE gateway SET location = %s where id = %s', (ip, 1))
+				cur.execute('UPDATE gateway SET sync = %s, location = %s, reboot = %s where id = %s', (0, ip, 1, 1))
 				con.commit()
 			print "-" * 65	
 			s.close()

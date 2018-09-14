@@ -33,8 +33,15 @@ $query = "SELECT * FROM piconnect";
 $results = $conn->query($query);
 echo '	<div class=\"list-group\">';
 while ($row = mysqli_fetch_assoc($results)) {
-	echo " <a target=\"_blank\" href=\"http://www.pihome.eu/piconnect/\" class=\"list-group-item\">
-	<i class=\"fa fa-plug green\"></i> API: ".$row['api_key']."</a>";
+	if ($row['status'] ==1){
+		echo " <a target=\"_blank\" href=\"http://www.pihome.eu/piconnect/\" class=\"list-group-item\">
+		<i class=\"fa fa-plug green\"></i> API: ".$row['api_key']."
+		<span class=\"pull-right \"><em>&nbsp;&nbsp;<i class=\"fa fa-thumbs-up\"></i> &nbsp;&nbsp;Active </em></span></a>";
+	}else {
+		echo " <a target=\"_blank\" href=\"http://www.pihome.eu/piconnect/\" class=\"list-group-item\">
+		<i class=\"fa fa-plug \"></i> API: ".$row['api_key']."
+		<span class=\"pull-right \"><em>&nbsp;&nbsp;<i class=\"fa fa-frown-o\"></i> &nbsp;&nbsp;Disabled </em></span></a>";
+	}
 }
 echo '<br><br>
 <h5 class="strong red" >PiConnect - Simplify the Connected Smart Heating is in beta mode.</h5>';
@@ -289,9 +296,10 @@ if (mysqli_num_rows($result) != 0){
 echo "<a href=\"#\" class=\"list-group-item\"><i class=\"fa fa-heartbeat red\"></i> Gateway Script Re-Started in Last 5 Minute: <span class=\"pull-right text-muted small\"><em>".$gw_restarted."</em></span></a>";
 echo '</div></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
+               
 				<a href="javascript:resetgw('.gw_logs($conn, 'pid').')" class="btn btn-default login btn-sm btn-edit">Reset GW</a>
 				<a href="javascript:find_gw()" class="btn btn-default login btn-sm btn-edit">Search GW</a>
+				<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
