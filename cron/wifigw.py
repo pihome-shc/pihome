@@ -23,7 +23,7 @@ print "********************************************************"
 print "* MySensors Wifi/Ethernet Gateway Communication Script *"
 print "* to communicate with MySensors Nodes, for more info   *"
 print "* please check MySensors API. Build Date: 18/09/2017   *"
-print "*      Version 0.05 - Last Modified 11/05/2018         *"
+print "*      Version 0.06 - Last Modified 16/09/2018         *"
 print "*                                 Have Fun - PiHome.eu *"
 print "********************************************************"
 print " " + bc.ENDC
