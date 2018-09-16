@@ -13,7 +13,6 @@
 
 
 -- Dumping database structure for pihome
-DROP DATABASE IF EXISTS `pihome`;
 CREATE DATABASE IF NOT EXISTS `pihome` /*!40100 DEFAULT CHARACTER SET utf16 COLLATE utf16_bin */;
 USE `pihome`;
 
@@ -21,8 +20,6 @@ USE `pihome`;
 DROP TABLE IF EXISTS `alerts`;
 CREATE TABLE IF NOT EXISTS `alerts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0',
   `datetime` datetime DEFAULT NULL,
   `message` varchar(200) COLLATE utf16_bin DEFAULT NULL,
   `status` tinyint(4) DEFAULT NULL,
