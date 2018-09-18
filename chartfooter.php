@@ -82,8 +82,10 @@ $(document).ready(function () {
 
 <script type="text/javascript">
 var hot_water = <?php echo json_encode($hot_water); ?>;
-var immersion_room = <?php echo json_encode($immersion_room); ?>;
-var dataset_c = [{label: "Hot Water ", data: hot_water, color: "#0077FF"}, {label: "Immersion Room ", data: immersion_room, color: "#DE000F"} ];
+//var immersion_room = <?php echo json_encode($immersion_room); ?>;
+//var dataset_c = [{label: "Hot Water ", data: hot_water, color: "#0077FF"}, {label: "Immersion Room ", data: immersion_room, color: "#DE000F"} ];
+var dataset_c = [{label: "Hot Water ", data: hot_water, color: "#0077FF"}];
+
 //background-color for boiler on time 
 var markings_chwater = [
 <?php
@@ -112,8 +114,9 @@ $(document).ready(function () {
 
 <script type="text/javascript">
 var system_c = <?php echo json_encode($system_c); ?>;
-var pi_box = <?php echo json_encode($pi_box); ?>;
-var dataset_hw = [{label: "CPU  ", data: system_c, color: "#DE000F"},{label: "Pi Box  ", data: pi_box, color: "#7D0096"} ];
+//var pi_box = <?php echo json_encode($pi_box); ?>;
+//var dataset_hw = [{label: "CPU  ", data: system_c, color: "#DE000F"},{label: "Pi Box  ", data: pi_box, color: "#7D0096"} ];
+var dataset_hw = [{label: "CPU  ", data: system_c, color: "#DE000F"}];
 
 //background-color for All boiler on time 
 var markings_boiler = [

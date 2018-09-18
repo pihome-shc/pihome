@@ -27,7 +27,7 @@ date_default_timezone_set(settings($conn, 'timezone'));
 
 //$sysversion="0.125";
 
-// This file is to include basic functions
+// this function is deprecated --- prepare mysql statement 
 function mysqli_prep($value) {
 	$magic_quotes_active = get_magic_quotes_gpc();
 	$new_enough_php = function_exists("mysqli_real_escape_string");

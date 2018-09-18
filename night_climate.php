@@ -25,11 +25,11 @@ require_once(__DIR__.'/st_inc/functions.php');
 
 if (isset($_POST['submit'])) {
 	$sc_en = isset($_POST['sc_en']) ? $_POST['sc_en'] : "0";
-	$start_time = mysqli_prep($_POST['start_time']);
-	$end_time = mysqli_prep($_POST['end_time']);
-	$query = "UPDATE schedule_night_climate_time SET status = '{$sc_en}', start_time = '{$start_time}', end_time = '{$end_time}'";
+	$start_time = $_POST['start_time'];
+	$end_time = $_POST['end_time'];
+	$query = "UPDATE schedule_night_climate_time SET sync = '0', status = '{$sc_en}', start_time = '{$start_time}', end_time = '{$end_time}' where id = 1;";
 	$timeresults = $conn->query($query);
-	if (isset($timeresults)) {$message_success = $LANG['record_add_success'];} else {$error = "<p>{$LANG['record_add_failed']}</p>"; $error .= "<p>" . mysqli_error() . "</p>";}
+	if ($timeresults) {$message_success = "Night Climate Time Changed Successfully!!!";} else {$error = "<p>Night Climate Changes Failed with error </p>"; $error .= "<p>".mysqli_error($conn). "</p>";}
 	
 	foreach($_POST['id'] as $id){
 		$id = $_POST['id'][$id];
@@ -37,13 +37,12 @@ if (isset($_POST['submit'])) {
 		//$status = $_POST['status'][$id];
 		$min = $_POST['min'][$id];
 		$max = $_POST['max'][$id];
-		$query = "UPDATE schedule_night_climat_zone SET status='$status', min_temperature='$min', max_temperature='$max' WHERE id='$id'";
+		$query = "UPDATE schedule_night_climat_zone SET sync = '0', status='$status', min_temperature='$min', max_temperature='$max' WHERE id='$id'";
 		$zoneresults = $conn->query($query);
 	}
 	$message_success = "Night Climate Schedule Modified Successfully!!!";
 	header("Refresh: 3; url=home.php");
-}
-?>
+} ?>
 <?php include("header.php");  ?>
 <?php include_once("notice.php"); ?>
  <div id="page-wrapper">
@@ -52,14 +51,14 @@ if (isset($_POST['submit'])) {
                 <div class="col-lg-12">
                    <div class="panel panel-primary">
                         <div class="panel-heading">
-                            <i class="fa fa-bed fa-1x"></i> Night Climate   
+                            <i class="fa fa-bed fa-1x"></i> Night Climate
 						<div class="pull-right"> <div class="btn-group"><?php echo date("H:i"); ?></div> </div>
                         </div>
                         <!-- /.panel-heading -->
  <div class="panel-body">
                 <form data-toggle="validator" role="form" method="post" action="<?php $_SERVER['PHP_SELF'];?>" id="form-join">
 <?php
-				$query = "SELECT * FROM schedule_night_climate_time WHERE id = 1";
+				$query = "SELECT * FROM schedule_night_climate_time WHERE id = 1;";
 				$results = $conn->query($query);	
 				$snct = mysqli_fetch_assoc($results);
 ?>
@@ -69,11 +68,11 @@ if (isset($_POST['submit'])) {
                 <div class="help-block with-errors"></div></div>
 
 				<div class="form-group" class="control-label"><label>Start Time</label>
-				<input class="form-control input-sm" type="time" id="start_time" name="start_time" value="<?php if(isset($_POST['start_time'])) { echo $_POST['start_time']; }else{echo $snct['start_time'];} ?>" placeholder="Start Time" required>
+				<input class="form-control input-sm" type="time" id="start_time" name="start_time" value="<?php if(isset($_POST['start_time'])) { echo $_POST['start_time']; }else{echo $snct['start_time'];} ?>" required>
                 <div class="help-block with-errors"></div></div>
 				
 				<div class="form-group" class="control-label"><label>End Time</label>
-				<input class="form-control input-sm" type="time" id="end_time" name="end_time" value="<?php if(isset($_POST['end_time'])) { echo $_POST['end_time']; }else{echo $snct['end_time'];} ?>" placeholder="End Time" required>
+				<input class="form-control input-sm" type="time" id="end_time" name="end_time" value="<?php if(isset($_POST['end_time'])) { echo $_POST['end_time']; }else{echo $snct['end_time'];} ?>" required>
                 <div class="help-block with-errors"></div></div>				
 <?php
 $zquery = "

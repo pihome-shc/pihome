@@ -70,6 +70,8 @@ while ($row = mysqli_fetch_assoc($result)) {
    $hot_water[] = array(strtotime($row['datetime']) * 1000, $row['payload']);
 }
 
+/*
+//No Temperature Sensors installed, if you have Temperature Sensors with ID 25 put it in Immersion Room and un-comment. 
 //hot water room
 $query="select * from messages_in_view_24h where node_id= 25";
 $result = $conn->query($query);
@@ -78,6 +80,7 @@ $immersion_room = array();
 while ($row = mysqli_fetch_assoc($result)) { 
    $immersion_room[] = array(strtotime($row['datetime']) * 1000, $row['payload']);
 }
+*/
 
 //cpu temperature
 $query="select * from messages_in_view_24h where node_id= 0";
@@ -88,7 +91,10 @@ while ($row = mysqli_fetch_assoc($result)) {
    $system_c[] = array(strtotime($row['datetime']) * 1000, $row['payload']);
 }
 
+/*
+
 //pi box temperature
+No Temperature Sensors Installed for Raspberry Pi only CPU Temperature is recorded. 
 $query="select * from messages_in_view_24h where node_id= 30";
 $result = $conn->query($query);
 //create array of pairs of x and y values
@@ -96,6 +102,8 @@ $pi_box = array();
 while ($row = mysqli_fetch_assoc($result)) { 
    $pi_box[] = array(strtotime($row['datetime']) * 1000, $row['payload']);
 }
+
+*/
 ;?>
 <div class="flot-chart">
 	<div class="flot-chart-content" id="placeholder"></div>
