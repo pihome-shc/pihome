@@ -38,17 +38,5 @@ echo settings($conn, 'name');
 
 //print_r($conn);
 
-if gateway script is reseting to many time in 
-Node not reporting for More then 10 minuts. 
-if system temperature is reached over 55c in last 5 minutes 
-
-If no connection to PiConnect is establishd in last 5 minutes 
-PiHome Version 
-
-
-
-
-
-
 
 ?>

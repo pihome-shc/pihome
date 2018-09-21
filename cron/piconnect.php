@@ -13,7 +13,7 @@ echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
 echo "*************************************************************\n";
 echo "*   PiConnect Script Version 0.1 Build Date 16/04/2018      *\n";
-echo "*   Update on 16/07/218                                     *\n";
+echo "*   Update on 16/09/2018                                    *\n";
 echo "*                                      Have Fun - PiHome.eu *\n";
 echo "*************************************************************\n";
 echo " \033[0m \n";
@@ -446,7 +446,7 @@ if ($status == "1"){
 				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Checking Gateway Data to Pull from PiConnect \n";	
 				$data='pull';
 				$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=gateway&id=0";
-				echo $url."\n";
+				//echo $url."\n";
 				$resulta = url_get_contents($url);
 				if ($resulta != 'no-data'){
 					// Convert JSON string to Array
@@ -1252,46 +1252,89 @@ if ($status == "1"){
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boost Data Sync Finished. \n";
 			//Boost sync end here 
 			/*****************************************************************************************************************************************************/
-			//start syncing Schedul Night Climate Time table with PiConnect. 
+			//start syncing Night Climate Time table with PiConnect. 
+			echo $line;
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Checking Night Climate Time Data to Push to PiConnect \n";
 			$query = "SELECT * FROM schedule_night_climate_time where sync = 0 order by id asc;";
 			$results = $conn->query($query);
 			if (mysqli_num_rows($results) != 0){
 				echo $line;
-				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Schedul Night Climate Time Data to sync with PiConnect: \033[32m". mysqli_num_rows($results)."\033[0m\n"; 
-			} else { 
-				echo $line;
-				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - No Schedul Night Climate Time Data to sync with PiConnect \n";
-			}
-			while ($row = mysqli_fetch_assoc($results)) {
-				$data='push';
-				$id=$row['id'];
-				$purge=$row['purge'];
-				$status=$row['status'];
-				$start_time=rawurlencode($row['start_time']);
-				$end_time=rawurlencode($row['end_time']);
-				//echo row data to console 
-				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Data to Sync with PiConnect: \n";
-				echo "\033[1;33m Data Comm:\033[0m            \033[1;32m".$data."\033[0m \n";
-				echo "\033[1;33m Table ID:\033[0m             \033[1;32m".$id."\033[0m \n";
-				echo "\033[1;33m Purge:\033[0m                \033[1;32m".$purge."\033[0m \n";
-				echo "\033[1;33m Status:\033[0m               \033[1;32m".$status."\033[0m \n";
-				echo "\033[1;33m Start Time:\033[0m           \033[1;32m".$row['start_time']."\033[0m \n";
-				echo "\033[1;33m End Time:\033[0m             \033[1;32m".$row['end_time']."\033[0m \n";
-				//call out to PiConnect with data 
-				$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=schedule_night_climate_time&id=${id}&purge=${purge}&status=${status}&start_time=${start_time}&end_time=${end_time}";
-				$result = url_get_contents($url);
-				//echo $url."\n";
-				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Result from PiConnect: \033[1;32m".$result."\033[0m \n";
-				if ($result == 'Success'){
-					$query = "UPDATE schedule_night_climate_time SET sync = '1' WHERE id ='{$id}' LIMIT 1;";
-					$conn->query($query);
-					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Schedul Night Climate Time sync status updated in local database.\n";
-				}elseif($result == 'Failed'){
-					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Result from PiConnect: \033[31m".$result."\033[0m \n";
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Night Climate Time Data to sync with PiConnect: \033[32m". mysqli_num_rows($results)."\033[0m\n"; 
+				while ($row = mysqli_fetch_assoc($results)) {
+					$data='push';
+					$id=$row['id'];
+					$purge=$row['purge'];
+					$status=$row['status'];
+					$start_time=rawurlencode($row['start_time']);
+					$end_time=rawurlencode($row['end_time']);
+					//echo row data to console 
+					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Data to Sync with PiConnect: \n";
+					echo "\033[1;33m Data Comm:\033[0m            \033[1;32m".$data."\033[0m \n";
+					echo "\033[1;33m Table ID:\033[0m             \033[1;32m".$id."\033[0m \n";
+					echo "\033[1;33m Purge:\033[0m                \033[1;32m".$purge."\033[0m \n";
+					echo "\033[1;33m Status:\033[0m               \033[1;32m".$status."\033[0m \n";
+					echo "\033[1;33m Start Time:\033[0m           \033[1;32m".$row['start_time']."\033[0m \n";
+					echo "\033[1;33m End Time:\033[0m             \033[1;32m".$row['end_time']."\033[0m \n";
+					//call out to PiConnect with data 
+					$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=schedule_night_climate_time&id=${id}&purge=${purge}&status=${status}&start_time=${start_time}&end_time=${end_time}";
+					$result = url_get_contents($url);
+					//echo $url."\n";
+					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Result from PiConnect: \033[1;32m".$result."\033[0m \n";
+					if ($result == 'Success'){
+						$query = "UPDATE schedule_night_climate_time SET sync = '1' WHERE id ='{$id}' LIMIT 1;";
+						$conn->query($query);
+						echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Night Climate Time sync status updated in local database.\n";
+					}elseif($result == 'Failed'){
+						echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Result from PiConnect: \033[31m".$result."\033[0m \n";
+					}
+					echo $line;
 				}
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Night Climate Time data Push Finished. \n";
+			} else {
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - No Night Climate Time Data to Push to PiConnect \n";
 				echo $line;
+				//Start Pulling Night Climate Time Data from PiConnect.
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Checking Night Climate Time Data to Pull from PiConnect \n";
+				$data='pull';
+				$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=schedule_night_climate_time&id=0";
+				//echo $url."\n";
+				$resulta = url_get_contents($url);
+				if ($resulta != 'no-data'){
+					// Convert JSON string to Array
+					$jasonarray = json_decode($resulta, true);
+					foreach ($jasonarray as $key => $value) {
+						echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Night Climate Time Data from PiConnect: \n";
+						$id=$value["id"];
+						$purge=$value['purge'];
+						$status=$value["status"];
+						$start_time=$value['start_time'];
+						$end_time=$value['end_time'];
+						echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Data to Sync with PiConnect: \n";
+						echo "\033[1;33m Data Comm:\033[0m            \033[1;32m".$data."\033[0m \n";
+						echo "\033[1;33m Table ID:\033[0m             \033[1;32m".$id."\033[0m \n";
+						echo "\033[1;33m Purge:\033[0m                \033[1;32m".$purge."\033[0m \n";
+						echo "\033[1;33m Status:\033[0m               \033[1;32m".$status."\033[0m \n";
+						echo "\033[1;33m Start Time:\033[0m           \033[1;32m".$start_time."\033[0m \n";
+						echo "\033[1;33m End Time:\033[0m             \033[1;32m".$end_time."\033[0m \n";
+						//search for any exiting record with same rt_id and api_id
+						$query = "SELECT * FROM schedule_night_climate_time where id = '{$id}';";
+						$result = $conn->query($query);
+						if (mysqli_num_rows($result) == 1){
+							$query = "UPDATE schedule_night_climate_time SET sync = '1', status = '{$status}', start_time = '{$start_time}', end_time = '{$end_time}' where id = '{$id}';";
+							$results = $conn->query($query);
+							echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Night Climate Time Data Updated in Local Database \n";
+						}else {
+							//Inset into schedule_daily_time table 
+							$query = "INSERT INTO schedule_night_climate_time (sync, status, start_time, end_time) VALUES ('1', '{$status}', '{$start_time}', '{$end_time}') where id = '{$id}';";
+							$results = $conn->query($query);
+							echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Night Climate Time Data Pull from PiConnect Finished. \n";
+							echo $line;
+						}
+					}
+				}else{
+					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Night Climate Schedule Time Data to Pull From PiConnect: \033[1;32m".$resulta."\033[0m \n";
+				}
 			}
-			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Schedul Night Climate Time data sync finished. \n";
 			//Schedul Night Climate Time sync end here 
 			/*****************************************************************************************************************************************************/
 			//start syncing Schedul Night Climate Zone table with PiConnect. 
@@ -1300,42 +1343,72 @@ if ($status == "1"){
 			if (mysqli_num_rows($results) != 0){
 				echo $line;
 				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Schedul Night Climate Zone Data to sync with PiConnect: \033[32m". mysqli_num_rows($results)."\033[0m\n"; 
-			} else { 
-				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - No Schedul Night Climate Zone Data to sync with PiConnect \n";
-				echo $line;
-			}
-			while ($row = mysqli_fetch_assoc($results)) {
-				$data='push';
-				$id=$row['id'];
-				$purge=$row['purge'];
-				$status=$row['status'];
-				$zone_id=$row['zone_id'];
-				$schedule_night_climate_id=$row['schedule_night_climate_id'];
-				$min_temperature=$row['min_temperature'];
-				$max_temperature=$row['max_temperature'];
-				//echo row data to console 
-				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Data to Sync with PiConnect: \n";
-				echo "\033[1;33m Data Comm:\033[0m            \033[1;32m".$data."\033[0m \n";
-				echo "\033[1;33m Table ID:\033[0m             \033[1;32m".$id."\033[0m \n";
-				echo "\033[1;33m Purge:\033[0m                \033[1;32m".$purge."\033[0m \n";
-				echo "\033[1;33m Status:\033[0m               \033[1;32m".$status."\033[0m \n";
-				echo "\033[1;33m Zone ID:\033[0m              \033[1;32m".$zone_id."\033[0m \n";
-				echo "\033[1;33m Night Schedule ID:\033[0m    \033[1;32m".$schedule_night_climate_id."\033[0m \n";
-				echo "\033[1;33m Min Temperature:\033[0m      \033[1;32m".$min_temperature."\033[0m \n";
-				echo "\033[1;33m Max Temperature:\033[0m      \033[1;32m".$max_temperature."\033[0m \n";
-				//call out to PiConnect with data 
-				$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=schedule_night_climat_zone&id=${id}&purge=${purge}&status=${status}&zone_id=${zone_id}&schedule_night_climate_id=${schedule_night_climate_id}&min_temperature=${min_temperature}&max_temperature=${max_temperature}";
-				$result = url_get_contents($url);
-				//echo $url."\n";
-				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Result from PiConnect: \033[1;32m".$result."\033[0m \n";
-				if ($result == 'Success'){
-					$query = "UPDATE schedule_night_climat_zone SET sync = '1' WHERE id ='{$id}' LIMIT 1;";
-					$conn->query($query);
-					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Schedul Night Climate Zone sync status updated in local database.\n";
-				}elseif($result == 'Failed'){
-					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Result from PiConnect: \033[31m".$result."\033[0m \n";
+				while ($row = mysqli_fetch_assoc($results)) {
+					$data='push';
+					$id=$row['id'];
+					$purge=$row['purge'];
+					$status=$row['status'];
+					$zone_id=$row['zone_id'];
+					$schedule_night_climate_id=$row['schedule_night_climate_id'];
+					$min_temperature=$row['min_temperature'];
+					$max_temperature=$row['max_temperature'];
+					//echo row data to console 
+					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Data to Sync with PiConnect: \n";
+					echo "\033[1;33m Data Comm:\033[0m            \033[1;32m".$data."\033[0m \n";
+					echo "\033[1;33m Table ID:\033[0m             \033[1;32m".$id."\033[0m \n";
+					echo "\033[1;33m Purge:\033[0m                \033[1;32m".$purge."\033[0m \n";
+					echo "\033[1;33m Status:\033[0m               \033[1;32m".$status."\033[0m \n";
+					echo "\033[1;33m Zone ID:\033[0m              \033[1;32m".$zone_id."\033[0m \n";
+					echo "\033[1;33m Night Schedule ID:\033[0m    \033[1;32m".$schedule_night_climate_id."\033[0m \n";
+					echo "\033[1;33m Min Temperature:\033[0m      \033[1;32m".$min_temperature."\033[0m \n";
+					echo "\033[1;33m Max Temperature:\033[0m      \033[1;32m".$max_temperature."\033[0m \n";
+					//call out to PiConnect with data 
+					$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=schedule_night_climat_zone&id=${id}&purge=${purge}&status=${status}&zone_id=${zone_id}&schedule_night_climate_id=${schedule_night_climate_id}&min_temperature=${min_temperature}&max_temperature=${max_temperature}";
+					$result = url_get_contents($url);
+					//echo $url."\n";
+					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Result from PiConnect: \033[1;32m".$result."\033[0m \n";
+					if ($result == 'Success'){
+						$query = "UPDATE schedule_night_climat_zone SET sync = '1' WHERE id ='{$id}' LIMIT 1;";
+						$conn->query($query);
+						echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Schedul Night Climate Zone sync status updated in local database.\n";
+					}elseif($result == 'Failed'){
+						echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Result from PiConnect: \033[31m".$result."\033[0m \n";
+					}
+					echo $line;
 				}
+			} else {
 				echo $line;
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - No Schedul Night Climate Zone Data to sync with PiConnect \n";
+				$data='pull';
+				$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=schedule_night_climat_zone&id=0";
+				echo $url."\n";
+				$resulta = url_get_contents($url);
+				if ($resulta != 'no-data'){
+					// Convert JSON string to Array
+					$jasonarray = json_decode($resulta, true);
+					foreach ($jasonarray as $key => $value) {
+						$id = $value["id"];
+						$purge = $value["purge"];
+						$status = $value["status"];
+						$zone_id = $value["zone_id"];
+						$schedule_night_climate_id = $value["schedule_night_climate_id"];
+						$min_temperature = $value["min_temperature"];
+						$max_temperature = $value["max_temperature"];
+						echo "\033[1;33m Data Comm:\033[0m                 \033[1;32m".$data."\033[0m \n";
+						echo "\033[1;33m Table ID:\033[0m                  \033[1;32m".$id."\033[0m \n";
+						echo "\033[1;33m Status:\033[0m                    \033[1;32m".$status."\033[0m \n";
+						echo "\033[1;33m Zone ID:\033[0m                   \033[1;32m".$zone_id."\033[0m \n";
+						echo "\033[1;33m Schedule Night Climate ID:\033[0m \033[1;32m".$schedule_night_climate_id."\033[0m \n";
+						echo "\033[1;33m Minimum Temperature:\033[0m       \033[1;32m".$min_temperature."\033[0m \n";
+						echo "\033[1;33m Maximum Temperature:\033[0m       \033[1;32m".$max_temperature."\033[0m \n";
+						$query = "UPDATE schedule_night_climat_zone SET sync = '1',  status = '{$status}', schedule_night_climate_id = '{$schedule_night_climate_id}', zone_id = '{$zone_id}', min_temperature = '{$min_temperature}', max_temperature = '{$max_temperature}' WHERE id ='{$id}' LIMIT 1;";
+						$conn->query($query);
+						echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Schedul Night Climate Zone Data Updated in Local Database.\n";
+						echo $line;
+					}
+				}else {
+					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Schedul Night Climate Zone Data from PiConnect: \033[1;32m".$resulta."\033[0m \n";
+				}
 			}
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Schedul Night Climate Zone data sync finished. \n";
 			//Schedul Night Climate Zone sync end here 
