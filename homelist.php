@@ -206,7 +206,9 @@ while ($row = mysqli_fetch_assoc($results)) {
 	if (mysqli_num_rows($sresults) == 0){
 		echo '<div class=\"list-group\"><a href="#" class="list-group-item"><i class="fa fa-exclamation-triangle red"></i>&nbsp;&nbsp;No Schedule Found for '.$row['name'].'!!! </a>';
 	} else {
-		echo '<h4>'.mysqli_num_rows($sresults).' Schedule Records found.</h4><br>
+		echo '<h4>'.mysqli_num_rows($sresults).' Schedule Records found.</h4>
+		<p>You can Disable Schedule by clicking on temperature circle.</p>
+		<br>
 		<div class=\"list-group\">' ;
 		while ($srow = mysqli_fetch_assoc($sresults)) {
 			$shactive="orangesch_list";
