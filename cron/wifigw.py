@@ -114,7 +114,8 @@ while 1:
 	try:
 		in_str =  tn.read_until('\n', timeout=1) #Here is receiving part of the code
 	except EOFError as e:
-		print "Connection closed: %s" % e
+		print "Connection Lost to Smart Home Gateway with Error: %s" % e
+		sys.exit()
 	# ..:: Un-comments Following two lines to see what you are receing and size of string ::..
 	# print "Size of String:          ", sys.getsizeof(in_str)," \n"
 	# print "String as Received:      ",in_str," \n"
