@@ -69,7 +69,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	
 	//query to get temperature from table with sensor id 
 	//$query = "SELECT * FROM messages_in WHERE node_id = '{$sensor_id}' ORDER BY id desc LIMIT 1 ";
-	$query = "SELECT * FROM messages_in WHERE node_id = '{$sensor_id}' AND child_id = {$sensor_child_id} ORDER BY id desc LIMIT 1 ";
+	$query = "SELECT * FROM messages_in WHERE node_id = '{$sensor_id}' AND child_id = '{$sensor_child_id}' ORDER BY id desc LIMIT 1 ";
 	$result = $conn->query($query);
 	$roomtemp = mysqli_fetch_array($result);
 	$room_c = $roomtemp['payload'];	

@@ -83,7 +83,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	
 	//query to get temperature from messages_in table 
 	//$query = "SELECT * FROM messages_in_view_24h WHERE node_id = {$zone_sensor_id} ORDER BY datetime desc LIMIT 1;";
-	$query = "SELECT * FROM messages_in_view_24h WHERE node_id = {$zone_sensor_id} AND AND child_id = {$zone_sensor_child_id} ORDER BY datetime desc LIMIT 1;";
+	$query = "SELECT * FROM messages_in_view_24h WHERE node_id = {$zone_sensor_id} AND child_id = {$zone_sensor_child_id} ORDER BY datetime desc LIMIT 1;";
 	$result = $conn->query($query);
 	$sensor = mysqli_fetch_array($result);
 	$zone_c = $sensor['payload'];
