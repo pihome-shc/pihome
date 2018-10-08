@@ -12,8 +12,8 @@ echo " \033[0m \n";
 echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
 echo "*******************************************************\n";
-echo "*   Boiler Script Version 0.5 Build Date 31/01/2018   *\n";
-echo "*   Update on 01/08/218                               *\n";
+echo "*   Boiler Script Version 0.51 Build Date 31/01/2018  *\n";
+echo "*   Update on 08/10/218                               *\n";
 echo "*                                Have Fun - PiHome.eu *\n";
 echo "*******************************************************\n";
 echo " \033[0m \n";
@@ -82,7 +82,8 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$zone_gpio_pin=$row['gpio_pin'];
 	
 	//query to get temperature from messages_in table 
-	$query = "SELECT * FROM messages_in_view_24h WHERE node_id = {$zone_sensor_id} ORDER BY datetime desc LIMIT 1;";
+	//$query = "SELECT * FROM messages_in_view_24h WHERE node_id = {$zone_sensor_id} ORDER BY datetime desc LIMIT 1;";
+	$query = "SELECT * FROM messages_in_view_24h WHERE node_id = {$zone_sensor_id} AND AND child_id = {$zone_sensor_child_id} ORDER BY datetime desc LIMIT 1;";
 	$result = $conn->query($query);
 	$sensor = mysqli_fetch_array($result);
 	$zone_c = $sensor['payload'];
@@ -199,13 +200,15 @@ echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Controller:
 if ($zone_status=='1') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Start Cause: ".$start_cause." - Target C:\033[41m".$target_c."\033[0m Zone C:\033[31m".$zone_c."\033[0m \n";}
 if ($zone_status=='0') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Stop Cause: ".$stop_cause." - Target C:\033[41m".$target_c."\033[0m Zone C:\033[31m".$zone_c."\033[0m \n";}
 
-/***************************************************************************************
-Zone Vole Wired to Raspberry Pi GPIO Section: Zone Vole Connected Raspberry Pi GPIO. 
-****************************************************************************************/
-$relay_status = ($zone_status == '1') ? $relay_on : $relay_off;
-echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone:  GIOP Relay Status: \033[41m".$relay_status. "\033[0m (0=On, 1=Off) \n";
-exec("/usr/local/bin/gpio write ".$zone_gpio_pin." ".$relay_status ); 
-exec("/usr/local/bin/gpio mode ".$zone_gpio_pin." out");
+if (!empty($zone_gpio_pin)){
+	/***************************************************************************************
+	Zone Vole Wired to Raspberry Pi GPIO Section: Zone Vole Connected Raspberry Pi GPIO. 
+	****************************************************************************************/
+	$relay_status = ($zone_status == '1') ? $relay_on : $relay_off;
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone:  GIOP Relay Status: \033[41m".$relay_status. "\033[0m (0=On, 1=Off) \n";
+	exec("/usr/local/bin/gpio write ".$zone_gpio_pin." ".$relay_status ); 
+	exec("/usr/local/bin/gpio mode ".$zone_gpio_pin." out");
+}
 
 /***************************************************************************************
 Zone Vole Wireless Section: MySensors Wireless Relay module for your Zone vole control. 
