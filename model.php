@@ -109,7 +109,7 @@ echo '
                 <h5 class="modal-title">Boiler Settings</h5>
             </div>
             <div class="modal-body">
-<p class="text-muted"> Boiler safety settings i.e. <small><i class="ionicons ion-ios-timer blue"></i> Hysteresis (Minimim delay between power off and on), <i class="fa fa-clock-o fa-1x orange"></i> Maximum operating time. </small></p>';
+<p class="text-muted"> Boiler safety settings i.e. <small><i class="ionicons ion-ios-timer blue"></i> Hysteresis (Minimim delay between power off and on)</p>';
 $query = "SELECT * FROM boiler_view";
 $results = $conn->query($query);
 echo '	<div class=\"list-group\">';
@@ -117,7 +117,6 @@ while ($row = mysqli_fetch_assoc($results)) {
 	echo " <a href=\"#\" class=\"list-group-item\">
 	<i class=\"ionicons ion-flame fa-1x red\"></i> ".$row['name']." - Node: ".$row['node_id']." Child: ".$row['node_child_id']."
 	<span class=\"pull-right \"><em>&nbsp;&nbsp;<i class=\"ionicons ion-ios-timer blue\"></i> ".$row['hysteresis_time']. " </em></span>
-	<span class=\"pull-right \"><em>&nbsp;&nbsp;<i class=\"fa fa-clock-o fa-1x orange\"></i> ".$row['max_operation_time']. " </em></span>
 	</a>";
 }
 echo '</div></div>
