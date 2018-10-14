@@ -23,7 +23,7 @@ print "********************************************************"
 print "* MySensors Wifi/Ethernet Gateway Communication Script *"
 print "* to communicate with MySensors Nodes, for more info   *"
 print "* please check MySensors API. Build Date: 18/09/2017   *"
-print "*      Version 0.06 - Last Modified 16/09/2018         *"
+print "*      Version 0.07 - Last Modified 04/10/2018         *"
 print "*                                 Have Fun - PiHome.eu *"
 print "********************************************************"
 print " " + bc.ENDC
@@ -114,8 +114,19 @@ while 1:
 	try:
 		in_str =  tn.read_until('\n', timeout=1) #Here is receiving part of the code
 	except EOFError as e:
-		print "Connection Lost to Smart Home Gateway with Error: %s" % e
-		sys.exit()
+		try:
+			print "Connection Lost to Smart Home Gateway with Error: %s" % e
+			con = mdb.connect(dbhost, dbuser, dbpass, dbname)
+			cur = con.cursor()
+			#e = "Connection Lost to Smart Home Gateway" + e 
+			cur.execute("INSERT INTO notice(message) VALUES(%s)", (e))
+			con.commit()
+			con.close()
+			sys.exit()
+		except mdb.Error, e:
+			print "Error %d: %s" % (e.args[0], e.args[1])
+			sys.exit(1)
+			
 	# ..:: Un-comments Following two lines to see what you are receing and size of string ::..
 	# print "Size of String:          ", sys.getsizeof(in_str)," \n"
 	# print "String as Received:      ",in_str," \n"

@@ -12,8 +12,8 @@ echo " \033[0m \n";
 echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
 echo "*************************************************************\n";
-echo "*   PiConnect Script Version 0.1 Build Date 16/04/2018      *\n";
-echo "*   Update on 16/09/2018                                    *\n";
+echo "*   PiConnect Script Version 0.2 Build Date 16/04/2018      *\n";
+echo "*   Update on 21/09/2018                                    *\n";
 echo "*                                      Have Fun - PiHome.eu *\n";
 echo "*************************************************************\n";
 echo " \033[0m \n";
@@ -85,7 +85,7 @@ if ($status == "1"){
 					//call out to PiConnect with data 
 					$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=notice&id=${id}&purge=${purge}&datetime=${datetime}&message=${message}&status=${status}";
 					$result = url_get_contents($url);
-					echo $url."\n";
+					//echo $url."\n";
 					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Result from PiConnect: \033[1;32m".$result."\033[0m \n";
 					if ($result == 'Success'){
 						$query = "UPDATE notice SET sync = '1' WHERE id ='{$id}' LIMIT 1;";
@@ -1381,7 +1381,7 @@ if ($status == "1"){
 				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - No Schedul Night Climate Zone Data to sync with PiConnect \n";
 				$data='pull';
 				$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=schedule_night_climat_zone&id=0";
-				echo $url."\n";
+				//echo $url."\n";
 				$resulta = url_get_contents($url);
 				if ($resulta != 'no-data'){
 					// Convert JSON string to Array
