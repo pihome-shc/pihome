@@ -33,7 +33,7 @@ $zone3 = $row['device'];
 $zone4 = $row['device'];
 */
 
-
+/*
 function clean($string) {
    $string = str_replace(' ', '', $string); // Replaces all spaces with hyphens.
    $string = preg_replace('/[^A-Za-z0-9\-]/', '', $string); // Removes special chars.
@@ -70,7 +70,7 @@ while ($row = mysqli_fetch_assoc($resulta)) {
 	//echo "</pre>";
 }
 
-/*
+*/
 
 $query="select * from messages_in_view_24h where node_id= 21";
 $result = $conn->query($query);
@@ -87,7 +87,7 @@ $result = $conn->query($query);
 while ($row = mysqli_fetch_assoc($result)) { 
    $first_floor[] = array(strtotime($row['datetime']) * 1000, $row['payload']);
 }
-*/
+
 
 
 
