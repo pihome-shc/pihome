@@ -44,8 +44,8 @@ $sunset = $weather_row['sunset']* 1000 ;
 	<script type="text/javascript" src="js/plugins/flot/curvedLines.js"></script>
 
 <script type="text/javascript">
-var ground_floor = <?php echo json_encode($ground_floor); ?>;
-var first_floor = <?php echo json_encode($first_floor); ?>;
+var ground_floor = <?php echo json_encode($zone_name); ?>;
+var first_floor = <?php echo json_encode($zone_name); ?>;
 var weather_c = <?php echo json_encode($weather_c); ?>;
 
 var dataset = [

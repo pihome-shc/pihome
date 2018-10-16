@@ -43,6 +43,10 @@ if(isset($_GET["zone_deleted"])) {
 	$info_message = "Zone records removed successfully...</small>";
 }
 
+if(isset($_GET["zone_deleted"])) {
+	$info_message = "Searching for PiHome Netwotk gateway on your local network <small> Please Do not Refresh... </small>";
+}
+
 //backup process start
  if(isset($_GET['db_backup'])) {
 $info_message = "Data Base Backup Request Started, This process may take some time complete..." ;

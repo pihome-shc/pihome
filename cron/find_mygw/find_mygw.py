@@ -1,5 +1,4 @@
-#http://www.procurity.wordpress.com
-
+#!/usr/bin/env python
 import socket, re, time, MySQLdb as mdb
 from ping import *
 class bc:
@@ -72,11 +71,11 @@ def ping(ip):
 			row = int(row[0])
 			if (row == 0):
 				print bc.dtm + time.ctime() + bc.ENDC + ' - Adding Gateway Record to Database \n\n'
-				cur.execute('INSERT INTO `gateway` (location, reboot) VALUES(%s, %s)', (ip, 1))
+				cur.execute('INSERT INTO `gateway` (location, reboot, find_gw) VALUES(%s, %s, %s)', (ip, 1, 0))
 				con.commit()
 			else:
 				print bc.dtm + time.ctime() + bc.ENDC + ' - Updating Gateway Record to Database \n\n'
-				cur.execute('UPDATE gateway SET sync = %s, location = %s, reboot = %s where id = %s', (0, ip, 1, 1))
+				cur.execute('UPDATE gateway SET sync = %s, location = %s, reboot = %s, find_gw = %s where id = %s', (0, ip, 1, 0, 1))
 				con.commit()
 			print "-" * 65	
 			s.close()

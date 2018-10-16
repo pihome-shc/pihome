@@ -160,7 +160,20 @@ while ($row = mysqli_fetch_assoc($results)) {
 	}else {
 		$boost_active='0';
 	}
-	
+
+	//Get Weather Temperature
+    $query = "SELECT * FROM messages_in WHERE node_id = '1' ORDER BY id desc LIMIT 1";
+    $result = $conn->query($query);
+    $weather_temp = mysqli_fetch_array($result);
+    $weather_c = $weather_temp['payload'];
+	//    1    00-05    0.3
+	//    2    06-10    0.4
+	//    3    11-15    0.5
+	//    4    15-20    0.6
+    $weather_fact = 0;
+    if ($weather_c <= 5 ) {$weather_fact = 0.2;}elseif ($weather_c <= 10 ) {$weather_fact = 0.3;} elseif($weather_c <= 15 ) {$weather_fact = 0.4;}elseif($weather_c <= 20 ) {$weather_fact = 0.5;}
+    $zone_c = $zone_c + $weather_fact; //Add to Actual Zone Temperature to Predict Accurate Temperature
+
 	//Following line to decide which temperature is target temperature 
 	if ($boost_active=='1'){$target_c=$boost_c;} elseif ($night_climate_status =='1') {$target_c=$nc_min_c;} elseif($override_status=='1'){$target_c=$override_c;} elseif($override_status=='0'){$target_c=$sch_c;}
 

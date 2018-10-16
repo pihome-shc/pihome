@@ -1,3 +1,4 @@
+0 2 * * * /usr/bin/php /var/www/cron/db_cleanup.php  >/dev/null 2>&1
 */10 * * * * /usr/bin/php /var/www/cron/system_c.php >/dev/null 2>&1
 */30 * * * * /usr/bin/php /var/www/cron/weather_update.php >/dev/null 2>&1
 */2 * * * * sh /var/www/cron/reboot_wifi.sh >/dev/null 2>&1
@@ -5,3 +6,7 @@
 */1 * * * * /usr/bin/php /var/www/cron/boiler.php >/dev/null 2>&1
 */1 * * * * /usr/bin/php /var/www/cron/piconnect.php >/dev/null 2>&1
 # @reboot sh /var/www/cron/gw.sh >/dev/null 2>&1
+#*/1 * * * * python /var/www/cron/gpio_ds18b20.py >/dev/null 2>&1
+
+
+

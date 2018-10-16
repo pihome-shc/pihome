@@ -210,8 +210,9 @@ if($what=="shutdown"){
 
 //Search for network gateway
 if($what=="find_gw"){
-	shell_exec("nohup python /var/www/cron/find_mygw/find_mygw.py");
-	$info_message = "Searching for PiHome Netwotk gateway on your local network <small> Please Do not Refresh... </small>";
+	//shell_exec("nohup python /var/www/cron/find_mygw/find_mygw.py");
+	$query = "UPDATE gateway SET find_gw = '1' where status = 1;";
+	$conn->query($query);
 }
 
 
