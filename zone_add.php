@@ -71,7 +71,7 @@ if (isset($_POST['submit'])) {
 	}
 
 	//Add Zone to message out table at same time to send out instructions to controller for each zone. 
-	$query = "INSERT INTO messages_out (node_id, child_id, sub_type, payload, sent, zone_id)VALUES ('{$controler}','{$controler_child_id}', '2', '0', '1', '{$zone_id}');";
+	$query = "INSERT INTO messages_out (node_id, child_id, sub_type, ack, type, payload, sent, zone_id)VALUES ('{$controler}','{$controler_child_id}', '1', '1', '2', '0', '0', '{$zone_id}');";
 	$result = $conn->query($query);
 	if ($result) {
 		$message_success .= "<p>Zone Controler Record Added Successfuly.</p>";
