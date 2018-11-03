@@ -43,7 +43,7 @@ if(isset($_GET["zone_deleted"])) {
 	$info_message = "Zone records removed successfully...</small>";
 }
 
-if(isset($_GET["zone_deleted"])) {
+if(isset($_GET["find_gw"])) {
 	$info_message = "Searching for PiHome Netwotk gateway on your local network <small> Please Do not Refresh... </small>";
 }
 
