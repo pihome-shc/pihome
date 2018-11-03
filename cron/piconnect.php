@@ -1185,8 +1185,9 @@ if ($status == "1"){
 					echo "\033[1;33m Zone ID:\033[0m             \033[1;32m".$zone_id."\033[0m \n";
 					echo "\033[1;33m Time:\033[0m                \033[1;32m".$row['time']."\033[0m \n";
 					echo "\033[1;33m Temperature:\033[0m         \033[1;32m".$temperature."\033[0m \n";
+					echo "\033[1;33m Minutes:\033[0m             \033[1;32m".$minute."\033[0m \n";
 					//call out to PiConnect with data 
-					$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=boost&id=${id}&purge=${purge}&status=${status}&zone_id=${zone_id}&time=${time}&temperature=${temperature}&time=${time}";
+					$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=boost&id=${id}&purge=${purge}&status=${status}&zone_id=${zone_id}&time=${time}&temperature=${temperature}&time=${time}&minute=${minute}";
 					$result = url_get_contents($url);
 					//echo $url."\n";
 					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Result from PiConnect: \033[1;32m".$result."\033[0m \n";

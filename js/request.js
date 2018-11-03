@@ -111,7 +111,7 @@ function shutdown() {
 
 function find_gw() {  
   	var quest = "?w=find_gw" + "&o=0" + "&frost_temp=0" + "&wid=0";
-	request('db.php', 'GET', quest, function(){ window.location="settings.php?find_gw"; });
+	request('db.php', 'GET', quest, function(){ window.location="settings.php"; });
     //window.location="settings.php?status=reboot";  
 }
 
