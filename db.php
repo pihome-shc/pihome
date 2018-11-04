@@ -185,7 +185,7 @@ if($what=="away"){
 //update frost temperature
 if($what=="frost"){
 	if($opp=="update"){
-			$query = "UPDATE frost_protection SET temperature = '{$frost_temp}' LIMIT 1";
+			$query = "UPDATE frost_protection SET temperature = '{$frost_temp}', sync = 0 LIMIT 1";
 			$conn->query($query);	
 	}
 }
