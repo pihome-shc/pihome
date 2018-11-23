@@ -50,7 +50,7 @@ def insertDB(IDs, temperature):
 		cur = con.cursor()
 		for i in range(0,len(temperature)):
 			#Check if Sensors Already Exit in Nodes Table, if no then add Sensors into Nodes Table otherwise just update Temperature Readings. 
-			cur.execute('SELECT COUNT(*) FROM `nodes` where node_id = (%s)', (IDs[i]))
+			cur.execute('SELECT COUNT(*) FROM `nodes` where node_id = (%s)', [IDs[i]])
 			row = cur.fetchone()
 			row = int(row[0])
 			if (row == 0):
