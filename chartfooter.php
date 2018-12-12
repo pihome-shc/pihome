@@ -154,7 +154,7 @@ $.fn.UseTooltip = function () {
                 showTooltip(item.pageX,
                         item.pageY,
                         color,
-                        "<strong>" + item.series.label + "</strong> At: " + new Date(x).getHours() + ":" + new Date(x).getMinutes() +"<br> <strong>Temp : " + $.formatNumber(y, { format: "#,###", locale: "us" }) + "&deg;</strong> ");                
+                        "<strong>" + item.series.label + "</strong> At: " + new Date(x).getHours() + ":"  + (new Date(x).getMinutes()<10?'0':'') + new Date(x).getMinutes() +"<br> <strong>Temp : " + $.formatNumber(y, { format: "#,###", locale: "us" }) + "&deg;</strong> ");               
             }
         } else {
             $("#tooltip").remove();
