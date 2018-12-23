@@ -48,7 +48,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 //following variable set to 0 on start for array index. 
 $sch_time_index = '0';
 //$query = "SELECT * FROM schedule_daily_time_zone_view group by time_id ORDER BY start asc";
-$query = "SELECT time_id, time_status, `start`, `end`, tz_id, tz_status, zone_id, index_id, zone_name, temperature, max(temperature) as max_c FROM schedule_daily_time_zone_view group by time_id ORDER BY start asc";
+$query = "SELECT time_id, time_status, DATE_FORMAT(`start`, '%H:%i') AS formatted_start, DATE_FORMAT(`end`, '%H:%i') AS formatted_end,`start`, `end`, tz_id, tz_status, zone_id, index_id, zone_name, temperature FROM schedule_daily_time_zone_view ORDER BY zone_id asc, start asc";
 $results = $conn->query($query);
 while ($row = mysqli_fetch_assoc($results)) {
 
@@ -58,13 +58,13 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$end_time = strtotime($row['end']);
 	if ($time >$start_time && $time <$end_time && $row["time_status"]=="1"){$shactive="redsch";}
 
-	//time shchedule listing
+	//time schedule listing
 	echo '
 	<li class="left clearfix scheduleli animated fadeIn">
-	<a href="javascript:active_schedule('.$row["time_id"].');"><span class="chat-img pull-left"><div class="circle '. $shactive.'"> <p class="schdegree">'.$row["max_c"].'&deg;</p></div></span></a>
+	<a href="javascript:active_schedule('.$row["time_id"].');"><span class="chat-img pull-left"><div class="circle '. $shactive.'"> <p class="schdegree">'.$row["temperature"].'&deg;</p></div></span></a>
 	<a style="color: #333; cursor: pointer; text-decoration: none;" data-toggle="collapse" data-parent="#accordion" href="#collapse'.$row['tz_id'].'">
 	<div class="chat-body clearfix">
-	<div class="header"><div class="text-info">&nbsp;&nbsp;'. $row['start'].' - ' .$row['end'].' &nbsp;&nbsp;<i class="fa fa-angle-double-right fa-fw"></i></div></a>
+	<div class="header"><div class="text-info">&nbsp;&nbsp;'. $row['formatted_start'].' - ' .$row['formatted_end'].' &nbsp;&nbsp;<i class="fa fa-angle-double-right fa-fw"></i></div></a>
 	<div id="collapse'.$row["tz_id"].'" class="panel-collapse collapse">
 	<br>';
 
