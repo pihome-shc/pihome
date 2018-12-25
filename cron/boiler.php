@@ -88,13 +88,28 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$sensor = mysqli_fetch_array($result);
 	$zone_c = $sensor['payload'];
 							
-	$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between `start` AND `end` AND zone_id = {$zone_id} AND time_status = '1' LIMIT 1;";
-	$result = $conn->query($query);
-	$schedule = mysqli_fetch_array($result);
-	$sch_status = $schedule['tz_status'];
-	$sch_start_time = $schedule['start'];
-	$sch_end_time = $schedule['end'];
-	$sch_c = $schedule['temperature'];
+    //Have to account for midnight rollover conditions
+    $query = "SELECT * FROM schedule_daily_time_zone_view 
+		WHERE ((`end`>`start` AND CURTIME() between `start` AND `end`)
+                  OR (`end`<`start` AND CURTIME()<`end`)
+                  OR (`end`<`start` AND CURTIME()>`start`))
+		    AND zone_id = {$zone_id} 
+		    AND time_status = '1' 
+		LIMIT 1;";
+    //echo $query . PHP_EOL;
+    $result = $conn->query($query);
+    if(mysqli_num_rows($result)<=0)
+    {
+        $sch_status=0;
+    }
+    else
+    {
+        $schedule = mysqli_fetch_array($result);
+        $sch_status = $schedule['tz_status'];
+        $sch_start_time = $schedule['start'];
+        $sch_end_time = $schedule['end'];
+        $sch_c = $schedule['temperature'];
+    }
 	
 	//query to check override status and get temperature from override table 
 	$query = "SELECT * FROM override WHERE zone_id = {$zone_id} LIMIT 1;";
