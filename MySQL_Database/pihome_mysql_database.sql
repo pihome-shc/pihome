@@ -501,6 +501,7 @@ CREATE TABLE IF NOT EXISTS `system` (
   `update_alias` char(100) CHARACTER SET latin1 DEFAULT NULL,
   `country` char(2) CHARACTER SET latin1 DEFAULT NULL,
   `city` char(100) CHARACTER SET latin1 DEFAULT NULL,
+  `zip` char(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `openweather_api` char(100) CHARACTER SET latin1 DEFAULT NULL,
   `backup_email` char(100) COLLATE utf16_bin DEFAULT NULL,
   `ping_home` bit(1) DEFAULT b'1',
