@@ -72,22 +72,21 @@ echo '
                 <p class="text-muted"> System will protect itself against frost</p>
 				<form data-toggle="validator" role="form" method="post" action="settings.php" id="form-join">
 				<div class="form-group" class="control-label"><label>Temperature</label>
-				<select class="form-control input-sm" type="number" id="frost_temp" name="frost_temp" placeholder="Frost protection temperature" >
-				<option selected>'.$frost.'</option>
-				<option>-1</option>
-				<option>0</option>
-				<option>1</option>
-				<option>2</option>
-				<option>3</option>
-				<option>4</option>
-				<option>5</option>
-				<option>6</option>
-				<option>7</option>
-				<option>8</option>
-				<option>9</option>
-				<option>10</option>
-				<option>11</option>
-				<option>12</option>
+				<select class="form-control input-sm" type="number" id="frost_temp" name="frost_temp" placeholder="Frost protection temperature" >';
+$c_f = settings($conn, 'c_f');
+if($c_f==1 || $c_f=='1') {
+    for($t=28;$t<=50;$t++)
+    {
+        echo '<option value="' . $t . '" ' . (DispTemp($conn, $frost)==$t ? 'selected' : '') . '>' . $t . '</option>';
+    }
+}
+else {
+    for($t=-1;$t<=12;$t++)
+    {
+        echo '<option value="' . $t . '" ' . ($frost==$t ? 'selected' : '') . '>' . $t . '</option>';
+    }
+}
+echo '
 				</select>
                 <div class="help-block with-errors"></div></div>
             </div>
@@ -98,6 +97,40 @@ echo '
         </div>
     </div>
 </div>';
+
+
+//Units
+$c_f = settings($conn, 'c_f');
+if($c_f==1 || $c_f=='1')
+    $TUnit='F';
+else
+    $TUnit='C';
+
+echo '
+<div class="modal fade" id="change_units" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                <h5 class="modal-title">Change Units</h5>
+            </div>
+            <div class="modal-body">
+				<form data-toggle="validator" role="form" method="post" action="settings.php" id="form-join">
+				<div class="form-group" class="control-label"><label>Units</label>
+				<select class="form-control input-sm" type="number" id="new_units" name="new_units">
+				<option value="0" ' . ($c_f==0 || $c_f=='0' ? 'selected' : '') . '>Celsius</option>
+				<option value="1" ' . ($c_f==1 || $c_f=='1' ? 'selected' : '') . '>Fahrenheit</option>
+				</select>
+                <div class="help-block with-errors"></div></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Cancel</button>
+                <input type="button" name="submit" value="Save" class="btn btn-default login btn-sm" onclick="update_units()">
+            </div>
+        </div>
+    </div>
+</div>';
+
 
 //Boiler Safety settings
 echo '
@@ -143,7 +176,7 @@ $results = $conn->query($query);
 echo '	<div class=\"list-group\">';
 while ($row = mysqli_fetch_assoc($results)) {
 	echo "<a href=\"#\" class=\"list-group-item\"><i class=\"fa fa-rocket fa-fw blueinfo\"></i> ".$row['name']."
-	<span class=\"pull-right text-muted small\"><em>".$row['minute']." minute ".$row['temperature']."&deg;  </em></span></a>"; 
+	<span class=\"pull-right text-muted small\"><em>".$row['minute']." minute ".number_format(DispTemp($conn,$row['temperature']),0)."&deg;  </em></span></a>"; 
 }
 echo '</div></div>
             <div class="modal-footer">

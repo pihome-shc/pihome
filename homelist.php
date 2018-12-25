@@ -32,8 +32,10 @@ require_once(__DIR__.'/st_inc/functions.php');
                         <!-- /.panel-heading -->
                         <div class="panel-body">
 							<a style="color: #777; cursor: pointer; text-decoration: none;" data-toggle="collapse" data-parent="#accordion" href="#collapseone">
-							<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn"><h3 class="Light"><small>One Touch</small><br><i class="fa fa-bullseye fa-2x"></i></h3>
-							<br>
+							<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn">
+                                <h3><small>One Touch</small></h3>
+                                <h3 class="degre" style="margin-top:0px;"><i class="fa fa-bullseye fa-2x"></i></h3>
+                                <h3 class="status"></h3>
 							</button></a>
 <?php 
 //query to get frost protection temperature
@@ -121,77 +123,132 @@ while ($row = mysqli_fetch_assoc($results)) {
 	} else {
 		$night_climate_status='0';
 	}
-
-	//following line to decide which temperature is target temperature 
-	if ($bactive=='1' && $room_c < $max_room_c){$target_c=$boost_c;} elseif($night_climate_status=='1' && $room_c < $max_room_c) {$target_c=$nc_min_c;} elseif($ovactive=='1' && $room_c < $max_room_c){$target_c=$override_c;} 
-	elseif (($sch_status=="1") && ($zone_status=="1") && ($room_c < $max_room_c)){$target_c=$schedule_c;} 
-	else {$target_c="0";}
-
-	//if((isset($sch_status)) AND $target_c > $room_c ) {$shactive = "ion-ios-clock-outline";}
 	
-	
-	if((isset($sch_status)) && $sch_status =="1" && $room_c < $max_room_c && $away_active=="0" && $bactive=="0" )  {$shactive = "ion-ios-clock-outline";}
-	elseif($room_c < $frost_c){$shactive="ion-ios-snowy";}
-	elseif($away_active=="1"){$shactive="fa-sign-out";}
-	elseif($room_c > $max_room_c){$shactive="ion-thermometer";}	
-	elseif($bactive=="1"){$shactive="fa-rocket";}
-	elseif($ovactive=="1"){$shactive="fa-refresh";}
-	elseif($night_climate_status=='1'){$shactive="fa-bed";}
-
-	
-	/*
-	if((isset($sch_status)) && $sch_status =="1")  {$shactive = "ion-ios-clock-outline";}
-	if ($room_c < $frost_c){$shactive="ion-ios-snowy";}else {
-		if($room_c > $max_room_c ){$shactive="ion-thermometer";}
-		if($night_climate_status=='1'){$shactive="fa-bed";
-		}elseif($ovactive=="1"){$shactive="fa-refresh";}
-		if($bactive=="1"){$shactive="fa-rocket";}
-		if($away_active=="1"){$shactive="fa-sign-out";}
-	}
-	
-	*/
-	//#dc0000 red
-	//#F0AD4E orance
-	//#5292f7 blue
-	$status="#555555";
-	if ($room_c < $frost_c) {$status="#dc0000";	}
-	elseif  ($room_c >= $max_room_c ) {$status="#F0AD4E";	}
-	elseif(($room_c > $frost_c) && ($room_c < $max_room_c)){
-		if ($away_active=='0'){	
-			if($bactive=='0'){
-				if($night_climate_status=='0'){
-				if (mysqli_num_rows($sch_results) != 0){
-					$status="0";
-					if (($sch_status=='1') && ($room_c < $target_c) && ($zone_enable =='1')){$status="#dc0000";}
-					if (($sch_status=='1') && ($room_c >= $target_c)){$status="#F0AD4E";}
-					if (($ovactive=='1' && $zone_status=='1') && ($room_c <= $target_c) && ($zone_enable =='1')){$status="#dc0000";}
-					if (($ovactive=='1' && $zone_status=='1') && ($room_c >= $target_c)){$status="#F0AD4E";} 
-					if (($sch_status=='0') && ($ovactive=='0') && ($zone_enable =='1')){$status="#5292f7";} 
-					if ($zone_status=='0'  && $zone_enable =='1'){$status="#5292f7";}
-				} elseif ($zone_enable =='1') {$status="#5292f7";
-				} else {$status="555555";}
-			}elseif($night_climate_status=='1' && $room_c < $target_c  && $zone_enable =='1'){$status="#dc0000";
-			}elseif($night_climate_status=='1' && $room_c >= $target_c){$status="#F0AD4E";}
-			}elseif(($bactive=='1') && ($room_c < $target_c)  && ($zone_enable =='1')) {$status="#dc0000";
-			}elseif(($bactive=='1') && ($room_c >= $target_c) && ($zone_enable =='1')) {$status="#F0AD4E";}
-		}elseif ($away_active=='1'){$status="#5292f7";}
-	}
+    
 	$boost_arr[$boost_index] = $bactive;
 	$boost_index = $boost_index+1;
 	$override_arr[$override_index] = $ovactive;
 	$override_index = $override_index+1;
-
-	echo ' <button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-href="#" data-toggle="modal" data-target="#'.$row['type'].''.$row['id'].'" data-backdrop="static" data-keyboard="false">
+    
+    
+   	echo '<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-href="#" data-toggle="modal" data-target="#'.$row['type'].''.$row['id'].'" data-backdrop="static" data-keyboard="false">
 	<h3><small>'.$row['name'].'</small></h3>
-	<h3 class="degre">'.number_format($room_c,1).'&deg;</h3>
-	<h3 class="status"><small style="color:'.$status.';"><i class="fa fa-circle fa-fw zone-status"></i></small>';
-	echo ' <small class="statusdegree">'; 
-	if((isset($target_c)) AND $target_c > 0 AND $away_active =='0') {echo $target_c.'&deg;';} 
-	if ($room_c >= $max_room_c && $away_active =='0'){echo '</small><small style="margin-left: 24px;" class="zoonstatus">';}
-	if ($room_c < $frost_c && $room_c < $max_room_c){echo '</small><small style="margin-left: 20px;" class="zoonstatus">';}
-	if($away_active=="1"){echo '</small><small style="margin-left: 48px;" class="zoonstatus">';}else {echo '</small><small class="zoonstatus">'; }
-	if($room_c > $max_room_c && $away_active=="0"){echo ' <i style="color:#dc0000;" class="fa '.$shactive.' fa-fw"></i></small></h3></button>';} else {echo ' <i class="fa '.$shactive.' fa-fw"></i></small></h3></button>';}
+	<h3 class="degre">'.number_format(DispTemp($conn,$room_c),1).'&deg;</h3>
+	<h3 class="status">';
+    //Now show status indicators
+    //Left is circle with color showing heating, on target, away
+	//  #dc0000 red     - heating
+	//  #F0AD4E orance  - on target, or above max
+	//  #5292f7 blue    - away, or 
+    //Middle is target temperature
+    //Right is icon for 
+    //  frost(snowy) 
+    //  away(signout) 
+    //  scheduled(clockoutline) 
+    //  over temp(thermometer) 
+    //  boost(rocket) 
+    //  override(refresh) 
+    //  bed(bed)
+    if ($room_c < $frost_c) {
+        //We don't care about any other conditions, protect against frost
+        $status='red';
+        $shactive='ion-ios-snowy';
+        $shcolor='';
+        $target=number_format(DispTemp($conn,$frost_c),0) . '&deg;';
+    }
+    else 
+    {
+        //we aren't in danger of freezing, so check our normal conditions.
+        if ($away_active == '0') {
+            //We are under normal operating conditions.
+            if ($room_c >= $max_room_c) {
+                //We are over temp
+                $status='orange';
+                $shactive='ion-thermometer';
+                $shcolor='red';                 //special color
+                $target=number_format(DispTemp($conn,$max_room_c),0) . '&deg;';
+            }
+            else if ($night_climate_status == '1' && $room_c < $nc_min_c) {
+                //We are night climate and heating
+                $status='red';   
+                $shactive='fa-bed';
+                $shcolor='';
+                $target=number_format(DispTemp($conn,$nc_min_c),0) . '&deg;';
+            }    
+            else if ($night_climate_status == '1' && $room_c >= $nc_min_c) {
+                //We are night climate and NOT heating
+                $status='orange';
+                $shactive='fa-bed';
+                $shcolor='';
+                $target=number_format(DispTemp($conn,$nc_min_c),0) . '&deg;';
+            }    
+            else if ($bactive == '1' && $room_c < $boost_c) {
+                //We are boost and heating
+                $status='red';   
+                $shactive='fa-rocket';
+                $shcolor='';
+                $target=number_format(DispTemp($conn,$boost_c),0) . '&deg;';
+            }
+            else if ($bactive == '1' && $room_c >= $boost_c) {
+                //We are boost and NOT heating
+                $status='orange';
+                $shactive='fa-rocket';
+                $shcolor='';
+                $target=number_format(DispTemp($conn,$boost_c),0) . '&deg;';
+            }
+            else if (($sch_status == 1) && ($ovactive == '1') && ($room_c < $schedule_c)) {
+                //We are override scheduled and heating
+                $status='red';   
+                $shactive='fa-refresh';
+                $shcolor='';
+                $target=number_format(DispTemp($conn,$schedule_c),0) . '&deg;';
+            }
+            else if (($sch_status == 1) && ($ovactive == '1') && ($room_c >= $schedule_c)) {
+                //We are override scheduled and NOT heating
+                $status='orange';
+                $shactive='fa-refresh';
+                $shcolor='';
+                $target=number_format(DispTemp($conn,$schedule_c),0) . '&deg;';
+            }
+            else if (($sch_status == 1) && ($room_c < $schedule_c)) {
+                //We are scheduled and heating
+                $status='red';   
+                $shactive='ion-ios-clock-outline';
+                $shcolor='';
+                $target=number_format(DispTemp($conn,$schedule_c),0) . '&deg;';
+            }
+            else if (($sch_status == 1) && ($room_c >= $schedule_c)) {
+                //We are scheduled and heating
+                $status='orange';
+                $shactive='ion-ios-clock-outline';
+                $shcolor='';
+                $target=number_format(DispTemp($conn,$schedule_c),0) . '&deg;';
+            }
+            else {
+                //We shouldn't get here.
+                $status='';      
+                $shactive='fa-question';
+                $shcolor='';
+                $target='';     //show no target temperature
+            }            
+        }
+        else
+        {
+            //We are away
+            $status='blue';  
+            $shactive='fa-sign-out';
+            $shcolor='';
+            $target='';     //show no target temperature
+        }
+    }
 
+    //Left small circular icon/color status
+    echo '<small class="statuscircle"><i class="fa fa-circle fa-fw ' . $status . '"></i></small>';
+    //Middle target temp
+    echo '<small class="statusdegree">' . $target .'</small>';
+    //Right icon for what/why
+    echo '<small class="statuszoon"><i class="fa ' . $shactive . ' ' . $shcolor . ' fa-fw"></i></small>';
+    echo '</h3></button>';      //close out status and button
 	
 
 	//Zone Schedule listing model
@@ -220,7 +277,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 			if ($time >$start_time && $time <$end_time){$shactive="redsch_list";}
 			//this line to pass unique argument  "?w=schedule_list&o=active&wid=" href="javascript:delete_schedule('.$srow["id"].');"
 			echo ' <a href="javascript:schedule_zone('.$srow['tz_id'].');" class="list-group-item">
-			<div class="circle_list '. $shactive.'"> <p class="schdegree">'.$srow['temperature'].'&deg;</p></div>
+			<div class="circle_list '. $shactive.'"> <p class="schdegree">'.number_format(DispTemp($conn,$srow['temperature']),0).'&deg;</p></div>
 			<span class="pull-right text-muted sch_list"><em>'. $srow['start'].' - ' .$srow['end'].'</em></span></a>';
 		}
 	}
@@ -258,11 +315,11 @@ if (isset($boiler_last_off)){
 } else {$hysteresis='0';}
 
 if ($fired_status=='1'){$boiler_colour="red";} elseif ($fired_status=='0'){$boiler_colour="blue";}
-echo '	<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-toggle="modal" href="#boiler" data-backdrop="static" data-keyboard="false">
+echo '<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-toggle="modal" href="#boiler" data-backdrop="static" data-keyboard="false">
 		<h3 class="text-info"><small>'.$boiler_name.'</small></h3>
 		<h3 class="degre" ><i class="ionicons ion-flame fa-1x '.$boiler_colour.'"></i></h3>';
-if($hysteresis=='0') { echo'<h3 class="status"><small class="statusdegree"></small><small style="margin-left: 48px;" class="zoonstatus"></small>';}
-if($hysteresis=='1') {echo'<h3 class="status"><small class="statusdegree"></small><small style="margin-left: 70px;" class="zoonstatus"><i class="fa fa-hourglass fa-1x orange"></i> </small>';}
+if($hysteresis=='0') { echo'<h3 class="status"><small class="statusdegree"></small><small style="margin-left: 48px;" class="statuszoon"></small>';}
+if($hysteresis=='1') {echo'<h3 class="status"><small class="statusdegree"></small><small style="margin-left: 70px;" class="statuszoon"><i class="fa fa-hourglass fa-1x orange"></i> </small>';}
 echo '</h3></button>';
 
 
@@ -352,14 +409,8 @@ echo '						<a href="javascript:active_away();">
                         <!-- /.panel-body -->
 						<div class="panel-footer">
 <?php 
-$query="select * from weather";
-$result = $conn->query($query);
-$weather = mysqli_fetch_array($result);
+ShowWeather($conn);
 ?>
-<?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
-<span><img border="0" width="24" src="images/<?php echo $weather['img'];?>.png" title="<?php echo $weather['title'];?> - 
-<?php echo $weather['description'];?>"></span> <span><?php echo $weather['title'];?> - 
-<?php echo $weather['description'];?></span>
 
                             <div class="pull-right">
                                 <div class="btn-group">

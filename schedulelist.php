@@ -61,7 +61,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	//time shchedule listing
 	echo '
 	<li class="left clearfix scheduleli animated fadeIn">
-	<a href="javascript:active_schedule('.$row["time_id"].');"><span class="chat-img pull-left"><div class="circle '. $shactive.'"> <p class="schdegree">'.$row["max_c"].'&deg;</p></div></span></a>
+	<a href="javascript:active_schedule('.$row["time_id"].');"><span class="chat-img pull-left"><div class="circle '. $shactive.'"> <p class="schdegree">'.number_format(DispTemp($conn,$row["max_c"]),0).'&deg;</p></div></span></a>
 	<a style="color: #333; cursor: pointer; text-decoration: none;" data-toggle="collapse" data-parent="#accordion" href="#collapse'.$row['tz_id'].'">
 	<div class="chat-body clearfix">
 	<div class="header"><div class="text-info">&nbsp;&nbsp;'. $row['start'].' - ' .$row['end'].' &nbsp;&nbsp;<i class="fa fa-angle-double-right fa-fw"></i></div></a>
@@ -76,7 +76,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	echo '
 		<div class="list-group">
 		<div class="list-group-item">
-		<i class="ionicons '.$status_icon.' fa-lg '.$status_color.'"></i>  '.$datarw['zone_name'].'<span class="pull-right text-muted small"><em>'.$datarw['temperature'].'&deg;</em></span>
+		<i class="ionicons '.$status_icon.' fa-lg '.$status_color.'"></i>  '.$datarw['zone_name'].'<span class="pull-right text-muted small"><em>'.number_format(DispTemp($conn,$datarw['temperature']),0).'&deg;</em></span>
 		</div>';
 	}
 
@@ -108,14 +108,9 @@ echo '
                         <!-- /.panel-body -->
 						<div class="panel-footer">
 <?php 
-$query="select * from weather";
-$result = $conn->query($query);
-$weather = mysqli_fetch_array($result);
+ShowWeather($conn);
 ?>
-<?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
-<span><img border="0" width="24" src="images/<?php echo $weather['img'];?>.png" title="<?php echo $weather['title'];?> - 
-<?php echo $weather['description'];?>"></span> <span><?php echo $weather['title'];?>
-</span>
+
                             <div class="pull-right">
                                 <div class="btn-group">
 <?php

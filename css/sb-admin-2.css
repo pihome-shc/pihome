@@ -4,6 +4,48 @@
  * For details, see http://www.apache.org/licenses/LICENSE-2.0.
  */
 
+/*
+CSS ID - HTML element, "#", ID
+    IDs have to be unique on the page, they only specify one element
+
+    CSS:
+        p#exampleID1 { background-color: white; }
+        p#exampleID2 { text-transform: uppercase; }
+
+    HTML:
+        <p id="ExampleID1">This paragraph has an ID name of
+         "exampleID1" and has a white CSS defined background</p>
+        <p id="ExampleID2">This paragraph has an ID name of
+         "exampleID2" and has had its text transformed to uppercase letters. </p>
+
+
+CSS Class - HTML element, "." , ID
+    Classes can apply to many elements on the same page.
+
+    CSS:
+        p{ color: red; font-size: 20px; }
+        p.test1{ color: blue; }
+        p.test2{ font-size: 12px; }
+
+    HTML Code:
+        <html>
+        <body>
+        <p>This is a normal paragraph.</p>
+        <p class="test1">This is a paragraph that uses the p.test1 CSS code!</p>
+        <p class="test2">This is a paragraph that uses the p.test2 CSS code!</p>
+
+    Remember, CSS code in classes will override the general CSS code for that element. p.test1 overrides p!
+
+
+Shorthand properties:
+    w x y z     top right bottom left
+    x y z       top right/left bottom
+    x y         top/bottom right/left
+    x           all four
+
+
+*/
+
 body {
     background-color: #f8f8f8;
 }
@@ -366,7 +408,11 @@ table.dataTable thead .sorting:after {
  font-size:40%
  }
 
-.mainbtn {;margin-bottom:5px;}
+.mainbtn 
+{
+    margin: 3px 3px 3px;
+    float:left;
+}
  
  
  
@@ -488,21 +534,34 @@ font-family: "HelveticaNeue-Light", 'Roboto', 'Source Sans Pro',  Helvetica, Ari
 text-align:left;
 margin-top: 0px;
 }
-.statusdegree {
-margin-left: -5px;
+h3.status{
+    height:12px;
+    width:100%;
+    display:inline-block;
+    padding: 0px 2px 2px;
 }
+.statuscircle {
+    float:left;
+}
+.statusdegree {
+    margin-left:5px;
+    float:left;
+}
+.statuszoon{
+    text-align: right;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    float:right;
+}
+
+
+
+
 
 .schdegree{
 margin-left: 2px;
 }
 
-.zoonstatus{
-text-align: right;
-margin-left: 28px;
-margin-top: 0px;
-margin-bottom: 0px;
-
-}
 
 .override{
 margin-top: 10px;
@@ -750,7 +809,6 @@ body{font-family:"HelveticaNeue-Light",Helvetica,Arial,sans-serif; font-size:14p
 .navbar-default{background-color:#ff8839;border-color:#ff8839}
 .nav>li>a:hover,.nav>li>a:focus{text-decoration:none;background-color:#ffede2;color:#ff8839;}
 .modal-header{min-height:16.43px;padding:10px;border-bottom:1px solid #e5e5e5; background-color:#ff8839;border-top-left-radius:0px;border-top-right-radius:0px}
-.zone-status {font-size: 8px}
 .login {background-color:#ffede2}
 h3 small {font-family: "HelveticaNeue-Light",Helvetica,Arial,sans-serif;}
 .alert-danger{color:#a40300;background-color:#f2dede;border-color:#eaaab4}

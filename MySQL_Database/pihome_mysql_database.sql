@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS `frost_protection` (
   `sync` tinyint(4) NOT NULL DEFAULT '0',
   `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
   `datetime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `temperature` tinyint(4) DEFAULT '5',
+  `temperature` FLOAT NOT NULL DEFAULT '5',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
@@ -367,7 +367,7 @@ CREATE TABLE IF NOT EXISTS `schedule_daily_time_zone` (
   `status` tinyint(4) DEFAULT NULL,
   `schedule_daily_time_id` int(11) DEFAULT NULL,
   `zone_id` int(11) DEFAULT NULL,
-  `temperature` tinyint(4) DEFAULT '0',
+  `temperature` FLOAT NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `FK_schedule_daily_time_zone_schedule_daily_time` (`schedule_daily_time_id`),
   KEY `FK_schedule_daily_time_zone_zone` (`zone_id`),
@@ -470,8 +470,8 @@ CREATE TABLE IF NOT EXISTS `schedule_night_climat_zone` (
   `status` tinyint(4) DEFAULT NULL,
   `zone_id` int(11) DEFAULT NULL,
   `schedule_night_climate_id` int(11) DEFAULT NULL,
-  `min_temperature` int(11) DEFAULT '18',
-  `max_temperature` int(11) DEFAULT '21',
+  `min_temperature` FLOAT NOT NULL DEFAULT '18',
+  `max_temperature` FLOAT NOT NULL DEFAULT '21',
   PRIMARY KEY (`id`),
   KEY `FK_schedule_zone_night_climat_zone` (`zone_id`),
   KEY `FK_schedule_zone_night_climat_schedule_night_climate` (`schedule_night_climate_id`),
@@ -501,12 +501,14 @@ CREATE TABLE IF NOT EXISTS `system` (
   `update_alias` char(100) CHARACTER SET latin1 DEFAULT NULL,
   `country` char(2) CHARACTER SET latin1 DEFAULT NULL,
   `city` char(100) CHARACTER SET latin1 DEFAULT NULL,
+  `zip` char(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `openweather_api` char(100) CHARACTER SET latin1 DEFAULT NULL,
   `backup_email` char(100) COLLATE utf16_bin DEFAULT NULL,
   `ping_home` bit(1) DEFAULT b'1',
   `timezone` varchar(50) COLLATE utf16_bin DEFAULT 'Europe/Dublin',
   `shutdown` tinyint(4) DEFAULT '0',
   `reboot` tinyint(4) DEFAULT '0',
+  `c_f` TINYINT NOT NULL DEFAULT '0' COMMENT '0=C, 1=F',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 

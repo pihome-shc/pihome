@@ -106,7 +106,7 @@ $('#nightclimatelist').load('nightclimatelist.php');
 <script>
 //Automatically refresh following pages after 15 seconds
 $(document).ready(function(){
-	setInterval(function(){
+	window.AutoInterval=setInterval(function(){
 		$("#schedulelist").load('schedulelist.php');
 		$('#overridelist').load('overridelist.php');
 		$('#homelist').load('homelist.php');

@@ -86,10 +86,57 @@ function active_away(){
 
 //update frost temperate 
 function update_frost(){
-	var frost_temp   = document.getElementsByName("frost_temp")[0].value;
-	var quest = "?w=frost&o=update&frost_temp=" + frost_temp + "&wid=0";
-	request('db.php', 'GET', quest, function(){ window.location="settings.php?frost="+ frost_temp; } );
+    var idata="w=frost&o=update";
+    idata+="&frost_temp="+document.getElementsByName("frost_temp")[0].value;
+    idata+="&wid=0";
+    $.get('db.php',idata)
+    .done(function(odata){
+        if(odata.Success)
+            reload_page();
+        else
+            console.log(odata.Message);
+    })
+    .fail(function( jqXHR, textStatus, errorThrown ){
+        if(jqXHR==401 || jqXHR==403) return;
+        console.log("update_frost: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
+    })
+    .always(function() {
+    });
 }
+
+//update units
+function update_units(){
+    var idata="w=units&o=update";
+    idata+="&val="+$("#new_units").val();
+    idata+="&wid=0";
+    $.get('db.php',idata)
+    .done(function(odata){
+        if(odata.Success)
+            reload_page();
+        else
+            console.log(odata.Message);
+    })
+    .fail(function( jqXHR, textStatus, errorThrown ){
+        if(jqXHR==401 || jqXHR==403) return;
+        console.log("update_units: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
+    })
+    .always(function() {
+    });
+}
+
+
+
+function reload_page()
+{
+    var loc = window.location;
+    /*console.log(loc.protocol);
+    console.log(loc.host);
+    console.log(loc.pathname);
+    console.log(loc.search);
+    console.log(loc.protocol + '//' + loc.host + loc.pathname);*/
+    window.location.href=loc.protocol + '//' + loc.host + loc.pathname;
+}
+
 
 //delete user account 
 function del_user(wid){

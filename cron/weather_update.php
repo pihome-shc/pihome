@@ -24,6 +24,16 @@ require_once(__DIR__.'../../st_inc/functions.php');
 
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Weather Update Script Started \n"; 
 
+$c_f = settings($conn, 'c_f');
+if($c_f==1 || $c_f=='1')
+{
+    $units='units=imperial';
+}
+else
+{
+    $units='units=metric';
+}
+
 //query to get system table
 $query = "SELECT * FROM system LIMIT 1";
 $result = $conn->query($query);
@@ -31,18 +41,23 @@ $row = mysqli_fetch_array($result);
 if ($row['openweather_api'] != NULL){
 	$country = $row['country'];
 	$city = $row['city'];
+    $zip = $row['zip'];
 	$appid = $row['openweather_api'];
 	//Get Current Weather Data
-	$weather_current_api = "http://api.openweathermap.org/data/2.5/weather?q=".$city.",".$country."&appid=".$appid;
+    if($city != NULL)
+        $weather_current_api = "http://api.openweathermap.org/data/2.5/weather?q=".$city.",".$country."&" . $units . "&appid=".$appid;
+    else
+        $weather_current_api = "http://api.openweathermap.org/data/2.5/weather?zip=".$zip.",".$country."&" . $units . "&appid=".$appid;
 	$json = file_get_contents($weather_current_api);
 	file_put_contents('/var/www/weather_current.json', $json);
 	
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Weather Data Downloaded \n"; 
 	//add weather temperature to database
 	$weather_data = json_decode($json, true);
-	$weather_c= round($weather_data['main']['temp']-272.15);
-	$c  = $weather_data['main']['temp'];
-	$wind_speed    = round($weather_data['wind']['speed']*1.609344, 2);
+    //weather_c is now dependent upon the units specified in the query.
+	$weather_c= round($weather_data['main']['temp']);   //-272.15);
+	//$c  = $weather_data['main']['temp'];
+	$wind_speed    = round($weather_data['wind']['speed']);   //*1.609344, 2);
 	$sunrise = $weather_data['sys']['sunrise'];
 	$sunset = $weather_data['sys']['sunset'];
 	$title = $weather_data['weather'][0]['main'];
@@ -68,7 +83,10 @@ if ($row['openweather_api'] != NULL){
 
 	//Call 5 day / 3 hour forecast data
 	//$weather_fivedays_api = "http://api.openweathermap.org/data/2.5/forecast?q=".$city.",".$country."&units=metric&appid=".$appid;
-	$weather_fivedays_api = "http://api.openweathermap.org/data/2.5/forecast?q=".$city.",".$country."&units=metric&lang=en&appid=".$appid;
+	if($city != NULL)
+        $weather_fivedays_api = "http://api.openweathermap.org/data/2.5/forecast?q=".$city.",".$country."&" . $units . "&lang=en&appid=".$appid;
+    else
+        $weather_fivedays_api = "http://api.openweathermap.org/data/2.5/forecast?zip=".$zip.",".$country."&" . $units . "&lang=en&appid=".$appid;
 	$json = file_get_contents($weather_fivedays_api);
 	file_put_contents('/var/www/weather_5days.json', $json);
 	$weather_fivedays = json_decode($json, true);
@@ -94,7 +112,10 @@ if ($row['openweather_api'] != NULL){
 	echo " \n" ;
 	//6 days weather forecast data 
 	//$weather_sixdays_api = "http://api.openweathermap.org/data/2.5/forecast/daily?q=".$city.",".$country."&appid=".$appid;
-	$weather_sixdays_api = "http://api.openweathermap.org/data/2.5/forecast/daily?q=".$city.",".$country."&units=metric&cnt=7&lang=en&appid=".$appid;
+	if($city != NULL)
+        $weather_sixdays_api = "http://api.openweathermap.org/data/2.5/forecast/daily?q=".$city.",".$country."&" . $units . "&cnt=7&lang=en&appid=".$appid;
+    else
+        $weather_sixdays_api = "http://api.openweathermap.org/data/2.5/forecast/daily?zip=".$zip.",".$country."&" . $units . "&cnt=7&lang=en&appid=".$appid;
 	$json = file_get_contents($weather_sixdays_api);
 	file_put_contents('/var/www/weather_6days.json', $json);
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Weather Data Downloaded \n"; 

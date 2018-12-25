@@ -27,7 +27,6 @@ require_once(__DIR__.'/st_inc/functions.php');
 $what = $_GET['w'];   # what to do, override, schedule, away etc..
 $opp =  $_GET['o'];   # insert, update, delete, ( active only device )
 $wid = $_GET['wid'];  # which id
-$frost_temp = $_GET['frost_temp']; #update frost temperature
 
 //Delete Zone and all related records
 if(($what=="zone") && ($opp=="delete")){
@@ -185,10 +184,42 @@ if($what=="away"){
 //update frost temperature
 if($what=="frost"){
 	if($opp=="update"){
-			$query = "UPDATE frost_protection SET temperature = '{$frost_temp}', sync = 0 LIMIT 1";
-			$conn->query($query);	
+        $temp=TempToDB($conn,$_GET['frost_temp']);
+        $query = "UPDATE frost_protection SET temperature = '" . number_format($temp,1) . "', sync = 0 LIMIT 1";
+        if($conn->query($query))
+        {
+            header('Content-type: application/json');
+            echo json_encode(array('Success'=>'Success','Query'=>$query));
+            return;
+        }
+        else
+        {
+            header('Content-type: application/json');
+            echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+            return;
+        }
 	}
 }
+
+//update units
+if($what=="units"){
+	if($opp=="update"){
+        $query = "UPDATE `system` SET `c_f`=" . $_GET['val'] . ";";
+        if($conn->query($query))
+        {
+            header('Content-type: application/json');
+            echo json_encode(array('Success'=>'Success','Query'=>$query));
+            return;
+        }
+        else
+        {
+            header('Content-type: application/json');
+            echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+            return;
+        }
+	}
+}
+
 
 //Database Backup
 if($what=="db_backup"){
