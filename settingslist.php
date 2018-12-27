@@ -92,6 +92,25 @@ $frost_temp = $frosttemp['temperature'];
 							<h3 class="degre" ><i class="ionicons ion-ios-timer-outline blue"></i></h3>
 							<h3 class="status"><small style="color:#fff;"><i class="fa"></i></small>
 							</h3></button>
+
+							<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" 
+                                    data-toggle="modal" data-remote="false" data-target="#ajaxModal"
+                                    data-ajax="ajax.php?Ajax=GetModal_OpenWeather">
+							<h3 class="buttontop"><small>OpenWeather</small></h3>
+							<h3 class="degre" ><i class="fa fa-sun-o"></i></h3>
+							<h3 class="status"></small></h3>
+                            </button>
+<script language="javascript" type="text/javascript">
+$("#ajaxModal").on("show.bs.modal", function(e) {
+    console.log($(e.relatedTarget).data('ajax'));
+    $(this).find("#ajaxModalLabel").html("...");
+    $(this).find("#ajaxModalBody").html("Waiting ...");
+    $(this).find("#ajaxModalFooter").html("...");
+    $(this).find("#ajaxModalContent").load($(e.relatedTarget).data('ajax'));
+});    
+</script>
+                                
+                                
 <?php 
 	$query = "select * from messages_in where node_id = 0 order by datetime desc limit 1";
 	$result = $conn->query($query);
@@ -166,7 +185,25 @@ $frost_temp = $frosttemp['temperature'];
 							<h3 class="degre" ><i class="fa fa-power-off fa-1x red"></i></h3>
 							<h3 class="status"><small style="color:#fff;"><i class="fa"></i></small>
 							</h3></button>	
-				
+
+<!-- Generic Ajax Modal -->
+<div class="modal fade" id="ajaxModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" id="ajaxModalContent">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="ajaxModalLabel">...</h4>
+      </div>
+      <div class="modal-body" id="ajaxModalBody">
+        Waiting...
+      </div>
+      <div class="modal-footer" id="ajaxModalFooter">
+        ...
+      </div>
+    </div>
+  </div>
+</div>
+
 <?php include("model.php");  ?>
                         </div>
                         <!-- /.panel-body -->
