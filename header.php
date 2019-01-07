@@ -186,6 +186,7 @@ $weather = mysqli_fetch_array($result);
 		<br>
 			<div class="row"> 
 			<div class="col-lg-12">
+<?php if(filesize('weather_6days.json')>0) { ?>                
 			<h4 class="text-center">Six Days Weather</h4>
 	<div class="list-group">
 <?php
@@ -198,6 +199,7 @@ echo '<a href="weather.php" class="list-group-item"><img border="0" width="28" h
 }
 ?>
 </div>
+<?php } //end of filesize if ?>            
 <a href="weather.php" button type="button" class="btn btn-default login btn-sm btn-edit">3 Hour Forcast</a>
 <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
         </div></div>
