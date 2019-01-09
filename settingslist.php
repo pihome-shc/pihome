@@ -45,26 +45,26 @@ $frost_temp = $frosttemp['temperature'];
 
 							<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-toggle="modal" data-target="#add_frost">
 							<h3 class="buttontop"><small>Frost</small></h3>
-                            <h3 class="degre" ><i class="ionicons ion-ios-snowy blue"></i></h3>
+							<h3 class="degre" ><i class="ionicons ion-ios-snowy blue"></i></h3>
 							<h3 class="status">
                                 <small class="statuscircle"><i class="fa fa-circle fa-fw blue"></i></small>
                                 <small class="statusdegree"><?php echo number_format(DispTemp($conn,$frost_temp),0);?>&deg;</small>
                                 <small class="statuszoon"><i class="fa"></i></small>
 							</h3></button>	
 
-<?php
-$c_f = settings($conn, 'c_f');
-if($c_f==1 || $c_f=='1')
-    $TUnit='F';
-else
-    $TUnit='C';
-?>
+							<?php
+								$c_f = settings($conn, 'c_f');
+								if($c_f==1 || $c_f=='1')
+									$TUnit='F';
+								else
+									$TUnit='C';
+							?>
 							<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-toggle="modal" data-target="#change_units">
 							<h3 class="buttontop"><small>Units</small></h3>
                             <h3 class="degre" ><?php echo $TUnit;?></h3>
 							<h3 class="status"></small></h3>
                             </button>
-
+							
 							<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-href="edit_boiler.php" data-toggle="modal" data-target="#boiler_safety_setup">
 							<h3 class="buttontop"><small>Boiler</small></h3>
 							<h3 class="degre" ><i class="ionicons ion-flame fa-1x red"></i></h3>
@@ -76,7 +76,6 @@ else
 							<h3 class="degre" ><i class="fa fa-rocket fa-1x blueinfo"></i></h3>
 							<h3 class="status"></small></h3>
                             </button>
-
 							
 							<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-href="edit_override.php" data-toggle="modal" data-target="#override_setup">
 							<h3 class="buttontop"><small>Override</small></h3>
@@ -94,7 +93,7 @@ else
 							<h3 class="buttontop"><small>Zone</small></h3>
 							<h3 class="degre" ><i class="glyphicon glyphicon-th-large orange"></i> </h3>
 							<h3 class="status"></small></h3>
-                            </button>							
+                            </button>
 
 							<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-href="edit_sensors.php" data-toggle="modal" data-target="#sensor_gateway">
 							<h3 class="buttontop"><small>Gateway</small></h3>
@@ -105,7 +104,23 @@ else
 							<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-href="edit_gpio.php" data-toggle="modal" data-target="#cron_jobs">
 							<h3 class="buttontop"><small>Cron Jobs</small></h3>
 							<h3 class="degre" ><i class="ionicons ion-ios-timer-outline blue"></i></h3>
-
+							<h3 class="status"></small></h3>
+                            </button>
+							
+							<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-toggle="modal" data-remote="false" data-target="#ajaxModal" data-ajax="ajax.php?Ajax=GetModal_OpenWeather">
+							<h3 class="buttontop"><small>OpenWeather</small></h3>
+							<h3 class="degre" ><i class="fa fa-sun-o"></i></h3>
+							<h3 class="status"></small></h3>
+							</h3></button>
+							<script language="javascript" type="text/javascript">
+							$("#ajaxModal").on("show.bs.modal", function(e) {
+								console.log($(e.relatedTarget).data('ajax'));
+								$(this).find("#ajaxModalLabel").html("...");
+								$(this).find("#ajaxModalBody").html("Waiting ...");
+								$(this).find("#ajaxModalFooter").html("...");
+								$(this).find("#ajaxModalContent").load($(e.relatedTarget).data('ajax'));
+							});    
+							</script>
 <?php 
 	$query = "select * from messages_in where node_id = 0 order by datetime desc limit 1";
 	$result = $conn->query($query);
@@ -150,7 +165,7 @@ else
 							<h3 class="buttontop"><small>WiFi</small></h3>
 							<h3 class="degre" ><i class="fa fa-signal green"></i></h3>
 							<h3 class="status"></small></h3>
-                            </button>							
+                            </button>
 
 							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-toggle="modal" data-target="#eth_setup">
 							<h3 class="buttontop"><small>Ethernet</small></h3>
@@ -172,14 +187,34 @@ else
 							
 							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" onClick="reboot()">
 							<h3 class="buttontop"><small>Reboot Pi</small></h3>
-                            <h3 class="degre" ><i class="ion-ios-refresh-outline larger orange"></i></h3>
+							<h3 class="degre" ><i class="ion-ios-refresh-outline orange"></i></h3>
 							<h3 class="status"></small></h3>
                             </button>
 
 							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" onClick="shutdown()">
 							<h3 class="buttontop"><small>Shutdown Pi</small></h3>
 							<h3 class="degre" ><i class="fa fa-power-off fa-1x red"></i></h3>
-
+							<h3 class="status"></small></h3>
+                            </button>
+							
+<!-- Generic Ajax Modal -->
+<div class="modal fade" id="ajaxModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" id="ajaxModalContent">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="ajaxModalLabel">...</h4>
+      </div>
+      <div class="modal-body" id="ajaxModalBody">
+        Waiting...
+      </div>
+      <div class="modal-footer" id="ajaxModalFooter">
+        ...
+      </div>
+    </div>
+  </div>
+</div>	
+			
 <?php include("model.php");  ?>
                         </div>
                         <!-- /.panel-body -->

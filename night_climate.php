@@ -44,7 +44,7 @@ if (isset($_POST['submit'])) {
 		$max =TempToDB($conn,$_POST['max'][$id]);
 		$query = "UPDATE schedule_night_climat_zone SET sync = '0', status='$status', min_temperature='" . number_format($min,1) . "', max_temperature='" . number_format($max,1) . "' WHERE id='$id'";
 		$zoneresults = $conn->query($query);
-        if ($zoneresults) {
+		 if ($zoneresults) {
             $message_success .= "<p>Night Climate Temp Changed Successfully!!!</p>";
         } else {
             $error .= "<p>Night Climate Changes Failed with error: </p><p>".mysqli_error($conn). "</p>";        
@@ -105,7 +105,7 @@ where zone.status = 1 order by zone.index_id;";
 				?>
 				<label>Minimum Temperature</label>
 				<select class="form-control input-sm" type="number" id="<?php echo $sncz["id"];?>" name="min[<?php echo $sncz["id"];?>]" placeholder="Zone Temperature" >
-<?php 
+				<?php 
     $c_f = settings($conn, 'c_f');
     if($c_f==1 || $c_f=='1') {
         for($t=64;$t<=74;$t++)

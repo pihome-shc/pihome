@@ -104,7 +104,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 		<a class="navbar-brand" href="home.php"><img src="images/navi-logo.png" width="32"></a>
             <!-- /.navbar-header -->
             <ul class="nav navbar-top-links navbar-right">
-                <li class="dropdown">
+               <li class="dropdown">
                     <a href="index.php">
                         <i class="fa fa-home fa-fw"></i>
                     </a>
@@ -197,7 +197,7 @@ else
 		<br>
 			<div class="row"> 
 			<div class="col-lg-12">
-<?php if(filesize('weather_6days.json')>0) { ?>                
+			<?php if(filesize('weather_6days.json')>0) { ?>
 			<h4 class="text-center">Six Days Weather</h4>
 	<div class="list-group">
 <?php
@@ -210,7 +210,7 @@ echo '<a href="weather.php" class="list-group-item"><img border="0" width="28" h
 }
 ?>
 </div>
-<?php } //end of filesize if ?>            
+<?php } //end of filesize if ?>  
 <a href="weather.php" button type="button" class="btn btn-default login btn-sm btn-edit">3 Hour Forcast</a>
 <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
         </div></div>

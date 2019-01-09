@@ -72,7 +72,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 </div>
                         <!-- /.panel-body -->
 						<div class="panel-footer">
-<?php 
+<?php
 ShowWeather($conn);
 ?>
                         </div>

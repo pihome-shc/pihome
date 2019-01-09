@@ -226,8 +226,8 @@ while ($row = mysqli_fetch_assoc($results)) {
             }
             else {
                 //We shouldn't get here.
-                $status='';      
-                $shactive='fa-question';
+                $status='blue';      
+                $shactive='';
                 $shcolor='';
                 $target='';     //show no target temperature
             }            

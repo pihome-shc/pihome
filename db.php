@@ -184,7 +184,7 @@ if($what=="away"){
 //update frost temperature
 if($what=="frost"){
 	if($opp=="update"){
-        $temp=TempToDB($conn,$_GET['frost_temp']);
+		$temp=TempToDB($conn,$_GET['frost_temp']);
         $query = "UPDATE frost_protection SET temperature = '" . number_format($temp,1) . "', sync = 0 LIMIT 1";
         if($conn->query($query))
         {
@@ -201,13 +201,69 @@ if($what=="frost"){
 	}
 }
 
-
+//update units
+if($what=="units"){
+	if($opp=="update"){
+        $query = "UPDATE `system` SET `c_f`=" . $_GET['val'] . ";";
+        if($conn->query($query))
+        {
+            header('Content-type: application/json');
+            echo json_encode(array('Success'=>'Success','Query'=>$query));
+            return;
+        }
+        else
+        {
+            header('Content-type: application/json');
+            echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
             return;
         }
 	}
 }
 
-
+//update openweather
+if($what=="openweather"){
+	if($opp=="update"){
+        if($_GET['rad_CityZip']=='City') {
+            $query = "UPDATE `system` SET `country`='" . $_GET['sel_Country'] . "'
+                    ,`openweather_api`='" . $_GET['inp_APIKEY'] . "'
+                    ,`city`='" . $_GET['inp_City'] . "',`zip`=NULL;";
+            if($conn->query($query))
+            {
+                header('Content-type: application/json');
+                echo json_encode(array('Success'=>'Success','Query'=>$query));
+                return;
+            }
+            else
+            {
+                header('Content-type: application/json');
+                echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+                return;
+            }
+        }
+        else if($_GET['rad_CityZip']=='Zip') {
+            $query = "UPDATE `system` SET `country`='" . $_GET['sel_Country'] . "'
+                    ,`openweather_api`='" . $_GET['inp_APIKEY'] . "'
+                    ,`zip`='" . $_GET['inp_Zip'] . "',`city`=NULL;";
+            if($conn->query($query))
+            {
+                header('Content-type: application/json');
+                echo json_encode(array('Success'=>'Success','Query'=>$query));
+                return;
+            }
+            else
+            {
+                header('Content-type: application/json');
+                echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+                return;
+            }
+        }
+        else {
+            header('Content-type: application/json');
+            echo json_encode(array('Message'=>'Invalid value for rad_CityZip.\r\n$_GET=' . print_r($_GET)));
+            return;
+        }
+	}
+}
 //Database Backup
 if($what=="db_backup"){
 	 shell_exec("php start_backup.php"); 

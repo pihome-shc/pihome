@@ -2,7 +2,7 @@
 # add following line to show up when some one ssh to pi /etc/profile 
 # sudo python /var/www/cron/login.py
 # clear everything from /etc/motd to remove generic message. 
-import socket, os, re, time, sys, subprocess
+import socket, os, re, time, sys, subprocess, fcntl, struct
 from threading import Thread
 class bc:
 	HEADER = '\033[0;36;40m'
@@ -35,17 +35,24 @@ df = subprocess.Popen(["df", "-h"], stdout=subprocess.PIPE)
 output = df.communicate()[0]
 device, size, used, available, percent, mountpoint = \
 	output.split("\n")[1].split()
-
 print bc.org +"Disk/SD Card Usage" + bc.ENDC
 print "Filesystem  Size  Used   Avail  Used%"
 print device+"   "+size+"   "+used+"   "+available+"   "+percent
 
-s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-s.connect(('google.com', 0))
-ip = s.getsockname()[0]
-#Get the Local IP
-end = re.search('^[\d]{1,3}.[\d]{1,3}.[\d]{1,3}.[\d]{1,3}', ip)
-#Chop down the last IP Digits
-create_ip = re.search('^[\d]{1,3}.[\d]{1,3}.[\d]{1,3}.', ip)
-print "WebServer:  "+bc.GREEN +"http://"+str(end.group(0))+"/"+ bc.ENDC
-print "PhpMyAdmin: "+bc.GREEN +"http://"+str(end.group(0))+"/phpmyadmin"+ bc.ENDC
+def get_interface_ip(ifname):
+	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	return socket.inet_ntoa(fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s', ifname[:15]))[20:24])
+	
+def get_ip():
+	ip = socket.gethostbyname(socket.gethostname())
+	if ip.startswith("127."):
+		interfaces = ["eth0","eth1","eth2","wlan0","wlan1","wifi0","ath0","ath1","ppp0"]
+		for ifname in interfaces:
+			try:
+				ip = get_interface_ip(ifname)
+				break
+			except IOError:
+				pass
+	return ip
+print "WebServer:  "+bc.GREEN +"http://"+str(get_ip())+"/"+ bc.ENDC
+print "PhpMyAdmin: "+bc.GREEN +"http://"+str(get_ip())+"/phpmyadmin"+ bc.ENDC

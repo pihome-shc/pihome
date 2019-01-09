@@ -48,10 +48,10 @@ if (isset($_POST['submit'])) {
 		$id = $_POST['id'][$id];
 		$status = isset($_POST['status'][$id]) ? $_POST['status'][$id] : "0";
 		$status = $_POST['status'][$id];
-        $temp=TempToDB($conn,$_POST['temp'][$id]);
+		$temp=TempToDB($conn,$_POST['temp'][$id]);
 		$query = "UPDATE schedule_daily_time_zone SET sync = '0', status = '{$status}', temperature = '" . number_format($temp,1) . "' WHERE id = '{$id}' LIMIT 1";
 		$zoneresults = $conn->query($query);
-        if ($zoneresults) {
+		if ($zoneresults) {
             $message_success .= "<p>Schedule Temp Modified Successfully!!!</p>";
         } else {
             $error .= "<p>Schedule Temp Modification failed with error: </p><p>".mysqli_error($conn)."</p>";
@@ -67,7 +67,7 @@ if (isset($_POST['submit'])) {
                 <div class="col-lg-12">
 				<div class="panel panel-primary">
                         <div class="panel-heading">
-                            <i class="fa fa-clock-o fa-fw"></i> Edit Schedule 
+                            <i class="fa fa-clock-o fa-fw"></i> Edit Schedule
 						<div class="pull-right"> <div class="btn-group"><?php echo date("H:i"); ?></div> </div>
                         </div>
                         <!-- /.panel-heading -->
@@ -124,6 +124,7 @@ if($row['tz_status'] == 1){
         }
     }
 ?>	
+	
 	</select>
     <div class="help-block with-errors"></div></div></div>
 <?php }?>				

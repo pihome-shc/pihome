@@ -110,7 +110,6 @@ echo '
 <?php 
 ShowWeather($conn);
 ?>
-
                             <div class="pull-right">
                                 <div class="btn-group">
 <?php

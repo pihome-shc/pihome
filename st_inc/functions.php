@@ -92,7 +92,6 @@ function ShowWeather($conn)
     $query="select * from weather";
     $result = $conn->query($query);
     $weather = mysqli_fetch_array($result);    
-
     $c_f = settings($conn, 'c_f');
     
     echo 'Outside: ' . $weather['c'] . '&deg;&nbsp;';
@@ -100,12 +99,10 @@ function ShowWeather($conn)
         echo 'F';
     else
         echo 'C';
-
     echo '<span><img border="0" width="24" src="images/' . $weather['img'] . '.png" title="' . $weather['title'] . ' - ' . $weather['description'] . '"></span>';
     echo '<span>' . $weather['title'] . ' - ' . $weather['description'] . '</span>';
 }
   
-
 //ref: http://stackoverflow.com/questions/14721443/php-convert-seconds-into-mmddhhmmss
 // Prefix single-digit values with a zero.
 function ensure2Digit($number) {
@@ -268,7 +265,6 @@ function get_current_url($strip = true) {
     return sprintf('%s://%s%s', $scheme, $host, $filter($_SERVER['REQUEST_URI']));
 }
 
-
 /**
 * DispTemp
 *
@@ -315,5 +311,4 @@ function TempToDB($conn,$T)
     }
     return round($T,1);
 }
-
 ?>

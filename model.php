@@ -98,14 +98,12 @@ echo '
     </div>
 </div>';
 
-
 //Units
 $c_f = settings($conn, 'c_f');
 if($c_f==1 || $c_f=='1')
     $TUnit='F';
 else
     $TUnit='C';
-
 echo '
 <div class="modal fade" id="change_units" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -130,7 +128,6 @@ echo '
         </div>
     </div>
 </div>';
-
 
 //Boiler Safety settings
 echo '
