@@ -201,20 +201,7 @@ if($what=="frost"){
 	}
 }
 
-//update units
-if($what=="units"){
-	if($opp=="update"){
-        $query = "UPDATE `system` SET `c_f`=" . $_GET['val'] . ";";
-        if($conn->query($query))
-        {
-            header('Content-type: application/json');
-            echo json_encode(array('Success'=>'Success','Query'=>$query));
-            return;
-        }
-        else
-        {
-            header('Content-type: application/json');
-            echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+
             return;
         }
 	}

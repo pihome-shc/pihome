@@ -105,8 +105,7 @@ else
 							<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-href="edit_gpio.php" data-toggle="modal" data-target="#cron_jobs">
 							<h3 class="buttontop"><small>Cron Jobs</small></h3>
 							<h3 class="degre" ><i class="ionicons ion-ios-timer-outline blue"></i></h3>
-							<h3 class="status"></small></h3>
-                            </button>
+
 <?php 
 	$query = "select * from messages_in where node_id = 0 order by datetime desc limit 1";
 	$result = $conn->query($query);
@@ -180,9 +179,7 @@ else
 							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" onClick="shutdown()">
 							<h3 class="buttontop"><small>Shutdown Pi</small></h3>
 							<h3 class="degre" ><i class="fa fa-power-off fa-1x red"></i></h3>
-							<h3 class="status"></small></h3>
-                            </button>	
-				
+
 <?php include("model.php");  ?>
                         </div>
                         <!-- /.panel-body -->
