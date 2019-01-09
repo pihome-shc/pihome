@@ -196,19 +196,20 @@ while ($row = mysqli_fetch_assoc($results)) {
                 $shcolor='';
                 $target=number_format(DispTemp($conn,$boost_c),0) . '&deg;';
             }
-            else if (($sch_status == 1) && ($ovactive == '1') && ($room_c < $schedule_c)) {
+            //else if (($sch_status == 1) && ($ovactive == '1') && ($room_c < $schedule_c)) {
+			else if (($ovactive == '1') && ($room_c < $override_c)) {
                 //We are override scheduled and heating
-                $status='red';   
+                $status="blue";
                 $shactive='fa-refresh';
                 $shcolor='';
-                $target=number_format(DispTemp($conn,$schedule_c),0) . '&deg;';
+                $target=number_format(DispTemp($conn,$override_c),0) . '&deg;';
             }
-            else if (($sch_status == 1) && ($ovactive == '1') && ($room_c >= $schedule_c)) {
+            else if (($ovactive == '1') && ($room_c >= $override_c)) {
                 //We are override scheduled and NOT heating
                 $status='orange';
                 $shactive='fa-refresh';
                 $shcolor='';
-                $target=number_format(DispTemp($conn,$schedule_c),0) . '&deg;';
+                $target=number_format(DispTemp($conn,$override_c),0) . '&deg;';
             }
             else if (($sch_status == 1) && ($room_c < $schedule_c)) {
                 //We are scheduled and heating
@@ -226,8 +227,9 @@ while ($row = mysqli_fetch_assoc($results)) {
             }
             else {
                 //We shouldn't get here.
-                $status='blue';      
-                $shactive='';
+                $status='';      
+				//$shactive='fa-question';
+				$shactive='';
                 $shcolor='';
                 $target='';     //show no target temperature
             }            
@@ -289,13 +291,6 @@ while ($row = mysqli_fetch_assoc($results)) {
 
 
 //BOILER BUTTON 
-
-//query to get last boiler statues change time
-$query = "SELECT * FROM boiler_logs ORDER BY id desc LIMIT 1 ";
-$result = $conn->query($query);
-$boiler_onoff = mysqli_fetch_array($result);
-$boiler_last_off = $boiler_onoff['stop_datetime'];
-
 //query to get last boiler operation time and hysteresis time
 $query = "SELECT * FROM boiler LIMIT 1";
 $result = $conn->query($query);
@@ -304,6 +299,12 @@ $fired_status = $row['fired_status'];
 $boiler_name = $row['name'];
 $boiler_max_operation_time = $row['max_operation_time'];
 $boiler_hysteresis_time = $row['hysteresis_time'];
+
+//query to get last boiler statues change time
+$query = "SELECT * FROM boiler_logs ORDER BY id desc LIMIT 1 ";
+$result = $conn->query($query);
+$boiler_onoff = mysqli_fetch_array($result);
+$boiler_last_off = $boiler_onoff['stop_datetime'];
 
 //check if hysteresis is passed its time or not 
 $hysteresis='0';
@@ -361,7 +362,7 @@ echo '						<a style="color: #777; cursor: pointer; text-decoration: none;" href
 							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn">
 							<h3 class="buttontop"><small>Override</small></h3>
 							<h3 class="degre" ><i class="fa fa-refresh fa-1x"></i></h3>
-							<h3 class="status"><small><i class="fa fa-circle fa-fw '.$override_status.'"></i></small>
+							<h3 class="status"><small class="statuscircle"><i class="fa fa-circle fa-fw '.$override_status.'"></i></small>
 							</h3></button></a>';
 
 							if (in_array("1", $boost_arr)) {$boost_status='red';}else{$boost_status='blue';}
@@ -369,7 +370,7 @@ echo '						<a style="color: #777; cursor: pointer; text-decoration: none;" href
 							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn">
 							<h3 class="buttontop"><small>Boost</small></h3>
 							<h3 class="degre" ><i class="fa fa-rocket fa-1x"></i></h3>
-							<h3 class="status"><small><i class="fa fa-circle fa-fw '.$boost_status.'"></i></small>
+							<h3 class="status"><small class="statuscircle"><i class="fa fa-circle fa-fw '.$boost_status.'"></i></small>
 							</h3></button></a>';
 							
 							$query = "SELECT * FROM schedule_night_climate_time WHERE id = 1";
@@ -380,7 +381,7 @@ echo '						<a style="color: #777; cursor: pointer; text-decoration: none;" href
 							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn">
 							<h3 class="buttontop"><small>Night Climate</small></h3>
 							<h3 class="degre" ><i class="fa fa-bed fa-1x"></i></h3>
-							<h3 class="status"><small><i class="fa fa-circle fa-fw '.$night_status.'"></i></small>
+							<h3 class="status"><small class="statuscircle"><i class="fa fa-circle fa-fw '.$night_status.'"></i></small>
 							</h3></button>';
 							
 							if ($away_active=='1'){$awaystatus="red";}elseif ($away_active=='0'){$awaystatus="blue";}
@@ -388,21 +389,21 @@ echo '						<a href="javascript:active_away();">
 							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn">
 							<h3 class="buttontop"><small>Away</small></h3>
 							<h3 class="degre" ><i class="fa fa-sign-out fa-1x"></i></h3>
-							<h3 class="status"><small><i class="fa fa-circle fa-fw '.$awaystatus.'"></i></small>
+							<h3 class="status"><small class="statuscircle"><i class="fa fa-circle fa-fw '.$awaystatus.'"></i></small>
 							</h3></button></a>';
 ?>
 							<a style="color: #777; cursor: pointer; text-decoration: none;" href="holidays.php">
 							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn">
 							<h3 class="buttontop"><small>Holidays</small></h3>
 							<h3 class="degre" ><i class="fa fa-paper-plane fa-1x"></i></h3>
-							<h3 class="status"><small style="color:#048afd;"><i class="fa fa-circle fa-fw"></i></small>
+							<h3 class="status"><small class="statuscircle" style="color:#048afd;"><i class="fa fa-circle fa-fw"></i></small>
 							</h3></button></a>
 
 							<a style="color: #777; cursor: pointer; text-decoration: none;" href="zone_add.php">
 							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn">
 							<h3 class="buttontop"><small>Add Zone</small></h3>
 							<h3 class="degre" ><i class="fa fa-plus fa-1x"></i></h3>
-							<h3 class="status"><small style="color:#048afd;"><i class="fa fa-fw"></i></small>
+							<h3 class="status"><small class="statuscircle" style="color:#048afd;"><i class="fa fa-fw"></i></small>
 							</h3></button></a>
 
 							</div></div>
