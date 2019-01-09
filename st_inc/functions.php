@@ -77,6 +77,34 @@ function getWeather()
         }
   }
 
+/**
+* ShowWeather
+*
+* Show weather at bottom of page, echos content directly.
+* Weather_c is now dependent upon the units specified in the weather_update query.
+*
+* @param object $conn
+*   Database connection
+*
+*/
+function ShowWeather($conn)
+{
+    $query="select * from weather";
+    $result = $conn->query($query);
+    $weather = mysqli_fetch_array($result);    
+
+    $c_f = settings($conn, 'c_f');
+    
+    echo 'Outside: ' . $weather['c'] . '&deg;&nbsp;';
+    if($c_f==1 || $c_f=='1')
+        echo 'F';
+    else
+        echo 'C';
+
+    echo '<span><img border="0" width="24" src="images/' . $weather['img'] . '.png" title="' . $weather['title'] . ' - ' . $weather['description'] . '"></span>';
+    echo '<span>' . $weather['title'] . ' - ' . $weather['description'] . '</span>';
+}
+  
 
 //ref: http://stackoverflow.com/questions/14721443/php-convert-seconds-into-mmddhhmmss
 // Prefix single-digit values with a zero.
@@ -164,7 +192,11 @@ function settings($db, $svalue){
 	$rValue = "";
 	$query="SELECT * FROM system limit 1;";
 	$result = $db->query($query);
-	if ($row = mysqli_fetch_array($result)){$rValue = $row[$svalue];}
+	if ($row = mysqli_fetch_array($result))
+    {
+        if(isset($row[$svalue]))
+            $rValue = $row[$svalue];        
+    }
 	return $rValue;	
 }
 
@@ -234,6 +266,54 @@ function get_current_url($strip = true) {
         $scheme = isset($_SERVER['REQUEST_SCHEME']) ? $_SERVER['REQUEST_SCHEME'] : ('http'. (($_SERVER['SERVER_PORT'] == '443') ? 's' : ''));
     }
     return sprintf('%s://%s%s', $scheme, $host, $filter($_SERVER['REQUEST_URI']));
+}
+
+
+/**
+* DispTemp
+*
+* Convert the temp, if necessary, to Fahrenheit. 
+*   All database records are expected to be in Celsius.
+*
+* @param object $conn
+*   Database connection
+* @param int $C
+*   Degrees in C
+*
+* @return int
+*   Degrees in C or F
+*/
+function DispTemp($conn,$C)
+{
+    $c_f = settings($conn, 'c_f');
+    if($c_f==1 || $c_f=='1')
+    {
+        return round(($C*9/5)+32,1);
+    }
+    return round($C,1);
+}
+/**
+* TempToDB
+*
+* Convert the temp from the UI, either C or F, to Celsius for storage. 
+*   All database records are expected to be in Celsius.
+*
+* @param object $conn
+*   Database connection
+* @param int $T
+*   Degrees in C/F, from UI
+*
+* @return int
+*   Degrees in C
+*/
+function TempToDB($conn,$T)
+{
+    $c_f = settings($conn, 'c_f');
+    if($c_f==1 || $c_f=='1')
+    {
+        return round(($T-32)*5/9,1);
+    }
+    return round($T,1);
 }
 
 ?>

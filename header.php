@@ -157,6 +157,17 @@ require_once(__DIR__.'/st_inc/functions.php');
 $query="select * from weather;";
 $result=$conn->query($query);
 $weather = mysqli_fetch_array($result);
+$c_f = settings($conn, 'c_f');
+if($c_f==1 || $c_f=='1')
+{
+    $TUnit='F';
+    $WUnit='mph';
+}
+else
+{
+    $TUnit='C';
+    $WUnit='km/s';
+}
 ?>
 
 <div class="modal fade" id="weather" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
@@ -176,11 +187,11 @@ $weather = mysqli_fetch_array($result);
             <div class="col-xs-7 col-sm-6 col-md-6 wdata">
                 Sunrise: <?php echo date('H:i', $weather['sunrise']);?> <br>
                 Sunset: <?php echo date('H:i', $weather['sunset']);?> <br>
-                Wind: <?php echo $weather['wind_speed'];?> km/s
+                Wind: <?php echo $weather['wind_speed'] . '&nbsp;' . $WUnit;?>
 			<?php //date_sun_info( int $weather['sunrise'], float $weather['lat'] , float $weather['lon']) ;?>
 			</div>     
             <div class="col-xs-5 col-sm-6 col-md-6">
-                <span class="pull-right degrees"><?php echo $weather['c'] ;?>&deg;C</span>
+                <span class="pull-right degrees"><?php echo $weather['c'] . '&deg;&nbsp;' . $TUnit;?></span>
             </div> 
         </div> 
 		<br>

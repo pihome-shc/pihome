@@ -27,7 +27,6 @@ require_once(__DIR__.'/st_inc/functions.php');
 $what = $_GET['w'];   # what to do, override, schedule, away etc..
 $opp =  $_GET['o'];   # insert, update, delete, ( active only device )
 $wid = $_GET['wid'];  # which id
-$frost_temp = $_GET['frost_temp']; #update frost temperature
 
 //Delete Zone and all related records
 if(($what=="zone") && ($opp=="delete")){
@@ -185,53 +184,24 @@ if($what=="away"){
 //update frost temperature
 if($what=="frost"){
 	if($opp=="update"){
-			$query = "UPDATE frost_protection SET temperature = '{$frost_temp}', sync = 0 LIMIT 1";
-			$conn->query($query);	
+        $temp=TempToDB($conn,$_GET['frost_temp']);
+        $query = "UPDATE frost_protection SET temperature = '" . number_format($temp,1) . "', sync = 0 LIMIT 1";
+        if($conn->query($query))
+        {
+            header('Content-type: application/json');
+            echo json_encode(array('Success'=>'Success','Query'=>$query));
+            return;
+        }
+        else
+        {
+            header('Content-type: application/json');
+            echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+            return;
+        }
 	}
 }
 
 
-
-//update openweather
-if($what=="openweather"){
-	if($opp=="update"){
-        if($_GET['rad_CityZip']=='City') {
-            $query = "UPDATE `system` SET `country`='" . $_GET['sel_Country'] . "'
-                    ,`openweather_api`='" . $_GET['inp_APIKEY'] . "'
-                    ,`city`='" . $_GET['inp_City'] . "',`zip`=NULL;";
-            if($conn->query($query))
-            {
-                header('Content-type: application/json');
-                echo json_encode(array('Success'=>'Success','Query'=>$query));
-                return;
-            }
-            else
-            {
-                header('Content-type: application/json');
-                echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
-                return;
-            }
-        }
-        else if($_GET['rad_CityZip']=='Zip') {
-            $query = "UPDATE `system` SET `country`='" . $_GET['sel_Country'] . "'
-                    ,`openweather_api`='" . $_GET['inp_APIKEY'] . "'
-                    ,`zip`='" . $_GET['inp_Zip'] . "',`city`=NULL;";
-            if($conn->query($query))
-            {
-                header('Content-type: application/json');
-                echo json_encode(array('Success'=>'Success','Query'=>$query));
-                return;
-            }
-            else
-            {
-                header('Content-type: application/json');
-                echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
-                return;
-            }
-        }
-        else {
-            header('Content-type: application/json');
-            echo json_encode(array('Message'=>'Invalid value for rad_CityZip.\r\n$_GET=' . print_r($_GET)));
             return;
         }
 	}

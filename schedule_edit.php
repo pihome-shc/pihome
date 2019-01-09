@@ -38,19 +38,24 @@ if (isset($_POST['submit'])) {
 	$result = $conn->query($query);
 	$schedule_daily_time_id = mysqli_insert_id($conn);
 	if ($result) {
-		$message_success = "Schedule Modified Successfully!!!";
+		$message_success = "<p>Schedule Time Modified Successfully!!!</p>";
 		header("Refresh: 3; url=schedule.php");
 	} else {
-		$error = "<p>{$LANG['username_create_failed']}</p><p>".mysqli_error()."</p>";
+		$error = "<p>Schedule Time Modification failed with error: </p><p>".mysqli_error($conn)."</p>";
 	}
 
 	foreach($_POST['id'] as $id){
 		$id = $_POST['id'][$id];
 		$status = isset($_POST['status'][$id]) ? $_POST['status'][$id] : "0";
 		$status = $_POST['status'][$id];
-		$temp = $_POST['temp'][$id];
-		$query = "UPDATE schedule_daily_time_zone SET sync = '0', status = '{$status}', temperature = '{$temp}' WHERE id = '{$id}' LIMIT 1";
+        $temp=TempToDB($conn,$_POST['temp'][$id]);
+		$query = "UPDATE schedule_daily_time_zone SET sync = '0', status = '{$status}', temperature = '" . number_format($temp,1) . "' WHERE id = '{$id}' LIMIT 1";
 		$zoneresults = $conn->query($query);
+        if ($zoneresults) {
+            $message_success .= "<p>Schedule Temp Modified Successfully!!!</p>";
+        } else {
+            $error .= "<p>Schedule Temp Modification failed with error: </p><p>".mysqli_error($conn)."</p>";
+        }
 	}
 }
 ?>
@@ -62,7 +67,7 @@ if (isset($_POST['submit'])) {
                 <div class="col-lg-12">
 				<div class="panel panel-primary">
                         <div class="panel-heading">
-                            <i class="fa fa-clock-o fa-fw"></i> Add Schedule 
+                            <i class="fa fa-clock-o fa-fw"></i> Edit Schedule 
 						<div class="pull-right"> <div class="btn-group"><?php echo date("H:i"); ?></div> </div>
                         </div>
                         <!-- /.panel-heading -->
@@ -104,39 +109,21 @@ if($row['tz_status'] == 1){
 	}
 ?>
 	<select class="form-control input-sm" type="number" id="<?php echo $row["tz_id"];?>" name="temp[<?php echo $row["tz_id"];?>]" placeholder="Ground Floor Temperature" >
-	<option selected><?php echo $row["temperature"];?></option>
-	<option>0</option>
-	<option>16</option>
-	<option>17</option>
-	<option>18</option>
-	<option>19</option>
-	<option>20</option>
-	<option>21</option>
-	<option>22</option>
-	<option>23</option>
-	<option>24</option>
-	<option>25</option>
-	<option>26</option>
-	<option>27</option>
-	<option>28</option>
-	<option>29</option>
-	<option>30</option>
-	<option>31</option>
-	<option>32</option>
-	<option>33</option>
-	<option>34</option>
-	<option>35</option>
-	<option>36</option>
-	<option>37</option>
-	<option>38</option>
-	<option>39</option>
-	<option>40</option>
-	<option>41</option>
-	<option>42</option>
-	<option>43</option>
-	<option>44</option>
-	<option>45</option>
-	
+<?php 
+    $c_f = settings($conn, 'c_f');
+    if($c_f==1 || $c_f=='1') {
+        for($t=60;$t<=100;$t++)
+        {
+            echo '<option value="' . $t . '" ' . (DispTemp($conn, $row['temperature'])==$t ? 'selected' : '') . '>' . $t . '</option>';
+        }
+    }
+    else {
+        for($t=16;$t<=45;$t++)
+        {
+            echo '<option value="' . $t . '" ' . ($row['temperature']==$t ? 'selected' : '') . '>' . $t . '</option>';
+        }
+    }
+?>	
 	</select>
     <div class="help-block with-errors"></div></div></div>
 <?php }?>				
@@ -147,15 +134,9 @@ if($row['tz_status'] == 1){
                         <!-- /.panel-body -->
 						<div class="panel-footer">
 <?php 
-$query="select * from weather";
-$result = $conn->query($query);
-$weather = mysqli_fetch_array($result);
+ShowWeather($conn);
 ?>
 
-Outside: <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
-<span><img border="0" width="24" src="images/<?php echo $weather['img'];?>.png" title="<?php echo $weather['title'];?> - 
-<?php echo $weather['description'];?>"></span> <span><?php echo $weather['title'];?> - 
-<?php echo $weather['description'];?></span>
                         </div>
                     </div>
                 </div>

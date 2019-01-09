@@ -32,18 +32,23 @@ if (isset($_POST['submit'])) {
 	$schedule_daily_time_id = mysqli_insert_id($conn);
 	
 	if ($result) {
-		$message_success = "Schedule Time Added Successfully!!!";
+		$message_success = "<p>Schedule Time Added Successfully!!!</p>";
 		header("Refresh: 3; url=schedule.php");
 	} else {
-		$error = "<p>Schedule Addtion failed with error </p><p>" . mysqli_error() . "</p>";
+		$error = "<p>Schedule Time Addition failed with error: </p><p>" . mysqli_error($conn) . "</p>";
 	}
 	foreach($_POST['id'] as $id){
 		$id = $_POST['id'][$id];
 		$status = isset($_POST['status'][$id]) ? $_POST['status'][$id] : "0";
 		$status = $_POST['status'][$id];
-		$temp = $_POST['temp'][$id];
-		$query = "INSERT INTO schedule_daily_time_zone(sync, status, schedule_daily_time_id, zone_id, temperature) VALUES ('0', '{$status}', '{$schedule_daily_time_id}','{$id}','{$temp}')"; 
+        $temp=TempToDB($conn,$_POST['temp'][$id]);
+		$query = "INSERT INTO schedule_daily_time_zone(sync, status, schedule_daily_time_id, zone_id, temperature) VALUES ('0', '{$status}', '{$schedule_daily_time_id}','{$id}','" . number_format($temp,1) . "')"; 
 		$zoneresults = $conn->query($query);
+        if ($zoneresults) {
+            $message_success .= "<p>Schedule Temp Added Successfully!!!</p>";
+        } else {
+            $error .= "<p>Schedule Temp Addition failed with error: </p><p>".mysqli_error($conn)."</p>";
+        }
 	}
 }
 ?>
@@ -91,7 +96,25 @@ while ($row = mysqli_fetch_assoc($results)) {
 
 	<div id="<?php echo $row["id"];?>" style="display:none !important;"><div class="form-group" class="control-label">
 	<select class="form-control input-sm" type="number" id="<?php echo $row["id"];?>" name="temp[<?php echo $row["id"];?>]" placeholder="Ground Floor Temperature" >
-	<option>0</option>
+<?php 
+    $c_f = settings($conn, 'c_f');
+    if($c_f==1 || $c_f=='1') {
+        for($t=60;$t<=100;$t++)
+        {
+            echo '<option value="' . $t . '" >' . $t . '</option>';
+        }
+    }
+    else {
+        for($t=16;$t<=45;$t++)
+        {
+            echo '<option value="' . $t . '" >' . $t . '</option>';
+        }
+    }
+?>	
+
+        
+        
+        <option>0</option>
 	<option>16</option>
 	<option>17</option>
 	<option>18</option>
@@ -134,15 +157,8 @@ while ($row = mysqli_fetch_assoc($results)) {
                         <!-- /.panel-body -->
 						<div class="panel-footer">
 <?php 
-$query="select * from weather";
-$result = $conn->query($query);
-$weather = mysqli_fetch_array($result);
+ShowWeather($conn);
 ?>
-
-Outside: <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
-<span><img border="0" width="24" src="images/<?php echo $weather['img'];?>.png" title="<?php echo $weather['title'];?> - 
-<?php echo $weather['description'];?>"></span> <span><?php echo $weather['title'];?> - 
-<?php echo $weather['description'];?></span>
                         </div>
                     </div>
                 </div>

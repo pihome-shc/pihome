@@ -49,7 +49,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 		<a href="javascript:active_boost('.$row["zone_id"].');">
 		<span class="chat-img pull-left override">';
 		if($row["status"]=="0"){ $shactive="bluesch"; $status="Off"; }else{ $shactive="redsch"; $status="On"; }
-		echo '<div class="circle '. $shactive.'"><p class="schdegree">'.$row["temperature"].'&deg;</p></div>
+		echo '<div class="circle '. $shactive.'"><p class="schdegree">'.number_format(DispTemp($conn,$row["temperature"]),0).'&deg;</p></div>
 		</span></a>
 		<div class="chat-body clearfix">
 		<div class="header">';
@@ -72,16 +72,9 @@ while ($row = mysqli_fetch_assoc($results)) {
 </div>
                         <!-- /.panel-body -->
 						<div class="panel-footer">
-<?php
-$query="select * from weather";
-$result = $conn->query($query);
-$weather = mysqli_fetch_array($result);
+<?php 
+ShowWeather($conn);
 ?>
-
-Outside: <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
-<span><img border="0" width="24" src="images/<?php echo $weather['img'];?>.png" title="<?php echo $weather['title'];?> - 
-<?php echo $weather['description'];?>"></span> <span><?php echo $weather['title'];?> - 
-<?php echo $weather['description'];?></span>
                         </div>
                     </div>
 <?php if(isset($conn)) { $conn->close();} ?>
