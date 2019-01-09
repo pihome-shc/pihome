@@ -408,14 +408,11 @@ table.dataTable thead .sorting:after {
  font-size:40%
  }
 
-.mainbtn 
-{
-    margin: 3px 3px 3px;
+.mainbtn {
+    margin: 3px 2px 2px;
     float:left;
 }
- 
- 
- 
+
 .circle
 {
 width:36px;
@@ -538,13 +535,13 @@ h3.status{
     height:12px;
     width:100%;
     display:inline-block;
-    padding: 0px 2px 2px;
+    padding: 0px 1px 2px;
 }
 .statuscircle {
     float:left;
 }
 .statusdegree {
-    margin-left:5px;
+    margin-left:2px;
     float:left;
 }
 .statuszoon{
@@ -553,10 +550,6 @@ h3.status{
     margin-bottom: 0px;
     float:right;
 }
-
-
-
-
 
 .schdegree{
 margin-left: 2px;
@@ -889,4 +882,12 @@ h3 small {font-family: "HelveticaNeue-Light",Helvetica,Arial,sans-serif;}
 .navbar-right {
     float: right !important;
     margin-right: -15px;
+}
+
+.panel-body {
+    padding: 6px;
+}
+
+#page-wrapper {
+    padding: 0 10px;
 }
