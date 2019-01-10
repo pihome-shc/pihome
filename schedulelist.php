@@ -47,24 +47,49 @@ require_once(__DIR__.'/st_inc/functions.php');
 <?php 
 //following variable set to 0 on start for array index. 
 $sch_time_index = '0';
-//$query = "SELECT * FROM schedule_daily_time_zone_view group by time_id ORDER BY start asc";
-$query = "SELECT time_id, time_status, `start`, `end`, tz_id, tz_status, zone_id, index_id, zone_name, temperature, max(temperature) as max_c FROM schedule_daily_time_zone_view group by time_id ORDER BY start asc";
+//$query = "SELECT time_id, time_status, `start`, `end`, tz_id, tz_status, zone_id, index_id, zone_name, temperature, max(temperature) as max_c FROM schedule_daily_time_zone_view group by time_id ORDER BY start asc";
+$query = "SELECT time_id, time_status, `start`, `end`, WeekDays,tz_id, tz_status, zone_id, index_id, zone_name, temperature, max(temperature) as max_c FROM schedule_daily_time_zone_view group by time_id ORDER BY start asc";
 $results = $conn->query($query);
 while ($row = mysqli_fetch_assoc($results)) {
 
+        if($row["WeekDays"]  & (1 << 0)){ $Sunday_status_icon="ion-checkmark-circled"; $Sunday_status_color="orangefa"; }else{ $Sunday_status_icon="ion-close-circled"; $Sunday_status_color="bluefa"; }
+        if($row["WeekDays"]  & (1 << 1)){ $Monday_status_icon="ion-checkmark-circled"; $Monday_status_color="orangefa"; }else{ $Monday_status_icon="ion-close-circled"; $Monday_status_color="bluefa"; }
+        if($row["WeekDays"]  & (1 << 2)){ $Tuesday_status_icon="ion-checkmark-circled"; $Tuesday_status_color="orangefa"; }else{ $Tuesday_status_icon="ion-close-circled"; $Tuesday_status_color="bluefa"; }
+        if($row["WeekDays"]  & (1 << 3)){ $Wednesday_status_icon="ion-checkmark-circled"; $Wednesday_status_color="orangefa"; }else{ $Wednesday_status_icon="ion-close-circled"; $Wednesday_status_color="bluefa"; }
+        if($row["WeekDays"]  & (1 << 4)){ $Thursday_status_icon="ion-checkmark-circled"; $Thursday_status_color="orangefa"; }else{ $Thursday_status_icon="ion-close-circled"; $Thursday_status_color="bluefa"; }
+        if($row["WeekDays"]  & (1 << 5)){ $Friday_status_icon="ion-checkmark-circled"; $Friday_status_color="orangefa"; }else{ $Friday_status_icon="ion-close-circled"; $Friday_status_color="bluefa"; }
+        if($row["WeekDays"]  & (1 << 6)){ $Saturday_status_icon="ion-checkmark-circled"; $Saturday_status_color="orangefa"; }else{ $Saturday_status_icon="ion-close-circled"; $Saturday_status_color="bluefa"; }
+		
 	if($row["time_status"]=="0"){ $shactive="bluesch"; }else{ $shactive="orangesch"; }
 	$time = strtotime(date("G:i:s")); 
 	$start_time = strtotime($row['start']);
 	$end_time = strtotime($row['end']);
-	if ($time >$start_time && $time <$end_time && $row["time_status"]=="1"){$shactive="redsch";}
+	if($row["WeekDays"]  & (1 << idate('w'))){if ($time >$start_time && $time <$end_time && $row["time_status"]=="1"){$shactive="redsch";}}
+	
 
 	//time shchedule listing
 	echo '
 	<li class="left clearfix scheduleli animated fadeIn">
-	<a href="javascript:active_schedule('.$row["time_id"].');"><span class="chat-img pull-left"><div class="circle '. $shactive.'"> <p class="schdegree">'.number_format(DispTemp($conn,$row["max_c"]),0).'&deg;</p></div></span></a>
+	<a href="javascript:active_schedule('.$row["time_id"].');"><span class="chat-img pull-left"><div class="circle '. $shactive.'"><p class="schdegree">'.$row["max_c"].'&deg;</p></div></span></a>
+	
 	<a style="color: #333; cursor: pointer; text-decoration: none;" data-toggle="collapse" data-parent="#accordion" href="#collapse'.$row['tz_id'].'">
 	<div class="chat-body clearfix">
-	<div class="header"><div class="text-info">&nbsp;&nbsp;'. $row['start'].' - ' .$row['end'].' &nbsp;&nbsp;<i class="fa fa-angle-double-right fa-fw"></i></div></a>
+	<div class="header text-info">&nbsp;&nbsp;'. $row['start'].' - ' .$row['end'].' &nbsp;&nbsp; 
+
+	<small class="pull-right pull-right-days">
+	&nbsp;&nbsp;&nbsp;&nbsp;S&nbsp;&nbsp;&nbsp;M&nbsp;&nbsp;&nbsp;T&nbsp;&nbsp;W&nbsp;&nbsp;&nbsp;T&nbsp;&nbsp;&nbsp;F&nbsp;&nbsp;&nbsp;S<br>
+	&nbsp;&nbsp;&nbsp;
+	<i class="ionicons '.$Sunday_status_icon.' fa-lg '.$Sunday_status_color.'"></i>
+	<i class="ionicons '.$Monday_status_icon.' fa-lg '.$Monday_status_color.'"></i>
+	<i class="ionicons '.$Tuesday_status_icon.' fa-lg '.$Tuesday_status_color.'"></i>
+	<i class="ionicons '.$Wednesday_status_icon.' fa-lg '.$Wednesday_status_color.'"></i>
+	<i class="ionicons '.$Thursday_status_icon.' fa-lg '.$Thursday_status_color.'"></i>
+	<i class="ionicons '.$Friday_status_icon.' fa-lg '.$Friday_status_color.'"></i>
+	<i class="ionicons '.$Saturday_status_icon.' fa-lg '.$Saturday_status_color.'"></i>
+
+	</small>
+	</div></div></a>
+
 	<div id="collapse'.$row["tz_id"].'" class="panel-collapse collapse">
 	<br>';
 

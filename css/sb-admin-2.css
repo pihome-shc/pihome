@@ -415,11 +415,11 @@ table.dataTable thead .sorting:after {
 
 .circle
 {
-width:36px;
-height:36px;
+width:40px;
+height:40px;
 border-radius:50%;
 font-size:13px;
-line-height:31px;
+line-height:36px;
 text-align:center;
 background:#000;
 background-color: transparent;
@@ -427,11 +427,11 @@ background-color: transparent;
 
 .circle_list
 {
-width:26px;
-height:26px;
+width:32px;
+height:32px;
 border-radius:50%;
 font-size:11px;
-line-height:23px;
+line-height:32px;
 text-align:center;
 background:#000;
 background-color: transparent;
@@ -441,7 +441,7 @@ border: 2px solid #5292f7;
 color:#5292f7;
 }
 .bluesch {
-border: 2px solid #5292f7;
+border: 1px solid #5292f7;
 color:#5292f7;
 background-color: #eef4ff;
 }
@@ -451,10 +451,35 @@ border: 1px solid #ff8839;
 color:#ff8839;
 }
 .orangesch{
-border: 2px solid #ff8839;
+border: 1.6px solid #ff8839;
 color:#ff8839;
 }
 
+.week_day {
+	font-size:12px;
+	margin-right: 5px;
+}
+
+.week_day_today {
+	color: #fff;
+	background-color: #ff8839;
+	border: 3px solid #ffede2;
+	width: 40px;
+	height: 40px;
+	margin-top: -2px;
+	cursor: pointer;
+	
+}
+.week_day:hover{
+	color: #fff;
+	background-color: #ff8839;
+	border: 3px solid #ffede2;
+	width: 40px;
+	height: 40px;
+	margin-top: -2px;
+	margin-right: 1px;
+	cursor: pointer;
+}
 .redsch_list {
 border: 1px solid #dc0000;
 color:#dc0000;
@@ -462,7 +487,7 @@ background-color: #ffe9e9;
 }
 
 .redsch {
-border: 2px solid #dc0000;
+border: 1px solid #dc0000;
 color:#dc0000;
 background-color: #ffe9e9;
 }
@@ -569,7 +594,7 @@ margin-top: 10px;
 */
 
 .checkbox {
-  padding-left: 20px; }
+  padding-left: 30px; }
   .checkbox label {
     display: inline-block;
     vertical-align: middle;
@@ -870,11 +895,18 @@ h3 small {font-family: "HelveticaNeue-Light",Helvetica,Arial,sans-serif;}
 	
 }
 
+.sch_button {
+	margin-left: 35px;
+    padding-top: 0px;
+}
+.col-xs-1 {
+    width: 14.28%;
+}
 .navbar-brand {
     float: left;
     height: 20px;
     padding: 10px 10px;
-	padding-right: 60px;
+	padding-right: 40px;
     font-size: 18px;
     line-height: 20px;
 }

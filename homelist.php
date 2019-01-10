@@ -48,6 +48,9 @@ $frost_c = $frost_q['temperature'];
 $boost_index = '0';
 $override_index = '0';
 
+//following variable set to current day of the week.
+$dow = idate('w');
+
 //query to check away status 
 $query = "SELECT * FROM away LIMIT 1";
 $result = $conn->query($query);
@@ -77,7 +80,8 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$room_c = $roomtemp['payload'];	
 	
 	//query to get schedule and temperature from table 
-	$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between start AND end AND zone_id = {$row['id']} AND tz_status = '1' LIMIT 1";
+	$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between start AND end AND zone_id = {$row['id']} AND tz_status = '1' AND (WeekDays & (1 << {$dow})) > 0 LIMIT 1";
+	//$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between start AND end AND zone_id = {$row['id']} AND tz_status = '1' LIMIT 1";
 	$sch_results = $conn->query($query);
 	$schedule = mysqli_fetch_array($sch_results);
 	$zone_status = $schedule['tz_status'];
@@ -259,16 +263,17 @@ while ($row = mysqli_fetch_assoc($results)) {
 	<div class="modal-content">
 	<div class="modal-header">
 	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-	<h5 class="modal-title">'.$row['name'].' - Active Schedule </h5>
+	<h5 class="modal-title">'.$row['name'].' - Active Schedules for Today</h5>
 	</div>
 	<div class="modal-body">';
-	$squery = "SELECT * FROM schedule_daily_time_zone_view where zone_id ='{$row['id']}' AND tz_status = 1 ORDER BY start asc";
+	//$squery = "SELECT * FROM schedule_daily_time_zone_view where zone_id ='{$row['id']}' AND tz_status = 1 ORDER BY start asc";
+	$squery = "SELECT * FROM schedule_daily_time_zone_view where zone_id ='{$row['id']}' AND tz_status = 1  AND (WeekDays & (1 << {$dow})) > 0 ORDER BY start asc";
 	$sresults = $conn->query($squery);
 	if (mysqli_num_rows($sresults) == 0){
 		echo '<div class=\"list-group\"><a href="#" class="list-group-item"><i class="fa fa-exclamation-triangle red"></i>&nbsp;&nbsp;No Schedule Found for '.$row['name'].'!!! </a>';
 	} else {
-		echo '<h4>'.mysqli_num_rows($sresults).' Schedule Records found.</h4>
-		<p>You can Disable Schedule by clicking on temperature circle.</p>
+		//echo '<h4>'.mysqli_num_rows($sresults).' Schedule Records found.</h4>';
+		echo '<p>You can Disable Schedule by clicking on temperature circle.</p>
 		<br>
 		<div class=\"list-group\">' ;
 		while ($srow = mysqli_fetch_assoc($sresults)) {
