@@ -21,45 +21,20 @@
 
 -- You Must create following View Talbes in MySQL for PiHome Smart Heating to work 
 
-----Schedule List with zone and Weekdays details view table version 1.x
-Drop View if exists schedule_daily_time_zone_view; 
-CREATE VIEW schedule_daily_time_zone_view AS 
-select sdt.schedule_daily_week_days_id as day_id, sdwd.`weekday` as `weekday`, sdt.id as time_id, sdt.status as time_status, sdt.start, sdt.end, 
-sdtz.sync as tz_sync, sdtz.id as tz_id, sdtz.status as tz_status, sdtz.zone_id, 
-zone.index_id, zone.name as zone_name, temperature
-from schedule_daily_time_zone sdtz
-join schedule_daily_time       sdt  on sdtz.schedule_daily_time_id = sdt.id
-join schedule_daily_week_days  sdwd on sdt.schedule_daily_week_days_id = sdwd.id
-join zone on sdtz.zone_id = zone.id
-where sdtz.`purge` = '0' order by zone.index_id ;
-
-
-----Schedule List with zone and Weekdays details view table version 1.5 no major difference only column names are different and more descriptive. 
-Drop View if exists schedule_daily_time_zone_view; 
-CREATE VIEW schedule_daily_time_zone_view AS 
-select sdt.schedule_daily_week_days_id as sdwd_id, sdwd.`weekday`, 
-sdt.id as sdt_id, sdt.`status` as time_status, sdt.`start`, sdt.`end`, 
-sdtz.id as sdtz_id, sdtz.`status` as sdtz_status, sdtz.zone_id, 
-zone.index_id, zone.name as zone_name, sdtz.temperature
-from schedule_daily_time_zone  sdtz
-join schedule_daily_time       sdt  on sdtz.schedule_daily_time_id = sdt.id
-join schedule_daily_week_days  sdwd on sdt.schedule_daily_week_days_id = sdwd.id
-join zone                           on sdtz.zone_id = zone.id
-where sdtz.`purge` = '0' order by zone.index_id ;
-
 
 ----Schedule List with zone details view table version 1.x
 Drop View if exists schedule_daily_time_zone_view; 
-CREATE VIEW schedule_daily_time_zone_view AS 
-select ss.id as time_id, ss.status as time_status, sstart.start, send.end, 
+CREATE VIEW schedule_daily_time_zone_view AS
+select ss.id as time_id, ss.status as time_status, sstart.start, send.end, sWeekDays.WeekDays,
 sdtz.sync as tz_sync, sdtz.id as tz_id, sdtz.status as tz_status,
 sdtz.zone_id, zone.index_id, zone.name as zone_name, temperature
 from schedule_daily_time_zone sdtz
 join schedule_daily_time ss on sdtz.schedule_daily_time_id = ss.id
 join schedule_daily_time sstart on sdtz.schedule_daily_time_id = sstart.id
 join schedule_daily_time send on sdtz.schedule_daily_time_id = send.id
+join schedule_daily_time sWeekDays on sdtz.schedule_daily_time_id = sWeekDays.id
 join zone on sdtz.zone_id = zone.id
-where sdtz.`purge` = '0' order by zone.index_id 
+where sdtz.`purge` = '0' order by zone.index_id;
 
 
 --Zone View version 2
