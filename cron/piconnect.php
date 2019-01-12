@@ -12,8 +12,8 @@ echo " \033[0m \n";
 echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
 echo "*************************************************************\n";
-echo "*   PiConnect Script Version 0.2 Build Date 16/04/2018      *\n";
-echo "*   Update on 21/09/2018                                    *\n";
+echo "*   PiConnect Script Version 0.3 Build Date 16/04/2018      *\n";
+echo "*   Update on 12/01/2011                                    *\n";
 echo "*                                      Have Fun - PiHome.eu *\n";
 echo "*************************************************************\n";
 echo " \033[0m \n";
@@ -1475,7 +1475,7 @@ if ($status == "1"){
 					$sunset=$row['sunset'];
 					$img=$row['img'];
 					$last_update=rawurlencode($row['last_update']);
-					//echo row data to console 
+					//echo row data to console /
 					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Data to Sync with PiConnect: \n";
 					echo "\033[1;33m Data Comm:\033[0m           \033[1;32m".$data."\033[0m \n";
 					echo "\033[1;33m Table ID:\033[0m            \033[1;32m".$id."\033[0m \n";
@@ -1515,6 +1515,37 @@ if ($status == "1"){
 //Display Message PiConnect is disabled 
 }else {
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiConnect is \033[41m Disabled !!!\033[0m You to Enable PiConnect from Settings.\n";
+	echo $line;
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Delete all Records Marked for Purge to do Keep Everyting Clean.\n";
+	//Delete Boost Records
+	$query = "DELETE FROM boost WHERE zone_id = '{$id}' LIMIT 1;";
+	$conn->query($query);
+	//Delete All Message Out records
+	$query = "DELETE FROM messages_out WHERE zone_id = '{$id}' LIMIT 1;";
+	$conn->query($query);
+	//Delete Override records
+	$query = "DELETE FROM override WHERE zone_id = '{$id}' LIMIT 1;";
+	$conn->query($query);
+	//Delete Daily Time records
+	$query = "DELETE FROM schedule_daily_time_zone WHERE zone_id = '{$id}';";
+	$conn->query($query);
+	//Delete Night Climat records
+	$query = "DELETE FROM schedule_night_climat_zone WHERE zone_id = '{$id}';";
+	$conn->query($query);
+	//Delete All Zone Logs records
+	$query = "DELETE FROM zone_logs WHERE zone_id = '{$id}';";
+	$conn->query($query);
+	//Delete Zone record
+	$query = "DELETE FROM zone WHERE id = '{$id}' LIMIT 1;";
+	$conn->query($query);
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Record Purged in Local Database \n";
+	echo $line;
+	$query = "DELETE FROM schedule_daily_time_zone WHERE schedule_daily_time_id = '{$id}';";
+	$conn->query($query);
+	$query = "DELETE FROM schedule_daily_time WHERE id = '{$id}';";
+	$conn->query($query);
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Schedul Time Sync Purged in Local Database \n";
+	
 }
 echo "\n"; 
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiConnect Script Ended \n"; 
