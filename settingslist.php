@@ -185,13 +185,13 @@ $frost_temp = $frosttemp['temperature'];
 							<h3 class="status"></small></h3>
                             </button>
 							
-							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" onClick="reboot()">
+							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-toggle="modal" data-target="#reboot_system">
 							<h3 class="buttontop"><small>Reboot Pi</small></h3>
 							<h3 class="degre" ><i class="ion-ios-refresh-outline orange"></i></h3>
 							<h3 class="status"></small></h3>
                             </button>
 
-							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" onClick="shutdown()">
+							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-toggle="modal" data-target="#shutdown_system">
 							<h3 class="buttontop"><small>Shutdown Pi</small></h3>
 							<h3 class="degre" ><i class="fa fa-power-off fa-1x red"></i></h3>
 							<h3 class="status"></small></h3>
