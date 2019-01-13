@@ -61,7 +61,7 @@ $query="select start_datetime, stop_datetime from zone_log_view where (start_dat
 $results = $conn->query($query);
 $count=mysqli_num_rows($results); 
 while ($row = mysqli_fetch_assoc($results)) {
-	if((--$count)==-1) break;
+if((--$count)==-1) break;
 	$boiler_start = strtotime($row['start_datetime']) * 1000;
 if (is_null($row['stop_datetime'])) {
 	$boiler_stop = strtotime("now") * 1000;
@@ -95,7 +95,7 @@ $query="select start_datetime, stop_datetime from zone_log_view where (start_dat
 $results = $conn->query($query);
 $count=mysqli_num_rows($results); 
 while ($row = mysqli_fetch_assoc($results)) {
-	if((--$count)==0) break;
+	if((--$count)==-1) break;
 $boiler_start = strtotime($row['start_datetime']) * 1000;
 $boiler_stop = strtotime($row['stop_datetime'])* 1000;
 echo "{ xaxis: { from: ".$boiler_stop.", to: ".$boiler_start." }, color: \"#ffe9dc\" },  \n" ;

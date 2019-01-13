@@ -173,13 +173,13 @@ $frost_temp = $frosttemp['temperature'];
 							<h3 class="status"></small></h3>
                             </button>
 							
-							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-href="edit_users.php" data-toggle="modal" data-target="#user_setup">
+							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-href="#" data-toggle="modal" data-target="#user_setup">
 							<h3 class="buttontop"><small>User Accounts</small></h3>
 							<h3 class="degre" ><i class="ionicons ion-person blue"></i></h3>
 							<h3 class="status"></small></h3>
                             </button>
 
-							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-href="edit_users.php" data-toggle="modal" data-target="#big_thanks">
+							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-href="#" data-toggle="modal" data-target="#big_thanks">
 							<h3 class="buttontop"><small>Big Thanks</small></h3>
 							<h3 class="degre" ><i class="ionicons ion-help-buoy blueinfo"></i></h3>
 							<h3 class="status"></small></h3>
