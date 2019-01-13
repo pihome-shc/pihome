@@ -67,6 +67,10 @@ echo "--------------------------------------------------------------------------
 //following variable set to 0 on start for array index. 
 $boiler_index = '0';
 $zone_index = '0';
+
+//following variable set to current day of the week.
+$dow = idate('w');
+
 $query = "SELECT * FROM zone_view where status = 1 order by index_id asc;";
 $results = $conn->query($query);
 while ($row = mysqli_fetch_assoc($results)) {
@@ -83,25 +87,18 @@ while ($row = mysqli_fetch_assoc($results)) {
 	
 	//query to get temperature from messages_in table 
 	//$query = "SELECT * FROM messages_in_view_24h WHERE node_id = {$zone_sensor_id} ORDER BY datetime desc LIMIT 1;";
-	$query = "SELECT * FROM messages_in_view_24h WHERE node_id = {$zone_sensor_id} AND child_id = {$zone_sensor_child_id} ORDER BY datetime desc LIMIT 1;";
+	$query = "SELECT * FROM messages_in_view_24h WHERE node_id = '{$zone_sensor_id}' AND child_id = {$zone_sensor_child_id} ORDER BY datetime desc LIMIT 1;";
 	$result = $conn->query($query);
 	$sensor = mysqli_fetch_array($result);
 	$zone_c = $sensor['payload'];
-							
-	/*$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between `start` AND `end` AND zone_id = {$zone_id} AND time_status = '1' LIMIT 1;";
-	$result = $conn->query($query);
-	$schedule = mysqli_fetch_array($result);
-	$sch_status = $schedule['tz_status'];
-	$sch_start_time = $schedule['start'];
-	$sch_end_time = $schedule['end'];
-	$sch_c = $schedule['temperature'];
-	*/
+
 	//Have to account for midnight rollover conditions
-    $query = "SELECT * FROM schedule_daily_time_zone_view WHERE ((`end`>`start` AND CURTIME() between `start` AND `end`) OR (`end`<`start` AND CURTIME()<`end`) OR (`end`<`start` AND CURTIME()>`start`)) AND zone_id = {$zone_id} AND time_status = '1' LIMIT 1;";
+    $query = "SELECT * FROM schedule_daily_time_zone_view WHERE ((`end`>`start` AND CURTIME() between `start` AND `end`) OR (`end`<`start` AND CURTIME()<`end`) OR (`end`<`start` AND CURTIME()>`start`)) AND zone_id = {$zone_id} AND time_status = '1' AND (WeekDays & (1 << {$dow})) > 0 LIMIT 1;";
     //echo $query . PHP_EOL;
     $result = $conn->query($query);
     if(mysqli_num_rows($result)<=0){
         $sch_status=0;
+		$sch_c=0;
     }else{
         $schedule = mysqli_fetch_array($result);
         $sch_status = $schedule['tz_status'];
@@ -369,21 +366,6 @@ if (TimeIsBetweenTwoTimes($current_time, $start_time, $end_time)) {
 	$result = url_get_contents($url);
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiHome Says: ".$result."\n";
 	echo "---------------------------------------------------------------------------------------- \n";
-	
-/*
-	//Updating PiConnect API Key to System Table
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiConnect Saving API Key to System Settings \n";
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiConnect API: \033[1;33m".$uid."\033[0m \n";
-	$query = "UPDATE piconnect SET api_key = '{$uid}' LIMIT 1";
-	$result = $conn->query($query);
-	if ($result) {
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiConnect API Key Updated Successfully. \n";
-	}else {
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiConnect API Key Update Failed.".mysqli_error($conn)." \n";
-	}
-	
-*/
-
 }
 
 
