@@ -514,6 +514,52 @@ echo '            </div>
     </div>
 </div>';
 
+// Reboot Modal
+echo '
+<div class="modal fade" id="reboot_system" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                <h5 class="modal-title">Reboot System</h5>
+            </div>
+            <div class="modal-body">
+                        <p class="text-muted"> ARE YOU SURE YOU WANT TO REBOOT THE SYSTEM. </p>
+                        <i class="ion-ios-refresh-outline orange"></i> ReBoot
+                        ';
+
+echo '            </div>
+            <div class="modal-footer">
+                        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Cancel</button>
+                        <a href="javascript:reboot()" class="btn btn-default login btn-sm">ReBoot</a>
+            </div>
+        </div>
+    </div>
+</div>';
+
+// Shutdown Model
+echo '
+<div class="modal fade" id="shutdown_system" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                <h5 class="modal-title">Shutdown System</h5>
+            </div>
+            <div class="modal-body">
+                        <p class="text-muted"> ARE YOU SURE YOU WANT TO SHUTDOWN THE SYSTEM. </p>
+                        <i class="fa fa-power-off fa-1x red"></i> Shutdown
+                        ';
+
+echo '            </div>
+            <div class="modal-footer">
+                        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Cancel</button>
+                        <a href="javascript:shutdown()" class="btn btn-default login btn-sm">Shutdown</a>
+            </div>
+        </div>
+    </div>
+</div>';
+
 //wifi model
 $rxwifidata = exec ("cat /sys/class/net/wlan0/statistics/rx_bytes");
 $txwifidata = exec ("cat /sys/class/net/wlan0/statistics/tx_bytes");
