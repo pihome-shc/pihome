@@ -33,7 +33,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 <div class="panel-body">
 <ul class="chat"> 
 <?php 
-$query = "SELECT boost.id, boost.status, boost.zone_id, zone.index_id, boost.time, boost.temperature, boost.minute FROM boost join zone on boost.zone_id = zone.id order by zone.index_id";
+$query = "SELECT boost.id, boost.status, boost.zone_id, zone.index_id, boost.time, boost.temperature, boost.minute FROM boost join zone on boost.zone_id = zone.id WHERE boost.`purge` = '0' order by zone.index_id";
 $results = $conn->query($query);
 while ($row = mysqli_fetch_assoc($results)) {
 	//query to search location device_id		

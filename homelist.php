@@ -266,7 +266,6 @@ while ($row = mysqli_fetch_assoc($results)) {
 	<h5 class="modal-title">'.$row['name'].' - Active Schedules for Today</h5>
 	</div>
 	<div class="modal-body">';
-	//$squery = "SELECT * FROM schedule_daily_time_zone_view where zone_id ='{$row['id']}' AND tz_status = 1 ORDER BY start asc";
 	$squery = "SELECT * FROM schedule_daily_time_zone_view where zone_id ='{$row['id']}' AND tz_status = 1  AND (WeekDays & (1 << {$dow})) > 0 ORDER BY start asc";
 	$sresults = $conn->query($squery);
 	if (mysqli_num_rows($sresults) == 0){
