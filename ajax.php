@@ -23,10 +23,8 @@ confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
 
-if(!isset($_GET['Ajax']))
-{
+if(!isset($_GET['Ajax'])){
     //Check this once, instead of everytime. Should be more efficient.
-
     //if($DEBUG==true)
     //{
         var_dump($_GET);
@@ -36,14 +34,7 @@ if(!isset($_GET['Ajax']))
     return;
 }
 
-
-
-
-
-
-
-function GetModal_OpenWeather($conn)
-{
+function GetModal_OpenWeather($conn){
 	//foreach($_GET as $variable => $value) echo $variable . "&nbsp;=&nbsp;" . $value . "<br />\r\n";
 
     echo '<div class="modal-header">
@@ -356,8 +347,7 @@ function GetModal_OpenWeather($conn)
     if($City!=NULL) {
         echo '$(\'#form-openweather [name="rad_CityZip"]\').val(["City"]);';
         echo '$("#inp_City").val("' . $City . '");';
-    }
-    else {
+    }else {
         echo '$(\'#form-openweather [name="rad_CityZip"]\').val(["Zip"]);';
         echo '$("#inp_Zip").val("' . settings($conn,'zip') . '");';
     }
@@ -388,13 +378,3 @@ if($_GET['Ajax']=='GetModal_OpenWeather')
     GetModal_OpenWeather($conn);
     return;
 }
-
-
-
-
-
-
-
-
-
-

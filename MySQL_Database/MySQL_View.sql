@@ -24,17 +24,16 @@
 
 ----Schedule List with zone details view table version 1.x
 Drop View if exists schedule_daily_time_zone_view; 
-CREATE VIEW schedule_daily_time_zone_view AS
-select ss.id as time_id, ss.status as time_status, sstart.start, send.end, sWeekDays.WeekDays,
+CREATE VIEW schedule_daily_time_zone_view AS 
+select ss.id as time_id, ss.status as time_status, sstart.start, send.end, 
 sdtz.sync as tz_sync, sdtz.id as tz_id, sdtz.status as tz_status,
 sdtz.zone_id, zone.index_id, zone.name as zone_name, temperature
 from schedule_daily_time_zone sdtz
 join schedule_daily_time ss on sdtz.schedule_daily_time_id = ss.id
 join schedule_daily_time sstart on sdtz.schedule_daily_time_id = sstart.id
 join schedule_daily_time send on sdtz.schedule_daily_time_id = send.id
-join schedule_daily_time sWeekDays on sdtz.schedule_daily_time_id = sWeekDays.id
 join zone on sdtz.zone_id = zone.id
-where sdtz.`purge` = '0' order by zone.index_id;
+where sdtz.`purge` = '0' order by zone.index_id 
 
 
 --Zone View version 2

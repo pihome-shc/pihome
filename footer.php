@@ -86,7 +86,7 @@ $(document).ready(function(){
 $('#overridelist').load('overridelist.php');
 
 //load schedulelist.php	
-$("#schedulelist").load('schedulelist.php')
+$("#schedulelist").load('schedulelist.php');
 	
 //load boostlist.php 
 $('#boostlist').load('boostlist.php');

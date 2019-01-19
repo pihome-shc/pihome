@@ -28,53 +28,38 @@ $what = $_GET['w'];   # what to do, override, schedule, away etc..
 $opp =  $_GET['o'];   # insert, update, delete, ( active only device )
 $wid = $_GET['wid'];  # which id
 
-//Delete Zone and all related records
+//Set Purge to 1 to mark records for deletion for Zone and all related records
 if(($what=="zone") && ($opp=="delete")){
 
 	//Delete Boost Records
 	$query = "UPDATE boost SET boost.purge='1' WHERE zone_id = '".$wid."'";
 	$conn->query($query);
-	//$query = "DELETE FROM boost WHERE zone_id = '".$wid."'";
-	//$conn->query($query);
 	
 	//Delete All Message Out records
-	//$query = "UPDATE messages_out SET messages_out.purge='1' WHERE zone_id = '".$wid."'";
-	//$conn->query($query);
 	$query = "DELETE FROM messages_out WHERE zone_id = '".$wid."'";
 	$conn->query($query);
 	
 	//Delete Override records
 	$query = "UPDATE override SET override.purge='1' WHERE zone_id = '".$wid."'";
 	$conn->query($query);
-	//$query = "DELETE FROM override WHERE zone_id = '".$wid."'";
-	//$conn->query($query);
 	
 	//Delete Daily Time records
 	$query = "UPDATE schedule_daily_time_zone SET schedule_daily_time_zone.purge='1' WHERE zone_id = '".$wid."'";
 	$conn->query($query);
-	//$query = "DELETE FROM schedule_daily_time_zone WHERE zone_id = '".$wid."'";
-	//$conn->query($query);
 	
 	//Delete Night Climat records
 	$query = "UPDATE schedule_night_climat_zone SET schedule_night_climat_zone.purge='1' WHERE zone_id = '".$wid."'";
 	$conn->query($query);
-	//$query = "DELETE FROM schedule_night_climat_zone WHERE zone_id = '".$wid."'";
-	//$conn->query($query);
 	
 	//Delete All Zone Logs records
 	$query = "UPDATE zone_logs SET zone_logs.purge='1' WHERE zone_id = '".$wid."'";
 	$conn->query($query);
 	
-	//$query = "DELETE FROM zone_logs WHERE zone_id = '".$wid."'";
-	//$conn->query($query);
-	
 	//Delete Zone record
 	$query = "UPDATE zone SET zone.purge='1', zone.sync='0' WHERE id = '".$wid."'";
 	$conn->query($query);
-	//$query = "DELETE FROM zone WHERE id = '".$wid."'";
-	//$conn->query($query); 
 }	
-
+//Holidays 
 if($what=="holidays"){
 	if($opp=="active"){
 		$query = "SELECT * FROM holidays WHERE id ='".$wid."'";
@@ -89,12 +74,12 @@ if($what=="holidays"){
 		$conn->query($query);
 	}
 }
-
+//Users accounts
 if(($what=="user") && ($opp=="delete")){
 		$query = "DELETE FROM user WHERE id = '".$wid."'"; 
 		$conn->query($query);
 }
-
+//Heating Schedule 
 if($what=="schedule"){
 	if($opp=="active"){
 		$query = "SELECT * FROM schedule_daily_time WHERE id ='".$wid."'";
@@ -124,7 +109,7 @@ if($what=="schedule_zone"){
 		$conn->query($query);
 	}
 }
-
+//Override 
 if($what=="override"){
 	if($opp=="active"){
 		//$time = date('H:i:s', time());
@@ -138,7 +123,7 @@ if($what=="override"){
 		$conn->query($query);
 	}
 }
-
+//Boost 
 if($what=="boost"){
 	if($opp=="active"){
 		$query = "SELECT * FROM boost WHERE status = '1' limit 1;";
@@ -164,7 +149,7 @@ if($what=="boost"){
 		$conn->query($query);
 	}
 }
-
+//Away 
 if($what=="away"){
 	if($opp=="active"){
 		$time = date("Y-m-d H:i:s");
@@ -186,14 +171,11 @@ if($what=="frost"){
 	if($opp=="update"){
 		$temp=TempToDB($conn,$_GET['frost_temp']);
         $query = "UPDATE frost_protection SET temperature = '" . number_format($temp,1) . "', sync = 0 LIMIT 1";
-        if($conn->query($query))
-        {
+        if($conn->query($query)){
             header('Content-type: application/json');
             echo json_encode(array('Success'=>'Success','Query'=>$query));
             return;
-        }
-        else
-        {
+        }else{
             header('Content-type: application/json');
             echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
             return;
@@ -205,14 +187,11 @@ if($what=="frost"){
 if($what=="units"){
 	if($opp=="update"){
         $query = "UPDATE `system` SET `c_f`=" . $_GET['val'] . ";";
-        if($conn->query($query))
-        {
+        if($conn->query($query)){
             header('Content-type: application/json');
             echo json_encode(array('Success'=>'Success','Query'=>$query));
             return;
-        }
-        else
-        {
+        }else{
             header('Content-type: application/json');
             echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
             return;
@@ -227,43 +206,100 @@ if($what=="openweather"){
             $query = "UPDATE `system` SET `country`='" . $_GET['sel_Country'] . "'
                     ,`openweather_api`='" . $_GET['inp_APIKEY'] . "'
                     ,`city`='" . $_GET['inp_City'] . "',`zip`=NULL;";
-            if($conn->query($query))
-            {
+            if($conn->query($query)){
                 header('Content-type: application/json');
                 echo json_encode(array('Success'=>'Success','Query'=>$query));
                 return;
-            }
-            else
-            {
+            }else{
                 header('Content-type: application/json');
                 echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
                 return;
             }
-        }
-        else if($_GET['rad_CityZip']=='Zip') {
+        }else if($_GET['rad_CityZip']=='Zip') {
             $query = "UPDATE `system` SET `country`='" . $_GET['sel_Country'] . "'
                     ,`openweather_api`='" . $_GET['inp_APIKEY'] . "'
                     ,`zip`='" . $_GET['inp_Zip'] . "',`city`=NULL;";
-            if($conn->query($query))
-            {
+            if($conn->query($query)){
                 header('Content-type: application/json');
                 echo json_encode(array('Success'=>'Success','Query'=>$query));
                 return;
-            }
-            else
-            {
+            }else{
                 header('Content-type: application/json');
                 echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
                 return;
             }
-        }
-        else {
+        }else{
             header('Content-type: application/json');
             echo json_encode(array('Message'=>'Invalid value for rad_CityZip.\r\n$_GET=' . print_r($_GET)));
             return;
         }
 	}
 }
+
+//Setup PiConnect
+if($what=="setup_piconnect"){
+	//Update PiConnect API Status and key
+	$api_key = $_GET['api_key'];
+	$status = $_GET['status'];
+	if ($status=='true'){$status = '1';}else {$status = '0';}
+	$query = "UPDATE piconnect SET status = '".$status."', api_key = '".$api_key."';";
+	$conn->query($query);
+	//Set away to 0 
+	$query = "UPDATE away SET `sync`='0';";
+	$result = $conn->query($query);
+	//Update Boiler to sync
+	$query = "UPDATE boiler SET `sync`='0';";
+	$result = $conn->query($query);
+	//Update boiler Records to sync 
+	$query = "UPDATE boiler SET `sync`='0';";
+	$result = $conn->query($query);
+	//Update boiler logs to sync 
+	$query = "UPDATE boiler_logs SET `sync`='0';";
+	$result = $conn->query($query);
+	//upate boost records to sync 
+	$query = "UPDATE boost SET `sync` ='0';";
+	$result = $conn->query($query);
+	//update from protection to sync 
+	$query = "UPDATE frost_protection SET `sync`='0';";
+	$result = $conn->query($query);
+	//update gateway to sync 
+	$query = "UPDATE gateway SET `sync`='0';";
+	$result = $conn->query($query);
+	//update gateway logs NOT sync 
+	$query = "UPDATE gateway_logs SET `sync`='1';";
+	$result = $conn->query($query);
+	//update messages in history to NOT sync 
+	$query = "UPDATE messages_in SET `sync`='1';";
+	$result = $conn->query($query);
+	//update nodes to sync 
+	$query = "UPDATE nodes SET `sync`='0';";
+	$result = $conn->query($query);
+	//update nodes battery to NOT sync 
+	$query = "UPDATE nodes_battery SET `sync`='1';";
+	$result = $conn->query($query);
+	//update schedule daily time to sync 
+	$query = "UPDATE schedule_daily_time SET `sync`='0';";
+	$result = $conn->query($query);
+	//update schedule dailt time for zone to sync
+	$query = "UPDATE schedule_daily_time_zone SET `sync`='0';";
+	$result = $conn->query($query);
+	//update schedule night climate time to sync 
+	$query = "UPDATE schedule_night_climate_time SET `sync`='0';";
+	$result = $conn->query($query);
+	//update schedule night climate zone to sync 
+	$query = "UPDATE schedule_night_climat_zone SET `sync`='0';";
+	$result = $conn->query($query);
+	//update weather to sync 
+	$query = "UPDATE weather SET `sync`='0';";
+	$result = $conn->query($query);
+	//update zone to sync 
+	$query = "UPDATE zone SET `sync`='0';";
+	$result = $conn->query($query);
+	//update zone logs to NOT to sync 
+	$query = "UPDATE zone_logs SET `sync`='1';";
+	$result = $conn->query($query);
+}
+
 //Database Backup
 if($what=="db_backup"){
 	 shell_exec("php start_backup.php"); 

@@ -28,32 +28,37 @@ echo '
                 <h5 class="modal-title">PiConnect Settings</h5>
             </div>
             <div class="modal-body">
-<p class="text-muted"> Manage your PiHome Smart Heating from anywhere in the world without opening any ports or having to do any vpn to your home network. To Enable this feature visit <a class="green" target="_blank" href="http://www.pihome.eu/piconnect/"> http://www.pihome.eu/piconnect/</p>';
+<p class="text-muted"> Manage your PiHome Smart Heating from anywhere in the world without opening any ports or having to do any vpn to your home network. 
+To Signup for PiConnect API Key <a class="green" target="_blank" href="http://www.pihome.eu/piconnect/"> http://www.pihome.eu/piconnect/</a></p>';
 $query = "SELECT * FROM piconnect";
-$results = $conn->query($query);
-echo '	<div class=\"list-group\">';
-while ($row = mysqli_fetch_assoc($results)) {
-	if ($row['status'] ==1){
-		echo " <a target=\"_blank\" href=\"http://www.pihome.eu/piconnect/\" class=\"list-group-item\">
-		<i class=\"fa fa-plug green\"></i> API: ".$row['api_key']."
-		<span class=\"pull-right \"><em>&nbsp;&nbsp;<i class=\"fa fa-thumbs-up\"></i> &nbsp;&nbsp;Active </em></span></a>";
-	}else {
-		echo " <a target=\"_blank\" href=\"http://www.pihome.eu/piconnect/\" class=\"list-group-item\">
-		<i class=\"fa fa-plug \"></i> API: ".$row['api_key']."
-		<span class=\"pull-right \"><em>&nbsp;&nbsp;<i class=\"fa fa-frown-o\"></i> &nbsp;&nbsp;Disabled </em></span></a>";
-	}
-}
-echo '<br><br>
+$result = $conn->query($query);
+$row = mysqli_fetch_array($result);
+$status = $row['status'];
+$api_key = $row['api_key'];
+	echo '
+		<form data-toggle="validator" role="form" method="post" action="settings.php" id="form-join">
+		<div class="form-group" class="control-label">
+		<div class="checkbox checkbox-default checkbox-circle">';
+		if ($row['status'] == '1'){ 
+			echo '<input id="checkbox0" class="styled" type="checkbox" value="1" name="status" checked>';
+		}else {
+			echo '<input id="checkbox0" class="styled" type="checkbox" value="1" name="status">';
+		}
+	echo' 
+		<label for="checkbox0"> Enable PiConnect</label></div>
+		<div class="form-group" class="control-label"><label>API Key</label>
+		<input class="form-control input-sm" type="text" id="api_key" name="api_key" value="'.$row["api_key"].'" placeholder="PiConnect API Key">
+		<div class="help-block with-errors"></div></div>';
+echo '<br>
 <h5 class="strong red" >PiConnect - Simplify the Connected Smart Heating is in beta mode.</h5>';
-
 echo '</div></div>
             <div class="modal-footer">
-				<button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">Close</button>
+			    <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Cancel</button>
+                <input type="button" name="submit" value="Save" class="btn btn-default login btn-sm" onclick="setup_piconnect()">
              </div>
         </div>
     </div>
 </div>';
-
 
 //query to frost protection temperature 
 $query = "SELECT * FROM frost_protection LIMIT 1 ";
@@ -75,14 +80,11 @@ echo '
 				<select class="form-control input-sm" type="number" id="frost_temp" name="frost_temp" placeholder="Frost protection temperature" >';
 $c_f = settings($conn, 'c_f');
 if($c_f==1 || $c_f=='1') {
-    for($t=28;$t<=50;$t++)
-    {
+    for($t=28;$t<=50;$t++){
         echo '<option value="' . $t . '" ' . (DispTemp($conn, $frost)==$t ? 'selected' : '') . '>' . $t . '</option>';
     }
-}
-else {
-    for($t=-1;$t<=12;$t++)
-    {
+} else {
+    for($t=-1;$t<=12;$t++) {
         echo '<option value="' . $t . '" ' . ($frost==$t ? 'selected' : '') . '>' . $t . '</option>';
     }
 }
@@ -524,19 +526,16 @@ echo '
                 <h5 class="modal-title">Reboot System</h5>
             </div>
             <div class="modal-body">
-                        <p class="text-muted"> ARE YOU SURE YOU WANT TO REBOOT THE SYSTEM. </p>
-                        <i class="ion-ios-refresh-outline orange"></i> ReBoot
+                        <p class="text-muted"> Are You Sure You Want To Reboot The System? </p>
                         ';
-
 echo '            </div>
             <div class="modal-footer">
                         <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Cancel</button>
-                        <a href="javascript:reboot()" class="btn btn-default login btn-sm">ReBoot</a>
+                        <a href="javascript:reboot()" class="btn btn-default login btn-sm">Yes</a>
             </div>
         </div>
     </div>
 </div>';
-
 // Shutdown Model
 echo '
 <div class="modal fade" id="shutdown_system" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -547,14 +546,12 @@ echo '
                 <h5 class="modal-title">Shutdown System</h5>
             </div>
             <div class="modal-body">
-                        <p class="text-muted"> ARE YOU SURE YOU WANT TO SHUTDOWN THE SYSTEM. </p>
-                        <i class="fa fa-power-off fa-1x red"></i> Shutdown
+                        <p class="text-muted"> Are You Sure You Want To Shutdown The System? </p>
                         ';
-
 echo '            </div>
             <div class="modal-footer">
                         <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Cancel</button>
-                        <a href="javascript:shutdown()" class="btn btn-default login btn-sm">Shutdown</a>
+                        <a href="javascript:shutdown()" class="btn btn-default login btn-sm">Yes</a>
             </div>
         </div>
     </div>

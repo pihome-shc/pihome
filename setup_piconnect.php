@@ -34,7 +34,29 @@ require_once(__DIR__.'/st_inc/functions.php');
                         </div></div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
+	<form data-toggle="validator" role="form" method="post" action="<?php $_SERVER['PHP_SELF'];?>" id="form-join">
+	<?php 
+	$query = "SELECT * FROM piconnect Limit 1;";
+	$result = $conn->query($query);	
+	$row = mysqli_fetch_assoc($result);
+	?>
+    <div class="checkbox checkbox-default checkbox-circle">
+    <input id="checkbox0" class="styled" type="checkbox" name="sc_en" value="1" <?php $check = ($row['status'] == 1) ? 'checked' : ''; echo $check; ?>>
+    <label for="checkbox0"> Enable PiConnect</label></div>
+	
+	<div class="form-group" class="control-label"><label>Protocol</label>
+	<input class="form-control input-sm" type="text" id="protocol" name="protocol" value="<?php echo $row["protocol"];?>" placeholder="PiConnect Protocol" disabled>
+    <div class="help-block with-errors"></div></div>
+	
+	
+	<div class="form-group" class="control-label"><label>API Key</label>
+	<input class="form-control input-sm" type="text" id="api_key" name="api_key" value="<?php echo $row["api_key"];?>" placeholder="PiConnect API Key" >
+    <div class="help-block with-errors"></div></div>
+						
+						
 <?php
+
+/*
 	$query = "UPDATE away SET `sync`='0';";
 	$result = $conn->query($query);
 	if ($result) {echo "<p class=\"text-info\"> <strong>".date('Y-m-d H:i:s'). "</strong> - MySQL DataBase Table away Records set to Sync 0 </p>"; }else {echo "<p class=\"text-danger\" <strong>".date('Y-m-d H:i:s'). "</strong> - MySQL DataBase Table away Records set to Sync 0 Failed </p>";}
@@ -103,40 +125,20 @@ require_once(__DIR__.'/st_inc/functions.php');
 	$result = $conn->query($query);
 	if ($result) {echo "<p class=\"text-info\"> <strong>".date('Y-m-d H:i:s'). "</strong> - MySQL DataBase Table zone_logs Records set to Sync 0 </p>"; }else {echo "<p class=\"text-danger\" <strong>".date('Y-m-d H:i:s'). "</strong> - MySQL DataBase Table zone_logs Records set to Sync 0 Failed </p>";}
 
-	
+*/	
 ?>	
                         <!-- /.panel-body -->
 						</div><div class="panel-footer">
 <?php 
-$query="select * from weather";
-$result = $conn->query($query);
-$weather = mysqli_fetch_array($result);
+ShowWeather($conn);
 ?>
-<?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
-<span><img border="0" width="24" src="images/<?php echo $weather['img'];?>.png" title="<?php echo $weather['title'];?> - 
-<?php echo $weather['description'];?>"></span> <span><?php echo $weather['title'];?> - 
-<?php echo $weather['description'];?></span>
                             <div class="pull-right">
                                 <div class="btn-group">
-<?php
-$query="select date(start_datetime) as date, 
-sum(TIMESTAMPDIFF(MINUTE, start_datetime, expected_end_date_time)) as total_minuts,
-sum(TIMESTAMPDIFF(MINUTE, start_datetime, stop_datetime)) as on_minuts, 
-(sum(TIMESTAMPDIFF(MINUTE, start_datetime, expected_end_date_time)) - sum(TIMESTAMPDIFF(MINUTE, start_datetime, stop_datetime))) as save_minuts
-from boiler_logs WHERE date(start_datetime) = CURDATE() GROUP BY date(start_datetime) asc";
-$result = $conn->query($query);
-$boiler_time = mysqli_fetch_array($result);
-$boiler_time_total = $boiler_time['total_minuts'];
-$boiler_time_on = $boiler_time['on_minuts'];
-$boiler_time_save = $boiler_time['save_minuts'];
-if($boiler_time_on >0){	echo ' <i class="ionicons ion-ios-clock-outline"></i> '.secondsToWords(($boiler_time_on)*60);}
-?>
                                 </div>
                             </div>
                         </div>
                     </div>
 <?php if(isset($conn)) { $conn->close();} ?>
-
                 </div>
                 <!-- /.col-lg-4 -->
             </div>

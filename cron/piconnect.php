@@ -12,8 +12,8 @@ echo " \033[0m \n";
 echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
 echo "*************************************************************\n";
-echo "*   PiConnect Script Version 0.3 Build Date 16/04/2018      *\n";
-echo "*   Update on 12/01/2011                                    *\n";
+echo "*   PiConnect Script Version 0.3 Build Date 19/01/2019      *\n";
+echo "*   Update on 21/09/2018                                    *\n";
 echo "*                                      Have Fun - PiHome.eu *\n";
 echo "*************************************************************\n";
 echo " \033[0m \n";
@@ -870,6 +870,7 @@ if ($status == "1"){
 					$status=$row['status'];
 					$start=rawurlencode($row['start']);
 					$end=rawurlencode($row['end']);
+					$WeekDays=$row['WeekDays'];
 					//echo row data to console 
 					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Data to Sync with PiConnect: \n";
 					echo "\033[1;33m Data Comm:\033[0m            \033[1;32m".$data."\033[0m \n";
@@ -878,8 +879,9 @@ if ($status == "1"){
 					echo "\033[1;33m Status:\033[0m               \033[1;32m".$status."\033[0m \n";
 					echo "\033[1;33m Start Time:\033[0m           \033[1;32m".$row['start']."\033[0m \n";
 					echo "\033[1;33m End Time:\033[0m             \033[1;32m".$row['end']."\033[0m \n";
+					echo "\033[1;33m Weekdays :\033[0m            \033[1;32m".$row['WeekDays']."\033[0m \n"; 
 					//call out to PiConnect with data 
-					$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=schedule_daily_time&id=${id}&purge=${purge}&status=${status}&start=${start}&end=${end}";
+					$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=schedule_daily_time&id=${id}&purge=${purge}&status=${status}&start=${start}&end=${end}&WeekDays=${WeekDays}";
 					$result = url_get_contents($url);
 					//echo $url."\n";
 					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Result from PiConnect: \033[1;32m".$result."\033[0m \n";
@@ -916,12 +918,14 @@ if ($status == "1"){
 						$status = $value["status"];
 						$start = $value["start"];
 						$end = $value["end"];
+						$WeekDays = $value["WeekDays"];
 						echo "\033[1;33m Data Comm:\033[0m            \033[1;32m".$data."\033[0m \n";
 						echo "\033[1;33m Table ID:\033[0m             \033[1;32m".$id."\033[0m \n";
 						echo "\033[1;33m Purge:\033[0m                \033[1;32m".$purge."\033[0m \n";
 						echo "\033[1;33m Status:\033[0m               \033[1;32m".$status."\033[0m \n";
 						echo "\033[1;33m Start Time:\033[0m           \033[1;32m".$start."\033[0m \n";
 						echo "\033[1;33m End Time:\033[0m             \033[1;32m".$end."\033[0m \n";
+						echo "\033[1;33m Weekdays :\033[0m            \033[1;32m".$WeekDays."\033[0m \n"; 
 						if ($purge == '1' && $id != '0'){
 							$query = "DELETE FROM schedule_daily_time_zone WHERE schedule_daily_time_id = '{$id}';";
 							$conn->query($query);
@@ -929,12 +933,12 @@ if ($status == "1"){
 							$conn->query($query);
 							echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Schedul Time Sync Purged in Local Database \n";
 						}elseif($purge == '0' && $id != '0'){
-							$query = "UPDATE schedule_daily_time SET sync = '1',  status = '{$status}', start = '{$start}', end = '{$end}' WHERE id ='{$id}' LIMIT 1;";
+							$query = "UPDATE schedule_daily_time SET sync = '1',  status = '{$status}', start = '{$start}', end = '{$end}', WeekDays = '{$WeekDays}' WHERE id ='{$id}' LIMIT 1;";
 							$conn->query($query);
 							echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Schedul Time Sync Updated in Local Database \n";
 						}elseif ($purge == '1' && $id == '0'){
 							// Add schedule_daily_time record and set to sync 0
-							$query = "INSERT INTO schedule_daily_time (status, start, end) VALUES ('{$status}', '{$start}', '{$end}');";
+							$query = "INSERT INTO schedule_daily_time (status, start, end, WeekDays) VALUES ('{$status}', '{$start}', '{$end}', '{$WeekDays}');";
 							$result = $conn->query($query);
 						}
 						echo $line;
@@ -1040,15 +1044,17 @@ if ($status == "1"){
 						$status = $value["status"];
 						$start = $value["start"];
 						$end = $value["end"];
+						$WeekDays = $value["WeekDays"];
 						echo "\033[1;33m Data Comm:\033[0m            \033[1;32m".$data."\033[0m \n";
 						echo "\033[1;33m Table ID:\033[0m             \033[1;32m".$id."\033[0m \n";
 						echo "\033[1;33m Purge:\033[0m                \033[1;32m".$purge."\033[0m \n";
 						echo "\033[1;33m Status:\033[0m               \033[1;32m".$status."\033[0m \n";
 						echo "\033[1;33m Start Time:\033[0m           \033[1;32m".$start."\033[0m \n";
 						echo "\033[1;33m End Time:\033[0m             \033[1;32m".$end."\033[0m \n";
+						echo "\033[1;33m WeekDays:\033[0m             \033[1;32m".$WeekDays."\033[0m \n";
 						if ($id == '0' && $purge == '1' && $sync == '0' ){
 							// Add schedule_daily_time record and set to sync 0
-							$query = "INSERT INTO schedule_daily_time (sync, `purge`, status, start, end) VALUES ('0', '0', '{$status}', '{$start}', '{$end}');";
+							$query = "INSERT INTO schedule_daily_time (sync, `purge`, status, start, end, WeekDays) VALUES ('0', '0', '{$status}', '{$start}', '{$end}', '{$WeekDays}');";
 							$result = $conn->query($query);
 							echo mysqli_error($conn)."\n";
 							$schedule_daily_time_id = mysqli_insert_id($conn);
@@ -1475,7 +1481,7 @@ if ($status == "1"){
 					$sunset=$row['sunset'];
 					$img=$row['img'];
 					$last_update=rawurlencode($row['last_update']);
-					//echo row data to console /
+					//echo row data to console 
 					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Data to Sync with PiConnect: \n";
 					echo "\033[1;33m Data Comm:\033[0m           \033[1;32m".$data."\033[0m \n";
 					echo "\033[1;33m Table ID:\033[0m            \033[1;32m".$id."\033[0m \n";

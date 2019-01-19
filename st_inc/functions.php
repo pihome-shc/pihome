@@ -302,11 +302,9 @@ function DispTemp($conn,$C)
 * @return int
 *   Degrees in C
 */
-function TempToDB($conn,$T)
-{
+function TempToDB($conn,$T){
     $c_f = settings($conn, 'c_f');
-    if($c_f==1 || $c_f=='1')
-    {
+    if($c_f==1 || $c_f=='1'){
         return round(($T-32)*5/9,1);
     }
     return round($T,1);
