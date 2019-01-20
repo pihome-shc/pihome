@@ -58,7 +58,8 @@ if(($what=="zone") && ($opp=="delete")){
 	//Delete Zone record
 	$query = "UPDATE zone SET zone.purge='1', zone.sync='0' WHERE id = '".$wid."'";
 	$conn->query($query);
-}	
+}
+/* Holiday Module isn’t implanted yet!!!! leave code here for future.  
 //Holidays 
 if($what=="holidays"){
 	if($opp=="active"){
@@ -74,6 +75,8 @@ if($what=="holidays"){
 		$conn->query($query);
 	}
 }
+*/
+
 //Users accounts
 if(($what=="user") && ($opp=="delete")){
 		$query = "DELETE FROM user WHERE id = '".$wid."'"; 
