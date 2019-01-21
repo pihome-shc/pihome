@@ -301,6 +301,9 @@ if($what=="setup_piconnect"){
 	//update zone logs to NOT to sync 
 	$query = "UPDATE zone_logs SET `sync`='1';";
 	$result = $conn->query($query);
+	//update Systems settings to sync 
+	$query = "UPDATE system SET `sync`='0';";
+	$result = $conn->query($query);
 }
 
 //Database Backup
