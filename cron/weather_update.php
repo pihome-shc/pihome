@@ -12,25 +12,22 @@ echo "  |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___| \n";
 echo " \033[0m \n";
 echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
-echo "***********************************************************\n";
-echo "* Weather Update Script Version 0.1 Build Date 31/01/2018 *\n";
-echo "* Update on 14/04/218                                     *\n";
-echo "*                                    Have Fun - PiHome.eu *\n";
-echo "***********************************************************\n";
+echo "************************************************************\n";
+echo "* Weather Update Script Version 0.11 Build Date 31/01/2018 *\n";
+echo "* Update on 22/01/2019                                     *\n";
+echo "*                                     Have Fun - PiHome.eu *\n";
+echo "************************************************************\n";
 echo " \033[0m \n";
 
 require_once(__DIR__.'../../st_inc/connection.php');
 require_once(__DIR__.'../../st_inc/functions.php'); 
 
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Weather Update Script Started \n"; 
-
+//set the Unit
 $c_f = settings($conn, 'c_f');
-if($c_f==1 || $c_f=='1')
-{
+if($c_f==1 || $c_f=='1'){
     $units='units=imperial';
-}
-else
-{
+}else{
     $units='units=metric';
 }
 

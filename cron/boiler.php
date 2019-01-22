@@ -368,7 +368,6 @@ if (TimeIsBetweenTwoTimes($current_time, $start_time, $end_time)) {
 	echo "---------------------------------------------------------------------------------------- \n";
 }
 
-
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Fired Status: ".$new_boiler_status."\n";	
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Hysteresis Status: ".$hysteresis."\n";
 echo "---------------------------------------------------------------------------------------- \n";
