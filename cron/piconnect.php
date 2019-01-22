@@ -12,7 +12,7 @@ echo " \033[0m \n";
 echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
 echo "*************************************************************\n";
-echo "*   PiConnect Script Version 0.3 Build Date 19/01/2019      *\n";
+echo "*   PiConnect Script Version 0.31 Build Date 21/01/2019     *\n";
 echo "*   Update on 21/09/2018                                    *\n";
 echo "*                                      Have Fun - PiHome.eu *\n";
 echo "*************************************************************\n";
@@ -226,12 +226,14 @@ if ($status == "1"){
 					$update_alias=rawurlencode($row['update_alias']);
 					$country=rawurlencode($row['country']);
 					$city=rawurlencode($row['city']);
+					$zip=rawurlencode($row['zip']);
 					$openweather_api=rawurlencode($row['openweather_api']);
 					$backup_email=rawurlencode($row['backup_email']);
 					$ping_home=$row['ping_home'];
 					$timezone=rawurlencode($row['timezone']);
 					$shutdown=$row['shutdown'];
 					$reboot=$row['reboot'];
+					$c_f=$row['c_f'];
 					//echo row data to console 
 					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Data to sync with PiConnect: \n";
 					echo "\033[1;33m Data Comm:\033[0m            \033[1;32m".$data."\033[0m \n";
@@ -245,16 +247,17 @@ if ($status == "1"){
 					echo "\033[1;33m Update Alias:\033[0m         \033[1;32m".$row['update_alias']."\033[0m \n";
 					echo "\033[1;33m Country:\033[0m              \033[1;32m".$row['country']."\033[0m \n";
 					echo "\033[1;33m City:\033[0m                 \033[1;32m".$row['city']."\033[0m \n";
+					echo "\033[1;33m Zip Code:\033[0m             \033[1;32m".$row['zip']."\033[0m \n";
 					echo "\033[1;33m OpenWeather API:\033[0m      \033[1;32m".$row['openweather_api']."\033[0m \n";
 					echo "\033[1;33m Backup Email:\033[0m         \033[1;32m".$row['backup_email']."\033[0m \n";
 					echo "\033[1;33m Ping Home:\033[0m            \033[1;32m".$row['ping_home']."\033[0m \n";
 					echo "\033[1;33m Timezone:\033[0m             \033[1;32m".$row['timezone']."\033[0m \n";
 					echo "\033[1;33m Shutdown Status:\033[0m      \033[1;32m".$row['shutdown']."\033[0m \n";
-					echo "\033[1;33m Reboot Status:\033[0m        \033[1;32m".$row['reboot']."\033[0m \n";
+					echo "\033[1;33m Unit:\033[0m                 \033[1;32m".$row['c_f']."\033[0m \n";
 					//call out to PiConnect with data 
-					$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=system&id=${id}&purge=${purge}&name=${name}&version=${version}&build=${build}&update_location=${update_location}&update_file=${update_file}&update_alias=${update_alias}&country=${country}&city=${city}&openweather_api=${openweather_api}&backup_email=${backup_email}&ping_home=${ping_home}&timezone=${timezone}&shutdown=${shutdown}&reboot=${reboot}";
+					$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=system&id=${id}&purge=${purge}&name=${name}&version=${version}&build=${build}&update_location=${update_location}&update_file=${update_file}&update_alias=${update_alias}&country=${country}&city=${city}&zip=${zip}&openweather_api=${openweather_api}&backup_email=${backup_email}&ping_home=${ping_home}&timezone=${timezone}&shutdown=${shutdown}&reboot=${reboot}&unit=${c_f}";
 					$result = url_get_contents($url);
-					//echo $url."\n";
+					echo $url."\n";
 					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Result from PiConnect: \033[1;32m".$result."\033[0m \n";
 					if ($result == 'Success'){
 						$query = "UPDATE system SET sync = '1' WHERE id ='{$id}' LIMIT 1;";
@@ -810,18 +813,20 @@ if ($status == "1"){
 			//Zone sync end here 
 			/*****************************************************************************************************************************************************/
 			//start syncing Zone Logs table with PiConnect. 
+			//get zone log records with sync status 0
 			$query = "SELECT * FROM zone_logs where sync = 0 order by id asc;";
-			$results = $conn->query($query);
-			$row = mysqli_fetch_array($results);
+			$zlresults = $conn->query($query);
+			$row = mysqli_fetch_array($zlresults);
 			$boiler_log_id = $row['boiler_log_id'];
 			//check if boiler log is synced
 			//$query = "SELECT * FROM boiler_logs where sync = 0 AND id = '{$boiler_log_id}' AND stop_datetime IS NOT NULL order by id asc;";
-			$query = "SELECT * FROM boiler_logs where sync = 1 AND id = '{$boiler_log_id}';";
+			$query = "SELECT * FROM boiler_logs where id = '{$boiler_log_id}';";
 			$result = $conn->query($query);
-			if (mysqli_num_rows($results) != 0){
+			
+			if (mysqli_num_rows($zlresults) != 0){
 				echo $line;
-				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Logs Data to Sync with PiConnect: \033[32m". mysqli_num_rows($results)."\033[0m\n"; 
-				while ($row = mysqli_fetch_assoc($results)) {
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Logs Data to Sync with PiConnect: \033[32m". mysqli_num_rows($zlresults)."\033[0m\n"; 
+				while ($row = mysqli_fetch_assoc($zlresults)) {
 					$data='push';
 					$id=$row['id'];
 					$purge=$row['purge'];

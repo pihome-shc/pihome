@@ -58,7 +58,8 @@ if(($what=="zone") && ($opp=="delete")){
 	//Delete Zone record
 	$query = "UPDATE zone SET zone.purge='1', zone.sync='0' WHERE id = '".$wid."'";
 	$conn->query($query);
-}	
+}
+/* Holiday Module isn’t implanted yet!!!! leave code here for future.  
 //Holidays 
 if($what=="holidays"){
 	if($opp=="active"){
@@ -74,6 +75,8 @@ if($what=="holidays"){
 		$conn->query($query);
 	}
 }
+*/
+
 //Users accounts
 if(($what=="user") && ($opp=="delete")){
 		$query = "DELETE FROM user WHERE id = '".$wid."'"; 
@@ -297,6 +300,9 @@ if($what=="setup_piconnect"){
 	$result = $conn->query($query);
 	//update zone logs to NOT to sync 
 	$query = "UPDATE zone_logs SET `sync`='1';";
+	$result = $conn->query($query);
+	//update Systems settings to sync 
+	$query = "UPDATE system SET `sync`='0';";
 	$result = $conn->query($query);
 }
 

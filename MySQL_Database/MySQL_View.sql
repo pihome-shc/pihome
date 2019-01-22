@@ -72,7 +72,7 @@ join zone on boost.zone_id = zone.id
 join zone zone_idx on boost.zone_id = zone_idx.id;
 
 
---Boost View
+--Override View
 Drop View if exists override_view; 
 CREATE VIEW override_view AS
 select override.`status`, override.sync, override.zone_id, zone_idx.index_id, zone.name, override.time, override.temperature
