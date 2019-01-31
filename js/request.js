@@ -150,12 +150,7 @@ function shutdown() {
 	request('db.php', 'GET', quest, function(){ window.location="settings.php?shutdown"; });
     //window.location="settings.php?status=reboot";  
 }
-//triger search for PiHome network Gateway. 
-function find_gw() {  
-  	var quest = "?w=find_gw" + "&o=0" + "&frost_temp=0" + "&wid=0";
-	request('db.php', 'GET', quest, function(){ window.location="settings.php"; });
-    //window.location="settings.php?status=reboot";  
-}
+
 //start database backup <--- this function need some work. 
 function db_backup() {  
   	var quest = "?w=db_backup" + "&o=0" + "&frost_temp=0" + "&wid=0";
@@ -167,6 +162,36 @@ function db_backup() {
 function resetgw(wid){
 	var quest = "?w=resetgw&o=0&wid=" + wid + "&frost_temp=0";
 	request('db.php', 'GET', quest, function(){ window.location="settings.php"; });
+}
+
+//triger search for PiHome network Gateway. 
+function find_gw() {  
+  	var quest = "?w=find_gw" + "&o=0" + "&frost_temp=0" + "&wid=0";
+	request('db.php', 'GET', quest, function(){ window.location="settings.php"; });
+    //window.location="settings.php?status=reboot";  
+}
+
+//update Gateway 
+function setup_gateway(){
+var idata="w=setup_gateway&o=update&status="+document.getElementById("checkbox1").checked;
+    idata+="&gw_type="+document.getElementById("gw_type").value;
+	idata+="&gw_location="+document.getElementById("gw_location").value;
+	idata+="&gw_port="+document.getElementById("gw_port").value;
+	idata+="&gw_timout="+document.getElementById("gw_timout").value;
+    idata+="&wid=0";
+    $.get('db.php',idata)
+    .done(function(odata){
+        if(odata.Success)
+            reload_page();
+        else
+            console.log(odata.Message);
+    })
+    .fail(function( jqXHR, textStatus, errorThrown ){
+        if(jqXHR==401 || jqXHR==403) return;
+        console.log("setup_gateway: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
+    })
+    .always(function() {
+    });
 }
 
 //update PiConnect 

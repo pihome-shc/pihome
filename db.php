@@ -241,12 +241,6 @@ if($what=="openweather"){
 
 //Setup PiConnect
 if($what=="setup_piconnect"){
-	//Update PiConnect API Status and key
-	$api_key = $_GET['api_key'];
-	$status = $_GET['status'];
-	if ($status=='true'){$status = '1';}else {$status = '0';}
-	$query = "UPDATE piconnect SET status = '".$status."', api_key = '".$api_key."';";
-	$conn->query($query);
 	//Set away to 0 
 	$query = "UPDATE away SET `sync`='0';";
 	$result = $conn->query($query);
@@ -304,6 +298,21 @@ if($what=="setup_piconnect"){
 	//update Systems settings to sync 
 	$query = "UPDATE system SET `sync`='0';";
 	$result = $conn->query($query);
+	//Update PiConnect API Status and key
+	$api_key = $_GET['api_key'];
+	$status = $_GET['status'];
+	if ($status=='true'){$status = '1';}else {$status = '0';}
+	$query = "UPDATE piconnect SET status = '".$status."', api_key = '".$api_key."';";
+	if($conn->query($query)){
+		header('Content-type: application/json');
+		echo json_encode(array('Success'=>'Success','Query'=>$query));
+		return;
+	}else{
+		header('Content-type: application/json');
+		echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+		return;
+	}
+	
 }
 
 //Database Backup
@@ -331,12 +340,30 @@ if($what=="find_gw"){
 	$conn->query($query);
 }
 
-
 //Restart MySensors Gateway
 if($what=="resetgw"){
 	$query = "UPDATE gateway SET reboot = '1';";
 	$conn->query($query);
 }
 
+//Setup Smart Home Gateway
+if($what=="setup_gateway"){
+	$status = $_GET['status'];
+	$gw_type = $_GET['gw_type'];
+	$gw_location = $_GET['gw_location'];
+	$gw_port = $_GET['gw_port'];
+	$gw_timout = $_GET['gw_timout'];
+	if ($status=='true'){$status = '1';}else {$status = '0';}
+	$query = "UPDATE gateway SET status = '".$status."', `sync` = '0', type = '".$gw_type."', location = '".$gw_location."', port = '".$gw_port."', timout = '".$gw_timout."' where ID = 1;";
+	if($conn->query($query)){
+		header('Content-type: application/json');
+		echo json_encode(array('Success'=>'Success','Query'=>$query));
+		return;
+	}else{
+		header('Content-type: application/json');
+		echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+		return;
+	}
+}
 ?>
 <?php if(isset($conn)) { $conn->close();} ?>

@@ -95,7 +95,7 @@ $frost_temp = $frosttemp['temperature'];
 							<h3 class="status"></small></h3>
                             </button>
 
-							<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-href="edit_sensors.php" data-toggle="modal" data-target="#sensor_gateway">
+							<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-href="#" data-toggle="modal" data-target="#sensor_gateway">
 							<h3 class="buttontop"><small>Gateway</small></h3>
 							<h3 class="degre" ><i class="fa fa-heartbeat red"></i></h3>
 							<h3 class="status"></small></h3>
@@ -214,7 +214,7 @@ $frost_temp = $frosttemp['temperature'];
     </div>
   </div>
 </div>	
-			
+	
 <?php include("model.php");  ?>
                         </div>
                         <!-- /.panel-body -->

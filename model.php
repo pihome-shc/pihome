@@ -300,22 +300,61 @@ echo '
     </div>
 </div>';
 
-//sensor gateway model
+//gateway model
 echo '
 <div class="modal fade" id="sensor_gateway" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title">MySensors Gateway</h5>
+                <h5 class="modal-title">Smart Home Gateway</h5>
             </div>
-            <div class="modal-body">
-<p class="text-muted"> MySensors '.ucwords(gw_logs($conn, 'type')).' Gateway Status</p>';
-echo '	<div class=\"list-group\">';
+            <div class="modal-body">';
+$gquery = "SELECT * FROM gateway";
+$gresult = $conn->query($gquery);
+$grow = mysqli_fetch_array($gresult);
+	
+echo '<p class="text-muted"> Smart Home Gateway has nRF24L01 to communicate with the nodes and WiFi to connect to your home network to which controller will also be connected.</p>';
+echo '
+	<form data-toggle="validator" role="form" method="post" action="settings.php" id="form-join">
+	<div class="form-group" class="control-label">
+	<div class="checkbox checkbox-default checkbox-circle">';
+	if ($grow['status'] == '1'){
+		echo '<input id="checkbox1" class="styled" type="checkbox" value="1" name="status" checked>';
+	}else {
+		echo '<input id="checkbox1" class="styled" type="checkbox" value="1" name="status">';
+	}
+echo ' 
+	<label for="checkbox0"> Enable Gateway</label></div></div>
+	
+	<div class="form-group" class="control-label"><label>Gateway type</label>
+	<select class="form-control input-sm" type="text" id="gw_type" name="gw_type">
+	<option value="wifi" ' . ($type=='wifi' ? 'selected' : '') . '>WiFi</option>
+	<option value="serial" ' . ($type=='serial' ? 'selected' : '') . '>Serial</option>
+	</select>
+    <div class="help-block with-errors"></div></div>
+	
+	<div class="form-group" class="control-label"><label>IP/Serial Port Location </label>
+	<input class="form-control input-sm" type="text" id="gw_location" name="gw_location" value="'.$grow['location'].'" placeholder="Gateway Location">
+	<div class="help-block with-errors"></div></div>
+	
+	<div class="form-group" class="control-label"><label>TCP/IP Port/Baud Rate for Serial </label>
+	<input class="form-control input-sm" type="text" id="gw_port" name="gw_port" value="'.$grow['port'].'" placeholder="Gateway Port">
+	<div class="help-block with-errors"></div></div>
+
+	<div class="form-group" class="control-label"><label>Timeout </label>
+	<input class="form-control input-sm" type="text" id="gw_timout" name="gw_timout" value="'.$grow['timout'].'" placeholder="Gateway Timeout">
+	<div class="help-block with-errors"></div></div>
+
+	<div class="form-group" class="control-label"><label>Gateway Version </label>
+	<input class="form-control input-sm" type="text" id="gw_timout" name="gw_timout" value="'.$grow['version'].'" disabled>
+	<div class="help-block with-errors"></div></div>
+	
+<br><h4 class="info"><i class="fa fa-heartbeat red"></i> Gateway Script Process Info</h4>
+<div class=\"list-group\">';
 echo "
-<a href=\"#\" class=\"list-group-item\"><i class=\"fa fa-heartbeat red\"></i> Gateway Location: <span class=\"pull-right text-muted small\"><em> ".gw_logs($conn, 'location')."</em></span></a>
-<a href=\"#\" class=\"list-group-item\"><i class=\"fa fa-heartbeat red\"></i> Gateway PID <span class=\"pull-right text-muted small\"><em> ".gw_logs($conn, 'pid')."</em></span></a>
-<a href=\"#\" class=\"list-group-item\"><i class=\"fa fa-heartbeat red\"></i> Gateway Running Since: <span class=\"pull-right text-muted small\"><em>".gw_logs($conn, 'pid_start_time')."</em></span></a>";
+<a href=\"#\" class=\"list-group-item\"> PID <span class=\"pull-right text-muted small\"><em> ".$grow['pid']."</em></span></a>
+<a href=\"#\" class=\"list-group-item\"> PID Running Since: <span class=\"pull-right text-muted small\"><em>".$grow['pid_running_since']."</em></span></a>";
 
 $query = "select * FROM gateway_logs WHERE pid_datetime >= NOW() - INTERVAL 5 MINUTE;";
 $result = $conn->query($query);
@@ -324,18 +363,18 @@ if (mysqli_num_rows($result) != 0){
 } else {
 	$gw_restarted = '0';
 }
-echo "<a href=\"#\" class=\"list-group-item\"><i class=\"fa fa-heartbeat red\"></i> Gateway Script Re-Started in Last 5 Minute: <span class=\"pull-right text-muted small\"><em>".$gw_restarted."</em></span></a>";
+echo "<a href=\"#\" class=\"list-group-item\"> Script Re-Started in Last 5 Minute: <span class=\"pull-right text-muted small\"><em>".$gw_restarted."</em></span></a>";
 echo '</div></div>
             <div class="modal-footer">
                
-				<a href="javascript:resetgw('.gw_logs($conn, 'pid').')" class="btn btn-default login btn-sm btn-edit">Reset GW</a>
+				<a href="javascript:resetgw('.$grow['pid'].')" class="btn btn-default login btn-sm btn-edit">Reset GW</a>
 				<a href="javascript:find_gw()" class="btn btn-default login btn-sm btn-edit">Search GW</a>
+				<input type="button" name="submit" value="Save" class="btn btn-default login btn-sm" onclick="setup_gateway()">
 				<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>';
-
 
 //cronetab model	
 echo '
