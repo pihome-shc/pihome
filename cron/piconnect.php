@@ -12,8 +12,8 @@ echo " \033[0m \n";
 echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
 echo "*************************************************************\n";
-echo "*   PiConnect Script Version 0.31 Build Date 21/01/2019     *\n";
-echo "*   Update on 21/09/2018                                    *\n";
+echo "*   PiConnect Script Version 0.32 Build Date 21/01/2019     *\n";
+echo "*   Update on 02/02/2019                                    *\n";
 echo "*                                      Have Fun - PiHome.eu *\n";
 echo "*************************************************************\n";
 echo " \033[0m \n";
@@ -1529,36 +1529,40 @@ if ($status == "1"){
 	echo $line;
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Delete all Records Marked for Purge to do Keep Everyting Clean.\n";
 	//Delete Boost Records
-	$query = "DELETE FROM boost WHERE zone_id = '{$id}' LIMIT 1;";
+	$query = "DELETE FROM boost WHERE `purge`= '1' LIMIT 1;";
 	$conn->query($query);
-	//Delete All Message Out records
-	$query = "DELETE FROM messages_out WHERE zone_id = '{$id}' LIMIT 1;";
-	$conn->query($query);
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boost Record Purged in Local Database \n";
 	//Delete Override records
-	$query = "DELETE FROM override WHERE zone_id = '{$id}' LIMIT 1;";
+	$query = "DELETE FROM override WHERE `purge`= '1'  LIMIT 1;";
 	$conn->query($query);
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Override Record Purged in Local Database \n";
 	//Delete Daily Time records
-	$query = "DELETE FROM schedule_daily_time_zone WHERE zone_id = '{$id}';";
+	$query = "DELETE FROM schedule_daily_time_zone WHERE `purge`= '1';";
 	$conn->query($query);
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Schedule Time Record Purged in Local Database \n";
 	//Delete Night Climat records
-	$query = "DELETE FROM schedule_night_climat_zone WHERE zone_id = '{$id}';";
+	$query = "DELETE FROM schedule_night_climat_zone WHERE `purge`= '1';";
 	$conn->query($query);
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Schedule Night Cliate Zone Record Purged in Local Database \n";
 	//Delete All Zone Logs records
-	$query = "DELETE FROM zone_logs WHERE zone_id = '{$id}';";
+	$query = "DELETE FROM zone_logs WHERE `purge`= '1';";
 	$conn->query($query);
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Logs Record Purged in Local Database \n";
 	//Delete Zone record
-	$query = "DELETE FROM zone WHERE id = '{$id}' LIMIT 1;";
+	$query = "DELETE FROM zone WHERE `purge`= '1' LIMIT 1;";
 	$conn->query($query);
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Record Purged in Local Database \n";
+	//Delete Schedul daily time zone 
+	$query = "DELETE FROM schedule_daily_time_zone WHERE `purge`= '1';";
+	$conn->query($query);
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Schedul Time Zone Purged in Local Database \n";
+	//Delete schedule dialy time 
+	$query = "DELETE FROM schedule_daily_time WHERE `purge`= '1';";
+	$conn->query($query);
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Schedul Time Purged in Local Database \n";
 	echo $line;
-	$query = "DELETE FROM schedule_daily_time_zone WHERE schedule_daily_time_id = '{$id}';";
-	$conn->query($query);
-	$query = "DELETE FROM schedule_daily_time WHERE id = '{$id}';";
-	$conn->query($query);
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Schedul Time Sync Purged in Local Database \n";
-	
 }
 echo "\n"; 
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiConnect Script Ended \n"; 
-echo "\033[32m**************************************************************\033[0m  \n";
+echo "\033[32m******************************************************************\033[0m  \n";
 if(isset($conn)) { $conn->close();}
