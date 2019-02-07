@@ -390,7 +390,7 @@ echo '
 echo '	<div class=\"list-group\">';
 //exec ("crontab -l >/var/www/cronjob.txt"); this didnt work need to investigate 
 $file_handle = fopen("/var/www/cronjob.txt", "r");
-while (!feof($file_handle)) {
+while ($file_handle && !feof($file_handle)) {
 	$line = fgets($file_handle);
 	echo "<a href=\"#\" class=\"list-group-item\">
     <i class=\"ionicons ion-ios-timer-outline red\"></i> ".$line."
@@ -440,7 +440,7 @@ echo '</div></div>
 //$lines=file('/etc/os-release');
 $lines=array();
 $fp=fopen('/etc/os-release', 'r');
-while (!feof($fp)){
+while ($fp && !feof($fp)){
     $line=fgets($fp);
     //process line however you like
     $line=trim($line);
