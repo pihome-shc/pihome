@@ -44,7 +44,7 @@ require_once(__DIR__.'/st_inc/functions.php');
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
 	
-	<link href="css/animate.css" rel="stylesheet">
+	<!--<link href="css/animate.css" rel="stylesheet">-->
 
     <!-- MetisMenu CSS -->
     <link href="css/plugins/metisMenu/metisMenu.min.css" rel="stylesheet">
