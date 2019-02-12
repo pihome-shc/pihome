@@ -66,7 +66,7 @@ if (isset($_POST['submit'])) {
 		$id = $_POST['id'][$id];
 		$status = isset($_POST['status'][$id]) ? $_POST['status'][$id] : "0";
 		$status = $_POST['status'][$id];
-		$temp = $_POST['temp'][$id];
+		$temp=TempToDB($conn,$_POST['temp'][$id]);
 		$query = "INSERT INTO schedule_daily_time_zone(sync, status, schedule_daily_time_id, zone_id, temperature) VALUES ('0', '{$status}', '{$schedule_daily_time_id}','{$id}','" . number_format($temp,1) . "')"; 
 		$zoneresults = $conn->query($query);
 	}

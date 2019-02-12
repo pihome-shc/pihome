@@ -75,7 +75,7 @@ if (isset($_POST['submit'])) {
 		$id = $_POST['id'][$id];
 		$status = isset($_POST['status'][$id]) ? $_POST['status'][$id] : "0";
 		$status = $_POST['status'][$id];
-		$temp = $_POST['temp'][$id];
+		$temp=TempToDB($conn,$_POST['temp'][$id]);
 		$query = "UPDATE schedule_daily_time_zone SET sync = '0', status = '{$status}', temperature = '" . number_format($temp,1) . "' WHERE id = '{$id}' LIMIT 1";
 		$zoneresults = $conn->query($query);
 	}
