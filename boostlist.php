@@ -63,6 +63,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 		<span class="pull-right text-muted small"><em> <img src="images/'.$pi_image.'" border="0"></em></span>
 		<br>';
 		if($row["status"]=="1"){echo '&nbsp;&nbsp;'.date("Y-m-d H:i", $boost_time).'';}
+		else{echo '&nbsp;&nbsp;'. ($row['minute'] / 60).'h';}
 		echo '';
 		echo '</div></div></li>';				
 	}	
