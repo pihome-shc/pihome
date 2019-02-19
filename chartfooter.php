@@ -69,7 +69,7 @@ var dataset = [
     $querya ="select * from zone_view where `type` = 'Heating' order BY index_id asc;";
     $resulta = $conn->query($querya);
     $counter = 0;
-    $count = mysqli_num_rows($resulta);
+    $count = mysqli_num_rows($resulta) + 1;
     while ($row = mysqli_fetch_assoc($resulta)) {
         // grab the zone names to be displayed in the plot legend
         $zone_name=$row['name'];
@@ -85,6 +85,8 @@ var dataset = [
         // create dataset entry using distinct color based on zone index(to have the same color everytime chart is opened)
         echo "{label: \"".$zone_name."\", data: ".json_encode($zone_temp).", color: rainbow(".$count.",".++$counter.") }, \n";
     }
+    // add outside weather temperature
+    echo "{label: \"Outside\", data: ".json_encode($weather_c).", color: rainbow(".$count.",".++$counter.") }, \n";
 ?> ];
 
 //background-color for boiler on time 
