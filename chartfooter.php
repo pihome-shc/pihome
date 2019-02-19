@@ -44,15 +44,48 @@ $sunset = $weather_row['sunset']* 1000 ;
 	<script type="text/javascript" src="js/plugins/flot/curvedLines.js"></script>
 
 <script type="text/javascript">
-var ground_floor = <?php echo json_encode($ground_floor); ?>;
-var first_floor = <?php echo json_encode($first_floor); ?>;
-var weather_c = <?php echo json_encode($weather_c); ?>;
+// distinct color implementation for plot lines 
+function rainbow(numOfSteps, step) {
+    var r, g, b;
+    var h = step / numOfSteps;
+    var i = ~~(h * 6);
+    var f = h * 6 - i;
+    var q = 1 - f;
+    switch(i % 6){
+        case 0: r = 1; g = f; b = 0; break;
+        case 1: r = q; g = 1; b = 0; break;
+        case 2: r = 0; g = 1; b = f; break;
+        case 3: r = 0; g = q; b = 1; break;
+        case 4: r = f; g = 0; b = 1; break;
+        case 5: r = 1; g = 0; b = q; break;
+    }
+    var c = "#" + ("00" + (~ ~(r * 255)).toString(16)).slice(-2) + ("00" + (~ ~(g * 255)).toString(16)).slice(-2) + ("00" + (~ ~(b * 255)).toString(16)).slice(-2);
+    return (c);
+}
 
+// create dataset based on all available zones
 var dataset = [
-	{label: "Ground Floor", data: ground_floor, color: "#DE000F"}, 
-	{label: "First Floor", data: first_floor, color: "#7D0096"},
-	{label: "Out Side", data: weather_c, color: "#009604"}
-];
+<?php
+    $querya ="select * from zone_view where `type` = 'Heating' order BY index_id asc;";
+    $resulta = $conn->query($querya);
+    $counter = 0;
+    $count = mysqli_num_rows($resulta);
+    while ($row = mysqli_fetch_assoc($resulta)) {
+        // grab the zone names to be displayed in the plot legend
+        $zone_name=$row['name'];
+        $zone_sensor_id=$row['sensors_id'];
+        
+        $query="select * from messages_in_view_24h where node_id = {$zone_sensor_id};";
+        $result = $conn->query($query);
+        // create array of pairs of x and y values for every zone
+        $zone_temp = array();
+        while ($rowb = mysqli_fetch_assoc($result)) { 
+            $zone_temp[] = array(strtotime($rowb['datetime']) * 1000, $rowb['payload']);
+        }
+        // create dataset entry using distinct color based on zone index(to have the same color everytime chart is opened)
+        echo "{label: \"".$zone_name."\", data: ".json_encode($zone_temp).", color: rainbow(".$count.",".++$counter.") }, \n";
+    }
+?> ];
 
 //background-color for boiler on time 
 var markings = [
