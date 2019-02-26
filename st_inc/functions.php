@@ -99,7 +99,10 @@ function ShowWeather($conn)
         echo 'F';
     else
         echo 'C';
-    echo '<span><img border="0" width="24" src="images/' . $weather['img'] . '.png" title="' . $weather['title'] . ' - ' . $weather['description'] . '"></span>';
+
+    $Img='images/' . $weather['img'] . '.png';
+    if(file_exists($Img))
+        echo '<span><img border="0" width="24" src="' . $Img . '" title="' . $weather['title'] . ' - ' . $weather['description'] . '"></span>';
     echo '<span>' . $weather['title'] . ' - ' . $weather['description'] . '</span>';
 }
   

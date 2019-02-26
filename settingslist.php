@@ -28,7 +28,19 @@ $query = "SELECT * FROM frost_protection LIMIT 1 ";
 $result = $conn->query($query);
 $frosttemp = mysqli_fetch_array($result);
 $frost_temp = $frosttemp['temperature'];
-?>                      <div class="panel panel-primary">
+?>
+
+<script language="javascript" type="text/javascript">
+$("#ajaxModal").on("show.bs.modal", function(e) {
+    console.log($(e.relatedTarget).data('ajax'));
+    $(this).find("#ajaxModalLabel").html("...");
+    $(this).find("#ajaxModalBody").html("Waiting ...");
+    $(this).find("#ajaxModalFooter").html("...");
+    $(this).find("#ajaxModalContent").load($(e.relatedTarget).data('ajax'));
+});    
+</script>
+
+                        <div class="panel panel-primary">
                         <div class="panel-heading">
                         <i class="fa fa-cog fa-fw"></i>   Settings    
 						<div class="pull-right"> <div class="btn-group"><?php echo date("H:i"); ?></div> </div>
@@ -111,16 +123,9 @@ $frost_temp = $frosttemp['temperature'];
 							<h3 class="buttontop"><small>OpenWeather</small></h3>
 							<h3 class="degre" ><i class="fa fa-sun-o"></i></h3>
 							<h3 class="status"></small></h3>
-							</h3></button>
-							<script language="javascript" type="text/javascript">
-							$("#ajaxModal").on("show.bs.modal", function(e) {
-								console.log($(e.relatedTarget).data('ajax'));
-								$(this).find("#ajaxModalLabel").html("...");
-								$(this).find("#ajaxModalBody").html("Waiting ...");
-								$(this).find("#ajaxModalFooter").html("...");
-								$(this).find("#ajaxModalContent").load($(e.relatedTarget).data('ajax'));
-							});    
-							</script>
+                            </button>
+                                
+                                
 <?php 
 	$query = "select * from messages_in where node_id = 0 order by datetime desc limit 1";
 	$result = $conn->query($query);
@@ -128,7 +133,7 @@ $frost_temp = $frosttemp['temperature'];
 	$system_cc = $result['payload'];
 	if ($system_cc < 40){$system_cc="#0bb71b"; $fan=" ";}elseif ($system_cc < 50){$system_cc="#F0AD4E"; $fan="fa-pulse";}elseif ($system_cc > 50){$system_cc="#ff0000"; $fan="fa-pulse";}
 ?>							
-							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-toggle="modal" data-target="#system_c">
+							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-toggle="modal" data-remote="false" data-target="#ajaxModal" data-ajax="ajax.php?Ajax=GetModal_System">
 							<h3 class="buttontop"><small>System &deg;</small></h3>
 							<h3 class="degre" ><i class="fa fa-server fa-1x green"></i></h3>
 							<h3 class="status">
@@ -203,7 +208,7 @@ $frost_temp = $frosttemp['temperature'];
     <div class="modal-content" id="ajaxModalContent">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="ajaxModalLabel">...</h4>
+        <h5 class="modal-title" id="ajaxModalLabel">...</h5>
       </div>
       <div class="modal-body" id="ajaxModalBody">
         Waiting...
@@ -213,8 +218,8 @@ $frost_temp = $frosttemp['temperature'];
       </div>
     </div>
   </div>
-</div>	
-	
+</div>
+
 <?php include("model.php");  ?>
                         </div>
                         <!-- /.panel-body -->

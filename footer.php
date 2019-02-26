@@ -23,6 +23,12 @@
     <!-- /#wrapper -->
     <!-- jQuery -->
     <script src="js/jquery.js"></script>
+    <script type="text/javascript">
+        $.ajaxSetup ({
+            // Disable caching of AJAX responses
+            cache: false
+        });
+    </script>
 
     <!-- Bootstrap Core JavaScript -->
     <script src="js/bootstrap.min.js"></script>

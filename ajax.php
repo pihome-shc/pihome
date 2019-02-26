@@ -39,9 +39,9 @@ function GetModal_OpenWeather($conn){
 
     echo '<div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-            <h5 class="modal-title">OpenWeather Settings</h5>
+            <h5 class="modal-title" id="ajaxModalLabel">OpenWeather Settings</h5>
         </div>
-        <div class="modal-body">
+        <div class="modal-body" id="ajaxModalBody">
             <p class="text-muted">Refer to <a class="green" target="_blank" href="http://OpenWeatherMap.org">OpenWeatherMap.org</a> for more information.
             <p>An account (free options) must be setup in order to use OpenWeather.
 
@@ -325,7 +325,7 @@ function GetModal_OpenWeather($conn){
             </div>               
             </form>';
     echo '</div>';      //close <div class="modal-body">
-    echo '<div class="modal-footer">
+    echo '<div class="modal-footer" id="ajaxModalFooter">
             <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Cancel</button>
             <input type="button" name="submit" value="Save" class="btn btn-default login btn-sm" onclick="update_openweather()">
         </div>';      //close <div class="modal-footer">
@@ -376,5 +376,38 @@ function GetModal_OpenWeather($conn){
 if($_GET['Ajax']=='GetModal_OpenWeather')
 {
     GetModal_OpenWeather($conn);
+    return;
+}
+
+function GetModal_System($conn)
+{
+	//foreach($_GET as $variable => $value) echo $variable . "&nbsp;=&nbsp;" . $value . "<br />\r\n";
+
+    //System temperature
+    echo '<div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+            <h5 class="modal-title" id="ajaxModalLabel">Sensors</h5>
+        </div>
+        <div class="modal-body" id="ajaxModalBody">
+    <p class="text-muted"> Last 5 CPU in-built temperature sensor reading. </p>';
+    $query = "select * from messages_in where node_id = 0 order by datetime desc limit 5";
+    $results = $conn->query($query);
+    echo '<div class="list-group">';
+    while ($row = mysqli_fetch_assoc($results)) {
+        echo '<span class="list-group-item">
+        <i class="fa fa-server fa-1x green"></i> '.$row['datetime'].' 
+        <span class="pull-right text-muted small"><em>'.number_format(DispTemp($conn,$row['payload']),1).'&deg;</em></span>
+        </span>'; 
+    }
+    echo '</div>';      //close <div class="list-group">';
+    echo '</div>';      //close <div class="modal-body">
+    echo '<div class="modal-footer" id="ajaxModalFooter">
+            <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>            
+        </div>';      //close <div class="modal-footer">
+    return;
+}
+if($_GET['Ajax']=='GetModal_System')
+{
+    GetModal_System($conn);
     return;
 }

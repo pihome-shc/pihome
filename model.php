@@ -407,34 +407,6 @@ echo ' </div></div>
     </div>
 </div>';
 
-//System temperature
-echo '
-<div class="modal fade" id="system_c" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title">System Temperature</h5>
-            </div>
-            <div class="modal-body">
-<p class="text-muted"> Last 5 CPU in-built temperature sensor reading. </p>';
-$query = "select * from messages_in where node_id = 0 order by datetime desc limit 5";
-$results = $conn->query($query);
-echo '	<div class=\"list-group\">';
-while ($row = mysqli_fetch_assoc($results)) {
-	echo "<a href=\"#\" class=\"list-group-item\">
-	<i class=\"fa fa-server fa-1x green\"></i> ".$row['datetime']." 
-	<span class=\"pull-right text-muted small\"><em>".$row['payload']."&deg;</em></span>
-    </a>"; 
-}
-echo '</div></div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>';
-
 //OS version model
 //$osversion = exec ("cat /etc/os-release");
 //$lines=file('/etc/os-release');
