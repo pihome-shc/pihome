@@ -70,7 +70,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$result = $conn->query($query);
 	$sensor = mysqli_fetch_array($result);
 	$sensor_id = $sensor['node_id'];
-	$sensor_child_id = $sensor['sensor_child_id'];
+	$sensor_child_id = $row['sensor_child_id'];
 	
 	//query to get temperature from table with sensor id 
 	//$query = "SELECT * FROM messages_in WHERE node_id = '{$sensor_id}' ORDER BY id desc LIMIT 1 ";
