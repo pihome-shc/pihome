@@ -89,7 +89,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 }
 
 
-
+*/
 
 //weather temperature
 $query="select * from messages_in_view_24h where node_id= 1";
@@ -100,7 +100,7 @@ while ($row = mysqli_fetch_assoc($result)) {
    $weather_c[] = array(strtotime($row['datetime']) * 1000, $row['payload']);
 }
 
-*/
+
 //hot water temperature
 $query="select * from messages_in_view_24h where node_id= 30";
 $result = $conn->query($query);
