@@ -772,7 +772,6 @@ CREATE TABLE `zone_view` (
 	`controler_id` CHAR(50) NOT NULL COLLATE 'utf16_bin',
 	`controler_child_id` INT(11) NULL,
 	`gpio_pin` INT(11) NULL,
-	`boiler_id` CHAR(50) NOT NULL COLLATE 'utf16_bin',
 	`last_seen` TIMESTAMP NULL,
 	`ms_version` CHAR(50) NULL COLLATE 'utf16_bin',
 	`sketch_version` CHAR(50) NULL COLLATE 'utf16_bin'

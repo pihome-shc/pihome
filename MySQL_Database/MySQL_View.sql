@@ -43,12 +43,10 @@ CREATE VIEW zone_view AS
 select zone.status, zone.sync, zone.id, zone.index_id, zone.name, zone.type, zone.max_c, zone.max_operation_time, zone.hysteresis_time, 
 sid.node_id as sensors_id, zone.sensor_child_id, 
 cid.node_id as controler_id, zone.controler_child_id, zone.gpio_pin,
-bid.node_id as boiler_id, 
 lasts.last_seen, msv.ms_version, skv.sketch_version
 from zone
 join nodes sid on zone.sensor_id = sid.id
 join nodes cid on zone.controler_id = cid.id
-join nodes bid on zone.boiler_id = bid.id
 join nodes lasts on zone.sensor_id = lasts.id
 join nodes msv on zone.sensor_id = msv.id
 join nodes skv on zone.sensor_id = skv.id 
