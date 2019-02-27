@@ -46,7 +46,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	if ($zone_status != 0) {
 		echo '
 		<li class="left clearfix animated fadeIn">
-		<a href="javascript:active_boost('.$row["zone_id"].');">
+		<a href="javascript:active_boost('.$row["id"].');">
 		<span class="chat-img pull-left override">';
 		if($row["status"]=="0"){ $shactive="bluesch"; $status="Off"; }else{ $shactive="redsch"; $status="On"; }
 		echo '<div class="circle '. $shactive.'"><p class="schdegree">'.number_format(DispTemp($conn,$row["temperature"]),0).'&deg;</p></div>
@@ -63,6 +63,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 		<span class="pull-right text-muted small"><em> <img src="images/'.$pi_image.'" border="0"></em></span>
 		<br>';
 		if($row["status"]=="1"){echo '&nbsp;&nbsp;'.date("Y-m-d H:i", $boost_time).'';}
+		else{echo '&nbsp;&nbsp;'. number_format(($row['minute'] / 60),2).'h';}
 		echo '';
 		echo '</div></div></li>';				
 	}	

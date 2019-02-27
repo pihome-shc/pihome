@@ -379,10 +379,10 @@ if($_GET['Ajax']=='GetModal_OpenWeather')
     return;
 }
 
+
 function GetModal_System($conn)
 {
 	//foreach($_GET as $variable => $value) echo $variable . "&nbsp;=&nbsp;" . $value . "<br />\r\n";
-
     //System temperature
     echo '<div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>

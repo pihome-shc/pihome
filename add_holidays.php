@@ -63,6 +63,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 <?php 
 ShowWeather($conn);
 ?>
+
                         </div>
                     </div>
                 </div>

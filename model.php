@@ -537,7 +537,7 @@ echo '
                 <h5 class="modal-title">Reboot System</h5>
             </div>
             <div class="modal-body">
-                        <p class="text-muted"> Are You Sure You Want To Reboot The System? </p>
+                        <p class="text-muted"> <i class="ion-ios-refresh-outline orange"></i> Are You Sure You Want To Reboot The System? </p>
                         ';
 echo '            </div>
             <div class="modal-footer">
@@ -557,7 +557,7 @@ echo '
                 <h5 class="modal-title">Shutdown System</h5>
             </div>
             <div class="modal-body">
-                        <p class="text-muted"> Are You Sure You Want To Shutdown The System? </p>
+                        <p class="text-muted"><i class="fa fa-power-off fa-1x red"></i> Are You Sure You Want To Shutdown The System? </p>
                         ';
 echo '            </div>
             <div class="modal-footer">

@@ -29,7 +29,6 @@ $result = $conn->query($query);
 $frosttemp = mysqli_fetch_array($result);
 $frost_temp = $frosttemp['temperature'];
 ?>
-
 <script language="javascript" type="text/javascript">
 $("#ajaxModal").on("show.bs.modal", function(e) {
     console.log($(e.relatedTarget).data('ajax'));
@@ -39,8 +38,7 @@ $("#ajaxModal").on("show.bs.modal", function(e) {
     $(this).find("#ajaxModalContent").load($(e.relatedTarget).data('ajax'));
 });    
 </script>
-
-                        <div class="panel panel-primary">
+                      <div class="panel panel-primary">
                         <div class="panel-heading">
                         <i class="fa fa-cog fa-fw"></i>   Settings    
 						<div class="pull-right"> <div class="btn-group"><?php echo date("H:i"); ?></div> </div>
@@ -123,9 +121,8 @@ $("#ajaxModal").on("show.bs.modal", function(e) {
 							<h3 class="buttontop"><small>OpenWeather</small></h3>
 							<h3 class="degre" ><i class="fa fa-sun-o"></i></h3>
 							<h3 class="status"></small></h3>
-                            </button>
-                                
-                                
+							</button>
+
 <?php 
 	$query = "select * from messages_in where node_id = 0 order by datetime desc limit 1";
 	$result = $conn->query($query);
@@ -218,8 +215,7 @@ $("#ajaxModal").on("show.bs.modal", function(e) {
       </div>
     </div>
   </div>
-</div>
-
+</div>	
 <?php include("model.php");  ?>
                         </div>
                         <!-- /.panel-body -->

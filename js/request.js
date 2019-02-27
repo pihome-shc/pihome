@@ -84,7 +84,7 @@ function active_away(){
 
 //update frost temperate 
 function update_frost(){
-    var idata="w=frost&o=update";
+	var idata="w=frost&o=update";
     idata+="&frost_temp="+document.getElementsByName("frost_temp")[0].value;
     idata+="&wid=0";
     $.get('db.php',idata)

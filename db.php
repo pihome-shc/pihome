@@ -140,15 +140,16 @@ if($what=="boost"){
 			$time = date("Y-m-d H:i:s");
 		}
 		
-		$query = "SELECT * FROM boost WHERE zone_id ='".$wid."'";
+		$query = "SELECT * FROM boost WHERE id ='".$wid."'";
 		$results = $conn->query($query);	
 		$row = mysqli_fetch_assoc($results);
 		$boost_status= $row['status'];
+		$zone_id=$row['zone_id'];
 		if($boost_status=="1"){ $set="0"; }else{ $set="1";}
-		$query = "UPDATE boost SET status = '{$set}', sync = '0', time = '{$time}' WHERE zone_id = '{$wid}' LIMIT 1";
+		$query = "UPDATE boost SET status = '{$set}', sync = '0', time = '{$time}' WHERE id = '{$wid}' LIMIT 1";
 		$conn->query($query);
 		//this line update message out 
-		$query = "UPDATE messages_out SET payload = '{$set}', datetime = '{$time}', sent = '0', sync = '0' WHERE zone_id = '{$wid}' AND node_id = {$row['boost_button_id']} AND child_id = {$row['boost_button_child_id']} LIMIT 1";
+		$query = "UPDATE messages_out SET payload = '{$set}', datetime = '{$time}', sent = '0', sync = '0' WHERE zone_id = '{$zone_id}' AND node_id = {$row['boost_button_id']} AND child_id = {$row['boost_button_child_id']} LIMIT 1";
 		$conn->query($query);
 	}
 }

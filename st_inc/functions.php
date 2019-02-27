@@ -94,12 +94,11 @@ function ShowWeather($conn)
     $weather = mysqli_fetch_array($result);    
     $c_f = settings($conn, 'c_f');
     
-    echo 'Outside: ' . $weather['c'] . '&deg;&nbsp;';
+    echo 'Outside: ' .DispTemp($conn,$weather['c']). '&deg;&nbsp;';
     if($c_f==1 || $c_f=='1')
         echo 'F';
     else
         echo 'C';
-
     $Img='images/' . $weather['img'] . '.png';
     if(file_exists($Img))
         echo '<span><img border="0" width="24" src="' . $Img . '" title="' . $weather['title'] . ' - ' . $weather['description'] . '"></span>';
