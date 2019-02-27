@@ -75,7 +75,7 @@ var dataset = [
         $zone_name=$row['name'];
         $zone_sensor_id=$row['sensors_id'];
         
-        $query="select * from messages_in_view_24h where node_id = {$zone_sensor_id};";
+        $query="select * from messages_in_view_24h where node_id = '{$zone_sensor_id}';";
         $result = $conn->query($query);
         // create array of pairs of x and y values for every zone
         $zone_temp = array();
