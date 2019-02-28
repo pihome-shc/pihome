@@ -51,8 +51,13 @@ if ($row['openweather_api'] != NULL){
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Weather Data Downloaded \n"; 
 	//add weather temperature to database
 	$weather_data = json_decode($json, true);
-    //weather_c is now dependent upon the units specified in the query.
-	$weather_c= round($weather_data['main']['temp']);   //-272.15);
+	//weather_c is now dependent upon the units specified in the query.
+	if($c_f==1 || $c_f=='1'){
+	    //the value returned in in Fahrenheit, but we store it in C, so convert.    
+	    $weather_c=round(($weather_data['main']['temp']-32)*(5/9));
+	} else {
+	    $weather_c=round($weather_data['main']['temp']);   //-272.15);
+	}
 	//$c  = $weather_data['main']['temp'];
 	$wind_speed    = round($weather_data['wind']['speed']);   //*1.609344, 2);
 	$sunrise = $weather_data['sys']['sunrise'];
