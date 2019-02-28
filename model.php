@@ -480,29 +480,6 @@ echo '</div></div>
     </div>
 </div>';
 
-// systems up time
-echo '
-<div class="modal fade" id="system_uptime" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title">System Uptime</h5>
-            </div>
-            <div class="modal-body">
-			<p class="text-muted"> Raspberry PI up time since last reboot. </p>
-			<i class="fa fa-clock-o fa-1x red"></i>
-			';
-$uptime = (exec ("cat /proc/uptime"));
-$uptime=substr($uptime, 0, strrpos($uptime, ' '));
-echo secondsToWords($uptime);
-echo '</div>
-            <div class="modal-footer">
-			<button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>';
 
 // backup_image
 echo '

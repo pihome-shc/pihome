@@ -84,7 +84,7 @@ function active_away(){
 
 //update frost temperate 
 function update_frost(){
-	var idata="w=frost&o=update";
+    var idata="w=frost&o=update";
     idata+="&frost_temp="+document.getElementsByName("frost_temp")[0].value;
     idata+="&wid=0";
     $.get('db.php',idata)
@@ -209,6 +209,28 @@ var idata="w=setup_piconnect&o=update&status="+document.getElementById("checkbox
     .fail(function( jqXHR, textStatus, errorThrown ){
         if(jqXHR==401 || jqXHR==403) return;
         console.log("setup_piconnect: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
+    })
+    .always(function() {
+    });
+}
+
+
+function mqtt_delete(wid){
+    var result = confirm("Confirm delete MQTT server?");
+    if (!result) return;
+
+    var idata="w=mqtt&o=delete";
+    idata+="&wid="+wid;
+    $.get('db.php',idata)
+    .done(function(odata){
+        if(odata.Success)
+            $('#ajaxModal').modal('hide')
+        else
+            console.log(odata.Message);
+    })
+    .fail(function( jqXHR, textStatus, errorThrown ){
+        if(jqXHR==401 || jqXHR==403) return;
+        console.log("delete_mqtt: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
     })
     .always(function() {
     });
