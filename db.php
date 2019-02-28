@@ -366,5 +366,66 @@ if($what=="setup_gateway"){
 		return;
 	}
 }
+
+
+if($what=="mqtt"){
+	if($opp=="delete"){
+        $query = "DELETE FROM `mqtt` WHERE `id`=" . $_GET['wid'] . ";";
+        if($conn->query($query)){
+            header('Content-type: application/json');
+            echo json_encode(array('Success'=>'Success','Query'=>$query));
+            return;
+        }else{
+            header('Content-type: application/json');
+            echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+            return;
+        }
+	}
+	if($opp=="add"){
+        $query = "INSERT INTO `mqtt` 
+            (`id`, `name`, `ip`, `port`, `username`, `password`, `enabled`, `type`) VALUES 
+            (NULL,
+             '" . $_GET['inp_Name'] . "',
+             '" . $_GET['inp_IP'] . "',
+             " . $_GET['inp_Port'] . ",
+             '" . $_GET['inp_Username'] . "',
+             '" . $_GET['inp_Password'] . "',
+             " . $_GET['sel_Enabled'] . ",
+             " . $_GET['sel_Type'] . ");";
+        if($conn->query($query)){
+            header('Content-type: application/json');
+            echo json_encode(array('Success'=>'Success','Query'=>$query));
+            return;
+        }else{
+            header('Content-type: application/json');
+            echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+            return;
+        }
+	}
+	if($opp=="edit"){
+        $query = "UPDATE `mqtt` SET 
+            `name`='" . $_GET['inp_Name'] . "',
+            `ip`='" . $_GET['inp_IP'] . "',
+            `port`=" . $_GET['inp_Port'] . ",
+            `username`='" . $_GET['inp_Username'] . "',
+            `password`='" . $_GET['inp_Password'] . "',
+            `enabled`=" . $_GET['sel_Enabled'] . ",
+            `type`=" . $_GET['sel_Type'] . "
+            WHERE `id`=" . $_GET['inp_id'] . ";";
+        if($conn->query($query)){
+            header('Content-type: application/json');
+            echo json_encode(array('Success'=>'Success','Query'=>$query));
+            return;
+        }else{
+            header('Content-type: application/json');
+            echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+            return;
+        }
+	}
+}
+
+
+
+
 ?>
 <?php if(isset($conn)) { $conn->close();} ?>

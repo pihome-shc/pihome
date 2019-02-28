@@ -411,3 +411,422 @@ if($_GET['Ajax']=='GetModal_System')
     GetModal_System($conn);
     return;
 }
+
+
+
+function GetModal_MQTT($conn)
+{
+	//foreach($_GET as $variable => $value) echo $variable . "&nbsp;=&nbsp;" . $value . "<br />\r\n";
+
+    echo '<div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+            <h5 class="modal-title" id="ajaxModalLabel">MQTT Connections</h5>
+        </div>
+        <div class="modal-body" id="ajaxModalBody">';
+    $query = "SELECT * FROM `mqtt` ORDER BY `name`;";
+    $results = $conn->query($query);
+    echo '<div class="list-group">';
+    echo '<span class="list-group-item" style="height:40px;">&nbsp;';
+    echo '<span class="pull-right text-muted small"><button type="button" class="btn btn-primary btn-sm" 
+             data-remote="false" data-target="#ajaxModal" data-ajax="ajax.php?Ajax=GetModal_MQTTAdd" onclick="mqtt_AddEdit(this);">Add</button></span>';
+    echo '</span>';
+    while ($row = mysqli_fetch_assoc($results)) {
+        echo '<span class="list-group-item">';
+        echo $row['name'] . ($row['enabled'] ? '' : ' (Disabled)');
+        echo '<span class="pull-right text-muted small" style="width:200px;text-align:right;">Username:&nbsp;' . $row['username'] . '</span>';
+        echo '<br/><span class="text-muted small">Type:&nbsp;';
+        if($row['type']==0) echo 'Default, monitor.';
+        else if($row['type']==1) echo 'Sonoff Tasmota.';
+        else echo 'Unknown.';
+        echo '</span>';
+        echo '<span class="pull-right text-muted small" style="width:200px;text-align:right;">Password:&nbsp;' . $row['password'] . '</span>';
+        echo '<br/><span class="text-muted small">' . $row['ip'] . '&nbsp;:&nbsp;' . $row['port'] . '</span>';
+
+        echo '<span class="pull-right text-muted small" style="width:200px;text-align:right;">';
+        echo '<button class="btn btn-default btn-xs" data-remote="false" data-target="#ajaxModal" data-ajax="ajax.php?Ajax=GetModal_MQTTEdit&id=' . $row['id'] . '" onclick="mqtt_AddEdit(this);">
+            <span class="ionicons ion-edit"></span></button>&nbsp;&nbsp;
+		<button class="btn btn-danger btn-xs" onclick="mqtt_delete(' . $row['id'] . ');"><span class="glyphicon glyphicon-trash"></span></button>';
+        echo '</span>';
+        echo '</span>';
+    }
+    echo '</div>';      //close <div class="list-group">';
+    echo '</div>';      //close <div class="modal-body">
+    echo '<div class="modal-footer" id="ajaxModalFooter">
+            <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>            
+        </div>';      //close <div class="modal-footer">
+    echo '<script language="javascript" type="text/javascript">
+        mqtt_AddEdit=function(ithis){ $("#ajaxModal").one("hidden.bs.modal", function() { $("#ajaxModal").modal("show",$(ithis)); }).modal("hide");};
+    </script>';
+    return;
+}
+if($_GET['Ajax']=='GetModal_MQTT')
+{
+    GetModal_MQTT($conn);
+    return;
+}
+function GetModal_MQTTAddEdit($conn)
+{
+	//foreach($_GET as $variable => $value) echo $variable . "&nbsp;=&nbsp;" . $value . "<br />\r\n";
+
+    $IsAdd=true;
+    if(isset($_GET['id'])) {
+        $query = "SELECT * FROM `mqtt` WHERE `id`=" . $_GET['id'] . ";";
+        $results = $conn->query($query);
+        $row = mysqli_fetch_assoc($results);
+        $IsAdd=false;
+    }
+
+    echo '<div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+            <h5 class="modal-title" id="ajaxModalLabel">' . ($IsAdd ? 'Add MQTT Connection' : 'Edit MQTT Connection') . '</h5>
+        </div>
+        <div class="modal-body" id="ajaxModalBody">';
+    
+    
+    echo '<form name="form-mqtt" id="form-mqtt" role="form" onSubmit="return false;" action="javascript:return false;" >
+            ' . ($IsAdd ? '' : '<input type="hidden" name="inp_id" id="inp_id" value="' . $row['id'] . '">') . '
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" class="form-control" name="inp_Name" id="inp_Name" value="' . ($IsAdd ? '' : $row['name']) . '">
+            </div>               
+            <div class="form-group">
+                <label>IP</label>
+                <input type="text" class="form-control" name="inp_IP" id="inp_IP" value="' . ($IsAdd ? '' : $row['ip']) . '">
+            </div>               
+            <div class="form-group">
+                <label>Port</label>
+                <input type="text" class="form-control" name="inp_Port" id="inp_Port" value="' . ($IsAdd ? '' : $row['port']) . '">
+            </div>               
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" class="form-control" name="inp_Username" id="inp_Username" value="' . ($IsAdd ? '' : $row['username']) . '">
+            </div>               
+            <div class="form-group">
+                <label>Password</label>
+                <input type="text" class="form-control" name="inp_Password" id="inp_Password" value="' . ($IsAdd ? '' : $row['password']) . '">
+            </div>               
+            <div class="form-group">
+                <label>Enabled</label>
+                <select class="form-control" id="sel_Enabled" name="sel_Enabled" >
+                    <option value="0" ' . ($IsAdd ? '' : ($row['enabled'] ? 'selected' : '')) . '>Disabled</option>
+                    <option value="1" ' . ($IsAdd ? '' : ($row['enabled'] ? 'selected' : '')) . '>Enabled</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Type</label>
+                <select class="form-control" id="sel_Type" name="sel_Type" >
+                    <option value="0" ' . ($IsAdd ? '' : ($row['type'] ? 'selected' : '')) . '>Default - view all</option>
+                    <option value="1" ' . ($IsAdd ? '' : ($row['type'] ? 'selected' : '')) . '>Sonoff - Tasmota</option>
+                </select>
+            </div>
+            </form>';
+    echo '</div>';      //close <div class="modal-body">
+    echo '<div class="modal-footer" id="ajaxModalFooter">' . ($IsAdd ?
+            '<button type="button" class="btn btn-warning btn-sm" data-dismiss="modal" onclick="mqtt_add()">Add Conn</button>'
+            : '<button type="button" class="btn btn-warning btn-sm" data-dismiss="modal" onclick="mqtt_edit()">Edit Conn</button>') . '
+            <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>            
+        </div>';      //close <div class="modal-footer">
+    echo '<script language="javascript" type="text/javascript">
+        mqtt_add=function(){
+            var idata="w=mqtt&o=add";
+            idata+="&"+$("#form-mqtt").serialize();
+            $.get("db.php",idata)
+            .done(function(odata){
+                if(odata.Success)
+                    $("#ajaxModal").modal("hide");
+                else
+                    alert(odata.Message);
+            })
+            .fail(function( jqXHR, textStatus, errorThrown ){
+                if(jqXHR==401 || jqXHR==403) return;
+                alert("mqtt_add: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
+            })
+            .always(function() {
+            });
+        }
+        mqtt_edit=function(){
+            var idata="w=mqtt&o=edit";
+            idata+="&"+$("#form-mqtt").serialize();
+            $.get("db.php",idata)
+            .done(function(odata){
+                if(odata.Success)
+                    $("#ajaxModal").modal("hide");
+                else
+                    alert(odata.Message);
+            })
+            .fail(function( jqXHR, textStatus, errorThrown ){
+                if(jqXHR==401 || jqXHR==403) return;
+                alert("mqtt_edit: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
+            })
+            .always(function() {
+            });
+        }
+    </script>';
+    return;
+}
+if($_GET['Ajax']=='GetModal_MQTTEdit' || $_GET['Ajax']=='GetModal_MQTTAdd')
+{
+    GetModal_MQTTAddEdit($conn);
+    return;
+}
+
+
+
+function GetModal_Services($conn)
+{
+	//foreach($_GET as $variable => $value) echo $variable . "&nbsp;=&nbsp;" . $value . "<br />\r\n";
+
+    echo '<div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+            <h5 class="modal-title" id="ajaxModalLabel">Services</h5>
+        </div>
+        <div class="modal-body" id="ajaxModalBody">';
+    $SArr=[['name'=>'Apache','service'=>'apache2.service'],
+           ['name'=>'MySQL','service'=>'mysql.service'],
+           ['name'=>'MariaDB','service'=>'mariadb.service'],
+           ['name'=>'PiHome MQTT','service'=>'pihome.mqtt.service']];
+    echo '<div class="list-group">';
+    foreach($SArr as $SArrKey=>$SArrVal) {
+        echo '<span class="list-group-item">';
+        echo $SArrVal['name'];
+        $rval=my_exec("/bin/systemctl status " . $SArrVal['service']);
+        echo '<span class="pull-right text-muted small">';
+        if($rval['stdout']=='') {
+            echo 'Error: ' . $rval['stderr'];
+        } else {
+            $stat='Status: Unknown';
+            $rval['stdout']=explode(PHP_EOL,$rval['stdout']);
+            foreach($rval['stdout'] as $line) {
+                if(strstr($line,'Loaded:')) {
+                    if(strstr($line,'disabled;')) {
+                        $stat='Status: Disabled';
+                        break;
+                    }
+                }
+                if(strstr($line,'Active:')) {
+                    if(strstr($line,'active (running)')) {
+                        $stat=trim($line);
+                        break;                        
+                    } else if(strstr($line,'(dead)')) {
+                        $stat='Status: Dead';
+                        break;
+                    }
+                }
+            }
+            echo $stat;
+        }
+        echo '</span>';
+        echo '<br/>&nbsp;<span class="pull-right text-muted small" style="width:200px;text-align:right;">';
+        echo '<button class="btn btn-default btn-xs" data-remote="false" data-target="#ajaxModal" data-ajax="ajax.php?Ajax=GetModal_ServicesInfo&id=' . $SArrVal['service'] . '" onclick="services_Info(this);">
+            <span class="ionicons ion-ios-information-outline"></span></button>';
+        echo '</span>';
+        echo '</span>';
+    }
+    echo '</div>';      //close <div class="list-group">';
+    echo '</div>';      //close <div class="modal-body">
+    echo '<div class="modal-footer" id="ajaxModalFooter">
+            <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>            
+        </div>';      //close <div class="modal-footer">
+    echo '<script language="javascript" type="text/javascript">
+        services_Info=function(ithis){ $("#ajaxModal").one("hidden.bs.modal", function() { $("#ajaxModal").modal("show",$(ithis)); }).modal("hide");};
+    </script>';
+    return;
+}
+if($_GET['Ajax']=='GetModal_Services')
+{
+    GetModal_Services($conn);
+    return;
+}
+function GetModal_ServicesInfo($conn)
+{
+	//foreach($_GET as $variable => $value) echo $variable . "&nbsp;=&nbsp;" . $value . "<br />\r\n";
+
+    echo '<div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+            <h5 class="modal-title" id="ajaxModalLabel">Services Info</h5>
+        </div>
+        <div class="modal-body" id="ajaxModalBody">';
+    echo '<div class="list-group">';
+    if(isset($_GET['Action'])) {
+        if($_GET['Action']=='start' || $_GET['Action']=='stop' || $_GET['Action']=='enable' || $_GET['Action']=='disable') {
+            $rval=my_exec("/usr/bin/sudo /bin/systemctl " . $_GET['Action'] . " " . $_GET['id']);
+            $per='';
+            similar_text($rval['stderr'],'We trust you have received the usual lecture from the local System Administrator. It usually boils down to these three things: #1) Respect the privacy of others. #2) Think before you type. #3) With great power comes great responsibility. sudo: no tty present and no askpass program specified',$per);
+            if($per>80) {
+                $rval['stdout']='www-data cannot issue systemctl commands.<br/><br/>If you would like it to be able to, add<br/><code>www-data ALL=/bin/systemctl<br/>www-data ALL=NOPASSWD: /bin/systemctl</code><br/>to /etc/sudoers.d/010_pi-nopasswd.';
+                $rval['stderr']='';
+            }
+            echo '<p class="text-muted">systemctl ' . $_GET['Action'] . ' ' . $_GET['id'] . '<br/>stdout: ' . $rval['stdout'] . '<br/>stderr: ' . $rval['stderr'] . '</p>';
+        }
+    }
+    
+    $rval=my_exec("/bin/systemctl status " . $_GET['id']);
+    echo '<span class="list-group-item">' . $_GET['id'];
+    echo '<span class="pull-right text-muted small">';
+    if($rval['stdout']=='') {
+        echo 'Error: ' . $rval['stderr'];
+    } else {
+        $stat='Status: Unknown';
+        $rval['stdout']=explode(PHP_EOL,$rval['stdout']);
+        foreach($rval['stdout'] as $line) {
+            if(strstr($line,'Loaded:')) {
+                if(strstr($line,'disabled;')) {
+                    $stat='Status: Disabled';
+                    break;
+                }
+            }
+            if(strstr($line,'Active:')) {
+                if(strstr($line,'active (running)')) {
+                    $stat=trim($line);
+                    break;                        
+                } else if(strstr($line,'(dead)')) {
+                    $stat='Status: Dead';
+                    break;
+                }
+            }
+        }
+        echo $stat;
+    }    
+    echo '</span>';
+    echo '</span>';
+    
+    if(substr($_GET['id'],0,7)=='pihome.') {
+        echo '<span class="list-group-item" style="height:40px;">&nbsp;';
+        echo '<span class="pull-right text-muted small">
+              <button class="btn btn-warning btn-xs" data-remote="false" data-target="#ajaxModal" data-ajax="ajax.php?Ajax=GetModal_ServicesInfo&id=' . $_GET['id'] . '&Action=start" onclick="services_Info(this);">
+                Start</button>
+              <button class="btn btn-warning btn-xs" data-remote="false" data-target="#ajaxModal" data-ajax="ajax.php?Ajax=GetModal_ServicesInfo&id=' . $_GET['id'] . '&Action=stop" onclick="services_Info(this);">
+                Stop</button>
+              <button class="btn btn-warning btn-xs" data-remote="false" data-target="#ajaxModal" data-ajax="ajax.php?Ajax=GetModal_ServicesInfo&id=' . $_GET['id'] . '&Action=enable" onclick="services_Info(this);">
+                Enable</button>
+              <button class="btn btn-warning btn-xs" data-remote="false" data-target="#ajaxModal" data-ajax="ajax.php?Ajax=GetModal_ServicesInfo&id=' . $_GET['id'] . '&Action=disable" onclick="services_Info(this);">
+                Disable</button>
+              </span>';
+        echo '</span>';
+    }
+
+    $rval=my_exec("/bin/journalctl -u " . $_GET['id'] . " -n 10 --no-pager");
+    $per='';
+    similar_text($rval['stderr'],'Hint: You are currently not seeing messages from other users and the system. Users in the \'systemd-journal\' group can see all messages. Pass -q to turn off this notice. No journal files were opened due to insufficient permissions.',$per);
+    if($per>80)
+    {
+        $rval['stdout']='www-data cannot access journalctl.<br/><br/>If you would like it to be able to, run<br/><code>sudo usermod -a -G systemd-journal www-data</code><br/>and then reboot the RPi.';
+    }
+    echo '<span class="list-group-item" style="overflow:hidden;">&nbsp;';
+    echo 'Status: <i class="ion-ios-refresh-outline" data-remote="false" data-target="#ajaxModal" data-ajax="ajax.php?Ajax=GetModal_ServicesInfo&id=' . $_GET['id'] . '" onclick="services_Info(this);"></i><br/>';
+    echo '<span class="text-muted small">';
+    echo Convert_CRLF($rval['stdout'],'<br/>');
+    echo '</span></span>';
+    
+    if($_GET['id']=='pihome.mqtt.service') {
+        echo '<span class="list-group-item" style="overflow:hidden;">Install Service:';
+        echo '<span class="pull-right text-muted small">Edit /lib/systemd/system/' . $_GET['id'] . '<br/>
+<code>sudo nano /lib/systemd/system/' . $_GET['id'] . '</code><br/>
+Put the following contents in the file:<br/>
+(make sure the -u is supplied to python<br/>
+to ensure the output is not buffered and delayed)<br/>
+<code>[Unit]<br/>
+Description=PiHome MQTT Service<br/>
+After=multi-user.target<br/>
+<br/>
+[Service]<br/>
+Type=simple<br/>
+ExecStart=/usr/bin/python -u /var/www/cron/mqtt.py<br/>
+Restart=on-abort<br/>
+<br/>
+[Install]<br/>
+WantedBy=multi-user.target</code><br/>
+Update the file permissions:<br/>
+<code>sudo chmod 644 /lib/systemd/system/' . $_GET['id'] . '</code><br/>
+Update systemd:<br/>
+<code>sudo systemctl daemon-reload</code><br/>
+<br/>
+For improved performance, lower SD card writes:<br/>
+Edit /etc/systemd/journald.conf<br/>
+<code>sudo nano /etc/systemd/journald.conf</code><br/>
+Edit/Add the following:<br/>
+<code>Storage=volatile<br/>
+RuntimeMaxUse=50M</code><br/>
+Then restart journald:<br/>
+<code>sudo systemctl restart systemd-journald</code><br/>
+Refer to: <a href="www.freedesktop.org/software/systemd/man/journald.conf.html">www.freedesktop.org/software/systemd/man/journald.conf.html</a><br/>
+              </span>';
+        echo '</span>';
+    }
+
+    echo '</div>';      //close <div class="list-group">';
+    echo '</div>';      //close <div class="modal-body">
+    echo '<div class="modal-footer" id="ajaxModalFooter">
+            <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>            
+        </div>';      //close <div class="modal-footer">
+    echo '<script language="javascript" type="text/javascript">
+        services_Info=function(ithis){ $("#ajaxModal").one("hidden.bs.modal", function() { $("#ajaxModal").modal("show",$(ithis)); }).modal("hide");};
+    </script>';
+    return;
+}
+if($_GET['Ajax']=='GetModal_ServicesInfo')
+{
+    GetModal_ServicesInfo($conn);
+    return;
+}
+
+
+
+function GetModal_Uptime($conn)
+{
+	//foreach($_GET as $variable => $value) echo $variable . "&nbsp;=&nbsp;" . $value . "<br />\r\n";
+
+    echo '<div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+            <h5 class="modal-title" id="ajaxModalLabel">System Uptime</h5>
+        </div>
+        <div class="modal-body" id="ajaxModalBody">
+			<p class="text-muted"> Raspberry PI up time since last reboot. </p>
+			<i class="fa fa-clock-o fa-1x red"></i>';
+    $uptime = (exec ("cat /proc/uptime"));
+    $uptime=substr($uptime, 0, strrpos($uptime, ' '));
+    echo secondsToWords($uptime) . '<br/><br/>';
+
+    echo '<div class="list-group">';
+    echo '<span class="list-group-item" style="overflow:hidden;"><pre>';
+    $rval=my_exec("df -h");
+    echo $rval['stdout'];
+    echo '</pre></span>';
+
+    echo '<span class="list-group-item" style="overflow:hidden;"><pre>';
+    $rval=my_exec("free -h");
+    echo $rval['stdout'];
+    echo '</pre></span>';
+    
+
+/*    while ($row = mysqli_fetch_assoc($results)) {
+        echo '<span class="list-group-item">';
+        echo $row['name'] . ($row['enabled'] ? '' : ' (Disabled)');
+        echo '<span class="pull-right text-muted small" style="width:200px;text-align:right;">Username:&nbsp;' . $row['username'] . '</span>';
+        echo '<br/><span class="text-muted small">Type:&nbsp;';
+        if($row['type']==0) echo 'Default, monitor.';
+        else if($row['type']==1) echo 'Sonoff Tasmota.';
+        else echo 'Unknown.';
+        echo '</span>';
+        echo '<span class="pull-right text-muted small" style="width:200px;text-align:right;">Password:&nbsp;' . $row['password'] . '</span>';
+        echo '<br/><span class="text-muted small">' . $row['ip'] . '&nbsp;:&nbsp;' . $row['port'] . '</span>';
+
+        echo '<span class="pull-right text-muted small" style="width:200px;text-align:right;">';
+        echo '<button class="btn btn-default btn-xs" data-remote="false" data-target="#ajaxModal" data-ajax="ajax.php?Ajax=GetModal_MQTTEdit&id=' . $row['id'] . '" onclick="mqtt_AddEdit(this);">
+            <span class="ionicons ion-edit"></span></button>&nbsp;&nbsp;
+		<button class="btn btn-danger btn-xs" onclick="mqtt_delete(' . $row['id'] . ');"><span class="glyphicon glyphicon-trash"></span></button>';
+        echo '</span>';
+        echo '</span>';
+    }*/
+    echo '</div>';      //close <div class="list-group">';
+    echo '</div>';      //close <div class="modal-body">
+    echo '<div class="modal-footer" id="ajaxModalFooter">
+            <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>            
+        </div>';      //close <div class="modal-footer">
+    return;
+}
+if($_GET['Ajax']=='GetModal_Uptime')
+{
+    GetModal_Uptime($conn);
+    return;
+}

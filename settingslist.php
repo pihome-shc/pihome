@@ -31,14 +31,14 @@ $frost_temp = $frosttemp['temperature'];
 ?>
 <script language="javascript" type="text/javascript">
 $("#ajaxModal").on("show.bs.modal", function(e) {
-    console.log($(e.relatedTarget).data('ajax'));
+    //console.log($(e.relatedTarget).data('ajax'));
     $(this).find("#ajaxModalLabel").html("...");
     $(this).find("#ajaxModalBody").html("Waiting ...");
     $(this).find("#ajaxModalFooter").html("...");
     $(this).find("#ajaxModalContent").load($(e.relatedTarget).data('ajax'));
 });    
 </script>
-                      <div class="panel panel-primary">
+                        <div class="panel panel-primary">
                         <div class="panel-heading">
                         <i class="fa fa-cog fa-fw"></i>   Settings    
 						<div class="pull-right"> <div class="btn-group"><?php echo date("H:i"); ?></div> </div>
@@ -117,6 +117,18 @@ $("#ajaxModal").on("show.bs.modal", function(e) {
 							<h3 class="status"></small></h3>
                             </button>
 							
+							<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-toggle="modal" data-remote="false" data-target="#ajaxModal" data-ajax="ajax.php?Ajax=GetModal_Services">
+							<h3 class="buttontop"><small>Services</small></h3>
+							<h3 class="degre" ><i class="ionicons ion-ios-cog-outline"></i></h3>
+							<h3 class="status"></small></h3>
+							</button>
+							
+							<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-toggle="modal" data-remote="false" data-target="#ajaxModal" data-ajax="ajax.php?Ajax=GetModal_MQTT">
+							<h3 class="buttontop"><small>MQTT</small></h3>
+							<h3 class="degre" >MQTT</h3>
+							<h3 class="status"></small></h3>
+							</button>
+							
 							<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-toggle="modal" data-remote="false" data-target="#ajaxModal" data-ajax="ajax.php?Ajax=GetModal_OpenWeather">
 							<h3 class="buttontop"><small>OpenWeather</small></h3>
 							<h3 class="degre" ><i class="fa fa-sun-o"></i></h3>
@@ -151,8 +163,8 @@ $("#ajaxModal").on("show.bs.modal", function(e) {
 							<h3 class="status"></small></h3>
                             </button>
 							
-							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-toggle="modal" data-target="#system_uptime">
-							<h3 class="buttontop"><small>Uptime</small></h3>
+							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-toggle="modal" data-remote="false" data-target="#ajaxModal" data-ajax="ajax.php?Ajax=GetModal_Uptime">
+							<h3 class="buttontop"><small>Uptime, etc</small></h3>
 							<h3 class="degre" ><i class="ionicons ion-clock red"></i></h3>
 							<h3 class="status"></small></h3>
                             </button>
@@ -215,7 +227,7 @@ $("#ajaxModal").on("show.bs.modal", function(e) {
       </div>
     </div>
   </div>
-</div>	
+</div>
 <?php include("model.php");  ?>
                         </div>
                         <!-- /.panel-body -->
