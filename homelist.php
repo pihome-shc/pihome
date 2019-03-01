@@ -101,14 +101,19 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$ovactive = $override['status'];
 	$override_c = $override['temperature'];
 	
-	//query to check override status and get temperature from override table 
-	$query = "SELECT * FROM boost WHERE zone_id = {$row['id']} LIMIT 1";
+	//query to check boost status and get temperature from boost table 
+	//$query = "SELECT * FROM boost WHERE zone_id = {$zone_id} LIMIT 1;";
+	$query = "SELECT * FROM boost WHERE zone_id = {$row['id']} AND status = 1 LIMIT 1;";
 	$result = $conn->query($query);
-	$boost = mysqli_fetch_array($result);
-	$bactive = $boost['status'];
-	$time = $boost['time'];
-	$boost_c = $boost['temperature'];
-	$minute = $boost['minute'];
+	if (mysqli_num_rows($result) != 0){  
+		$boost = mysqli_fetch_array($result);
+		$bactive = $boost['status'];
+		$time = $boost['time'];
+		$boost_c = $boost['temperature'];
+		$minute = $boost['minute'];  
+	} else { 
+		$bactive = '0';
+	}
 
 	//query to check night cliemate status and get temperature from night climate table 
 	$query = "select * from schedule_night_climat_zone_view WHERE zone_id = {$row['id']} LIMIT 1";

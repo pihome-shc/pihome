@@ -115,13 +115,17 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$override_c = $override['temperature'];
 
 	//query to check boost status and get temperature from boost table 
-	$query = "SELECT * FROM boost WHERE zone_id = {$zone_id} LIMIT 1;";
+	$query = "SELECT * FROM boost WHERE zone_id = {$zone_id} AND status = 1 LIMIT 1;";
 	$result = $conn->query($query);
-	$boost = mysqli_fetch_array($result);
-	$boost_status = $boost['status'];
-	$boost_time = $boost['time'];
-	$boost_c = $boost['temperature'];
-	$boost_minute = $boost['minute'];
+	if (mysqli_num_rows($result) != 0){  
+		$boost = mysqli_fetch_array($result);
+		$boost_status = $boost['status'];
+		$boost_time = $boost['time'];
+		$boost_c = $boost['temperature'];
+		$boost_minute = $boost['minute'];  
+	} else { 
+		$boost_status = '0';
+	}
 
 	//query to check night climate status and get temperature from night climate table 
 	$query = "select * from schedule_night_climat_zone_view WHERE zone_id = {$zone_id} LIMIT 1;";
@@ -148,26 +152,30 @@ while ($row = mysqli_fetch_assoc($results)) {
 	}
 
 	//check boost time is passed, if it passed then update db and set to boost status to 0
-	$phpdate = strtotime( $boost_time );
-	$boost_time = $phpdate + ($boost_minute * 60);
-	$now=strtotime(date('Y-m-d H:i:s'));
-	if (($boost_time > $now) && ($boost_status=='1')){
-		$boost_active='1';
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boost is Active for This Zone \n";
-	}elseif (($boost_time < $now) && ($boost_status=='1')){
-		$boost_active='0';
-		$query = "UPDATE boost SET status = '{$boost_active}', sync = '0' WHERE zone_id = {$row['id']} LIMIT 1";
-		$conn->query($query);
-		/* 
-		Following is commented out if you dont have Boost Console Build. 
-		$query = "SELECT * FROM boost WHERE zone_id ={$row['id']}";
-		$bresults = mysql_query($query, $connection);
-		$brow = mysqli_fetch_assoc($bresults);
-		$brow['boost_button_id'];
-		$brow['boost_button_child_id'];
-		$query = "UPDATE messages_out SET payload = '{$boost_active}', sent = '0' WHERE zone_id = {$row['id']} AND node_id = {$brow['boost_button_id']} AND child_id = {$brow['boost_button_child_id']} LIMIT 1";
-		mysql_query($query, $connection);
-		*/
+	if ($boost_status=='1'){
+		$phpdate = strtotime( $boost_time );
+		$boost_time = $phpdate + ($boost_minute * 60);
+		$now=strtotime(date('Y-m-d H:i:s'));
+		if (($boost_time > $now) && ($boost_status=='1')){
+			$boost_active='1';
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boost is Active for This Zone \n";
+		}elseif (($boost_time < $now) && ($boost_status=='1')){
+			$boost_active='0';
+			$query = "UPDATE boost SET status = '{$boost_active}', sync = '0' WHERE zone_id = {$row['id']} LIMIT 1";
+			$conn->query($query);
+			/* 
+			Following is commented out if you dont have Boost Console Build. 
+			$query = "SELECT * FROM boost WHERE zone_id ={$row['id']}";
+			$bresults = mysql_query($query, $connection);
+			$brow = mysqli_fetch_assoc($bresults);
+			$brow['boost_button_id'];
+			$brow['boost_button_child_id'];
+			$query = "UPDATE messages_out SET payload = '{$boost_active}', sent = '0' WHERE zone_id = {$row['id']} AND node_id = {$brow['boost_button_id']} AND child_id = {$brow['boost_button_child_id']} LIMIT 1";
+			mysql_query($query, $connection);
+			*/
+		}else {
+			$boost_active='0';
+		}
 	}else {
 		$boost_active='0';
 	}
@@ -280,8 +288,8 @@ if (in_array("1", $boiler)) {
 	****************************************************************************************/
 	exec("/usr/local/bin/gpio write ".$boiler_goip_pin ." ".$relay_on ); 
 	exec("/usr/local/bin/gpio mode ".$boiler_goip_pin ." out");
+
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Node ID: \033[41m".$boiler_node_id."\033[0m Child ID: \033[41m".$boiler_node_child_id."\033[0m \n";	
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler GIOP: \033[41m".$boiler_goip_pin. "\033[0m Status: \033[41m".$relay_on."\033[0m (0=On, 1=Off) \n";
 	if ($boiler_fire_status != $new_boiler_status){
 		//insert date and time into boiler log table so we can record boiler start date and time.
 		$bsquery = "INSERT INTO boiler_logs(start_datetime, start_cause, expected_end_date_time) VALUES ('{$date_time}', '{$start_cause}', '{$expected_end_date_time}');";
@@ -320,8 +328,8 @@ if (in_array("1", $boiler)) {
 	****************************************************************************************/
 	exec("/usr/local/bin/gpio write ".$boiler_goip_pin ." ".$relay_off ); 
 	exec("/usr/local/bin/gpio mode ".$boiler_goip_pin ." out");
+	
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Node ID: \033[41m".$boiler_node_id."\033[0m Child ID: \033[41m".$boiler_node_child_id."\033[0m \n";	
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler GIOP: \033[41m".$boiler_goip_pin. "\033[0m Status: \033[41m".$relay_off."\033[0m (0=On, 1=Off) \n";
 	if ($boiler_fire_status != $new_boiler_status){
 		//Update last record with boiler stop date and time in boiler log table. 
 		$query = "UPDATE boiler_logs SET stop_datetime = '{$date_time}', stop_cause = '{$stop_cause}' ORDER BY id DESC LIMIT 1";
@@ -368,8 +376,8 @@ if (TimeIsBetweenTwoTimes($current_time, $start_time, $end_time)) {
 	echo "---------------------------------------------------------------------------------------- \n";
 }
 
-echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Fired Status: \033[41m".$new_boiler_status."\033[0m \n";	
-echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Hysteresis Status: \033[41m".$hysteresis."\033[0m \n";
+echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Fired Status: ".$new_boiler_status."\n";	
+echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Hysteresis Status: ".$hysteresis."\n";
 echo "---------------------------------------------------------------------------------------- \n";
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Script Ended \n"; 
 echo "\033[32m****************************************************************************************\033[0m  \n";
