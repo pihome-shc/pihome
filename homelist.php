@@ -132,8 +132,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	} else {
 		$night_climate_status='0';
 	}
-	
-    
+	//Boost and Override Array
 	$boost_arr[$boost_index] = $bactive;
 	$boost_index = $boost_index+1;
 	$override_arr[$override_index] = $ovactive;
