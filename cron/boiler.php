@@ -13,7 +13,7 @@ echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
 echo "*******************************************************\n";
 echo "*   Boiler Script Version 0.51 Build Date 31/01/2018  *\n";
-echo "*   Update on 08/10/218                               *\n";
+echo "*   Update on 16/03/2019                              *\n";
 echo "*                                Have Fun - PiHome.eu *\n";
 echo "*******************************************************\n";
 echo " \033[0m \n";
@@ -163,16 +163,16 @@ while ($row = mysqli_fetch_assoc($results)) {
 			$boost_active='0';
 			$query = "UPDATE boost SET status = '{$boost_active}', sync = '0' WHERE zone_id = {$row['id']};";
 			$conn->query($query);
-			/* 
-			Following is commented out if you dont have Boost Console Build. 
+
+			//You can comment out if you dont have Boost Button Console installed.  
 			$query = "SELECT * FROM boost WHERE zone_id ={$row['id']}";
-			$bresults = mysql_query($query, $connection);
+			$bresults = $conn->query($query);
 			$brow = mysqli_fetch_assoc($bresults);
 			$brow['boost_button_id'];
 			$brow['boost_button_child_id'];
 			$query = "UPDATE messages_out SET payload = '{$boost_active}', sent = '0' WHERE zone_id = {$row['id']} AND node_id = {$brow['boost_button_id']} AND child_id = {$brow['boost_button_child_id']} LIMIT 1";
-			mysql_query($query, $connection);
-			*/
+			$conn->query($query);
+			
 		}else {
 			$boost_active='0';
 		}
