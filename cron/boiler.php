@@ -85,8 +85,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$zone_controler_child_id=$row['controler_child_id'];
 	$zone_gpio_pin=$row['gpio_pin'];
 	
-	//query to get temperature from messages_in table 
-	//$query = "SELECT * FROM messages_in_view_24h WHERE node_id = {$zone_sensor_id} ORDER BY datetime desc LIMIT 1;";
+	//query to get temperature from messages_in_view_24h table view 
 	$query = "SELECT * FROM messages_in_view_24h WHERE node_id = '{$zone_sensor_id}' AND child_id = {$zone_sensor_child_id} ORDER BY datetime desc LIMIT 1;";
 	$result = $conn->query($query);
 	$sensor = mysqli_fetch_array($result);
@@ -161,18 +160,17 @@ while ($row = mysqli_fetch_assoc($results)) {
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boost is Active for This Zone \n";
 		}elseif (($boost_time < $now) && ($boost_status=='1')){
 			$boost_active='0';
-			$query = "UPDATE boost SET status = '{$boost_active}', sync = '0' WHERE zone_id = {$row['id']};";
-			$conn->query($query);
-
 			//You can comment out if you dont have Boost Button Console installed.  
-			$query = "SELECT * FROM boost WHERE zone_id ={$row['id']}";
+			$query = "SELECT * FROM boost WHERE zone_id ={$row['id']} AND status = '1';";
 			$bresults = $conn->query($query);
 			$brow = mysqli_fetch_assoc($bresults);
 			$brow['boost_button_id'];
 			$brow['boost_button_child_id'];
-			$query = "UPDATE messages_out SET payload = '{$boost_active}', sent = '0' WHERE zone_id = {$row['id']} AND node_id = {$brow['boost_button_id']} AND child_id = {$brow['boost_button_child_id']} LIMIT 1";
+			$query = "UPDATE messages_out SET payload = '{$boost_active}', sent = '0' WHERE zone_id = {$row['id']} AND node_id = {$brow['boost_button_id']} AND child_id = {$brow['boost_button_child_id']} LIMIT 1;";
 			$conn->query($query);
-			
+			//update Boost Records in database
+			$query = "UPDATE boost SET status = '{$boost_active}', sync = '0' WHERE zone_id = {$row['id']};";
+			$conn->query($query);
 		}else {
 			$boost_active='0';
 		}
