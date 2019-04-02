@@ -26,7 +26,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 ?>
                     <div class="panel panel-primary">
                         <div class="panel-heading">
-                            <i class="fa fa-rocket fa-fw"></i>  Boost    
+                            <i class="fa fa-rocket fa-fw"></i>  <?php echo $lang['boost']; ?>    
 						<div class="pull-right"> <div class="btn-group"><?php echo date("H:i"); ?></div> </div>
                         </div>
                         <!-- /.panel-heading -->

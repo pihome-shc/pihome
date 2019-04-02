@@ -65,58 +65,58 @@ if (isset($_POST['submit'])) {
 	$result = $conn->query($query);
 	$zone_id = mysqli_insert_id($conn);
 	if ($result) {
-		$message_success = "<p>Zone Record Added Successfuly.</p>";
+		$message_success = "<p>".$lang['zone_record_success']."</p>";
 	} else {
-		$error = "<p>Zone Record Addition Failed: </p> <p>" .mysqli_error($conn). "</p>";
+		$error = "<p>".$lang['zone_record_fail']." </p> <p>" .mysqli_error($conn). "</p>";
 	}
 
 	//Add Zone to message out table at same time to send out instructions to controller for each zone. 
 	$query = "INSERT INTO messages_out (node_id, child_id, sub_type, ack, type, payload, sent, zone_id)VALUES ('{$controler}','{$controler_child_id}', '1', '1', '2', '0', '0', '{$zone_id}');";
 	$result = $conn->query($query);
 	if ($result) {
-		$message_success .= "<p>Zone Controler Record Added Successfuly.</p>";
+		$message_success .= "<p>".$lang['zone_controler_success']."</p>";
 	} else {
-		$error .= "<p>Zone Controler Recrd Addition Failed!!!</p> <p>" .mysqli_error($conn). "</p>";
+		$error .= "<p>".$lang['zone_controler_fail']."</p> <p>" .mysqli_error($conn). "</p>";
 	}
 
 	//Add Zone Boost Button Console to messageout table at same time
 	$query = "INSERT INTO messages_out (node_id, child_id, sub_type, payload, sent, zone_id)VALUES ('{$boost_button_id}','{$boost_button_child_id}', '2', '0', '1', '{$zone_id}');";
 	$result = $conn->query($query);
 	if ($result) {
-		$message_success .= "<p>Zone Boost Button Record Added Successfuly.</p>";
+		$message_success .= "<p>".$lang['zone_button_success']."</p>";
 	} else {
-		$error .= "<p>Zone Boost Button Recrd Addition Failed!!!</p> <p>" .mysqli_error($conn). "</p>";
+		$error .= "<p>".$lang['zone_button_fail']."</p> <p>" .mysqli_error($conn). "</p>";
 	}
 	
 	//Add Zone to boost table at same time
 	$query = "INSERT INTO boost (status, zone_id, temperature, minute, boost_button_id, boost_button_child_id)VALUES ('0', '{$zone_id}','{$max_c}','{$max_operation_time}', '{$boost_button_id}', '{$boost_button_child_id}');";
 	$result = $conn->query($query);
 	if ($result) {
-		$message_success .= "<p>Zone Boost Record Added Successfuly.</p>";
+		$message_success .= "<p>".$lang['zone_boost_success']."</p>";
 	} else {
-		$error .= "<p>Zone Boost Recrd Addition Failed!!!</p> <p>" .mysqli_error($conn). "</p>";
+		$error .= "<p>".$lang['zone_boost_fail']."</p> <p>" .mysqli_error($conn). "</p>";
 	}
 	
 	//Add Zone to override table at same time
 	$query = "INSERT INTO override (status, zone_id, temperature) VALUES ('0', '{$zone_id}','{$max_c}');";
 	$result = $conn->query($query);
 	if ($result) {
-		$message_success .= "<p>Zone Override Record Added Successfuly.</p>";
+		$message_success .= "<p>".$lang['zone_override_success']."</p>";
 	} else {
-		$error .= "<p>Zone Override Record Addition Failed!!!</p> <p>" .mysqli_error($conn). "</p>";
+		$error .= "<p>".$lang['zone_override_fail']."</p> <p>" .mysqli_error($conn). "</p>";
 	}
 	
 	//Add Zone to schedule_night_climat_zone table at same time
 	$query = "INSERT INTO schedule_night_climat_zone (status, zone_id, schedule_night_climate_id, min_temperature, max_temperature) VALUES ('0', '{$zone_id}', '1', '18','21');";
 	$result = $conn->query($query);
 	if ($result) {
-		$message_success .= "<p>Zone Night Climate Record Added Successfuly. </p>
-		<p>Do Not refrest and click Back button on your Browser...</p>";
+		$message_success .= "<p>".$lang['zone_night_climate_success']."</p>
+		<p>".$lang['do_not_refresh']."</p>";
 		header("Refresh: 10; url=home.php");
 	} else {
-		$error .= "<p>Zone Night Climate Record Addition Failed!!!</p> <p>" .mysqli_error($conn). "</p>";
+		$error .= "<p>".$lang['zone_night_climate_fail']."</p> <p>" .mysqli_error($conn). "</p>";
 	}
-	$alert_message="Zone ".$name." will not be added to any exiting heating Schedule!!!";
+	$alert_message=$lang['zone']." ".$name." ".$lang['zone_not_added_to_schedule'];
 }
 ?>
 <?php include("header.php");  ?>
@@ -127,7 +127,7 @@ if (isset($_POST['submit'])) {
                 <div class="col-lg-12">
                    <div class="panel panel-primary">
                         <div class="panel-heading">
-                            <i class="fa fa-plus fa-1x"></i> Add Zone   
+                            <i class="fa fa-plus fa-1x"></i> <?php echo $lang['zone_add']; ?>   
 						<div class="pull-right"> <div class="btn-group"><?php echo date("H:i"); ?></div> </div>
                         </div>
                         <!-- /.panel-heading -->
@@ -141,39 +141,39 @@ $new_index_id = $found_product['index_id']+1;
 ?>
 <div class="checkbox checkbox-default checkbox-circle">
 <input id="checkbox0" class="styled" type="checkbox" name="zone_status" value="1">
-<label for="checkbox0"> Enable Zone </label>
+<label for="checkbox0"> <?php echo $lang['zone_enable']; ?> </label>
 <div class="help-block with-errors"></div></div>
 
-<div class="form-group" class="control-label"><label>Index Number</label>
-<input class="form-control" placeholder="Index Number" value="<?php if(isset($_POST['index_id'])) { echo $_POST['index_id']; }else {echo $new_index_id; }  ?>" id="index_id" name="index_id" data-error="Index Number should contain numbers only! This number will dertimin where icon will be placed on home screen for this Zone." autocomplete="off" required>
+<div class="form-group" class="control-label"><label><?php echo $lang['zone_index_number']; ?></label>
+<input class="form-control" placeholder="<?php echo $lang['zone_index_number']; ?>r" value="<?php if(isset($_POST['index_id'])) { echo $_POST['index_id']; }else {echo $new_index_id; }  ?>" id="index_id" name="index_id" data-error="<?php echo $lang['zone_index_number_help']; ?>" autocomplete="off" required>
 <div class="help-block with-errors"></div></div>
 
-<div class="form-group" class="control-label"><label>Zone Name</label>
-<input class="form-control" placeholder="Zone Name" value="<?php if(isset($_POST['name'])) { echo $_POST['name']; } ?>" id="name" name="name" data-error="Zone Name Can Not be Empty!" autocomplete="off" required>
+<div class="form-group" class="control-label"><label><?php echo $lang['zone_name']; ?></label>
+<input class="form-control" placeholder="Zone Name" value="<?php if(isset($_POST['name'])) { echo $_POST['name']; } ?>" id="name" name="name" data-error="<?php echo $lang['zone_name_help']; ?>" autocomplete="off" required>
 <div class="help-block with-errors"></div></div>
 
-<div class="form-group" class="control-label"><label>Zone Type</label>
-<select id="type" name="type" class="form-control select2" placeholder="Zone Type i.e Heating or Water"  data-error="Zone type Either Heating or Water!" autocomplete="off" required>
+<div class="form-group" class="control-label"><label><?php echo $lang['zone_type']; ?></label>
+<select id="type" name="type" class="form-control select2" autocomplete="off" required>
 <?php if(isset($_POST['type'])) { echo '<option selected >'.$_POST['type'].'</option>'; } ?>
-<option>Heating</option>
-<option>Water</option>
+<option><?php echo $lang['zone_type_heating']; ?></option>
+<option><?php echo $lang['zone_type_water']; ?></option>
 </select>				
 <div class="help-block with-errors"></div></div>
 
-<div class="form-group" class="control-label"><label>Maximum Temperature</label>
-<input class="form-control" placeholder="Maximum temperature for this zone" value="<?php if(isset($_POST['max_c'])) { echo $_POST['max_c']; } ?>" id="max_c" name="max_c" data-error="Maximum temperature this Zone can reach before system shutdown this Zone for safty!"  autocomplete="off" required>
+<div class="form-group" class="control-label"><label><?php echo $lang['min_temperature']; ?></label>
+<input class="form-control" placeholder="<?php echo $lang['zone_max_temperature_help']; ?>" value="<?php if(isset($_POST['max_c'])) { echo $_POST['max_c']; } ?>" id="max_c" name="max_c" data-error="<?php echo $lang['zone_max_temperature_error']; ?>"  autocomplete="off" required>
 <div class="help-block with-errors"></div></div>
 				
-<div class="form-group" class="control-label"><label>Maximum Operation Time</label>
-<input class="form-control" placeholder="Maximum opertation time for this zone, normally 45 minuts to 60 minuts." value="<?php if(isset($_POST['max_operation_time'])) { echo $_POST['max_operation_time']; } ?>" id="max_operation_time" name="max_operation_time" data-error="Maximum operation time this Zone can run before systems shutdown this Zone for safty!"  autocomplete="off" required>
+<div class="form-group" class="control-label"><label><?php echo $lang['zone_max_operation_time']; ?></label>
+<input class="form-control" placeholder="<?php echo $lang['zone_max_operation_time_help']; ?>" value="<?php if(isset($_POST['max_operation_time'])) { echo $_POST['max_operation_time']; } ?>" id="max_operation_time" name="max_operation_time" data-error="<?php echo $lang['zone_max_operation_time_error']; ?>"  autocomplete="off" required>
 <div class="help-block with-errors"></div></div>				
 
-<div class="form-group" class="control-label"><label>Hysteresis Time</label>
-<input class="form-control" placeholder="Hysteresis Time for Safty, Please consult your motorized volve technical manule for more details. Default is 3 Minuts." value="<?php if(isset($_POST['hysteresis_time'])) { echo $_POST['hysteresis_time']; } else {echo '3';} ?>" id="hysteresis_time" name="hysteresis_time" data-error="Hysteresis time for safty, Please consult your motorized volve technical manule for more details. Default is 3 Minuts."  autocomplete="off" required>
+<div class="form-group" class="control-label"><label><?php echo $lang['hysteresis_time']; ?></label>
+<input class="form-control" placeholder="<?php echo $lang['zone_hysteresis_time_help']; ?>" value="<?php if(isset($_POST['hysteresis_time'])) { echo $_POST['hysteresis_time']; } else {echo '3';} ?>" id="hysteresis_time" name="hysteresis_time" data-error="<?php echo $lang['zone_hysteresis_time_error']; ?>"  autocomplete="off" required>
 <div class="help-block with-errors"></div></div>	
 
-<div class="form-group" class="control-label"><label>Temperature Sensor ID</label>
-<select id="sensor_id" name="sensor_id" class="form-control select2" data-error="Zone sensor id can not be empty!" autocomplete="off" required>
+<div class="form-group" class="control-label"><label><?php echo $lang['temp_sensor_id']; ?></label>
+<select id="sensor_id" name="sensor_id" class="form-control select2" data-error="<?php echo $lang['zone_temp_sensor_id_error']; ?>" autocomplete="off" required>
 <?php if(isset($_POST['node_id'])) { echo '<option selected >'.$_POST['node_id'].'</option>'; } ?>
 <?php  $query = "SELECT node_id, child_id_1 FROM nodes where name = 'Temperature Sensor'";
 $result = $conn->query($query);
@@ -186,8 +186,8 @@ echo "<option>$node_id</option>";} ?>
 
 <input type="hidden" name="sensor_child_id" value="0">			
  
-<div class="form-group" class="control-label"><label>Zone Relay Controller ID</label>
-<select id="controler_id" name="controler_id" class="form-control select2" data-error="Zone Controler ID can not be empty! Select Node connect to Zone's motorized valve, If your zone connected to RPI GPIO you can select 0" autocomplete="off" required>
+<div class="form-group" class="control-label"><label><?php echo $lang['zone_controller_id']; ?></label>
+<select id="controler_id" name="controler_id" class="form-control select2" data-error="<?php echo $lang['zone_controller_id_error']; ?>" autocomplete="off" required>
 <?php if(isset($_POST['controler_id'])) { echo '<option selected >'.$_POST['controler_id'].'</option>'; } ?>
 <?php  $query = "SELECT node_id FROM nodes where name = 'Zone Controller Relay'";
 $result = $conn->query($query);
@@ -200,8 +200,8 @@ while ($datarw=mysqli_fetch_array($result)) {
 <div class="help-block with-errors"></div></div>
 
 
-<div class="form-group" class="control-label"><label>Zone Relay Controller's Child ID</label>
-<select id="controler_child_id" name="controler_child_id" class="form-control select2"  data-error="Child ID on Zone Controller, This value is from 1 to 8 that connect to your Zone's motorized valve relay, If your zone connected to RPI GPIO you can select 0" autocomplete="off" required>
+<div class="form-group" class="control-label"><label><?php echo $lang['zone_controller_child_id']; ?></label>
+<select id="controler_child_id" name="controler_child_id" class="form-control select2"  data-error="<?php echo $lang['zone_controller_child_id_error']; ?>" autocomplete="off" required>
 <?php if(isset($_POST['controler_child_id'])) { echo '<option selected >'.$_POST['controler_child_id'].'</option>'; } ?>
 <option></option>
 <option>0</option>
@@ -217,8 +217,8 @@ while ($datarw=mysqli_fetch_array($result)) {
 <div class="help-block with-errors"></div></div>
 
 
-<div class="form-group" class="control-label"><label>Zone Relay GPIO Pin</label>
-<select id="zone_gpio" name="zone_gpio" class="form-control select2" data-error="If Zone motorized valve connected to Raspberry pi GPIO Pin,  Make sure you follow WiringPi GPIO Pin. if you are using Wireless Relay you can select any GPIO." autocomplete="off" required>
+<div class="form-group" class="control-label"><label><?php echo $lang['zone_relay_gpio']; ?></label>
+<select id="zone_gpio" name="zone_gpio" class="form-control select2" data-error="<?php echo $lang['zone_gpio_pin_error']; ?>" autocomplete="off" required>
 <?php if(isset($_POST['zone_gpio'])) { echo '<option selected >'.$_POST['zone_gpio'].'</option>'; } ?>
 <option></option>
 <option>0</option>
@@ -242,8 +242,8 @@ while ($datarw=mysqli_fetch_array($result)) {
 <div class="help-block with-errors"></div></div>
 
 
-<div class="form-group" class="control-label"><label>Boost Button ID</label>
-<select id="boost_button_id" name="boost_button_id" class="form-control select2" data-error="If you have Boost Console then you can select Boost Console ID" autocomplete="off" >
+<div class="form-group" class="control-label"><label><?php echo $lang['zone_boost_button_id']; ?></label>
+<select id="boost_button_id" name="boost_button_id" class="form-control select2" data-error="<?php echo $lang['zone_boost_id_error']; ?>" autocomplete="off" >
 <?php if(isset($_POST['boost_button_id'])) { echo '<option selected >'.$_POST['boost_button_id'].'</boost_button_id>'; } ?>
 <?php  $query = "SELECT node_id FROM nodes where name = 'Button Console'";
 $result = $conn->query($query);
@@ -254,8 +254,8 @@ echo "<option>$node_id</option>";} ?>
 </select>				
 <div class="help-block with-errors"></div></div>
 
-<div class="form-group" class="control-label"><label>Boost Button's Child ID</label>
-<select id="boost_button_child_id" name="boost_button_child_id" class="form-control select2" data-error="Boost Console Button ID for this Zone" autocomplete="off" required>
+<div class="form-group" class="control-label"><label><?php echo $lang['zone_boost_button_child_id']; ?></label>
+<select id="boost_button_child_id" name="boost_button_child_id" class="form-control select2" data-error="<?php echo $lang['zone_boost_child_id_error']; ?>" autocomplete="off" required>
 <?php if(isset($_POST['boost_button_child_id'])) { echo '<option selected >'.$_POST['boost_button_child_id'].'</option>'; } ?>
 <option></option>
 <option>0</option>
@@ -270,7 +270,7 @@ echo "<option>$node_id</option>";} ?>
 </select>				
 <div class="help-block with-errors"></div></div>
 
-<div class="form-group" class="control-label"><label>Boiler</label>
+<div class="form-group" class="control-label"><label><?php echo $lang['boiler']; ?></label>
 <select id="boiler_id" name="boiler_id" class="form-control select2" data-error="Boiler ID can not be empty!" autocomplete="off" required>
 <?php if(isset($_POST['boiler_id'])) { echo '<option selected >'.$_POST['boiler_id'].'</option>'; } ?>
 <?php  $query = "SELECT id, node_id, name FROM boiler;";
@@ -281,8 +281,8 @@ echo "<option>$boiler_id</option>";} ?>
 </select>				
 <div class="help-block with-errors"></div></div>
 
-<input type="submit" name="submit" value="Submit" class="btn btn-default btn-sm">
-<a href="home.php"><button type="button" class="btn btn-primary btn-sm">Cancel</button></a>
+<input type="submit" name="submit" value="<?php echo $lang['submit']; ?>" class="btn btn-default btn-sm">
+<a href="home.php"><button type="button" class="btn btn-primary btn-sm"><?php echo $lang['cancel']; ?></button></a>
 </form>
                         </div>
                         <!-- /.panel-body -->

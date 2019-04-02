@@ -87,7 +87,7 @@ var dataset = [
         echo "{label: \"".$zone_name."\", data: ".json_encode($zone_temp).", color: rainbow(".$count.",".++$counter.") }, \n";
     }
     // add outside weather temperature
-    echo "{label: \"Outside\", data: ".json_encode($weather_c).", color: rainbow(".$count.",".++$counter.") }, \n";
+    echo "{label: \"".$lang['graph_outsie']."\", data: ".json_encode($weather_c).", color: rainbow(".$count.",".++$counter.") }, \n";
 ?> ];
 
 //background-color for boiler on time 
@@ -122,7 +122,7 @@ $(document).ready(function () {
 var hot_water = <?php echo json_encode($hot_water); ?>;
 //var immersion_room = <?php echo json_encode($immersion_room); ?>;
 //var dataset_c = [{label: "Hot Water ", data: hot_water, color: "#0077FF"}, {label: "Immersion Room ", data: immersion_room, color: "#DE000F"} ];
-var dataset_c = [{label: "Hot Water ", data: hot_water, color: "#0077FF"}];
+var dataset_c = [{label: "<?php echo $lang['hot_water']; ?> ", data: hot_water, color: "#0077FF"}];
 
 //background-color for boiler on time 
 var markings_chwater = [
@@ -156,7 +156,7 @@ $(document).ready(function () {
 var system_c = <?php echo json_encode($system_c); ?>;
 //var pi_box = <?php echo json_encode($pi_box); ?>;
 //var dataset_hw = [{label: "CPU  ", data: system_c, color: "#DE000F"},{label: "Pi Box  ", data: pi_box, color: "#7D0096"} ];
-var dataset_hw = [{label: "CPU  ", data: system_c, color: "#DE000F"}];
+var dataset_hw = [{label: "<?php echo $lang['cpu']; ?> ", data: system_c, color: "#DE000F"}];
 
 //background-color for All boiler on time 
 var markings_boiler = [
@@ -196,7 +196,7 @@ $.fn.UseTooltip = function () {
                 showTooltip(item.pageX,
                         item.pageY,
                         color,
-                        "<strong>" + item.series.label + "</strong> At: " + (new Date(x).getHours()<10?'0':'') + new Date(x).getHours() + ":"  + (new Date(x).getMinutes()<10?'0':'') + new Date(x).getMinutes() +"<br> <strong>Temp : " + $.formatNumber(y, { format: "#,###", locale: "us" }) + "&deg;</strong> ");
+                        "<strong>" + item.series.label + "</strong> At: " + (new Date(x).getHours()<10?'0':'') + new Date(x).getHours() + ":"  + (new Date(x).getMinutes()<10?'0':'') + new Date(x).getMinutes() +"<br> <strong><?php echo $lang['temp']; ?>  : " + $.formatNumber(y, { format: "#,###", locale: "us" }) + "&deg;</strong> ");
             }
         } else {
             $("#tooltip").remove();
@@ -241,9 +241,9 @@ var on_minuts = <?php echo json_encode($on_minuts); ?>;
 var save_minuts = <?php echo json_encode($save_minuts); ?>;
 
 var dataset_mu = [
-{label: "Total Time  ", data: total_minuts, color: "#DE000F"},
-{label: "Consumed Time  ", data: on_minuts, color: "#7D0096"}, 
-{label: "Saved Time  ", data: save_minuts, color: "#009604"} ];
+{label: "<?php echo $lang['graph_total_time']; ?>  ", data: total_minuts, color: "#DE000F"},
+{label: "<?php echo $lang['graph_consumed_time']; ?>   ", data: on_minuts, color: "#7D0096"}, 
+{label: "<?php echo $lang['graph_saved_time']; ?>   ", data: save_minuts, color: "#009604"} ];
 
 /*
 Timeformat specifiers
@@ -286,7 +286,7 @@ $.fn.UseTooltipu = function () {
                 var y = item.datapoint[1];
                 var color = item.series.color;                        
                 showTooltipu(item.pageX, item.pageY, color,
-                "<strong>" + item.series.label + " in " + z +" <strong><br>Hours : " + $.formatNumber(y, { format: "#,###", locale: "us" }) + "</strong> ");                
+                "<strong>" + item.series.label + " in " + z +" <strong><br><?php echo $lang['hours']; ?>  : " + $.formatNumber(y, { format: "#,###", locale: "us" }) + "</strong> ");                
             }
         } else {
             $("#tooltip").remove();

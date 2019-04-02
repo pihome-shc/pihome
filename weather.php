@@ -34,7 +34,7 @@ require_once(__DIR__.'/st_inc/functions.php');
                 <div class="col-lg-12">
                     <div class="panel panel-primary">
                         <div class="panel-heading">
-                            <i class="fa fa-cog fa-fw"></i>   Outside <?php echo $weather['temp_celsius'] ;?>&deg;    
+                            <i class="fa fa-cog fa-fw"></i>   <?php echo $lang['weather_outside']; ?> <?php echo $weather['temp_celsius'] ;?>&deg;    
 						<div class="pull-right"> <div class="btn-group"><?php echo date("H:i"); ?></div> </div>
                         </div>
                         <!-- /.panel-heading -->
@@ -63,7 +63,7 @@ echo '<a href="#" class="list-group-item">'
                         </div>
                         <!-- /.panel-body -->
 						<div class="panel-footer">
-                            Next Schedule: 
+                            <?php echo $lang['schedule_next']; ?>: 
                         </div>
                     </div>
                 </div>

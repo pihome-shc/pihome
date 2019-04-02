@@ -225,7 +225,7 @@ while 1:
 			# print "2 insert: ", node_id, " , ", child_sensor_id, "payload", payload
 				print "8. Adding Database Record: Node ID:",node_id," Child Sensor ID:", child_sensor_id, " PayLoad:", payload, "\n"
 				xboost = "UPDATE boost SET status=%s WHERE boost_button_id=%s AND boost_button_child_id = %s"
-				cur.execute(xboost, (payload, node_id,child_sensor_id,))
+				cur.execute(xboost, (payload, node_id, child_sensor_id,))
 				con.commit()
 				cur.execute('UPDATE `nodes` SET `last_seen`=now(), `sync`=0 WHERE node_id = %s', [node_id])
 				con.commit()
@@ -236,7 +236,7 @@ while 1:
 			# print "2 insert: ", node_id, " , ", child_sensor_id, "payload", payload
 				print "9. Adding Database Record: Node ID:", node_id, " Child Sensor ID:", child_sensor_id, " PayLoad:", payload, "\n"
 				xaway = "UPDATE away SET status=%s WHERE away_button_id=%s AND away_button_child_id = %s"
-				cur.execute(xaway, (payload, node_id,child_sensor_id,))
+				cur.execute(xaway, (payload, node_id, child_sensor_id,))
 				con.commit()
 				cur.execute('UPDATE `nodes` SET `last_seen`=now(), `sync`=0  WHERE node_id = %s', [node_id])
 				con.commit()
@@ -248,7 +248,26 @@ while 1:
 			if (node_id == 0 and child_sensor_id == 255 and message_type == 0 and sub_type == 18):
 				print "10: PiHome MySensors Gateway Version :", payload, "\n\n"
 				cur.execute('UPDATE gateway SET version = %s', [payload])
-				con.commit()	
+				con.commit()
+				
+			# ..::Step Eleven::.. 40;0;3;0;1;02:27 
+			# When client is requesting time
+			if (node_id != 0 and child_sensor_id == 255 and message_type == 3 and sub_type == 1):
+				print "11: Node ID: ",node_id," Requested Time \n"
+				#nowtime = time.ctime()
+				nowtime = time.strftime('%H:%M')
+				ntime = "UPDATE messages_out SET payload=%s, sent=%s WHERE node_id=%s AND child_id = %s"
+				cur.execute(ntime, (nowtime, '0', node_id, child_sensor_id,))
+				con.commit()
+			
+			# ..::Step Twelve::.. 40;0;3;0;1;02:27 
+			# When client is requesting text
+			if (node_id != 0 and message_type == 2 and sub_type == 47):
+				print "12: Node ID: ",node_id,"Child ID: ", child_sensor_id," Requesting Text \n"
+				nowtime = time.strftime('%H:%M')
+				ntime = "UPDATE messages_out SET payload=%s, sent=%s WHERE node_id=%s AND child_id = %s"
+				#cur.execute(ntime, (nowtime, '0', node_id, child_sensor_id,))
+				#con.commit()
 
 		except mdb.Error, e:
 				print "Error %d: %s" % (e.args[0], e.args[1])

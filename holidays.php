@@ -66,7 +66,7 @@ if (isset($_POST['submit'])) {
 ?>
 <?php include("header.php");  ?>
 <?php include_once("notice.php"); ?>
- <div id="page-wrapper">
+<div id="page-wrapper">
 <br>
             <div class="row">
                 <div class="col-lg-12">

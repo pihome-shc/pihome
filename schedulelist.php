@@ -25,7 +25,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 ?>
                     <div class="panel panel-primary">
                         <div class="panel-heading">
-                            <i class="fa fa-clock-o fa-fw"></i> Schedule   
+                            <i class="fa fa-clock-o fa-fw"></i> <?php echo $lang['schedule']; ?>   
 						<div class="pull-right"> <div class="btn-group"><?php echo date("H:i"); ?></div> </div>
                         </div>
                         <!-- /.panel-heading -->
@@ -39,7 +39,7 @@ require_once(__DIR__.'/st_inc/functions.php');
                          <div class="header">
                              <strong class="primary-font">   </strong> 
 							 <small class="pull-right text-muted">
-								Add Schedule <i class="fa fa-chevron-right fa-fw"></i></a>
+								<?php echo $lang['schedule_add']; ?>  <i class="fa fa-chevron-right fa-fw"></i></a>
                              </small>
                          </div>
                      </div>

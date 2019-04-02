@@ -25,11 +25,11 @@ echo '
         <div class="modal-content">
             <div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title">PiConnect Settings</h5>
+                <h5 class="modal-title">PiConnect '.$lang['settings'].'</h5>
             </div>
             <div class="modal-body">
-<p class="text-muted"> Manage your PiHome Smart Heating from anywhere in the world without opening any ports or having to do any vpn to your home network. 
-To Signup for PiConnect API Key <a class="green" target="_blank" href="http://www.pihome.eu/piconnect/"> http://www.pihome.eu/piconnect/</a></p>';
+<p class="text-muted"> 
+'.$lang['piconnect_text'].'</a></p>';
 $query = "SELECT * FROM piconnect";
 $result = $conn->query($query);
 $row = mysqli_fetch_array($result);
@@ -50,11 +50,11 @@ $api_key = $row['api_key'];
 		<input class="form-control input-sm" type="text" id="api_key" name="api_key" value="'.$row["api_key"].'" placeholder="PiConnect API Key">
 		<div class="help-block with-errors"></div></div>';
 echo '<br>
-<h5 class="strong red" >PiConnect - Simplify the Connected Smart Heating is in beta mode.</h5>';
+<h5 class="strong red" >'.$lang['piconnect_notice_text'].'</h5>';
 echo '</div></div>
             <div class="modal-footer">
-			    <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Cancel</button>
-                <input type="button" name="submit" value="Save" class="btn btn-default login btn-sm" onclick="setup_piconnect()">
+			    <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['cancel'].'</button>
+                <input type="button" name="submit" value="'.$lang['save'].'" class="btn btn-default login btn-sm" onclick="setup_piconnect()">
              </div>
         </div>
     </div>
@@ -71,13 +71,13 @@ echo '
         <div class="modal-content">
             <div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title">Frost Protection</h5>
+                <h5 class="modal-title">'.$lang['frost_protection'].'</h5>
             </div>
             <div class="modal-body">
-                <p class="text-muted"> System will protect itself against frost</p>
+                <p class="text-muted"> '.$lang['frost_protection_text'].'</p>
 				<form data-toggle="validator" role="form" method="post" action="settings.php" id="form-join">
-				<div class="form-group" class="control-label"><label>Temperature</label>
-				<select class="form-control input-sm" type="number" id="frost_temp" name="frost_temp" placeholder="Frost protection temperature" >';
+				<div class="form-group" class="control-label"><label>'.$lang['temperature'].'</label>
+				<select class="form-control input-sm" type="number" id="frost_temp" name="frost_temp" >';
 $c_f = settings($conn, 'c_f');
 if($c_f==1 || $c_f=='1') {
     for($t=28;$t<=50;$t++){
@@ -93,8 +93,8 @@ echo '
                 <div class="help-block with-errors"></div></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Cancel</button>
-                <input type="button" name="submit" value="Save" class="btn btn-default login btn-sm" onclick="update_frost()">
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['cancel'].'</button>
+                <input type="button" name="submit" value="'.$lang['save'].'" class="btn btn-default login btn-sm" onclick="update_frost()">
             </div>
         </div>
     </div>
@@ -112,48 +112,76 @@ echo '
         <div class="modal-content">
             <div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title">Change Units</h5>
+                <h5 class="modal-title">'.$lang['unit_change'].'</h5>
             </div>
             <div class="modal-body">
 				<form data-toggle="validator" role="form" method="post" action="settings.php" id="form-join">
-				<div class="form-group" class="control-label"><label>Units</label>
+				<div class="form-group" class="control-label"><label>'.$lang['units'].'</label>
 				<select class="form-control input-sm" type="number" id="new_units" name="new_units">
-				<option value="0" ' . ($c_f==0 || $c_f=='0' ? 'selected' : '') . '>Celsius</option>
-				<option value="1" ' . ($c_f==1 || $c_f=='1' ? 'selected' : '') . '>Fahrenheit</option>
+				<option value="0" ' . ($c_f==0 || $c_f=='0' ? 'selected' : '') . '>'.$lang['unit_celsius'].'</option>
+				<option value="1" ' . ($c_f==1 || $c_f=='1' ? 'selected' : '') . '>'.$lang['unit_fahrenheit'].'</option>
 				</select>
                 <div class="help-block with-errors"></div></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Cancel</button>
-                <input type="button" name="submit" value="Save" class="btn btn-default login btn-sm" onclick="update_units()">
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['cancel'].'</button>
+                <input type="button" name="submit" value="'.$lang['save'].'" class="btn btn-default login btn-sm" onclick="update_units()">
             </div>
         </div>
     </div>
 </div>';
 
-//Boiler Safety settings
+//Language settings
+$language = settings($conn, 'language');
+echo '
+<div class="modal fade" id="language" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                <h5 class="modal-title">'.$lang['language'].'</h5>
+            </div>
+            <div class="modal-body">
+				
+				<form data-toggle="validator" role="form" method="post" action="settings.php" id="form-join">
+				<div class="form-group" class="control-label"><label>'.$lang['language'].'</label>
+				<select class="form-control input-sm" type="text" id="new_lang" name="new_lang">
+				<option value="en" ' . ($language=='en' ? 'selected' : '') . '>'.$lang['lang_en'].'</option>
+				<option value="pt" ' . ($language=='pt' ? 'selected' : '') . '>'.$lang['lang_pt'].'</option>
+				</select>
+                <div class="help-block with-errors"></div></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['cancel'].'</button>
+                <input type="button" name="submit" value="'.$lang['save'].'" class="btn btn-default login btn-sm" onclick="update_lang()">
+            </div>
+        </div>
+    </div>
+</div>';
+
+//Boiler settings
 echo '
 <div class="modal fade" id="boiler_safety_setup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title">Boiler Settings</h5>
+                <h5 class="modal-title">'.$lang['boiler_settings'].'</h5>
             </div>
             <div class="modal-body">
-<p class="text-muted"> Boiler safety settings i.e. <small><i class="ionicons ion-ios-timer blue"></i> Hysteresis (Minimim delay between power off and on)</p>';
+<p class="text-muted"> Boiler safety settings i.e. <i class="ionicons ion-ios-timer blue"></i> '.$lang['boiler_hysteresis_text'].'</p>';
 $query = "SELECT * FROM boiler_view";
 $results = $conn->query($query);
 echo '	<div class=\"list-group\">';
 while ($row = mysqli_fetch_assoc($results)) {
 	echo " <a href=\"#\" class=\"list-group-item\">
-	<i class=\"ionicons ion-flame fa-1x red\"></i> ".$row['name']." - Node: ".$row['node_id']." Child: ".$row['node_child_id']."
+	<i class=\"ionicons ion-flame fa-1x red\"></i> ".$row['name']." - ".$lang['node'].": ".$row['node_id']." ".$lang['child'].": ".$row['node_child_id']."
 	<span class=\"pull-right \"><em>&nbsp;&nbsp;<i class=\"ionicons ion-ios-timer blue\"></i> ".$row['hysteresis_time']. " </em></span>
 	</a>";
 }
 echo '</div></div>
             <div class="modal-footer">
-				<button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
              </div>
         </div>
     </div>
@@ -166,10 +194,10 @@ echo '
         <div class="modal-content">
             <div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title">Boost Temperature</h5>
+                <h5 class="modal-title">'.$lang['boost_settings'].'</h5>
             </div>
             <div class="modal-body">
-<p class="text-muted"> Boost settings for each zone i.e. Maximum operating time, Maximum temperature.</p>';
+<p class="text-muted"> '.$lang['boost_settings_text'].'</p>';
 $query = "SELECT * FROM boost_view ORDER BY index_id asc";
 $results = $conn->query($query);
 echo '	<div class=\"list-group\">';
@@ -179,7 +207,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 }
 echo '</div></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
 				
             </div>
         </div>
@@ -193,10 +221,10 @@ echo '
         <div class="modal-content">
             <div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title">Override Setup</h5>
+                <h5 class="modal-title">'.$lang['override_settings'].'</h5>
             </div>
             <div class="modal-body">
-<p class="text-muted"> Override settings for each zone i.e. Maximum temperature. Override depend on schedule and only come into effect when schedule start for any other zone. </p>';
+<p class="text-muted"> '.$lang['override_settings_text'].'</p>';
 $query = "SELECT * FROM override_view ORDER BY index_id asc";
 $results = $conn->query($query);
 echo '	<div class=\"list-group\">';
@@ -207,7 +235,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 }
 echo '</div></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
             </div>
         </div>
     </div>
@@ -220,10 +248,10 @@ echo '
         <div class="modal-content">
             <div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title">Temperature Sensor</h5>
+                <h5 class="modal-title">'.$lang['temperature_sensor'].'</h5>
             </div>
             <div class="modal-body">
-<p class="text-muted"> Temperature sensor Node id, battery level and last seen. </p>';
+<p class="text-muted"> '.$lang['temperature_sensor_text'].' </p>';
 $query = "SELECT * FROM nodes where name = 'Temperature Sensor' ORDER BY node_id asc";
 $results = $conn->query($query);
 echo '	<div class=\"list-group\">';
@@ -243,7 +271,6 @@ while ($row = mysqli_fetch_assoc($results)) {
 echo '</div></div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">Close</button>
-				
             </div>
         </div>
     </div>
@@ -256,14 +283,10 @@ echo '
         <div class="modal-content">
             <div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title">Zone Settings</h5>
+                <h5 class="modal-title">'.$lang['zone_settings'].'</h5>
             </div>
             <div class="modal-body">
-<p class="text-muted">
-Hysteresis (Minimim delay between power off and on) <br>
-Maximum operating time <br>
-Maximum zone temperature. </p>';
-
+<p class="text-muted">'.$lang['zone_settings_text'].'</p>';
 $query = "select * from zone_view order by index_id asc";
 $results = $conn->query($query);
 echo '	<div class=\"list-group\">';
@@ -271,7 +294,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	if ($row['gpio_pin'] == 0){
 		echo "<div class=\"list-group-item\">
 		<i class=\"glyphicon glyphicon-th-large orange\"></i> ".$row['name']."
-		<span class=\"pull-right \"><em>&nbsp;&nbsp;<small> Max ".$row['max_c']."&deg; </em> - Sensor: ".$row['sensors_id']." - Ctr: ".$row['controler_id']."-".$row['controler_child_id']."</small></span> 
+		<span class=\"pull-right \"><em>&nbsp;&nbsp;<small> ".$lang['max']." ".$row['max_c']."&deg; </em> - ".$lang['sensor'].": ".$row['sensors_id']." - ".$lang['ctr'].": ".$row['controler_id']."-".$row['controler_child_id']."</small></span> 
 		<br><span class=\"pull-right \"><small>
 		<a href=\"zone_edit.php?id=".$row['id']."\" class=\"btn btn-default btn-xs login\"><span class=\"ionicons ion-edit\"></span></a>&nbsp;&nbsp;
 		<a href=\"javascript:delete_zone(".$row['id'].");\"><button class=\"btn btn-danger btn-xs\"><span class=\"glyphicon glyphicon-trash\"></span></button></a>
@@ -281,20 +304,19 @@ while ($row = mysqli_fetch_assoc($results)) {
 	} else {
 		echo "<div class=\"list-group-item\">
 		<i class=\"glyphicon glyphicon-th-large orange\"></i> ".$row['name']."
-		<span class=\"pull-right \"><em>&nbsp;&nbsp;<small> Max ".$row['max_c']."&deg; </em> - Sensor: ".$row['sensors_id']." - GPIO: ".$row['gpio_pin']."</small></span>
+		<span class=\"pull-right \"><em>&nbsp;&nbsp;<small> ".$lang['max']." ".$row['max_c']."&deg; </em> - ".$lang['sensor'].": ".$row['sensors_id']." - GPIO: ".$row['gpio_pin']."</small></span>
 		<br><span class=\"pull-right \"><small>
 		<a href=\"zone_edit.php?id=".$row['id']."\" class=\"btn btn-default btn-xs login\"><span class=\"ionicons ion-edit\"></span></a>&nbsp;&nbsp;
 		<a href=\"javascript:delete_zone(".$row['id'].");\"><button class=\"btn btn-danger btn-xs\"><span class=\"glyphicon glyphicon-trash\"></span></button></a>
 		</small></span>
 		<br>
-		
 		</div>";
 	}
 }
 echo '
 </div></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
             </div>
         </div>
     </div>
@@ -307,14 +329,14 @@ echo '
         <div class="modal-content">
             <div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title">Smart Home Gateway</h5>
+                <h5 class="modal-title">'.$lang['smart_home_gateway'].'</h5>
             </div>
             <div class="modal-body">';
 $gquery = "SELECT * FROM gateway";
 $gresult = $conn->query($gquery);
 $grow = mysqli_fetch_array($gresult);
 	
-echo '<p class="text-muted"> Smart Home Gateway has nRF24L01 to communicate with the nodes and WiFi to connect to your home network to which controller will also be connected.</p>';
+echo '<p class="text-muted">'.$lang['smart_home_gateway_text'].'</p>';
 echo '
 	<form data-toggle="validator" role="form" method="post" action="settings.php" id="form-join">
 	<div class="form-group" class="control-label">
@@ -325,36 +347,36 @@ echo '
 		echo '<input id="checkbox1" class="styled" type="checkbox" value="1" name="status">';
 	}
 echo ' 
-	<label for="checkbox0"> Enable Gateway</label></div></div>
+	<label for="checkbox0"> '.$lang['smart_home_gateway_enable'].'</label></div></div>
 	
-	<div class="form-group" class="control-label"><label>Gateway type</label>
+	<div class="form-group" class="control-label"><label>'.$lang['smart_home_gateway_type'].'</label>
 	<select class="form-control input-sm" type="text" id="gw_type" name="gw_type">
-	<option value="wifi" ' . ($type=='wifi' ? 'selected' : '') . '>WiFi</option>
-	<option value="serial" ' . ($type=='serial' ? 'selected' : '') . '>Serial</option>
+	<option value="wifi" ' . ($type=='wifi' ? 'selected' : '') . '>'.$lang['wifi'].'</option>
+	<option value="serial" ' . ($type=='serial' ? 'selected' : '') . '>'.$lang['serial'].'</option>
 	</select>
     <div class="help-block with-errors"></div></div>
 	
-	<div class="form-group" class="control-label"><label>IP/Serial Port Location </label>
+	<div class="form-group" class="control-label"><label>'.$lang['smart_home_gateway_location'].'</label>
 	<input class="form-control input-sm" type="text" id="gw_location" name="gw_location" value="'.$grow['location'].'" placeholder="Gateway Location">
 	<div class="help-block with-errors"></div></div>
 	
-	<div class="form-group" class="control-label"><label>TCP/IP Port/Baud Rate for Serial </label>
+	<div class="form-group" class="control-label"><label>'.$lang['smart_home_gateway_port'].' </label>
 	<input class="form-control input-sm" type="text" id="gw_port" name="gw_port" value="'.$grow['port'].'" placeholder="Gateway Port">
 	<div class="help-block with-errors"></div></div>
 
-	<div class="form-group" class="control-label"><label>Timeout </label>
+	<div class="form-group" class="control-label"><label>'.$lang['timeout'].' </label>
 	<input class="form-control input-sm" type="text" id="gw_timout" name="gw_timout" value="'.$grow['timout'].'" placeholder="Gateway Timeout">
 	<div class="help-block with-errors"></div></div>
 
-	<div class="form-group" class="control-label"><label>Gateway Version </label>
+	<div class="form-group" class="control-label"><label>'.$lang['smart_home_gateway_version'].' </label>
 	<input class="form-control input-sm" type="text" id="gw_timout" name="gw_timout" value="'.$grow['version'].'" disabled>
 	<div class="help-block with-errors"></div></div>
 	
-<br><h4 class="info"><i class="fa fa-heartbeat red"></i> Gateway Script Process Info</h4>
+<br><h4 class="info"><i class="fa fa-heartbeat red"></i> '.$lang['smart_home_gateway_scr_info'].'</h4>
 <div class=\"list-group\">';
 echo "
 <a href=\"#\" class=\"list-group-item\"> PID <span class=\"pull-right text-muted small\"><em> ".$grow['pid']."</em></span></a>
-<a href=\"#\" class=\"list-group-item\"> PID Running Since: <span class=\"pull-right text-muted small\"><em>".$grow['pid_running_since']."</em></span></a>";
+<a href=\"#\" class=\"list-group-item\"> ".$lang['smart_home_gateway_pid'].": <span class=\"pull-right text-muted small\"><em>".$grow['pid_running_since']."</em></span></a>";
 
 $query = "select * FROM gateway_logs WHERE pid_datetime >= NOW() - INTERVAL 5 MINUTE;";
 $result = $conn->query($query);
@@ -363,14 +385,14 @@ if (mysqli_num_rows($result) != 0){
 } else {
 	$gw_restarted = '0';
 }
-echo "<a href=\"#\" class=\"list-group-item\"> Script Re-Started in Last 5 Minute: <span class=\"pull-right text-muted small\"><em>".$gw_restarted."</em></span></a>";
+echo "<a href=\"#\" class=\"list-group-item\"> ".$lang['smart_home_gateway_scr'].": <span class=\"pull-right text-muted small\"><em>".$gw_restarted."</em></span></a>";
 echo '</div></div>
             <div class="modal-footer">
                
 				<a href="javascript:resetgw('.$grow['pid'].')" class="btn btn-default login btn-sm btn-edit">Reset GW</a>
 				<a href="javascript:find_gw()" class="btn btn-default login btn-sm btn-edit">Search GW</a>
 				<input type="button" name="submit" value="Save" class="btn btn-default login btn-sm" onclick="setup_gateway()">
-				<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
             </div>
         </div>
     </div>
@@ -383,10 +405,10 @@ echo '
         <div class="modal-content">
             <div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title">Cron Jobs</h5>
+                <h5 class="modal-title">'.$lang['cron_jobs'].'</h5>
             </div>
             <div class="modal-body">
-<p class="text-muted"> Crone Jobs list with schedule schedule </p>';
+<p class="text-muted"> '.$lang['cron_jobs_text'].' </p>';
 echo '	<div class=\"list-group\">';
 //exec ("crontab -l >/var/www/cronjob.txt"); this didnt work need to investigate 
 $file_handle = fopen("/var/www/cronjob.txt", "r");
@@ -400,8 +422,7 @@ while ($file_handle && !feof($file_handle)) {
 fclose($file_handle);
 echo ' </div></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">Close</button>
-				
+                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
             </div>
         </div>
     </div>
@@ -426,7 +447,7 @@ echo '
         <div class="modal-content">
             <div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title">OS Version</h5>
+                <h5 class="modal-title">'.$lang['os_version'].'</h5>
             </div>
             <div class="modal-body">
 			   <div class="list-group">
@@ -435,7 +456,7 @@ echo '
 				</div>				
            </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
             </div>
         </div>
     </div>
@@ -448,15 +469,15 @@ echo '
         <div class="modal-content">
             <div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title">PiHome Update</h5>
+                <h5 class="modal-title">'.$lang['pihome_update'].'</h5>
             </div>
             <div class="modal-body">
-			<p class="text-muted"> PiHome current software version and any available updates. </p>';
+			<p class="text-muted"> '.$lang['pihome_update_text'].' </p>';
 
 		
 echo '	<div class=\"list-group\">';
 echo "                            <a href=\"#\" class=\"list-group-item\">
-                                    <i class=\"fa fa-server fa-1x blueinfo\"></i> Current System Version 
+                                    <i class=\"fa fa-server fa-1x blueinfo\"></i> ".$lang['pihome_update_c_version']."
                                     <span class=\"pull-right text-muted small\"><em>".settings($conn, 'version')."</em>
                                     </span>
                                 </a>"; 
@@ -467,14 +488,14 @@ $versionList = explode("\n", $getVersions);
 	foreach ($versionList as $aV)
 	{
 		echo "<a href=\"settings.php?uid=10\"  class=\"list-group-item\">
-        <i class=\"fa fa-download fa-1x blueinfo\"></i> Available Update Version 
+        <i class=\"fa fa-download fa-1x blueinfo\"></i> ".$lang['pihome_update_u_version']."
         <span class=\"pull-right text-muted small\"><em>".$aV."</em></span>
          </a>";
 	}
 }	
 echo '</div></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
             </div>
         </div>
     </div>
@@ -488,17 +509,16 @@ echo '
         <div class="modal-content">
             <div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title">Full System Backup</h5>
+                <h5 class="modal-title">'.$lang['pihome_backup'].'</h5>
             </div>
             <div class="modal-body">
-			<p class="text-muted"> Full system backup will takes quite a while to complete. </p>
-			<i class="fa fa-clone fa-1x blue"></i> Full System Backup
+			<p class="text-muted"> '.$lang['pihome_backup_text'].' </p>
+			<i class="fa fa-clone fa-1x blue"></i> '.$lang['pihome_backup'].'
 			';
-
-echo '            </div>
+echo '     </div>
             <div class="modal-footer">
-			<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
-			<a href="javascript:db_backup()" class="btn btn-default login btn-sm">Start</a>
+			<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
+			<a href="javascript:db_backup()" class="btn btn-default login btn-sm">'.$lang['start'].'</a>
             </div>
         </div>
     </div>
@@ -511,19 +531,20 @@ echo '
         <div class="modal-content">
             <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title">Reboot System</h5>
+                <h5 class="modal-title">'.$lang['reboot_system'].'</h5>
             </div>
             <div class="modal-body">
-                        <p class="text-muted"> <i class="ion-ios-refresh-outline orange"></i> Are You Sure You Want To Reboot The System? </p>
+                        <p class="text-muted"> <i class="ion-ios-refresh-outline orange"></i> '.$lang['reboot_system_text'].' </p>
                         ';
 echo '            </div>
             <div class="modal-footer">
-                        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Cancel</button>
-                        <a href="javascript:reboot()" class="btn btn-default login btn-sm">Yes</a>
+                        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['cancel'].'</button>
+                        <a href="javascript:reboot()" class="btn btn-default login btn-sm">'.$lang['yes'].'</a>
             </div>
         </div>
     </div>
 </div>';
+
 // Shutdown Model
 echo '
 <div class="modal fade" id="shutdown_system" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -531,15 +552,15 @@ echo '
         <div class="modal-content">
             <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title">Shutdown System</h5>
+                <h5 class="modal-title">'.$lang['shutdown_system'].'</h5>
             </div>
             <div class="modal-body">
-                        <p class="text-muted"><i class="fa fa-power-off fa-1x red"></i> Are You Sure You Want To Shutdown The System? </p>
+                        <p class="text-muted"><i class="fa fa-power-off fa-1x red"></i> '.$lang['shutdown_system_text'].' </p>
                         ';
 echo '            </div>
             <div class="modal-footer">
-                        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Cancel</button>
-                        <a href="javascript:shutdown()" class="btn btn-default login btn-sm">Yes</a>
+                        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['cancel'].'</button>
+                        <a href="javascript:shutdown()" class="btn btn-default login btn-sm">'.$lang['yes'].'</a>
             </div>
         </div>
     </div>
@@ -563,27 +584,27 @@ echo '
         <div class="modal-content">
             <div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title">WiFi Settings</h5>
+                <h5 class="modal-title">'.$lang['wifi_settings'].'</h5>
             </div>
             <div class="modal-body">
-			<p class="text-muted"> WiFi Status and total data transfered since last reboot. </p>
+			<p class="text-muted"> '.$lang['wifi_settings_text'].' </p>
 <div class="list-group">
 <a href="#" class="list-group-item">
-<i class="fa fa-signal green"></i> Status: '.$wifistatus.'
+<i class="fa fa-signal green"></i> '.$lang['status'].': '.$wifistatus.'
 </a>
 <a href="#" class="list-group-item">
-<i class="fa fa-signal green"></i> MAC: '.$wifimac.'
+<i class="fa fa-signal green"></i> '.$lang['mac'].': '.$wifimac.'
 </a>
 <a href="#" class="list-group-item">
-<i class="fa fa-signal green"></i> Download: '.number_format($rxwifidata,0).' MB 
+<i class="fa fa-signal green"></i> '.$lang['download'].': '.number_format($rxwifidata,0).' MB 
 </a>
 <a href="#" class="list-group-item">
-<i class="fa fa-signal green"></i> Upload: '.number_format($txwifidata,0).' MB 
+<i class="fa fa-signal green"></i> '.$lang['upload'].': '.number_format($txwifidata,0).' MB 
 </a>
 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
             </div>
         </div>
     </div>
@@ -603,24 +624,24 @@ echo '
         <div class="modal-content">
             <div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title">Ethernet Settings</h5>
+                <h5 class="modal-title">'.$lang['ethernet_settings'].'</h5>
             </div>
             <div class="modal-body">
 			   <div class="list-group">
 				<a href="#" class="list-group-item"><i class="ionicons ion-network green"></i>
-				Status: '.$nicactive.'</a>
+				'.$lang['status'].': '.$nicactive.'</a>
 				<a href="#" class="list-group-item"><i class="ionicons ion-network green"></i>
-				Speed: '.$nicpeed.'Mb</a>
+				'.$lang['speed'].': '.$nicpeed.'Mb</a>
 				<a href="#" class="list-group-item"><i class="ionicons ion-network green"></i>
-				MAC: '.$nicmac.'</a>
+				'.$lang['mac'].': '.$nicmac.'</a>
 				<a href="#" class="list-group-item"><i class="ionicons ion-network green"></i>
-				Download: '.number_format($rxdata,0).' MB </a> 
+				'.$lang['download'].': '.number_format($rxdata,0).' MB </a> 
 				<a href="#" class="list-group-item"><i class="ionicons ion-network green"></i>
-				Upload: '.number_format($txdata,0).' MB </a>
+				'.$lang['upload'].': '.number_format($txdata,0).' MB </a>
 				</div>
            </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
             </div>
         </div>
     </div>
@@ -633,10 +654,10 @@ echo '
         <div class="modal-content">
             <div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title">User Accounts</h5>
+                <h5 class="modal-title">'.$lang['user_accounts'].'</h5>
             </div>
             <div class="modal-body">
-			<p class="text-muted"> PiHome User Accounts. </p>';
+			<p class="text-muted"> '.$lang['user_accounts_text'].' </p>';
 echo '<div class=\"list-group\">';
 $query = "SELECT * FROM user";
 $results = $conn->query($query);
@@ -644,7 +665,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$full_name=$row['fullname'];
 	$username=$row['username'];
 	echo "<div href=\"settings.php?uid=".$row['id']."\"  class=\"list-group-item\"> 
-    <i class=\"ionicons ion-person blue\"></i> ".$full_name."
+    <i class=\"ionicons ion-person blue\"></i> ".$username."
     <span class=\"pull-right text-muted small\"><em>
 	<a href=\"javascript:del_user(".$row["id"].");\"><button class=\"btn btn-danger btn-xs\"><span class=\"glyphicon glyphicon-trash\"></span></button> </a>
 	<a href=\"user_password.php?uid=".$row["id"]."\"><button class=\"btn btn-primary btn-xs\"><span class=\"fa fa-user fa-key\"></span></button> </a>
@@ -652,7 +673,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 }
 echo '</div></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
             </div>
         </div>
     </div>
@@ -665,10 +686,10 @@ echo '
         <div class="modal-content">
             <div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title">Credits</h5>
+                <h5 class="modal-title">'.$lang['credits'].'</h5>
             </div>
             <div class="modal-body">
-<p class="text-muted"> PiHome Smart heating is a free and open sources. it was only possible with help of: </p>';
+<p class="text-muted"> '.$lang['credits_text'].' </p>';
 echo '	<div class=\"list-group\">';
 echo " 
 
@@ -682,14 +703,11 @@ echo "
 <a href=\"http://www.pihome.eu\" class=\"list-group-item\"><i class=\"ionicons ion-help-buoy blueinfo\"></i> All others if forget them... <span class=\"pull-right text-muted small\"><em>...</em></span></a>
 <a href=\"http://pihome.harkemedia.de\" class=\"list-group-item\"><i class=\"ionicons ion-help-buoy blueinfo\"></i> RaspberryPi Home Automation <span class=\"pull-right text-muted small\"><em>...</em></span></a>
 ";
-
 echo '</div></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
             </div>
         </div>
     </div>
 </div>';
-
-// <a class="btn btn-default login btn-sm btn-edit">Edit</a>
 ?>

@@ -46,6 +46,9 @@
 	<!-- bootstrap waiting for JavaScript -->
 	<script src="js/plugins/waitingfor/bootstrap-waitingfor.min.js"></script>
 
+	<!-- bootstrap slider -->
+	<script src="js/plugins/slider/bootstrap-slider.min.js"></script>
+	
 <script>	
 $(document).ready(function() {
 //delete record 
@@ -120,6 +123,25 @@ $(document).ready(function(){
 	}, 15000);
 });
 </script>
+
+<script>
+<?php 
+if (($_SERVER['REQUEST_URI'] == '/schedule_add.php') OR ($_SERVER['SCRIPT_NAME'] == '/schedule_edit.php')){
+	$query = "select * from zone where status = 1;";
+	$results = $conn->query($query);	
+	while ($row = mysqli_fetch_assoc($results)) { ?>
+		var slider<?php echo $row["id"];?> = document.getElementById("bb<?php echo $row["id"];?>");
+		var output<?php echo $row["id"];?> = document.getElementById("val<?php echo $row["id"];?>");
+		output<?php echo $row["id"];?>.innerHTML = slider<?php echo $row["id"];?>.value;
+		slider<?php echo $row["id"];?>.oninput = function() {
+		output<?php echo $row["id"];?>.innerHTML = this.value;
+		}
+<?php
+	}
+}
+?>
+</script>
+
 <?php if ($_SERVER['REQUEST_URI'] == '/chart.php'){include("chartfooter.php");} ?>
 </body>
 </html>

@@ -11,4 +11,10 @@ function confirm_logged_in() {
 		exit;
 	}
 }
+//Set Cookies for PiHome Lanauge 
+if(isset($_COOKIE['PiHomeLanguage'])){
+	require_once "languages/".$_COOKIE['PiHomeLanguage'].".php";
+} else {
+	require_once('languages/en.php');
+}
 ?>

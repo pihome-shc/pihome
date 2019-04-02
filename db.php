@@ -203,6 +203,21 @@ if($what=="units"){
 	}
 }
 
+//update language
+if($what=="lang"){
+	if($opp=="update"){
+        $query = "UPDATE `system` SET `language`='" . $_GET['lang_val'] . "';";
+        if($conn->query($query)){
+            header('Content-type: application/json');
+            echo json_encode(array('Success'=>'Success','Query'=>$query));
+            return;
+        }else{
+            header('Content-type: application/json');
+            echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+            return;
+        }
+	}
+}
 //update openweather
 if($what=="openweather"){
 	if($opp=="update"){

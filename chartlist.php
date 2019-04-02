@@ -20,7 +20,7 @@
 */
 
 $graphs_page = '1';
-echo "<h4>PiHome Temperature Graps</h4></p>Temperature Graphs for last 24 hours for all Zones. </p>";
+echo "<h4>".$lang['graph_temperature']."</h4></p>".$lang['graph_24h']."</p>";
 /*
 //query to get system table
 $query = "SELECT * FROM location where zone IS NOT NULL AND zone != '' ORDER BY index_id asc";

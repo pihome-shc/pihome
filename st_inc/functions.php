@@ -25,8 +25,6 @@ require_once(__DIR__.'/connection.php');
 //date_default_timezone_set("Europe/Dublin"); // You can set Timezone Manually and uncomment this line and comment out following line 
 date_default_timezone_set(settings($conn, 'timezone'));
 
-//$sysversion="0.125";
-
 // this function is deprecated --- prepare mysql statement 
 function mysqli_prep($value) {
 	$magic_quotes_active = get_magic_quotes_gpc();

@@ -122,6 +122,26 @@ function update_units(){
     });
 }
 
+//update language
+function update_lang(){
+    var idata="w=lang&o=update";
+    idata+="&lang_val="+$("#new_lang").val();
+    idata+="&wid=0";
+    $.get('db.php',idata)
+    .done(function(odata){
+        if(odata.Success)
+            reload_page();
+        else
+            console.log(odata.Message);
+    })
+    .fail(function( jqXHR, textStatus, errorThrown ){
+        if(jqXHR==401 || jqXHR==403) return;
+        console.log("update_lang: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
+    })
+    .always(function() {
+    });
+}
+
 function reload_page()
 {
     var loc = window.location;
@@ -144,6 +164,7 @@ function reboot() {
 	request('db.php', 'GET', quest, function(){ window.location="settings.php?reboot"; });
     //window.location="settings.php?status=reboot";  
 }
+
 //shutdown Pi
 function shutdown() {  
   	var quest = "?w=shutdown" + "&o=0" + "&frost_temp=0" + "&wid=0";

@@ -65,10 +65,10 @@ if (isset($_POST['submit'])) {
 	$result = $conn->query($query);
 	$schedule_daily_time_id = mysqli_insert_id($conn);
 	if ($result) {
-		$message_success = "Schedule Time Modified Successfully!!!";
+		$message_success = $lang['schedule_time_modify_success'];
 		header("Refresh: 3; url=schedule.php");
 	} else {
-		$error = "Schedule Time Modification failed with error: <p>".mysqli_error($conn)."</p>";
+		$error = $lang['schedule_time_modify_error']."<p>".mysqli_error($conn)."</p>";
 	}
 
 	foreach($_POST['id'] as $id){
@@ -89,7 +89,7 @@ if (isset($_POST['submit'])) {
                 <div class="col-lg-12">
 				<div class="panel panel-primary">
                         <div class="panel-heading">
-                            <i class="fa fa-clock-o fa-fw"></i> Edit Schedule
+                            <i class="fa fa-clock-o fa-fw"></i> <?php echo $lang['schedule_edit']; ?>
 						<div class="pull-right"> <div class="btn-group"><?php echo date("H:i"); ?></div> </div>
                         </div>
                         <!-- /.panel-heading -->
@@ -102,43 +102,43 @@ $time_row = mysqli_fetch_assoc($results);
 ?>
     <div class="checkbox checkbox-default checkbox-circle">
     <input id="checkbox0" class="styled" type="checkbox" name="sc_en" value="1" <?php $check = ($time_row['status'] == 1) ? 'checked' : ''; echo $check; ?>>
-    <label for="checkbox0"> Enable Schedule</label></div>
+    <label for="checkbox0"> <?php echo $lang['schedule_enable']; ?></label></div>
 	
     <div class="row">
 	<div class="col-xs-3"><div class="checkbox checkbox-default checkbox-circle">
     <input id="checkbox1" class="styled" type="checkbox" name="Sunday_en" value="1" <?php $check = (($time_row['WeekDays'] & 1) > 0) ? 'checked' : ''; echo $check; ?>>
-    <label for="checkbox1"> Sun</label></div></div>
+    <label for="checkbox1"> <?php echo $lang['sun']; ?></label></div></div>
 	
     <div class="col-xs-3"><div class="checkbox checkbox-default checkbox-circle">
     <input id="checkbox2" class="styled" type="checkbox" name="Monday_en" value="1" <?php $check = (($time_row['WeekDays'] & 2) > 0) ? 'checked' : ''; echo $check; ?>>
-    <label for="checkbox2"> Mon</label></div></div>
+    <label for="checkbox2"> <?php echo $lang['mon']; ?></label></div></div>
 	
     <div class="col-xs-3"><div class="checkbox checkbox-default checkbox-circle">
     <input id="checkbox3" class="styled" type="checkbox" name="Tuesday_en" value="1" <?php $check = (($time_row['WeekDays'] & 4) > 0) ? 'checked' : ''; echo $check; ?>>
-    <label for="checkbox3"> Tue</label></div></div>
+    <label for="checkbox3"> <?php echo $lang['tue']; ?></label></div></div>
 	
     <div class="col-xs-3"><div class="checkbox checkbox-default checkbox-circle">
     <input id="checkbox4" class="styled" type="checkbox" name="Wednesday_en" value="1" <?php $check = (($time_row['WeekDays'] & 8) > 0) ? 'checked' : ''; echo $check; ?>>
-    <label for="checkbox4"> Wed</label></div></div>
+    <label for="checkbox4"> <?php echo $lang['wed']; ?></label></div></div>
 	
     <div class="col-xs-3"><div class="checkbox checkbox-default checkbox-circle">
     <input id="checkbox5" class="styled" type="checkbox" name="Thursday_en" value="1" <?php $check = (($time_row['WeekDays'] & 16) > 0) ? 'checked' : ''; echo $check; ?>>
-    <label for="checkbox5"> Thu</label></div></div>
+    <label for="checkbox5"> <?php echo $lang['thu']; ?></label></div></div>
 	
     <div class="col-xs-3"><div class="checkbox checkbox-default checkbox-circle">
     <input id="checkbox6" class="styled" type="checkbox" name="Friday_en" value="1" <?php $check = (($time_row['WeekDays'] & 32) > 0) ? 'checked' : ''; echo $check; ?>>
-    <label for="checkbox6"> Fri</label></div></div>
+    <label for="checkbox6"> <?php echo $lang['fri']; ?></label></div></div>
 	
     <div class="col-xs-3"><div class="checkbox checkbox-default checkbox-circle">
     <input id="checkbox7" class="styled" type="checkbox" name="Saturday_en" value="1" <?php $check = (($time_row['WeekDays'] & 64) > 0) ? 'checked' : ''; echo $check; ?>>
-    <label for="checkbox7"> Sat</label></div></div>
+    <label for="checkbox7"> <?php echo $lang['sat']; ?></label></div></div>
 	</div>
 
-	<div class="form-group" class="control-label"><label>Start Time</label>
+	<div class="form-group" class="control-label"><label><?php echo $lang['start_time']; ?></label>
 	<input class="form-control input-sm" type="time" id="start_time" name="start_time" value="<?php echo $time_row["start"];?>" placeholder="Start Time" required>
     <div class="help-block with-errors"></div></div>
 	
-	<div class="form-group" class="control-label"><label>End Time</label>
+	<div class="form-group" class="control-label"><label><?php echo $lang['end_time']; ?></label>
 	<input class="form-control input-sm" type="time" id="end_time" name="end_time" value="<?php echo $time_row["end"];?>" placeholder="End Time" required>
     <div class="help-block with-errors"></div></div>				
 <?php 
@@ -152,32 +152,40 @@ while ($row = mysqli_fetch_assoc($results)) {
     <input id="checkbox<?php echo $row["tz_id"];?>" class="styled" type="checkbox" name="status[<?php echo $row["tz_id"];?>]" value="1" <?php $check = ($row['tz_status'] == 1) ? 'checked' : ''; echo $check; ?> onclick="$('#<?php echo $row["tz_id"];?>').toggle();">
     <label for="checkbox<?php echo $row["tz_id"];?>"><?php echo $row["zone_name"];?></label>
     <div class="help-block with-errors"></div></div>
+	
+	
 <?php 
 if($row['tz_status'] == 1){
 	echo '<div id="'.$row["tz_id"].'"><div class="form-group" class="control-label">';
 }else{
 	echo '<div id="'.$row["tz_id"].'" style="display:none !important;"><div class="form-group" class="control-label">';
 	}
-?>
-	<select class="form-control input-sm" type="number" id="<?php echo $row["tz_id"];?>" name="temp[<?php echo $row["tz_id"];?>]" placeholder="Ground Floor Temperature" >
-<?php 
-    $c_f = settings($conn, 'c_f');
-    if($c_f==1 || $c_f=='1') {
-        for($t=50;$t<=100;$t+=.5){
-            echo '<option value="' . $t . '" ' . (DispTemp($conn, $row['temperature'])==$t ? 'selected' : '') . '>' . $t . '</option>';
-        }
-    }else {
-        for($t=10;$t<=45;$t+=.5){
-            echo '<option value="' . $t . '" ' . ($row['temperature']==$t ? 'selected' : '') . '>' . $t . '</option>';
-        }
-    }
-?>	
+	//0=C, 1=F
+	$c_f = settings($conn, 'c_f');
+    if(($c_f==1 || $c_f=='1') AND ($row["type"]=='Heating')) {
+		$min = 50;
+		$max = 85;
+	}elseif (($c_f==1 || $c_f=='1') AND ($row["type"]=='Water')) {
+		$min = 50;
+		$max = 170;
+	}elseif (($c_f==0 || $c_f=='0') AND ($row["type"]=='Heating')) {
+		$min = 10;
+		$max = 30;
+	}elseif (($c_f==0 || $c_f=='0') AND ($row["type"]=='Water')) {
+		$min = 10;
+		$max = 80;
+	}
+	?>
+	<div class="slidecontainer">
+		<input type="range" min="<?php echo $min; ?>" max="<?php echo $max; ?>" value="<?php echo DispTemp($conn, $row['temperature']) ?>" class="slider" id="bb<?php echo $row["zone_id"];?>" name="temp[<?php echo $row["tz_id"];?>]">
+		<br>
+		<?php echo $lang['temperature']; ?>: <span id="val<?php echo $row["zone_id"];?>"></span>
+	</div>
+    </div></div>
 	
-	</select>
-    <div class="help-block with-errors"></div></div></div>
 <?php }?>				
-                <a href="schedule.php"><button type="button" class="btn btn-primary btn-sm" >Cancel</button></a>
-                <input type="submit" name="submit" value="Submit" class="btn btn-default btn-sm login">
+                <a href="schedule.php"><button type="button" class="btn btn-primary btn-sm" ><?php echo $lang['cancel']; ?></button></a>
+                <input type="submit" name="submit" value="<?php echo $lang['submit']; ?>" class="btn btn-default btn-sm login">
 				</form>
 						</div>
                         <!-- /.panel-body -->
@@ -185,7 +193,6 @@ if($row['tz_status'] == 1){
 <?php 
 ShowWeather($conn);
 ?>
-
                         </div>
                     </div>
                 </div>

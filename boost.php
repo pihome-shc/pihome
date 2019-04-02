@@ -31,7 +31,7 @@ require_once(__DIR__.'/st_inc/functions.php');
             <div class="row">
                 <div class="col-lg-12">
                    	<div id="boostlist" >
-				   <div class="text-center"><br><br><p>Please wait while system grab latest information from database...</p>
+				   <div class="text-center"><br><br><p><?php echo $lang['please_wait_text']; ?></p>
 				   <br><br><img src="images/loader.gif">
 				   </div>
 				   </div>
