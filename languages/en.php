@@ -213,7 +213,9 @@ $lang['max'] = "Max";
 $lang['sensor'] = "Sensor";
 $lang['ctr'] = "Ctr";
 $lang['smart_home_gateway'] = "Smart Home Gateway";
-$lang['smart_home_gateway_text'] = " Smart Home Gateway has nRF24L01 to communicate with the nodes and WiFi to connect to your home network to which controller will also be connected.";
+$lang['smart_home_gateway_text_wifi'] = " Smart Home Gateway has nRF24L01 to communicate with the nodes and WiFi to connect to your home network to which controller will also be connected.";
+$lang['smart_home_gateway_text_serial'] = " Smart Home Gateway has nRF24L01 to communicate with the nodes and Serial to connect to your home automation controller.";
+
 $lang['smart_home_gateway_enable'] = "Enable Gateway";
 $lang['smart_home_gateway_type'] = "Gateway type";
 $lang['wifi'] = "WiFi";

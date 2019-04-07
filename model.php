@@ -335,8 +335,9 @@ echo '
 $gquery = "SELECT * FROM gateway";
 $gresult = $conn->query($gquery);
 $grow = mysqli_fetch_array($gresult);
-	
-echo '<p class="text-muted">'.$lang['smart_home_gateway_text'].'</p>';
+echo '<p class="text-muted">'; 
+if ($grow['type']=='wifi'){echo $lang['smart_home_gateway_text_wifi'];}elseif ($grow['type']=='serial') {echo $lang['smart_home_gateway_text_serial'];}
+echo '</p>';
 echo '
 	<form data-toggle="validator" role="form" method="post" action="settings.php" id="form-join">
 	<div class="form-group" class="control-label">
@@ -347,12 +348,14 @@ echo '
 		echo '<input id="checkbox1" class="styled" type="checkbox" value="1" name="status">';
 	}
 echo ' 
+
+	
 	<label for="checkbox0"> '.$lang['smart_home_gateway_enable'].'</label></div></div>
 	
 	<div class="form-group" class="control-label"><label>'.$lang['smart_home_gateway_type'].'</label>
 	<select class="form-control input-sm" type="text" id="gw_type" name="gw_type">
-	<option value="wifi" ' . ($type=='wifi' ? 'selected' : '') . '>'.$lang['wifi'].'</option>
-	<option value="serial" ' . ($type=='serial' ? 'selected' : '') . '>'.$lang['serial'].'</option>
+	<option value="wifi" ' . ($grow['type']=='wifi' ? 'selected' : '') . '>'.$lang['wifi'].'</option>
+	<option value="serial" ' . ($grow['type']=='serial' ? 'selected' : '') . '>'.$lang['serial'].'</option>
 	</select>
     <div class="help-block with-errors"></div></div>
 	
