@@ -269,6 +269,9 @@ if($what=="setup_piconnect"){
 	//Update boiler logs to sync 
 	$query = "UPDATE boiler_logs SET `sync`='0';";
 	$result = $conn->query($query);
+	//upate override records to sync 
+	$query = "UPDATE override SET `sync` ='0';";
+	$result = $conn->query($query)
 	//upate boost records to sync 
 	$query = "UPDATE boost SET `sync` ='0';";
 	$result = $conn->query($query);
