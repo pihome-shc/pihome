@@ -160,7 +160,7 @@ $new_index_id = $found_product['index_id']+1;
 </select>				
 <div class="help-block with-errors"></div></div>
 
-<div class="form-group" class="control-label"><label><?php echo $lang['min_temperature']; ?></label>
+<div class="form-group" class="control-label"><label><?php echo $lang['max_temperature']; ?></label>
 <input class="form-control" placeholder="<?php echo $lang['zone_max_temperature_help']; ?>" value="<?php if(isset($_POST['max_c'])) { echo $_POST['max_c']; } ?>" id="max_c" name="max_c" data-error="<?php echo $lang['zone_max_temperature_error']; ?>"  autocomplete="off" required>
 <div class="help-block with-errors"></div></div>
 				
