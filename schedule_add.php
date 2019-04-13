@@ -162,7 +162,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	}
 	?>
 	<div class="slidecontainer">
-		<input type="range" min="<?php echo $min; ?>" max="<?php echo $max; ?>" value="15" class="slider" id="bb<?php echo $row["id"];?>" name="temp[<?php echo $row["id"];?>]">
+		<input type="range" min="<?php echo $min; ?>" max="<?php echo $max; ?>" step="0.5" value="15.0" class="slider" id="bb<?php echo $row["id"];?>" name="temp[<?php echo $row["id"];?>]">
 		<br>
 		<h3><small ><?php echo $lang['temperature']; ?>: <span id="val<?php echo $row["id"];?>"></span></small></h3>
 	</div>
