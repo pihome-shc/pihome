@@ -148,6 +148,7 @@ echo '
 				<select class="form-control input-sm" type="text" id="new_lang" name="new_lang">
 				<option value="en" ' . ($language=='en' ? 'selected' : '') . '>'.$lang['lang_en'].'</option>
 				<option value="pt" ' . ($language=='pt' ? 'selected' : '') . '>'.$lang['lang_pt'].'</option>
+				<option value="pt" ' . ($language=='fr' ? 'selected' : '') . '>'.$lang['lang_fr'].'</option>
 				</select>
                 <div class="help-block with-errors"></div></div>
             </div>

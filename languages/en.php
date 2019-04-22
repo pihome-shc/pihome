@@ -9,6 +9,8 @@ $lang['build'] = "Build";
 $lang['powerd_by_rpi'] = "Powered By: Raspberry Pi";
 $lang['lang_en'] = "English";
 $lang['lang_pt'] = "Portuguese";
+$lang['lang_fr'] = "Français";
+
 $lang['start_time'] = "Start Time";
 $lang['end_time'] = "End Time";
 $lang['close'] = "Close";

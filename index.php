@@ -241,8 +241,11 @@ html {
                         </form>
 <br>
 								<h3 class="text-right">
-								<small><a class="text-info" style="text-decoration: none;" href="languages.php?lang=en" title="English">English</a> - 
-								<a class="text-info" style="text-decoration: none; padding-right:10px;" href="languages.php?lang=pt" title="Portuguese ">Portuguese </a></small>
+								<small>
+								<a class="text-info" style="text-decoration: none;" href="languages.php?lang=en" title="English">English</a> - 
+								<a class="text-info" style="text-decoration: none;" href="languages.php?lang=pt" title="Portuguese">Portuguese</a> - 
+								<a class="text-info" style="text-decoration: none; padding-right:10px;" href="languages.php?lang=fr" title="French">French</a>
+								</small>
 								</h3>
                     </div></div>	
 <!--<div class="panel-footer">	</div> -->
