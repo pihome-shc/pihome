@@ -177,9 +177,8 @@ if($row['tz_status'] == 1){
 	}
 	?>
 	<div class="slidecontainer">
+		<h4><?php echo $lang['temperature']; ?>: <span id="val<?php echo $row["zone_id"];?>"></span>&deg;</h4><br>
 		<input type="range" min="<?php echo $min; ?>" max="<?php echo $max; ?>" step="0.5" value="<?php echo DispTemp($conn, $row['temperature']) ?>" class="slider" id="bb<?php echo $row["zone_id"];?>" name="temp[<?php echo $row["tz_id"];?>]">
-		<br>
-		<?php echo $lang['temperature']; ?>: <span id="val<?php echo $row["zone_id"];?>"></span>
 	</div>
     </div></div>
 	
