@@ -281,7 +281,7 @@ CREATE TABLE IF NOT EXISTS `nodes` (
   `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
   `node_id` char(50) COLLATE utf16_bin NOT NULL,
   `child_id_1` int(11) DEFAULT NULL,
-  `child_id_2` int(11) DEFAULT NULL,
+  `repeater` TINYINT(4) NULL DEFAULT NULL COMMENT 'Repeater Feature Enabled=1 or Disable=0',
   `child_id_3` int(11) DEFAULT NULL,
   `child_id_4` int(11) DEFAULT NULL,
   `child_id_5` int(11) DEFAULT NULL,

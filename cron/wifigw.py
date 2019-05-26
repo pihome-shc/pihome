@@ -154,7 +154,7 @@ while 1:
 			cur = con.cursor()
 			
 			# ..::Step One::..
-			# First time MySensors Node Comes online: Add Node to The Nodes Table.
+			# First time Temperature Sensors Node Comes online: Add Node to The Nodes Table.
 			if (node_id != 0 and child_sensor_id == 255 and message_type == 0 and sub_type == 17):
 			#if (child_sensor_id != 255 and message_type == 0):
 				cur.execute('SELECT COUNT(*) FROM `nodes` where node_id = (%s)', (node_id, )) 
@@ -166,7 +166,21 @@ while 1:
 					con.commit()
 				else: 
 					print "1: Node ID:",node_id," Already Exist In Node Table \n\n"
-					
+	
+			# ..::Step One B::..
+			# First time Node Comes online with Repeater Feature Enabled: Add Node to The Nodes Table.
+			if (node_id != 0 and child_sensor_id == 255 and message_type == 0 and sub_type == 18):
+			#if (child_sensor_id != 255 and message_type == 0):
+				cur.execute('SELECT COUNT(*) FROM `nodes` where node_id = (%s)', (node_id, )) 
+				row = cur.fetchone()  
+				row = int(row[0])
+				if (row == 0):
+					print "1-B: Adding Node ID:",node_id, "MySensors Version:", payload, "\n\n"
+					cur.execute('INSERT INTO nodes(node_id, repeater, ms_version) VALUES(%s, %s, %s)', (node_id, '1', payload))
+					con.commit()
+				else: 
+					print "1-B: Node ID:",node_id," Already Exist In Node Table \n\n"
+
 			# ..::Step Two ::..
 			# Add Nodes Name i.e. Relay, Temperature Sensor etc. to Nodes Table.
 			if (child_sensor_id == 255 and message_type == 3 and sub_type == 11):
