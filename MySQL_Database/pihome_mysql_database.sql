@@ -281,7 +281,7 @@ CREATE TABLE IF NOT EXISTS `nodes` (
   `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
   `node_id` char(50) COLLATE utf16_bin NOT NULL,
   `child_id_1` int(11) DEFAULT NULL,
-  `repeater` TINYINT(4) NULL DEFAULT NULL COMMENT 'Repeater Feature Enabled=1 or Disable=0',
+  `child_id_2` INT(11) NULL DEFAULT NULL,
   `child_id_3` int(11) DEFAULT NULL,
   `child_id_4` int(11) DEFAULT NULL,
   `child_id_5` int(11) DEFAULT NULL,
@@ -293,6 +293,7 @@ CREATE TABLE IF NOT EXISTS `nodes` (
   `status` char(50) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   `ms_version` char(50) COLLATE utf16_bin DEFAULT NULL,
   `sketch_version` char(50) COLLATE utf16_bin DEFAULT NULL,
+  `repeater` TINYINT(4) NULL DEFAULT NULL COMMENT 'Repeater Feature Enabled=1 or Disable=0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
@@ -618,7 +619,7 @@ CREATE TABLE IF NOT EXISTS `system` (
 -- Dumping data for table pihome.system: ~1 rows (approximately)
 /*!40000 ALTER TABLE `system` DISABLE KEYS */;
 REPLACE INTO `system` (`id`, `sync`, `purge`, `name`, `version`, `build`, `update_location`, `update_file`, `update_alias`, `country`, `language`, `city`, `zip`, `openweather_api`, `backup_email`, `ping_home`, `timezone`, `shutdown`, `reboot`, `c_f`) VALUES
-	(2, 0, 0, 'PiHome - Smart Heating Control', '1.5', '210918', 'http://www.pihome.eu/updates/', 'current-release-versions.php', 'pihome', 'IE', 'en', 'Portlaoise', NULL, '', '', b'1', 'Europe/Dublin', 0, 0, 0);
+	(2, 0, 0, 'PiHome - Smart Heating Control', '1.6', '080419', 'http://www.pihome.eu/updates/', 'current-release-versions.php', 'pihome', 'IE', 'en', 'Portlaoise', NULL, '', '', b'1', 'Europe/Dublin', 0, 0, 0);
 /*!40000 ALTER TABLE `system` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.user
