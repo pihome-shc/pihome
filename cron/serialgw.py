@@ -23,7 +23,7 @@ print "********************************************************"
 print "* MySensors 2.2 Serial Gateway Communication Script    *"
 print "* to communicate with MySensors Nodes, for more info   *"
 print "* please check MySensors API. Build Date: 18/09/2017   *"
-print "*      Version 0.04 - Last Modified 11/05/2018         *"
+print "*      Version 0.04 - Last Modified 11/06/2019         *"
 print "*                                 Have Fun - PiHome.eu *"
 print "********************************************************"
 print " "
@@ -136,7 +136,7 @@ while 1:
 			con = mdb.connect(dbhost, dbuser, dbpass, dbname)
 			cur = con.cursor()
 			
-# ..::Step One::..
+			# ..::Step One::..
 			# First time Temperature Sensors Node Comes online: Add Node to The Nodes Table.
 			if (node_id != 0 and child_sensor_id == 255 and message_type == 0 and sub_type == 17):
 			#if (child_sensor_id != 255 and message_type == 0):
@@ -148,7 +148,9 @@ while 1:
 					cur.execute('INSERT INTO nodes(node_id, ms_version) VALUES(%s, %s)', (node_id, payload))
 					con.commit()
 				else: 
-					print "1: Node ID:",node_id," Already Exist In Node Table \n\n"
+					print "1: Node ID:",node_id," Already Exist In Node Table, Updating MS Version \n\n"
+					cur.execute('UPDATE nodes SET ms_version = %s where node_id = %s', (payload, node_id))
+					con.commit()
 	
 			# ..::Step One B::..
 			# First time Node Comes online with Repeater Feature Enabled: Add Node to The Nodes Table.
@@ -158,11 +160,13 @@ while 1:
 				row = cur.fetchone()  
 				row = int(row[0])
 				if (row == 0):
-					print "1: Adding Node ID:",node_id, "MySensors Version:", payload, "\n\n"
+					print "1-B: Adding Node ID:",node_id, "MySensors Version:", payload, "\n\n"
 					cur.execute('INSERT INTO nodes(node_id, repeater, ms_version) VALUES(%s, %s, %s)', (node_id, '1', payload))
 					con.commit()
 				else: 
-					print "1: Node ID:",node_id," Already Exist In Node Table \n\n"
+					print "1-B: Node ID:",node_id," Already Exist In Node Table, Updating MS Version \n\n"
+					cur.execute('UPDATE nodes SET ms_version = %s where node_id = %s', (payload, node_id))
+					con.commit()
 
 			# ..::Step Two ::..
 			# Add Nodes Name i.e. Relay, Temperature Sensor etc. to Nodes Table.
