@@ -969,3 +969,12 @@ h3 small {font-family: "HelveticaNeue-Light",Helvetica,Arial,sans-serif;}
   border-width:4px;
   border-color:#ffede2;
 }
+
+.navbar {
+    min-height: 50px;
+}
+.navbar-right {
+	margin: auto;
+	padding: 5px;
+}
+
