@@ -12,8 +12,8 @@ echo " \033[0m \n";
 echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
 echo "*******************************************************\n";
-echo "*   Boiler Script Version 0.51 Build Date 31/01/2018  *\n";
-echo "*   Update on 16/03/2019                              *\n";
+echo "*   Boiler Script Version 0.52 Build Date 31/01/2018  *\n";
+echo "*   Update on 16/06/2019                              *\n";
 echo "*                                Have Fun - PiHome.eu *\n";
 echo "*******************************************************\n";
 echo " \033[0m \n";
@@ -186,9 +186,10 @@ while ($row = mysqli_fetch_assoc($results)) {
 	//    1    00-05    0.3
 	//    2    06-10    0.4
 	//    3    11-15    0.5
-	//    4    15-20    0.6
+	//    4    16-20    0.6
+	//    5    21-30    0.7
     $weather_fact = 0;
-    if ($weather_c <= 5 ) {$weather_fact = 0.2;}elseif ($weather_c <= 10 ) {$weather_fact = 0.3;} elseif($weather_c <= 15 ) {$weather_fact = 0.4;}elseif($weather_c <= 20 ) {$weather_fact = 0.5;}
+    if ($weather_c <= 5 ) {$weather_fact = 0.3;} elseif ($weather_c <= 10 ) {$weather_fact = 0.4;} elseif ($weather_c <= 15 ) {$weather_fact = 0.5;} elseif ($weather_c <= 20 ) {$weather_fact = 0.6;} elseif ($weather_c <= 30 ) {$weather_fact = 0.7;}
     $zone_c = $zone_c + $weather_fact; //Add to Actual Zone Temperature to Predict Accurate Temperature
 
 	//Following line to decide which temperature is target temperature 
