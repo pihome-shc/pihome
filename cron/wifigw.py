@@ -105,6 +105,7 @@ while 1:
 			# help http://stackoverflow.com/questions/21740359/python-mysqldb-typeerror-not-all-arguments-converted-during-string-formatting
 			cur.execute('UPDATE `messages_out` set sent=1 where id=%s', [out_id]) #update DB so this message will not be processed in next loop
 			con.commit() #commit above
+			time.sleep(.100) # Wait for 100 milliseconds
 	except mdb.Error, e:
 		print "Error %d: %s" % (e.args[0], e.args[1])
 		sys.exit(1)

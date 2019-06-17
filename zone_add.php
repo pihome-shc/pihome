@@ -53,11 +53,14 @@ if (isset($_POST['submit'])) {
 	$found_product = mysqli_fetch_array($result);
 	$controler_id = $found_product['id'];
 	
-	//query to search node id for boost button
-	$query = "SELECT * FROM nodes WHERE node_id = '{$boost_button_id}' LIMIT 1;";
-	$result = $conn->query($query);
-	$found_product = mysqli_fetch_array($result);
-	$boost_button_id = $found_product['node_id'];
+	//If boost button console isnt installed then no need to add this to message_out
+	if ($boost_button_id != 'None'){
+		//query to search node id for boost button
+		$query = "SELECT * FROM nodes WHERE node_id = '{$boost_button_id}' LIMIT 1;";
+		$result = $conn->query($query);
+		$found_product = mysqli_fetch_array($result);
+		$boost_button_id = $found_product['node_id'];
+	}
 	
 	//Add zone record to Zone Talbe 
 	$query = "INSERT INTO zone (status, index_id, name, type, max_c, max_operation_time, hysteresis_time, sensor_id, sensor_child_id, controler_id, controler_child_id, boiler_id) 
@@ -71,21 +74,24 @@ if (isset($_POST['submit'])) {
 	}
 
 	//Add Zone to message out table at same time to send out instructions to controller for each zone. 
-	$query = "INSERT INTO messages_out (node_id, child_id, sub_type, ack, type, payload, sent, zone_id)VALUES ('{$controler}','{$controler_child_id}', '1', '1', '2', '0', '0', '{$zone_id}');";
+	$query = "INSERT INTO messages_out (node_id, child_id, sub_type, ack, type, payload, sent, zone_id)VALUES ('{$controler}','{$controler_child_id}', '1', '0', '2', '0', '0', '{$zone_id}');";
 	$result = $conn->query($query);
 	if ($result) {
 		$message_success .= "<p>".$lang['zone_controler_success']."</p>";
 	} else {
 		$error .= "<p>".$lang['zone_controler_fail']."</p> <p>" .mysqli_error($conn). "</p>";
 	}
-
-	//Add Zone Boost Button Console to messageout table at same time
-	$query = "INSERT INTO messages_out (node_id, child_id, sub_type, payload, sent, zone_id)VALUES ('{$boost_button_id}','{$boost_button_child_id}', '2', '0', '1', '{$zone_id}');";
-	$result = $conn->query($query);
-	if ($result) {
-		$message_success .= "<p>".$lang['zone_button_success']."</p>";
-	} else {
-		$error .= "<p>".$lang['zone_button_fail']."</p> <p>" .mysqli_error($conn). "</p>";
+	
+	//If boost button console isnt installed then no need to add this to message_out
+	if ($boost_button_id != 'None'){
+		//Add Zone Boost Button Console to messageout table at same time
+		$query = "INSERT INTO messages_out (node_id, child_id, sub_type, payload, sent, zone_id)VALUES ('{$boost_button_id}','{$boost_button_child_id}', '2', '0', '1', '{$zone_id}');";
+		$result = $conn->query($query);
+		if ($result) {
+			$message_success .= "<p>".$lang['zone_button_success']."</p>";
+		} else {
+			$error .= "<p>".$lang['zone_button_fail']."</p> <p>" .mysqli_error($conn). "</p>";
+		}
 	}
 	
 	//Add Zone to boost table at same time
@@ -161,11 +167,11 @@ $new_index_id = $found_product['index_id']+1;
 <div class="help-block with-errors"></div></div>
 
 <div class="form-group" class="control-label"><label><?php echo $lang['max_temperature']; ?></label>
-<input class="form-control" placeholder="<?php echo $lang['zone_max_temperature_help']; ?>" value="<?php if(isset($_POST['max_c'])) { echo $_POST['max_c']; } ?>" id="max_c" name="max_c" data-error="<?php echo $lang['zone_max_temperature_error']; ?>"  autocomplete="off" required>
+<input class="form-control" placeholder="<?php echo $lang['zone_max_temperature_help']; ?>" value="<?php if(isset($_POST['max_c'])) { echo $_POST['max_c']; } else {echo '25';}  ?>" id="max_c" name="max_c" data-error="<?php echo $lang['zone_max_temperature_error']; ?>"  autocomplete="off" required>
 <div class="help-block with-errors"></div></div>
 				
 <div class="form-group" class="control-label"><label><?php echo $lang['zone_max_operation_time']; ?></label>
-<input class="form-control" placeholder="<?php echo $lang['zone_max_operation_time_help']; ?>" value="<?php if(isset($_POST['max_operation_time'])) { echo $_POST['max_operation_time']; } ?>" id="max_operation_time" name="max_operation_time" data-error="<?php echo $lang['zone_max_operation_time_error']; ?>"  autocomplete="off" required>
+<input class="form-control" placeholder="<?php echo $lang['zone_max_operation_time_help']; ?>" value="<?php if(isset($_POST['max_operation_time'])) { echo $_POST['max_operation_time']; } else {echo '60';}  ?>" id="max_operation_time" name="max_operation_time" data-error="<?php echo $lang['zone_max_operation_time_error']; ?>"  autocomplete="off" required>
 <div class="help-block with-errors"></div></div>				
 
 <div class="form-group" class="control-label"><label><?php echo $lang['hysteresis_time']; ?></label>
@@ -219,7 +225,7 @@ while ($datarw=mysqli_fetch_array($result)) {
 
 <div class="form-group" class="control-label"><label><?php echo $lang['zone_relay_gpio']; ?></label>
 <select id="zone_gpio" name="zone_gpio" class="form-control select2" data-error="<?php echo $lang['zone_gpio_pin_error']; ?>" autocomplete="off" required>
-<?php if(isset($_POST['zone_gpio'])) { echo '<option selected >'.$_POST['zone_gpio'].'</option>'; } ?>
+<?php if(isset($_POST['zone_gpio'])) { echo '<option selected >'.$_POST['zone_gpio'].'</option>'; } else { echo '<option selected>0</option>';}?>
 <option></option>
 <option>0</option>
 <option>1</option>
@@ -247,7 +253,7 @@ while ($datarw=mysqli_fetch_array($result)) {
 <?php if(isset($_POST['boost_button_id'])) { echo '<option selected >'.$_POST['boost_button_id'].'</boost_button_id>'; } ?>
 <?php  $query = "SELECT node_id FROM nodes where name = 'Button Console'";
 $result = $conn->query($query);
-echo "<option></option>";
+echo "<option>None</option>";
 while ($datarw=mysqli_fetch_array($result)) {
 $node_id=$datarw["node_id"];
 echo "<option>$node_id</option>";} ?>
@@ -256,7 +262,7 @@ echo "<option>$node_id</option>";} ?>
 
 <div class="form-group" class="control-label"><label><?php echo $lang['zone_boost_button_child_id']; ?></label>
 <select id="boost_button_child_id" name="boost_button_child_id" class="form-control select2" data-error="<?php echo $lang['zone_boost_child_id_error']; ?>" autocomplete="off" required>
-<?php if(isset($_POST['boost_button_child_id'])) { echo '<option selected >'.$_POST['boost_button_child_id'].'</option>'; } ?>
+<?php if(isset($_POST['boost_button_child_id'])) { echo '<option selected >'.$_POST['boost_button_child_id'].'</option>'; }else { echo '<option selected>None</option>';} ?>
 <option></option>
 <option>0</option>
 <option>1</option>

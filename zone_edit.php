@@ -58,11 +58,14 @@ if (isset($_POST['submit'])) {
 	$found_product = mysqli_fetch_array($result);
 	$controler_id = $found_product['id'];
 	
-	//query to search node id for boost button
-	$query = "SELECT * FROM nodes WHERE node_id = '{$boost_button_id}' LIMIT 1";
-	$result = $conn->query($query);
-	$found_product = mysqli_fetch_array($result);
-	$boost_button_id = $found_product['node_id'];
+	//If boost button console isnt installed then no need to add this to message_out
+	if ($boost_button_id != 'None'){
+		//query to search node id for boost button
+		$query = "SELECT * FROM nodes WHERE node_id = '{$boost_button_id}' LIMIT 1";
+		$result = $conn->query($query);
+		$found_product = mysqli_fetch_array($result);
+		$boost_button_id = $found_product['node_id'];
+	}
 	
 	$query = "INSERT INTO zone (status, index_id, name, type, max_c, max_operation_time, hysteresis_time, sensor_id, sensor_child_id, controler_id, controler_child_id, boiler_id) 
 	VALUES ('{$zone_status}', '{$index_id}', '{$name}', '{$type}', '{$max_c}', '{$max_operation_time}', '{$hysteresis_time}', '{$sensor_id}', '{$sensor_child_id}', '{$controler_id}', '{$controler_child_id}', '{$boiler_id}');";
@@ -75,7 +78,7 @@ if (isset($_POST['submit'])) {
 		$error = "<p>{$LANG['add_purchase_failed']}</p> <p>" .mysqli_error($conn). "</p>";
 	}
 	//Add Zone to message out table at same time to send out instructions to controller for each zone. 
-	$query = "INSERT INTO messages_out (node_id, child_id, sub_type, ack, type, payload, sent, zone_id)VALUES ('{$controler}','{$controler_child_id}', '1', '1', '2', '0', '0', '{$zone_id}');";
+	$query = "INSERT INTO messages_out (node_id, child_id, sub_type, ack, type, payload, sent, zone_id)VALUES ('{$controler}','{$controler_child_id}', '1', '0', '2', '0', '0', '{$zone_id}');";
 	$result = $conn->query($query);
 	if ($result) {
 		$message_success .= "<p>Zone Controler Record Added Successfuly.</p>";
@@ -83,13 +86,16 @@ if (isset($_POST['submit'])) {
 		$error = "<p>Zone Controler Recrd Addition Failed!!!</p> <p>" .mysqli_error($conn). "</p>";
 	}
 
-	//Add Zone Boost Button Console to message out table at same time
-	$query = "INSERT INTO messages_out (node_id, child_id, sub_type, payload, sent, zone_id)VALUES ('{$boost_button_id}','{$boost_button_child_id}', '2', '0', '1', '{$zone_id}');";
-	$result = mysqli_fetch_array($query, $connection);
-	if ($result) {
-		$message_success .= "<p>Zone Boost Button Record Added Successfuly.</p>";
-	} else {
-		$error = "<p>Zone Boost Button Recrd Addition Failed!!!</p> <p>" .mysqli_error($conn). "</p>";
+	//If boost button console isnt installed then no need to add this to message_out
+	if ($boost_button_id != 'None'){
+		//Add Zone Boost Button Console to message out table at same time
+		$query = "INSERT INTO messages_out (node_id, child_id, sub_type, payload, sent, zone_id)VALUES ('{$boost_button_id}','{$boost_button_child_id}', '2', '0', '1', '{$zone_id}');";
+		$result = mysqli_fetch_array($query, $connection);
+		if ($result) {
+			$message_success .= "<p>Zone Boost Button Record Added Successfuly.</p>";
+		} else {
+			$error = "<p>Zone Boost Button Recrd Addition Failed!!!</p> <p>" .mysqli_error($conn). "</p>";
+		}
 	}
 	
 	//Add Zone to boost table at same time

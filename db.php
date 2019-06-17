@@ -148,9 +148,14 @@ if($what=="boost"){
 		if($boost_status=="1"){ $set="0"; }else{ $set="1";}
 		$query = "UPDATE boost SET status = '{$set}', sync = '0', time = '{$time}' WHERE id = '{$wid}' LIMIT 1";
 		$conn->query($query);
-		//this line update message out 
-		$query = "UPDATE messages_out SET payload = '{$set}', datetime = '{$time}', sent = '0', sync = '0' WHERE zone_id = '{$zone_id}' AND node_id = {$row['boost_button_id']} AND child_id = {$row['boost_button_child_id']} LIMIT 1";
-		$conn->query($query);
+		//First check if Boost Button Console exit
+		$query = "SELECT * FROM nodes WHERE node_id = '{$boost_button_id}' AND child_id = {$row['boost_button_child_id']} LIMIT 1;";
+		$rowcount=$conn->query($query);
+		if(mysqli_num_rows($rowcount)!=0){
+			//this line update message out for Boost Button Console
+			$query = "UPDATE messages_out SET payload = '{$set}', datetime = '{$time}', sent = '0', sync = '0' WHERE zone_id = '{$zone_id}' AND node_id = {$row['boost_button_id']} AND child_id = {$row['boost_button_child_id']} LIMIT 1";
+			$conn->query($query);
+		}
 	}
 }
 //Away 
