@@ -16,6 +16,9 @@
 // Enable debug prints to serial monitor
 #define MY_DEBUG
 
+//Set MY_SPLASH_SCREEN_DISABLED to disable MySensors splash screen. (This saves 120 bytes of flash)
+#define MY_SPLASH_SCREEN_DISABLED
+
 // Enable and select radio type attached
 #define MY_RADIO_RF24
 //#define MY_RADIO_NRF5_ESB
@@ -73,6 +76,8 @@
 #define RELAY_OFF 1 // GPIO value to write to turn off attached relay
 
 int oldStatus = RELAY_OFF;
+int COMMS = 0;
+unsigned long WAIT_TIME = 300000; // Wait time (in milliseconds) best to keep it for 5 Minuts
 
 void before()
 {
@@ -100,7 +105,17 @@ void presentation()
 }
 
 void loop(){
-
+	//Safety function for Boiler: If Boiler Controller loses connection with gateway or RPI crashes boiler will turn off at set time. 
+	wait(WAIT_TIME);
+	if (COMMS == 1) {
+		Serial.print("Comms Received Witin Time: \n");
+		COMMS = 0;
+	}else {
+		Serial.print("NO Comms Received Witin Time!!! \n");
+		Serial.print("Shutting Down Boiler \n");
+		// Change relay state to Off
+		digitalWrite(RELAY_1, RELAY_OFF);
+	}
 }
 
 void receive(const MyMessage &message)
@@ -108,14 +123,17 @@ void receive(const MyMessage &message)
 	// We only expect one type of message from controller. But we better check anyway.
 	if (message.type==V_STATUS) {
 		
+		//Set the Comms variable to 1 when v_status received 
+		COMMS = 1;
+
 		//digitalWrite(message.sensor-1+RELAY_1, message.getBool()?RELAY_ON:RELAY_OFF);
 		int RELAY_status = (message.sensor-1+RELAY_1, message.getBool()?RELAY_ON:RELAY_OFF);
 		
 		// Write some debug info
 		#ifdef MY_DEBUG
-			Serial.print("Relay Status Received: ");
+			Serial.print("New Status Received: ");
 			Serial.println(RELAY_status);
-			Serial.print("Relay Old Status: ");
+			Serial.print("Old Status: ");
 			Serial.println(oldStatus);
 			Serial.print(" \n");
 		#endif
