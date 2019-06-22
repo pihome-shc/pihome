@@ -179,8 +179,8 @@ $new_index_id = $found_product['index_id']+1;
 <input class="form-control" placeholder="<?php echo $lang['zone_hysteresis_time_help']; ?>" value="<?php if(isset($_POST['hysteresis_time'])) { echo $_POST['hysteresis_time']; } else {echo '3';} ?>" id="hysteresis_time" name="hysteresis_time" data-error="<?php echo $lang['zone_hysteresis_time_error']; ?>"  autocomplete="off" required>
 <div class="help-block with-errors"></div></div>	
 
-<div class="form-group" class="control-label"><label><?php echo 'Setpoint Deadband'; ?></label>
-<input class="form-control" placeholder="<?php echo 'Deadband below temperature setpoint.'; ?>" value="<?php if(isset($_POST['sp_deadband'])) { echo $_POST['sp_deadband']; } else {echo '0.5';} ?>" id="sp_deadband" name="sp_deadband" data-error="<?php echo 'Deadband needed'; ?>"  autocomplete="off" required>
+<div class="form-group" class="control-label"><label><?php echo $lang['zone_sp_deadband']; ?></label>
+<input class="form-control" placeholder="<?php echo $lang['zone_sp_deadband_help']; ?>" value="<?php if(isset($_POST['sp_deadband'])) { echo $_POST['sp_deadband']; } else {echo '0.5';} ?>" id="sp_deadband" name="sp_deadband" data-error="<?php echo $lang['zone_sp_deadband_error'] ; ?>"  autocomplete="off" required>
 <div class="help-block with-errors"></div></div>	
 
 <div class="form-group" class="control-label"><label><?php echo $lang['temp_sensor_id']; ?></label>
