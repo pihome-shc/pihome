@@ -189,8 +189,8 @@ $row = mysqli_fetch_assoc($result);
 <input class="form-control" placeholder="Hysteresis Time for Safty, Please consult your motorized volve technical manule for more details. Default is 3 Minuts." value="<?php echo $row['hysteresis_time']; ?>" id="hysteresis_time" name="hysteresis_time" data-error="Hysteresis time for safty, Please consult your motorized volve technical manule for more details. Default is 3 Minuts." pattern="[0-9]+([\,|\.][0-9]+)?"  autocomplete="off" required>
 <div class="help-block with-errors"></div></div>	
 
-<div class="form-group" class="control-label"><label>Setpoint Deadband</label>
-<input class="form-control" placeholder="Setpoint Deadband" value="<?php echo $row['sp_deadband']; ?>" id="sp_deadband" name="sp_deadband" data-error="Temperature setpoint deadband." pattern="[0-9]+([\,|\.][0-9]+)?"  autocomplete="off" required>
+<div class="form-group" class="control-label"><label><?php echo $lang['zone_sp_deadband']; ?></label>
+<input class="form-control" placeholder="<?php echo $lang['zone_sp_deadband_help']; ?>" value="<?php echo $row['sp_deadband']; ?>" id="sp_deadband" name="sp_deadband" data-error="<?php echo $lang['zone_sp_deadband_error']; ?>" pattern="[0-9]+([\,|\.][0-9]+)?"  autocomplete="off" required>
 <div class="help-block with-errors"></div></div>
 
 <div class="form-group" class="control-label"><label>Temperature Sensor ID</label>
