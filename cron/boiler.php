@@ -192,7 +192,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	//    5    21-30    0.7
     $weather_fact = 0;
     if ($weather_c <= 5 ) {$weather_fact = 0.3;} elseif ($weather_c <= 10 ) {$weather_fact = 0.4;} elseif ($weather_c <= 15 ) {$weather_fact = 0.5;} elseif ($weather_c <= 20 ) {$weather_fact = 0.6;} elseif ($weather_c <= 30 ) {$weather_fact = 0.7;}
-    //$zone_c = $zone_c + $weather_fact; //Add to Actual Zone Temperature to Predict Accurate Temperature
+    $zone_c = $zone_c + $weather_fact; //Add to Actual Zone Temperature to Predict Accurate Temperature
 
 	//Following line to decide which temperature is target temperature 
 	if ($boost_active=='1'){$target_c=$boost_c;} elseif ($night_climate_status =='1') {$target_c=$nc_min_c;} elseif($override_status=='1'){$target_c=$override_c;} elseif($override_status=='0'){$target_c=$sch_c;}
@@ -233,14 +233,15 @@ if ($zone_c < $frost_c-$zone_sp_deadband){$zone_status="1"; $start_cause="Frost 
 					if (($sch_status =='1') && ($override_status=='1') && ($zone_c >= $target_c)){$zone_status="0"; $stop_cause="Schedule Override Target C Achieved";} 
 					if (($sch_status =='0') &&($override_status=='0')){$zone_status="0"; $stop_cause="No Schedule For This Zone \n"; } 
 					if ($sch_status=='0') {$zone_status="0"; $stop_cause="No Schedule"; } 
-				}elseif($night_climate_status=='1' && $zone_c < $target_c-$zone_sp_deadband){$zone_status="1"; $start_cause="Night Climate"; $expected_end_date_time=date('Y-m-d '.$nc_end_time_rc.'');
-				}elseif($night_climate_status=='1' && $zone_c >= $target_c-$zone_sp_deadband && $zone_c < $target_c){$zone_status=$zone_status_prev; $start_cause="Night Climate Deadband"; $end_cause="Night Climate Deadband"; $expected_end_date_time=date('Y-m-d '.$nc_end_time_rc.'');
-				}elseif($night_climate_status=='1' && $zone_c >= $target_c){$zone_status="0"; $start_cause="Night Climate C Reached"; $expected_end_date_time=date('Y-m-d '.$nc_end_time_rc.'');}
-			}elseif ($boost_status=='1' && $zone_c < $target_c-$zone_sp_deadband) {$zone_status="1"; $start_cause="Boost Active"; $expected_end_date_time=date('Y-m-d H:i:s', $boost_time);
-			}elseif ($boost_status=='1' && $zone_c >= $target_c-$zone_sp_deadband && $zone_c < $target_c) {$zone_status=$zone_status_prev; $start_cause="Boost Target Deadband"; $stop_cause="Boost Target Deadband";
-			}elseif ($boost_status=='1' && $zone_c >= $target_c) {$zone_status="0"; $stop_cause="Boost Target C Achived";}
+				}elseif(($night_climate_status=='1') && ($zone_c < $target_c-$zone_sp_deadband)){$zone_status="1"; $start_cause="Night Climate"; $expected_end_date_time=date('Y-m-d '.$nc_end_time_rc.'');
+				}elseif(($night_climate_status=='1') && ($zone_c >= $target_c-$zone_sp_deadband) && ($zone_c < $target_c)){$zone_status=$zone_status_prev; $start_cause="Night Climate Deadband"; $stop_cause="Night Climate Deadband"; $expected_end_date_time=date('Y-m-d '.$nc_end_time_rc.'');
+				}elseif(($night_climate_status=='1') && ($zone_c >= $target_c)){$zone_status="0"; $stop_cause="Night Climate C Reached"; $expected_end_date_time=date('Y-m-d '.$nc_end_time_rc.'');}
+			}elseif (($boost_status=='1') && ($zone_c < $target_c-$zone_sp_deadband)) {$zone_status="1"; $start_cause="Boost Active"; $expected_end_date_time=date('Y-m-d H:i:s', $boost_time);
+			}elseif (($boost_status=='1') && ($zone_c >= $target_c-$zone_sp_deadband) && ($zone_c < $target_c)) {$zone_status=$zone_status_prev; $start_cause="Boost Target Deadband"; $stop_cause="Boost Target Deadband";
+			}elseif (($boost_status=='1') && ($zone_c >= $target_c)) {$zone_status="0"; $stop_cause="Boost Target C Achived";}
 		}elseif($away_status=='1'){$zone_status="0"; $stop_cause="Away Active";}
-	}else{$zone_status="0"; $stop_cause="Zone Reached its Max Temperature ".$zone_max_c;;}
+	}elseif($zone_c >= $zone_max_c){$zone_status="0"; $stop_cause="Zone Reached its Max Temperature ".$zone_max_c;}
+	 else{$zone_status="0"; $stop_cause="Hysteresis active ";}
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone ID: \033[41m".$zone_id. "\033[0m \n";
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Controller: \033[41m".$zone_controler_id."\033[0m Controller Child: \033[41m".$zone_controler_child_id."\033[0m Zone Status: \033[41m".$zone_status."\033[0m \n";	
 if ($zone_status=='1') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Start Cause: ".$start_cause." - Target C:\033[41m".$target_c."\033[0m Zone C:\033[31m".$zone_c."\033[0m \n";}
