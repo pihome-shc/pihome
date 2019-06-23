@@ -152,6 +152,7 @@ $lang['zone_settings_text'] = "Hystérésis (délai minimum entre l'extinction e
 $lang['zone_sp_deadband'] = "Temperature Setpoint Deadband";
 $lang['zone_sp_deadband_help'] = "Deadband below setpoint temperature.";
 $lang['zone_sp_deadband_error'] = "Deadband below setpoint temperature used for starting the zone, zone starts below setpoint-deadband, set to zero if you want to start below setpoint temperature without deadband.";
+
 $lang['schedule'] = "Programme";
 $lang['schedule_add'] = "Ajouter un programme";
 $lang['schedule_enable'] = "Activer le programme";
