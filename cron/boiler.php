@@ -42,6 +42,7 @@ $boiler_node_child_id = $row['node_child_id'];
 $boiler_hysteresis_time = $row['hysteresis_time']; 
 $boiler_max_operation_time = $row['max_operation_time'];
 $boiler_goip_pin = $row['gpio_pin'];
+$zone_sp_deadband=$row['sp_deadband'];
 
 //query to check away status 
 $query = "SELECT * FROM away LIMIT 1";
