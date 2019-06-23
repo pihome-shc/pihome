@@ -31,6 +31,7 @@ if (isset($_POST['submit'])) {
 	$max_c = $_POST['max_c'];
 	$max_operation_time = $_POST['max_operation_time'];
 	$hysteresis_time = $_POST['hysteresis_time'];
+	$sp_deadband = $_POST['sp_deadband'];
 	$sensor_id = $_POST['sensor_id'];
 	$controler = $_POST['controler_id'];
 	$controler_id = $_POST['controler_id'];
@@ -63,8 +64,8 @@ if (isset($_POST['submit'])) {
 	}
 	
 	//Add zone record to Zone Talbe 
-	$query = "INSERT INTO zone (status, index_id, name, type, max_c, max_operation_time, hysteresis_time, sensor_id, sensor_child_id, controler_id, controler_child_id, boiler_id) 
-	VALUES ('{$zone_status}', '{$index_id}', '{$name}', '{$type}', '{$max_c}', '{$max_operation_time}', '{$hysteresis_time}', '{$sensor_id}', '{$sensor_child_id}', '{$controler_id}', '{$controler_child_id}', '{$boiler_id}');";
+	$query = "INSERT INTO zone (status, index_id, name, type, max_c, max_operation_time, hysteresis_time, sp_deadband, sensor_id, sensor_child_id, controler_id, controler_child_id, boiler_id) 
+	VALUES ('{$zone_status}', '{$index_id}', '{$name}', '{$type}', '{$max_c}', '{$max_operation_time}', '{$hysteresis_time}', '{$sp_deadband}', '{$sensor_id}', '{$sensor_child_id}', '{$controler_id}', '{$controler_child_id}', '{$boiler_id}');";
 	$result = $conn->query($query);
 	$zone_id = mysqli_insert_id($conn);
 	if ($result) {
@@ -176,6 +177,10 @@ $new_index_id = $found_product['index_id']+1;
 
 <div class="form-group" class="control-label"><label><?php echo $lang['hysteresis_time']; ?></label>
 <input class="form-control" placeholder="<?php echo $lang['zone_hysteresis_time_help']; ?>" value="<?php if(isset($_POST['hysteresis_time'])) { echo $_POST['hysteresis_time']; } else {echo '3';} ?>" id="hysteresis_time" name="hysteresis_time" data-error="<?php echo $lang['zone_hysteresis_time_error']; ?>"  autocomplete="off" required>
+<div class="help-block with-errors"></div></div>	
+
+<div class="form-group" class="control-label"><label><?php echo $lang['zone_sp_deadband']; ?></label>
+<input class="form-control" placeholder="<?php echo $lang['zone_sp_deadband_help']; ?>" value="<?php if(isset($_POST['sp_deadband'])) { echo $_POST['sp_deadband']; } else {echo '0.5';} ?>" id="sp_deadband" name="sp_deadband" data-error="<?php echo $lang['zone_sp_deadband_error'] ; ?>"  autocomplete="off" required>
 <div class="help-block with-errors"></div></div>	
 
 <div class="form-group" class="control-label"><label><?php echo $lang['temp_sensor_id']; ?></label>

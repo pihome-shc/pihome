@@ -699,6 +699,7 @@ CREATE TABLE IF NOT EXISTS `zone` (
   `max_c` tinyint(4) DEFAULT NULL,
   `max_operation_time` tinyint(4) DEFAULT NULL,
   `hysteresis_time` tinyint(4) DEFAULT NULL,
+  `sp_deadband` float NOT NULL DEFAULT '0.5'
   `sensor_id` int(11) DEFAULT NULL,
   `sensor_child_id` int(11) DEFAULT NULL,
   `controler_id` int(11) DEFAULT NULL,
@@ -769,6 +770,7 @@ CREATE TABLE `zone_view` (
 	`max_c` TINYINT(4) NULL,
 	`max_operation_time` TINYINT(4) NULL,
 	`hysteresis_time` TINYINT(4) NULL,
+  `sp_deadband` FLOAT NOT NULL,
 	`sensors_id` CHAR(50) NOT NULL COLLATE 'utf16_bin',
 	`sensor_child_id` INT(11) NULL,
 	`controler_id` CHAR(50) NOT NULL COLLATE 'utf16_bin',
@@ -825,7 +827,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `zone_lo
 DROP VIEW IF EXISTS `zone_view`;
 -- Removing temporary table and create final VIEW structure
 DROP TABLE IF EXISTS `zone_view`;
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `zone_view` AS select `zone`.`status` AS `status`,`zone`.`sync` AS `sync`,`zone`.`id` AS `id`,`zone`.`index_id` AS `index_id`,`zone`.`name` AS `name`,`zone`.`type` AS `type`,`zone`.`max_c` AS `max_c`,`zone`.`max_operation_time` AS `max_operation_time`,`zone`.`hysteresis_time` AS `hysteresis_time`,`sid`.`node_id` AS `sensors_id`,`zone`.`sensor_child_id` AS `sensor_child_id`,`cid`.`node_id` AS `controler_id`,`zone`.`controler_child_id` AS `controler_child_id`,`zone`.`gpio_pin` AS `gpio_pin`,`bid`.`node_id` AS `boiler_id`,`lasts`.`last_seen` AS `last_seen`,`msv`.`ms_version` AS `ms_version`,`skv`.`sketch_version` AS `sketch_version` from ((((((`zone` join `nodes` `sid` on((`zone`.`sensor_id` = `sid`.`id`))) join `nodes` `cid` on((`zone`.`controler_id` = `cid`.`id`))) join `nodes` `bid` on((`zone`.`boiler_id` = `bid`.`id`))) join `nodes` `lasts` on((`zone`.`sensor_id` = `lasts`.`id`))) join `nodes` `msv` on((`zone`.`sensor_id` = `msv`.`id`))) join `nodes` `skv` on((`zone`.`sensor_id` = `skv`.`id`))) where (`zone`.`purge` = '0');
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `zone_view` AS select `zone`.`status` AS `status`,`zone`.`sync` AS `sync`,`zone`.`id` AS `id`,`zone`.`index_id` AS `index_id`,`zone`.`name` AS `name`,`zone`.`type` AS `type`,`zone`.`max_c` AS `max_c`,`zone`.`max_operation_time` AS `max_operation_time`,`zone`.`hysteresis_time` AS `hysteresis_time`,`zone`.`sp_deadband` AS `sp_deadband`,`sid`.`node_id` AS `sensors_id`,`zone`.`sensor_child_id` AS `sensor_child_id`,`cid`.`node_id` AS `controler_id`,`zone`.`controler_child_id` AS `controler_child_id`,`zone`.`gpio_pin` AS `gpio_pin`,`bid`.`node_id` AS `boiler_id`,`lasts`.`last_seen` AS `last_seen`,`msv`.`ms_version` AS `ms_version`,`skv`.`sketch_version` AS `sketch_version` from ((((((`zone` join `nodes` `sid` on((`zone`.`sensor_id` = `sid`.`id`))) join `nodes` `cid` on((`zone`.`controler_id` = `cid`.`id`))) join `nodes` `bid` on((`zone`.`boiler_id` = `bid`.`id`))) join `nodes` `lasts` on((`zone`.`sensor_id` = `lasts`.`id`))) join `nodes` `msv` on((`zone`.`sensor_id` = `msv`.`id`))) join `nodes` `skv` on((`zone`.`sensor_id` = `skv`.`id`))) where (`zone`.`purge` = '0');
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
