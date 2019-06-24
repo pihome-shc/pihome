@@ -31,10 +31,6 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
 
--- Dumping database structure for pihome
-CREATE DATABASE IF NOT EXISTS `pihome` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
-USE `pihome`;
-
 -- Dumping structure for table pihome.away
 DROP TABLE IF EXISTS `away`;
 CREATE TABLE IF NOT EXISTS `away` (
@@ -49,10 +45,10 @@ CREATE TABLE IF NOT EXISTS `away` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
--- Dumping data for table pihome.away: ~1 rows (approximately)
+-- Dumping data for table pihome.away: ~0 rows (approximately)
 /*!40000 ALTER TABLE `away` DISABLE KEYS */;
 REPLACE INTO `away` (`id`, `sync`, `purge`, `status`, `start_datetime`, `end_datetime`, `away_button_id`, `away_button_child_id`) VALUES
-	(1, 0, 0, 0, '2019-01-21 21:21:19', NULL, 40, 4);
+	(1, 1, 0, 0, '2019-06-14 09:45:31', NULL, 40, 4);
 /*!40000 ALTER TABLE `away` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.boiler
@@ -63,7 +59,7 @@ CREATE TABLE IF NOT EXISTS `boiler` (
   `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
   `status` tinyint(4) DEFAULT '0',
   `fired_status` tinyint(4) DEFAULT '0',
-  `name` char(50) COLLATE utf16_bin DEFAULT 'Gas Boiler',
+  `name` char(50) CHARACTER SET utf16 COLLATE utf16_bin DEFAULT 'Gas Boiler',
   `node_id` int(11) DEFAULT NULL,
   `node_child_id` int(11) DEFAULT '1',
   `hysteresis_time` tinyint(4) DEFAULT '3',
@@ -73,12 +69,12 @@ CREATE TABLE IF NOT EXISTS `boiler` (
   PRIMARY KEY (`id`),
   KEY `FK_boiler_zone` (`node_id`),
   CONSTRAINT `FK_boiler_zone` FOREIGN KEY (`node_id`) REFERENCES `nodes` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
--- Dumping data for table pihome.boiler: ~1 rows (approximately)
+-- Dumping data for table pihome.boiler: ~0 rows (approximately)
 /*!40000 ALTER TABLE `boiler` DISABLE KEYS */;
 REPLACE INTO `boiler` (`id`, `sync`, `purge`, `status`, `fired_status`, `name`, `node_id`, `node_child_id`, `hysteresis_time`, `max_operation_time`, `datetime`, `gpio_pin`) VALUES
-	(1, 0, 0, 1, 0, 'Gas Boiler', 5, 1, 3, 60, '2019-01-22 12:15:02', 24);
+	(1, 1, 0, 1, 0, 'Gas Boiler', 5, 1, 3, 60, '2019-06-20 00:43:10', 24);
 /*!40000 ALTER TABLE `boiler` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.boiler_logs
@@ -99,22 +95,6 @@ CREATE TABLE IF NOT EXISTS `boiler_logs` (
 /*!40000 ALTER TABLE `boiler_logs` DISABLE KEYS */;
 /*!40000 ALTER TABLE `boiler_logs` ENABLE KEYS */;
 
--- Dumping structure for view pihome.boiler_view
-DROP VIEW IF EXISTS `boiler_view`;
--- Creating temporary table to overcome VIEW dependency errors
-CREATE TABLE `boiler_view` (
-	`status` TINYINT(4) NULL,
-	`sync` TINYINT(4) NOT NULL,
-	`purge` TINYINT(4) NOT NULL COMMENT 'Mark For Deletion',
-	`fired_status` TINYINT(4) NULL,
-	`name` CHAR(50) NULL COLLATE 'utf16_bin',
-	`node_id` CHAR(50) NOT NULL COLLATE 'utf16_bin',
-	`node_child_id` INT(11) NULL,
-	`hysteresis_time` TINYINT(4) NULL,
-	`max_operation_time` TINYINT(4) NULL,
-	`gpio_pin` INT(11) NULL
-) ENGINE=MyISAM;
-
 -- Dumping structure for table pihome.boost
 DROP TABLE IF EXISTS `boost`;
 CREATE TABLE IF NOT EXISTS `boost` (
@@ -131,28 +111,41 @@ CREATE TABLE IF NOT EXISTS `boost` (
   PRIMARY KEY (`id`),
   KEY `FK_boost_zone` (`zone_id`),
   CONSTRAINT `FK_boost_zone` FOREIGN KEY (`zone_id`) REFERENCES `zone` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
--- Dumping data for table pihome.boost: ~3 rows (approximately)
+-- Dumping data for table pihome.boost: ~7 rows (approximately)
 /*!40000 ALTER TABLE `boost` DISABLE KEYS */;
 REPLACE INTO `boost` (`id`, `sync`, `purge`, `status`, `zone_id`, `time`, `temperature`, `minute`, `boost_button_id`, `boost_button_child_id`) VALUES
-	(8, 0, 0, 0, 33, '2019-01-21 21:21:19', 23, 30, 0, 0),
-	(9, 0, 0, 0, 34, '2019-01-21 21:21:19', 23, 30, 0, 0),
-	(10, 0, 0, 0, 35, '2019-01-21 21:21:19', 50, 60, 0, 0);
+	(8, 1, 0, 0, 33, '2019-06-19 19:59:14', 23, 30, 40, 1),
+	(9, 1, 0, 0, 34, '2019-06-11 23:41:24', 23, 30, 40, 3),
+	(10, 1, 0, 0, 35, '2019-06-20 00:45:48', 30, 40, 0, 0),
+	(12, 1, 0, 0, 35, '2019-06-20 00:45:06', 35, 60, 40, 4),
+	(13, 1, 0, 0, 35, '2019-06-20 00:45:51', 40, 70, 40, 5),
+	(14, 1, 0, 0, 35, '2019-06-20 00:46:10', 50, 80, 40, 5),
+	(15, 1, 0, 0, 35, '2019-06-20 00:46:02', 60, 90, 40, 5);
 /*!40000 ALTER TABLE `boost` ENABLE KEYS */;
 
--- Dumping structure for view pihome.boost_view
-DROP VIEW IF EXISTS `boost_view`;
--- Creating temporary table to overcome VIEW dependency errors
-CREATE TABLE `boost_view` (
-	`status` TINYINT(4) NULL,
-	`sync` TINYINT(4) NOT NULL,
-	`zone_id` INT(11) NULL,
-	`index_id` TINYINT(4) NULL,
-	`name` CHAR(50) NULL COLLATE 'utf8_bin',
-	`temperature` TINYINT(4) NULL,
-	`minute` TINYINT(4) NULL
-) ENGINE=MyISAM;
+-- Dumping structure for table pihome.crontab
+DROP TABLE IF EXISTS `crontab`;
+CREATE TABLE IF NOT EXISTS `crontab` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `status` char(50) DEFAULT '#',
+  `min` char(50) DEFAULT '*/1',
+  `hour` char(50) DEFAULT '*',
+  `day` char(50) DEFAULT '*',
+  `month` char(50) DEFAULT '*',
+  `weekday` char(50) DEFAULT '*',
+  `command` char(50) DEFAULT '',
+  `output` char(50) DEFAULT '>/dev/null 2>&1',
+  `comments` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='PiHome Smart Heating - Manage Crontab from web interface ';
+
+-- Dumping data for table pihome.crontab: ~0 rows (approximately)
+/*!40000 ALTER TABLE `crontab` DISABLE KEYS */;
+REPLACE INTO `crontab` (`id`, `status`, `min`, `hour`, `day`, `month`, `weekday`, `command`, `output`, `comments`) VALUES
+	(1, '#', '*/1', '*', '*', '*', '*', 'ls -l', '>/dev/null 2>&1', NULL);
+/*!40000 ALTER TABLE `crontab` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.frost_protection
 DROP TABLE IF EXISTS `frost_protection`;
@@ -165,10 +158,10 @@ CREATE TABLE IF NOT EXISTS `frost_protection` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
--- Dumping data for table pihome.frost_protection: ~1 rows (approximately)
+-- Dumping data for table pihome.frost_protection: ~0 rows (approximately)
 /*!40000 ALTER TABLE `frost_protection` DISABLE KEYS */;
 REPLACE INTO `frost_protection` (`id`, `sync`, `purge`, `datetime`, `temperature`) VALUES
-	(1, 0, 0, '2017-06-16 16:55:48', 8);
+	(1, 1, 0, '2017-06-16 16:55:48', 4);
 /*!40000 ALTER TABLE `frost_protection` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.gateway
@@ -190,10 +183,10 @@ CREATE TABLE IF NOT EXISTS `gateway` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
--- Dumping data for table pihome.gateway: ~1 rows (approximately)
+-- Dumping data for table pihome.gateway: ~0 rows (approximately)
 /*!40000 ALTER TABLE `gateway` DISABLE KEYS */;
 REPLACE INTO `gateway` (`id`, `status`, `sync`, `purge`, `type`, `location`, `port`, `timout`, `pid`, `pid_running_since`, `reboot`, `find_gw`, `version`) VALUES
-	(1, 0, 0, 0, 'wifi', '192.168.99.5', '5003', '3', '22183', 'Mon Jan 21 21:02:01 2019', 0, 1, '2.1.1\n');
+	(1, 1, 1, 0, 'wifi', '192.168.99.5', '5003', '3', '15832', 'Wed Jun 19 19:02:01 2019', 0, 1, '2.3.1\n');
 /*!40000 ALTER TABLE `gateway` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.gateway_logs
@@ -233,16 +226,6 @@ CREATE TABLE IF NOT EXISTS `messages_in` (
 /*!40000 ALTER TABLE `messages_in` DISABLE KEYS */;
 /*!40000 ALTER TABLE `messages_in` ENABLE KEYS */;
 
--- Dumping structure for view pihome.messages_in_view_24h
-DROP VIEW IF EXISTS `messages_in_view_24h`;
--- Creating temporary table to overcome VIEW dependency errors
-CREATE TABLE `messages_in_view_24h` (
-	`node_id` CHAR(15) NULL COLLATE 'utf16_bin',
-	`child_id` TINYINT(4) NULL,
-	`datetime` TIMESTAMP NOT NULL,
-	`payload` DECIMAL(10,2) NULL
-) ENGINE=MyISAM;
-
 -- Dumping structure for table pihome.messages_out
 DROP TABLE IF EXISTS `messages_out`;
 CREATE TABLE IF NOT EXISTS `messages_out` (
@@ -259,19 +242,39 @@ CREATE TABLE IF NOT EXISTS `messages_out` (
   `datetime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Current datetime',
   `zone_id` int(11) NOT NULL COMMENT 'Zone ID related to this entery',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf32 COLLATE=utf32_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf32 COLLATE=utf32_bin;
 
--- Dumping data for table pihome.messages_out: ~6 rows (approximately)
+-- Dumping data for table pihome.messages_out: ~7 rows (approximately)
 /*!40000 ALTER TABLE `messages_out` DISABLE KEYS */;
 REPLACE INTO `messages_out` (`id`, `sync`, `purge`, `node_id`, `child_id`, `sub_type`, `ack`, `type`, `payload`, `sent`, `datetime`, `zone_id`) VALUES
-	(15, 0, 0, '101', 1, 1, 1, 2, '0', 1, '2019-01-22 15:38:03', 33),
-	(17, 0, 0, '101', 2, 1, 1, 2, '0', 1, '2019-01-22 15:38:05', 34),
-	(19, 0, 0, '101', 3, 1, 1, 2, '0', 1, '2019-01-22 15:38:07', 35),
-	(21, 0, 0, '40', 1, 1, 1, 2, '1', 1, '2018-05-18 15:16:40', 33),
-	(22, 0, 0, '40', 2, 1, 1, 2, '1', 1, '2018-05-18 15:16:42', 34),
-	(23, 0, 0, '40', 3, 1, 1, 2, '1', 1, '2018-05-18 15:16:43', 35),
-	(24, 0, 0, '100', 1, 1, 1, 2, '0', 0, '2018-05-13 00:08:01', 0);
+	(15, 0, 0, '101', 1, 1, 1, 2, '0', 1, '2019-06-20 00:46:59', 33),
+	(17, 0, 0, '101', 2, 1, 1, 2, '0', 1, '2019-06-20 00:47:00', 34),
+	(19, 0, 0, '101', 3, 1, 1, 2, '0', 1, '2019-06-20 00:47:01', 35),
+	(21, 0, 0, '40', 1, 1, 0, 2, '0', 1, '2019-06-19 19:59:02', 33),
+	(22, 0, 0, '40', 2, 1, 0, 2, '0', 1, '2019-06-17 16:02:48', 34),
+	(23, 0, 0, '40', 3, 1, 0, 2, '0', 1, '2019-06-17 16:02:49', 35),
+	(24, 0, 0, '100', 1, 1, 1, 2, '0', 1, '2019-06-20 00:47:03', 0);
 /*!40000 ALTER TABLE `messages_out` ENABLE KEYS */;
+
+-- Dumping structure for table pihome.mqtt
+DROP TABLE IF EXISTS `mqtt`;
+CREATE TABLE IF NOT EXISTS `mqtt` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '',
+  `ip` varchar(39) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '127.0.0.1',
+  `port` int(11) NOT NULL DEFAULT '1883',
+  `username` varchar(50) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '',
+  `password` varchar(50) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '',
+  `enabled` tinyint(4) NOT NULL DEFAULT '1',
+  `type` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
+
+-- Dumping data for table pihome.mqtt: ~0 rows (approximately)
+/*!40000 ALTER TABLE `mqtt` DISABLE KEYS */;
+REPLACE INTO `mqtt` (`id`, `name`, `ip`, `port`, `username`, `password`, `enabled`, `type`) VALUES
+	(1, 'Demo', '127.0.0.1', 1883, 'mosquitto', 'mosquitto', 0, 0);
+/*!40000 ALTER TABLE `mqtt` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.nodes
 DROP TABLE IF EXISTS `nodes`;
@@ -281,7 +284,7 @@ CREATE TABLE IF NOT EXISTS `nodes` (
   `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
   `node_id` char(50) COLLATE utf16_bin NOT NULL,
   `child_id_1` int(11) DEFAULT NULL,
-  `child_id_2` INT(11) NULL DEFAULT NULL,
+  `child_id_2` int(11) DEFAULT NULL,
   `child_id_3` int(11) DEFAULT NULL,
   `child_id_4` int(11) DEFAULT NULL,
   `child_id_5` int(11) DEFAULT NULL,
@@ -293,21 +296,20 @@ CREATE TABLE IF NOT EXISTS `nodes` (
   `status` char(50) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   `ms_version` char(50) COLLATE utf16_bin DEFAULT NULL,
   `sketch_version` char(50) COLLATE utf16_bin DEFAULT NULL,
-  `repeater` TINYINT(4) NULL DEFAULT NULL COMMENT 'Repeater Feature Enabled=1 or Disable=0',
+  `repeater` tinyint(4) DEFAULT NULL COMMENT 'Repeater Feature Enabled=1 or Disable=0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
--- Dumping data for table pihome.nodes: ~8 rows (approximately)
+-- Dumping data for table pihome.nodes: ~7 rows (approximately)
 /*!40000 ALTER TABLE `nodes` DISABLE KEYS */;
-REPLACE INTO `nodes` (`id`, `sync`, `purge`, `node_id`, `child_id_1`, `child_id_2`, `child_id_3`, `child_id_4`, `child_id_5`, `child_id_6`, `child_id_7`, `child_id_8`, `name`, `last_seen`, `status`, `ms_version`, `sketch_version`) VALUES
-	(0, 0, 0, '0', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Zone Controller Relay', '2019-01-21 21:21:19', NULL, NULL, NULL),
-	(1, 0, 0, '21', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Temperature Sensor', '2019-01-22 15:38:22', 'Active', '2.1.1', '1.37'),
-	(2, 0, 0, '20', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Temperature Sensor', '2019-01-22 15:37:46', 'Active', '2.1.1', '1.34'),
-	(4, 0, 0, '30', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Temperature Sensor', '2019-01-22 15:37:50', 'Active', '2.1.1', '1.37'),
-	(5, 0, 0, '100', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Boiler Relay', '2019-01-21 21:21:19', 'Active', NULL, '1.3'),
-	(7, 0, 0, '101', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Zone Controller Relay', '2019-01-21 21:21:19', NULL, '2.1.1\n', '1.23'),
-	(8, 0, 0, '40', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Button Console', '2019-01-21 21:21:19', NULL, '2.1.1\n', '1.31'),
-	(9, 0, 1, '31', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Temperature Sensor', '2019-01-21 21:21:19', NULL, '2.1.1\n', '1.37');
+REPLACE INTO `nodes` (`id`, `sync`, `purge`, `node_id`, `child_id_1`, `child_id_2`, `child_id_3`, `child_id_4`, `child_id_5`, `child_id_6`, `child_id_7`, `child_id_8`, `name`, `last_seen`, `status`, `ms_version`, `sketch_version`, `repeater`) VALUES
+	(0, 1, 0, '0', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Zone Controller Relay', '2019-06-07 17:28:21', NULL, NULL, NULL, NULL),
+	(1, 1, 0, '21', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Temperature Sensor', '2019-06-20 00:42:08', 'Active', '2.3.1\n', '0.31', NULL),
+	(2, 1, 0, '20', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Temperature Sensor', '2019-06-20 00:33:08', 'Active', '2.3.1\n', '0.31', NULL),
+	(4, 1, 0, '30', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Temperature Sensor', '2019-06-20 00:40:08', 'Active', '2.3.1\n', '0.31', NULL),
+	(5, 1, 0, '100', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Boiler Relay', '2019-06-19 00:22:08', 'Active', '2.3.1\n', '0.31', NULL),
+	(7, 1, 0, '101', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Zone Controller Relay', '2019-06-07 17:28:39', NULL, '2.1.1\n', '1.23', NULL),
+	(8, 1, 0, '40', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Button Console', '2019-06-07 17:28:42', NULL, '2.1.1\n', '1.32', NULL);
 /*!40000 ALTER TABLE `nodes` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.nodes_battery
@@ -333,7 +335,7 @@ CREATE TABLE IF NOT EXISTS `notice` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `sync` tinyint(4) NOT NULL DEFAULT '0',
   `purge` tinyint(4) NOT NULL DEFAULT '0',
-  `datetime` datetime DEFAULT NULL,
+  `datetime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `message` varchar(200) COLLATE utf16_bin DEFAULT NULL,
   `status` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -361,23 +363,10 @@ CREATE TABLE IF NOT EXISTS `override` (
 -- Dumping data for table pihome.override: ~3 rows (approximately)
 /*!40000 ALTER TABLE `override` DISABLE KEYS */;
 REPLACE INTO `override` (`id`, `sync`, `purge`, `status`, `zone_id`, `time`, `temperature`) VALUES
-	(8, 1, 0, 0, 33, '2019-01-20 19:07:30', 24),
-	(9, 1, 0, 0, 34, '2019-01-19 00:48:08', 24),
-	(10, 1, 0, 0, 35, '2019-01-19 00:48:06', 35);
+	(8, 1, 0, 0, 33, '2019-06-19 12:15:31', 24),
+	(9, 1, 0, 0, 34, '2019-06-07 12:34:45', 24),
+	(10, 1, 0, 0, 35, '2019-06-19 19:22:19', 35);
 /*!40000 ALTER TABLE `override` ENABLE KEYS */;
-
--- Dumping structure for view pihome.override_view
-DROP VIEW IF EXISTS `override_view`;
--- Creating temporary table to overcome VIEW dependency errors
-CREATE TABLE `override_view` (
-	`status` TINYINT(4) NULL,
-	`sync` TINYINT(4) NOT NULL,
-	`zone_id` INT(11) NULL,
-	`index_id` TINYINT(4) NULL,
-	`name` CHAR(50) NULL COLLATE 'utf8_bin',
-	`time` TIMESTAMP NULL,
-	`temperature` TINYINT(4) NULL
-) ENGINE=MyISAM;
 
 -- Dumping structure for table pihome.piconnect
 DROP TABLE IF EXISTS `piconnect`;
@@ -391,7 +380,7 @@ CREATE TABLE IF NOT EXISTS `piconnect` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
--- Dumping data for table pihome.piconnect: ~1 rows (approximately)
+-- Dumping data for table pihome.piconnect: ~0 rows (approximately)
 /*!40000 ALTER TABLE `piconnect` DISABLE KEYS */;
 REPLACE INTO `piconnect` (`id`, `status`, `protocol`, `url`, `script`, `api_key`) VALUES
 	(1, 0, 'http', 'www.pihome.eu', '/piconnect/mypihome.php', '');
@@ -408,32 +397,10 @@ CREATE TABLE IF NOT EXISTS `schedule_daily_time` (
   `end` time DEFAULT NULL,
   `WeekDays` smallint(6) NOT NULL DEFAULT '127',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=91 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
--- Dumping data for table pihome.schedule_daily_time: ~21 rows (approximately)
+-- Dumping data for table pihome.schedule_daily_time: ~0 rows (approximately)
 /*!40000 ALTER TABLE `schedule_daily_time` DISABLE KEYS */;
-REPLACE INTO `schedule_daily_time` (`id`, `sync`, `purge`, `status`, `start`, `end`, `WeekDays`) VALUES
-	(68, 0, 0, 1, '00:01:00', '00:35:00', 65),
-	(69, 0, 0, 1, '14:15:00', '14:40:00', 127),
-	(72, 0, 0, 1, '06:25:00', '07:00:00', 127),
-	(73, 0, 0, 1, '10:00:00', '10:30:00', 62),
-	(74, 0, 0, 1, '19:48:00', '20:00:00', 127),
-	(75, 0, 0, 1, '02:00:00', '02:10:00', 15),
-	(76, 0, 0, 1, '07:10:00', '07:45:00', 62),
-	(77, 0, 0, 1, '02:25:00', '02:45:00', 127),
-	(78, 0, 0, 1, '03:15:00', '03:45:00', 127),
-	(79, 0, 0, 1, '04:00:00', '04:15:00', 127),
-	(80, 0, 0, 1, '04:50:00', '05:05:00', 127),
-	(81, 0, 0, 1, '11:05:00', '11:25:00', 127),
-	(82, 0, 0, 1, '01:27:00', '01:45:00', 127),
-	(83, 0, 0, 1, '02:25:00', '02:40:00', 127),
-	(84, 0, 0, 1, '11:50:00', '12:15:00', 119),
-	(85, 0, 0, 1, '20:30:00', '20:50:00', 119),
-	(86, 0, 0, 1, '22:10:00', '22:30:00', 127),
-	(87, 0, 0, 1, '23:00:00', '23:30:00', 127),
-	(88, 0, 0, 1, '18:00:00', '18:15:00', 127),
-	(89, 0, 0, 1, '19:00:00', '19:20:00', 127),
-	(90, 0, 0, 1, '13:00:00', '13:15:00', 127);
 /*!40000 ALTER TABLE `schedule_daily_time` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.schedule_daily_time_zone
@@ -451,87 +418,11 @@ CREATE TABLE IF NOT EXISTS `schedule_daily_time_zone` (
   KEY `FK_schedule_daily_time_zone_zone` (`zone_id`),
   CONSTRAINT `FK_schedule_daily_time_zone_schedule_daily_time` FOREIGN KEY (`schedule_daily_time_id`) REFERENCES `schedule_daily_time` (`id`),
   CONSTRAINT `FK_schedule_daily_time_zone_zone` FOREIGN KEY (`zone_id`) REFERENCES `zone` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=145 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
--- Dumping data for table pihome.schedule_daily_time_zone: ~57 rows (approximately)
+-- Dumping data for table pihome.schedule_daily_time_zone: ~0 rows (approximately)
 /*!40000 ALTER TABLE `schedule_daily_time_zone` DISABLE KEYS */;
-REPLACE INTO `schedule_daily_time_zone` (`id`, `sync`, `purge`, `status`, `schedule_daily_time_id`, `zone_id`, `temperature`) VALUES
-	(82, 0, 0, 0, 68, 33, 10),
-	(83, 0, 0, 0, 68, 34, 21),
-	(84, 0, 0, 0, 68, 35, 10),
-	(85, 0, 0, 1, 69, 33, 20),
-	(86, 0, 0, 0, 69, 34, 21),
-	(87, 0, 0, 1, 69, 35, 32),
-	(94, 0, 0, 0, 72, 33, 10),
-	(95, 0, 0, 1, 72, 34, 20),
-	(96, 0, 0, 0, 72, 35, 10),
-	(97, 0, 0, 1, 73, 33, 20),
-	(98, 0, 0, 0, 73, 34, 0),
-	(99, 0, 0, 1, 73, 35, 30),
-	(100, 0, 0, 0, 75, 33, 0),
-	(101, 0, 0, 1, 75, 34, 21),
-	(102, 0, 0, 0, 75, 35, 0),
-	(103, 0, 0, 1, 76, 33, 20),
-	(104, 0, 0, 1, 76, 34, 20),
-	(105, 0, 0, 1, 76, 35, 32),
-	(106, 0, 0, 0, 78, 33, 0),
-	(107, 0, 0, 1, 78, 34, 20),
-	(108, 0, 0, 0, 78, 35, 0),
-	(109, 0, 0, 0, 79, 33, 0),
-	(110, 0, 0, 1, 79, 34, 20),
-	(111, 0, 0, 0, 79, 35, 0),
-	(112, 0, 0, 0, 80, 33, 0),
-	(113, 0, 0, 1, 80, 34, 20),
-	(114, 0, 0, 0, 80, 35, 0),
-	(115, 0, 0, 0, 81, 33, 21),
-	(116, 0, 0, 0, 81, 34, 0),
-	(117, 0, 0, 0, 81, 35, 0),
-	(118, 0, 0, 0, 82, 33, 0),
-	(119, 0, 0, 1, 82, 34, 20),
-	(120, 0, 0, 0, 82, 35, 0),
-	(121, 0, 0, 0, 83, 33, 0),
-	(122, 0, 0, 1, 83, 34, 20),
-	(123, 0, 0, 0, 83, 35, 0),
-	(124, 0, 0, 1, 84, 33, 21),
-	(125, 0, 0, 0, 84, 34, 0),
-	(126, 0, 0, 1, 84, 35, 30),
-	(127, 0, 0, 0, 85, 33, 0),
-	(128, 0, 0, 1, 85, 34, 20),
-	(129, 0, 0, 1, 85, 35, 28),
-	(130, 0, 0, 0, 86, 33, 0),
-	(131, 0, 0, 1, 86, 34, 19),
-	(132, 0, 0, 0, 86, 35, 0),
-	(133, 0, 0, 0, 87, 33, 0),
-	(134, 0, 0, 1, 87, 34, 19),
-	(135, 0, 0, 0, 87, 35, 0),
-	(136, 0, 0, 1, 88, 33, 20),
-	(137, 0, 0, 0, 88, 34, 0),
-	(138, 0, 0, 1, 88, 35, 30),
-	(139, 0, 0, 1, 89, 33, 20),
-	(140, 0, 0, 0, 89, 34, 0),
-	(141, 0, 0, 0, 89, 35, 0),
-	(142, 0, 0, 0, 90, 33, 0),
-	(143, 0, 0, 0, 90, 34, 0),
-	(144, 0, 0, 1, 90, 35, 30);
 /*!40000 ALTER TABLE `schedule_daily_time_zone` ENABLE KEYS */;
-
--- Dumping structure for view pihome.schedule_daily_time_zone_view
-DROP VIEW IF EXISTS `schedule_daily_time_zone_view`;
--- Creating temporary table to overcome VIEW dependency errors
-CREATE TABLE `schedule_daily_time_zone_view` (
-	`time_id` INT(11) NOT NULL,
-	`time_status` TINYINT(4) NULL,
-	`start` TIME NULL,
-	`end` TIME NULL,
-	`WeekDays` SMALLINT(6) NOT NULL,
-	`tz_sync` TINYINT(4) NOT NULL,
-	`tz_id` INT(11) NOT NULL,
-	`tz_status` TINYINT(4) NULL,
-	`zone_id` INT(11) NULL,
-	`index_id` TINYINT(4) NULL,
-	`zone_name` CHAR(50) NULL COLLATE 'utf8_bin',
-	`temperature` FLOAT NOT NULL
-) ENGINE=MyISAM;
 
 -- Dumping structure for table pihome.schedule_night_climate_time
 DROP TABLE IF EXISTS `schedule_night_climate_time`;
@@ -545,10 +436,10 @@ CREATE TABLE IF NOT EXISTS `schedule_night_climate_time` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
--- Dumping data for table pihome.schedule_night_climate_time: ~1 rows (approximately)
+-- Dumping data for table pihome.schedule_night_climate_time: ~0 rows (approximately)
 /*!40000 ALTER TABLE `schedule_night_climate_time` DISABLE KEYS */;
 REPLACE INTO `schedule_night_climate_time` (`id`, `sync`, `purge`, `status`, `start_time`, `end_time`) VALUES
-	(1, 0, 0, 0, '18:00:00', '23:30:00');
+	(1, 1, 0, 0, '18:00:00', '23:30:00');
 /*!40000 ALTER TABLE `schedule_night_climate_time` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.schedule_night_climat_zone
@@ -572,23 +463,10 @@ CREATE TABLE IF NOT EXISTS `schedule_night_climat_zone` (
 -- Dumping data for table pihome.schedule_night_climat_zone: ~3 rows (approximately)
 /*!40000 ALTER TABLE `schedule_night_climat_zone` DISABLE KEYS */;
 REPLACE INTO `schedule_night_climat_zone` (`id`, `sync`, `purge`, `status`, `zone_id`, `schedule_night_climate_id`, `min_temperature`, `max_temperature`) VALUES
-	(8, 0, 0, 0, 33, 1, 18, 20),
-	(9, 0, 0, 1, 34, 1, 19, 21),
-	(10, 0, 0, 0, 35, 1, 19, 21);
+	(8, 1, 0, 0, 33, 1, 18, 20),
+	(9, 1, 0, 1, 34, 1, 19, 21),
+	(10, 1, 0, 1, 35, 1, 19, 21);
 /*!40000 ALTER TABLE `schedule_night_climat_zone` ENABLE KEYS */;
-
--- Dumping structure for view pihome.schedule_night_climat_zone_view
-DROP VIEW IF EXISTS `schedule_night_climat_zone_view`;
--- Creating temporary table to overcome VIEW dependency errors
-CREATE TABLE `schedule_night_climat_zone_view` (
-	`t_status` TINYINT(4) NULL,
-	`z_status` TINYINT(4) NULL,
-	`zone_id` INT(11) NULL,
-	`start_time` TIME NULL,
-	`end_time` TIME NULL,
-	`min_temperature` FLOAT NOT NULL,
-	`max_temperature` FLOAT NOT NULL
-) ENGINE=MyISAM;
 
 -- Dumping structure for table pihome.system
 DROP TABLE IF EXISTS `system`;
@@ -603,7 +481,7 @@ CREATE TABLE IF NOT EXISTS `system` (
   `update_file` char(100) CHARACTER SET latin1 DEFAULT NULL,
   `update_alias` char(100) CHARACTER SET latin1 DEFAULT NULL,
   `country` char(2) CHARACTER SET latin1 DEFAULT NULL,
-  `language` CHAR(10) NULL DEFAULT 'en' COLLATE 'utf16_bin',
+  `language` char(10) COLLATE utf16_bin DEFAULT 'en',
   `city` char(100) CHARACTER SET latin1 DEFAULT NULL,
   `zip` char(100) COLLATE utf16_bin DEFAULT NULL,
   `openweather_api` char(100) CHARACTER SET latin1 DEFAULT NULL,
@@ -616,10 +494,10 @@ CREATE TABLE IF NOT EXISTS `system` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
--- Dumping data for table pihome.system: ~1 rows (approximately)
+-- Dumping data for table pihome.system: ~0 rows (approximately)
 /*!40000 ALTER TABLE `system` DISABLE KEYS */;
 REPLACE INTO `system` (`id`, `sync`, `purge`, `name`, `version`, `build`, `update_location`, `update_file`, `update_alias`, `country`, `language`, `city`, `zip`, `openweather_api`, `backup_email`, `ping_home`, `timezone`, `shutdown`, `reboot`, `c_f`) VALUES
-	(2, 0, 0, 'PiHome - Smart Heating Control', '1.6', '080419', 'http://www.pihome.eu/updates/', 'current-release-versions.php', 'pihome', 'IE', 'en', 'Portlaoise', NULL, '', '', b'1', 'Europe/Dublin', 0, 0, 0);
+	(2, 1, 0, 'PiHome - Smart Heating Control', '1.6', '080419', 'http://www.pihome.eu/updates/', 'current-release-versions.php', 'pihome', 'IE', 'en', 'Portlaoise', NULL, '', '', b'1', 'Europe/Dublin', 0, 0, 0);
 /*!40000 ALTER TABLE `system` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.user
@@ -640,10 +518,10 @@ CREATE TABLE IF NOT EXISTS `user` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
--- Dumping data for table pihome.user: ~1 rows (approximately)
+-- Dumping data for table pihome.user: ~0 rows (approximately)
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
 REPLACE INTO `user` (`id`, `account_enable`, `fullname`, `username`, `email`, `password`, `cpdate`, `account_date`, `backup`, `users`, `support`, `settings`) VALUES
-	(1, 1, 'Administrator', 'admin', '', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-01-22 15:55:45', '2017-06-13 16:10:31', 1, 1, 1, 1);
+	(1, 1, 'Administrator', 'admin', '', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-04-07 19:01:14', '2017-06-13 16:10:31', 1, 1, 1, 1);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.userhistory
@@ -679,10 +557,10 @@ CREATE TABLE IF NOT EXISTS `weather` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
--- Dumping data for table pihome.weather: ~1 rows (approximately)
+-- Dumping data for table pihome.weather: ~0 rows (approximately)
 /*!40000 ALTER TABLE `weather` DISABLE KEYS */;
 REPLACE INTO `weather` (`id`, `sync`, `location`, `c`, `wind_speed`, `title`, `description`, `sunrise`, `sunset`, `img`, `last_update`) VALUES
-	(1, 0, 'Portlaoise', 2, '7', 'Clouds', 'scattered clouds', '1548059271', '1548089642', '03n', '2019-01-21 21:21:20');
+	(1, 1, 'Portlaoise', 11, '6', 'Clouds', 'broken clouds', '1561003356', '1561064325', '04n', '2019-06-20 00:00:15');
 /*!40000 ALTER TABLE `weather` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.zone
@@ -718,9 +596,9 @@ CREATE TABLE IF NOT EXISTS `zone` (
 -- Dumping data for table pihome.zone: ~3 rows (approximately)
 /*!40000 ALTER TABLE `zone` DISABLE KEYS */;
 REPLACE INTO `zone` (`id`, `sync`, `purge`, `status`, `index_id`, `name`, `type`, `model`, `max_c`, `max_operation_time`, `hysteresis_time`, `sensor_id`, `sensor_child_id`, `controler_id`, `controler_child_id`, `boiler_id`, `gpio_pin`) VALUES
-	(33, 0, 0, 1, 1, 'Ground Floor', 'Heating', 'DE000F', 25, 60, 3, 1, 0, 7, 1, 1, NULL),
-	(34, 0, 0, 1, 2, 'First Floor', 'Heating', '7D0096', 25, 60, 3, 2, 0, 7, 2, 1, 22),
-	(35, 0, 0, 1, 5, 'Ch. Hot Water', 'Water', '009604', 45, 60, 3, 4, 0, 7, 3, 1, 23);
+	(33, 1, 0, 1, 1, 'Ground Floor', 'Heating', 'DE000F', 25, 60, 3, 1, 0, 7, 1, 1, 21),
+	(34, 1, 0, 1, 2, 'First Floor', 'Heating', '7D0096', 25, 60, 3, 2, 0, 7, 2, 1, 22),
+	(35, 1, 0, 1, 5, 'Ch. Hot Water', 'Water', '009604', 70, 90, 3, 4, 0, 7, 3, 1, 23);
 /*!40000 ALTER TABLE `zone` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.zone_logs
@@ -743,91 +621,6 @@ CREATE TABLE IF NOT EXISTS `zone_logs` (
 /*!40000 ALTER TABLE `zone_logs` DISABLE KEYS */;
 /*!40000 ALTER TABLE `zone_logs` ENABLE KEYS */;
 
--- Dumping structure for view pihome.zone_log_view
-DROP VIEW IF EXISTS `zone_log_view`;
--- Creating temporary table to overcome VIEW dependency errors
-CREATE TABLE `zone_log_view` (
-	`id` INT(11) NOT NULL,
-	`zone_id` INT(11) NULL,
-	`type` CHAR(50) NULL COLLATE 'utf8_bin',
-	`boiler_log_id` INT(11) NULL,
-	`start_datetime` TIMESTAMP NULL,
-	`stop_datetime` TIMESTAMP NULL,
-	`expected_end_date_time` TIMESTAMP NULL,
-	`status` INT(11) NULL
-) ENGINE=MyISAM;
-
--- Dumping structure for view pihome.zone_view
-DROP VIEW IF EXISTS `zone_view`;
--- Creating temporary table to overcome VIEW dependency errors
-CREATE TABLE `zone_view` (
-	`status` TINYINT(4) NULL,
-	`sync` TINYINT(4) NOT NULL,
-	`id` INT(11) NOT NULL,
-	`index_id` TINYINT(4) NULL,
-	`name` CHAR(50) NULL COLLATE 'utf8_bin',
-	`type` CHAR(50) NULL COLLATE 'utf8_bin',
-	`max_c` TINYINT(4) NULL,
-	`max_operation_time` TINYINT(4) NULL,
-	`hysteresis_time` TINYINT(4) NULL,
-  `sp_deadband` FLOAT NOT NULL,
-	`sensors_id` CHAR(50) NOT NULL COLLATE 'utf16_bin',
-	`sensor_child_id` INT(11) NULL,
-	`controler_id` CHAR(50) NOT NULL COLLATE 'utf16_bin',
-	`controler_child_id` INT(11) NULL,
-	`gpio_pin` INT(11) NULL,
-	`last_seen` TIMESTAMP NULL,
-	`ms_version` CHAR(50) NULL COLLATE 'utf16_bin',
-	`sketch_version` CHAR(50) NULL COLLATE 'utf16_bin'
-) ENGINE=MyISAM;
-
--- Dumping structure for view pihome.boiler_view
-DROP VIEW IF EXISTS `boiler_view`;
--- Removing temporary table and create final VIEW structure
-DROP TABLE IF EXISTS `boiler_view`;
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `boiler_view` AS select `boiler`.`status` AS `status`,`boiler`.`sync` AS `sync`,`boiler`.`purge` AS `purge`,`boiler`.`fired_status` AS `fired_status`,`boiler`.`name` AS `name`,`nodes`.`node_id` AS `node_id`,`boiler`.`node_child_id` AS `node_child_id`,`boiler`.`hysteresis_time` AS `hysteresis_time`,`boiler`.`max_operation_time` AS `max_operation_time`,`boiler`.`gpio_pin` AS `gpio_pin` from (`boiler` join `nodes` on((`boiler`.`node_id` = `nodes`.`id`))) where (`boiler`.`purge` = '0');
-
--- Dumping structure for view pihome.boost_view
-DROP VIEW IF EXISTS `boost_view`;
--- Removing temporary table and create final VIEW structure
-DROP TABLE IF EXISTS `boost_view`;
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `boost_view` AS select `boost`.`status` AS `status`,`boost`.`sync` AS `sync`,`boost`.`zone_id` AS `zone_id`,`zone_idx`.`index_id` AS `index_id`,`zone`.`name` AS `name`,`boost`.`temperature` AS `temperature`,`boost`.`minute` AS `minute` from ((`boost` join `zone` on((`boost`.`zone_id` = `zone`.`id`))) join `zone` `zone_idx` on((`boost`.`zone_id` = `zone_idx`.`id`)));
-
--- Dumping structure for view pihome.messages_in_view_24h
-DROP VIEW IF EXISTS `messages_in_view_24h`;
--- Removing temporary table and create final VIEW structure
-DROP TABLE IF EXISTS `messages_in_view_24h`;
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `messages_in_view_24h` AS select `messages_in`.`node_id` AS `node_id`,`messages_in`.`child_id` AS `child_id`,`messages_in`.`datetime` AS `datetime`,`messages_in`.`payload` AS `payload` from `messages_in` where (`messages_in`.`datetime` > (now() - interval 24 hour));
-
--- Dumping structure for view pihome.override_view
-DROP VIEW IF EXISTS `override_view`;
--- Removing temporary table and create final VIEW structure
-DROP TABLE IF EXISTS `override_view`;
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `override_view` AS select `override`.`status` AS `status`,`override`.`sync` AS `sync`,`override`.`zone_id` AS `zone_id`,`zone_idx`.`index_id` AS `index_id`,`zone`.`name` AS `name`,`override`.`time` AS `time`,`override`.`temperature` AS `temperature` from ((`override` join `zone` on((`override`.`zone_id` = `zone`.`id`))) join `zone` `zone_idx` on((`override`.`zone_id` = `zone_idx`.`id`)));
-
--- Dumping structure for view pihome.schedule_daily_time_zone_view
-DROP VIEW IF EXISTS `schedule_daily_time_zone_view`;
--- Removing temporary table and create final VIEW structure
-DROP TABLE IF EXISTS `schedule_daily_time_zone_view`;
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `schedule_daily_time_zone_view` AS select `ss`.`id` AS `time_id`,`ss`.`status` AS `time_status`,`sstart`.`start` AS `start`,`send`.`end` AS `end`,`sWeekDays`.`WeekDays` AS `WeekDays`,`sdtz`.`sync` AS `tz_sync`,`sdtz`.`id` AS `tz_id`,`sdtz`.`status` AS `tz_status`,`sdtz`.`zone_id` AS `zone_id`,`zone`.`index_id` AS `index_id`,`zone`.`name` AS `zone_name`,`sdtz`.`temperature` AS `temperature` from (((((`schedule_daily_time_zone` `sdtz` join `schedule_daily_time` `ss` on((`sdtz`.`schedule_daily_time_id` = `ss`.`id`))) join `schedule_daily_time` `sstart` on((`sdtz`.`schedule_daily_time_id` = `sstart`.`id`))) join `schedule_daily_time` `send` on((`sdtz`.`schedule_daily_time_id` = `send`.`id`))) join `schedule_daily_time` `sWeekDays` on((`sdtz`.`schedule_daily_time_id` = `sWeekDays`.`id`))) join `zone` on((`sdtz`.`zone_id` = `zone`.`id`))) where (`sdtz`.`purge` = '0') order by `zone`.`index_id`;
-
--- Dumping structure for view pihome.schedule_night_climat_zone_view
-DROP VIEW IF EXISTS `schedule_night_climat_zone_view`;
--- Removing temporary table and create final VIEW structure
-DROP TABLE IF EXISTS `schedule_night_climat_zone_view`;
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `schedule_night_climat_zone_view` AS select `tnct`.`status` AS `t_status`,`ncz`.`status` AS `z_status`,`ncz`.`zone_id` AS `zone_id`,`snct`.`start_time` AS `start_time`,`enct`.`end_time` AS `end_time`,`ncz`.`min_temperature` AS `min_temperature`,`ncz`.`max_temperature` AS `max_temperature` from (((`schedule_night_climat_zone` `ncz` join `schedule_night_climate_time` `snct` on((`ncz`.`schedule_night_climate_id` = `snct`.`id`))) join `schedule_night_climate_time` `enct` on((`ncz`.`schedule_night_climate_id` = `enct`.`id`))) join `schedule_night_climate_time` `tnct` on((`ncz`.`schedule_night_climate_id` = `tnct`.`id`)));
-
--- Dumping structure for view pihome.zone_log_view
-DROP VIEW IF EXISTS `zone_log_view`;
--- Removing temporary table and create final VIEW structure
-DROP TABLE IF EXISTS `zone_log_view`;
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `zone_log_view` AS select `zone_logs`.`id` AS `id`,`zone_logs`.`zone_id` AS `zone_id`,`ztype`.`type` AS `type`,`zone_logs`.`boiler_log_id` AS `boiler_log_id`,`blst`.`start_datetime` AS `start_datetime`,`blet`.`stop_datetime` AS `stop_datetime`,`blext`.`expected_end_date_time` AS `expected_end_date_time`,`zone_logs`.`status` AS `status` from ((((`zone_logs` join `zone` `ztype` on((`zone_logs`.`zone_id` = `ztype`.`id`))) join `boiler_logs` `blst` on((`zone_logs`.`boiler_log_id` = `blst`.`id`))) join `boiler_logs` `blet` on((`zone_logs`.`boiler_log_id` = `blet`.`id`))) join `boiler_logs` `blext` on((`zone_logs`.`boiler_log_id` = `blext`.`id`))) order by `zone_logs`.`id`;
-
--- Dumping structure for view pihome.zone_view
-DROP VIEW IF EXISTS `zone_view`;
--- Removing temporary table and create final VIEW structure
-DROP TABLE IF EXISTS `zone_view`;
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `zone_view` AS select `zone`.`status` AS `status`,`zone`.`sync` AS `sync`,`zone`.`id` AS `id`,`zone`.`index_id` AS `index_id`,`zone`.`name` AS `name`,`zone`.`type` AS `type`,`zone`.`max_c` AS `max_c`,`zone`.`max_operation_time` AS `max_operation_time`,`zone`.`hysteresis_time` AS `hysteresis_time`,`zone`.`sp_deadband` AS `sp_deadband`,`sid`.`node_id` AS `sensors_id`,`zone`.`sensor_child_id` AS `sensor_child_id`,`cid`.`node_id` AS `controler_id`,`zone`.`controler_child_id` AS `controler_child_id`,`zone`.`gpio_pin` AS `gpio_pin`,`bid`.`node_id` AS `boiler_id`,`lasts`.`last_seen` AS `last_seen`,`msv`.`ms_version` AS `ms_version`,`skv`.`sketch_version` AS `sketch_version` from ((((((`zone` join `nodes` `sid` on((`zone`.`sensor_id` = `sid`.`id`))) join `nodes` `cid` on((`zone`.`controler_id` = `cid`.`id`))) join `nodes` `bid` on((`zone`.`boiler_id` = `bid`.`id`))) join `nodes` `lasts` on((`zone`.`sensor_id` = `lasts`.`id`))) join `nodes` `msv` on((`zone`.`sensor_id` = `msv`.`id`))) join `nodes` `skv` on((`zone`.`sensor_id` = `skv`.`id`))) where (`zone`.`purge` = '0');
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

@@ -109,7 +109,7 @@ require_once(__DIR__.'/st_inc/functions.php');
             <ul class="nav navbar-top-links navbar-right">
                <li class="dropdown">
                     <a href="index.php">
-                        <i class="fa fa-home fa-lg fa-fw"></i>
+                        <i class="fa fa-home fa-lg"></i>
                     </a>
                 </li>
 				<?php // Alert icon need some thinking: May be table with list of alerts and one cron job to check if any thing not communicating. 
@@ -122,24 +122,24 @@ require_once(__DIR__.'/st_inc/functions.php');
 				?>
                 <li class="dropdown">
                     <a class="dropdown-toggle" href="schedule.php">
-                        <i class="fa fa-clock-o fa-lg fa-fw"></i>  
+                        <i class="fa fa-clock-o fa-lg"></i>  
                     </a>
                 </li>
                 <li class="dropdown">
                     <a class="dropdown-toggle" href="chart.php">
-                        <i class="fa fa-bar-chart fa-lg fa-fw"></i>  
+                        <i class="fa fa-bar-chart fa-lg"></i>  
                     </a>
                 </li>		
 
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="modal" href="#weather" data-backdrop="static" data-keyboard="false">
-                        <i class="fa fa-sun-o fa-lg fa-fw"></i>  
+                        <i class="fa fa-sun-o fa-lg"></i>  
                     </a>
                 </li>
 				
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                        <i class="fa fa-cog fa-lg fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                        <i class="fa fa-cog fa-lg"></i>  <i class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">
                         <li><a href="languages.php?lang=en"><i class="fa fa-language fa-fw"></i> <?php echo $lang['lang_en']; ?> </a></li>
@@ -147,7 +147,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 						<li><a href="languages.php?lang=fr"><i class="fa fa-language fa-fw"></i> <?php echo $lang['lang_fr']; ?></a></li>
 						<li><a href="http://www.pihome.eu/" target="_blank"><i class="fa fa-language fa-fw"></i> <?php echo $lang['more_language']; ?></a></li>
 						<li class="divider"></li>
-						<li><a href="settings.php"><i class="fa fa-cog fa-fw"></i> <?php echo $lang['settings']; ?></a></li>
+						<li><a href="settings.php"><i class="fa fa-cog"></i> <?php echo $lang['settings']; ?></a></li>
                     </ul>
                     <!-- /.dropdown-user -->
                 </li>
@@ -157,9 +157,9 @@ require_once(__DIR__.'/st_inc/functions.php');
                         <i class="fa fa-user fa-lg fa-fw"></i><i class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">
-                        <li><a href="selfpwd.php"><i class="fa fa-user fa-key fa-fw"></i> <?php echo $lang['user_change_password']; ?> </a></li>
+                        <li><a href="selfpwd.php"><i class="fa fa-user fa-key"></i> <?php echo $lang['user_change_password']; ?> </a></li>
                         <li class="divider"></li>
-                        <li><a href="logout.php"><i class="fa fa-sign-out fa-fw"></i> <?php echo $lang['user_logout']; ?></a></li>
+                        <li><a href="logout.php"><i class="fa fa-sign-out"></i> <?php echo $lang['user_logout']; ?></a></li>
                     </ul>
                     <!-- /.dropdown-user -->
                 </li>

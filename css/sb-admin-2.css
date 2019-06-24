@@ -951,22 +951,22 @@ h3 small {font-family: "HelveticaNeue-Light",Helvetica,Arial,sans-serif;}
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 25px;
-  height: 25px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
   background: #ff8839;
   cursor: pointer;
-  border-width:4px;
+  border-width:5px;
   border-color:#ffede2;
 }
 
 .slider::-moz-range-thumb {
-  width: 25px;
-  height: 25px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
   background: #ff8839;
   cursor: pointer;
-  border-width:4px;
+  border-width:5px;
   border-color:#ffede2;
 }
 

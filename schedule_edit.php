@@ -183,7 +183,8 @@ if($row['tz_status'] == 1){
     </div></div>
 	
 <?php }?>				
-                <a href="schedule.php"><button type="button" class="btn btn-primary btn-sm" ><?php echo $lang['cancel']; ?></button></a>
+                <br>
+				<a href="schedule.php"><button type="button" class="btn btn-primary btn-sm" ><?php echo $lang['cancel']; ?></button></a>
                 <input type="submit" name="submit" value="<?php echo $lang['submit']; ?>" class="btn btn-default btn-sm login">
 				</form>
 						</div>
