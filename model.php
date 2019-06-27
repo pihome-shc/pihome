@@ -177,6 +177,7 @@ echo '	<div class=\"list-group\">';
 while ($row = mysqli_fetch_assoc($results)) {
 	echo " <a href=\"#\" class=\"list-group-item\">
 	<i class=\"ionicons ion-flame fa-1x red\"></i> ".$row['name']." - ".$lang['node'].": ".$row['node_id']." ".$lang['child'].": ".$row['node_child_id']."
+	 - GPIO Pin: ".$row['gpio_pin']."
 	<span class=\"pull-right \"><em>&nbsp;&nbsp;<i class=\"ionicons ion-ios-timer blue\"></i> ".$row['hysteresis_time']. " </em></span>
 	</a>";
 }
