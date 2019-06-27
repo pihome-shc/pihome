@@ -577,6 +577,7 @@ CREATE TABLE IF NOT EXISTS `zone` (
   `max_c` tinyint(4) DEFAULT NULL,
   `max_operation_time` tinyint(4) DEFAULT NULL,
   `hysteresis_time` tinyint(4) DEFAULT NULL,
+  `sp_deadband` float NOT NULL DEFAULT '0.5'
   `sensor_id` int(11) DEFAULT NULL,
   `sensor_child_id` int(11) DEFAULT NULL,
   `controler_id` int(11) DEFAULT NULL,
@@ -619,6 +620,7 @@ CREATE TABLE IF NOT EXISTS `zone_logs` (
 -- Dumping data for table pihome.zone_logs: ~0 rows (approximately)
 /*!40000 ALTER TABLE `zone_logs` DISABLE KEYS */;
 /*!40000 ALTER TABLE `zone_logs` ENABLE KEYS */;
+
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

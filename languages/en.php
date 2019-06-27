@@ -129,6 +129,9 @@ $lang['zone_boost_id_error'] = "If you have Boost Console then you can select Bo
 $lang['zone_boost_child_id_error'] = "Boost Console Button Child ID for this Zone";
 $lang['zone_settings'] = "Zone Settings";
 $lang['zone_settings_text'] = "Hysteresis (Minimim delay between power off and on) <br> Maximum operating time <br> Maximum zone temperature. ";
+$lang['zone_sp_deadband'] = "Temperature Setpoint Deadband";
+$lang['zone_sp_deadband_help'] = "Deadband below setpoint temperature.";
+$lang['zone_sp_deadband_error'] = "Deadband below setpoint temperature used for starting the zone, zone starts below setpoint-deadband, set to zero if you want to start below setpoint temperature without deadband.";
 
 $lang['schedule'] = "Schedule";
 $lang['schedule_add'] = "Add Schedule";
