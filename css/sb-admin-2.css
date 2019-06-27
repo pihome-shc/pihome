@@ -957,7 +957,7 @@ h3 small {font-family: "HelveticaNeue-Light",Helvetica,Arial,sans-serif;}
   background: #ff8839;
   cursor: pointer;
   border-width:5px;
-  border-color:#ffede2;
+  border-color:#fde3d2;
 }
 
 .slider::-moz-range-thumb {
@@ -967,7 +967,7 @@ h3 small {font-family: "HelveticaNeue-Light",Helvetica,Arial,sans-serif;}
   background: #ff8839;
   cursor: pointer;
   border-width:5px;
-  border-color:#ffede2;
+  border-color:#fde3d2;
 }
 
 .navbar {
