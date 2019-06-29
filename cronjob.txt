@@ -7,4 +7,5 @@
 #*/1 * * * * python /var/www/cron/gpio_ds18b20.py >/dev/null 2>&1
 */1 * * * * /usr/bin/php /var/www/cron/boiler.php >/dev/null 2>&1
 */1 * * * * /usr/bin/php /var/www/cron/piconnect.php >/dev/null 2>&1
+*/30 * * * * python  /var/www/cron/notice.py >/dev/null 2>&1
 # @reboot sh /var/www/cron/gw.sh >/dev/null 2>&1

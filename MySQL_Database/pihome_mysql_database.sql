@@ -147,6 +147,25 @@ REPLACE INTO `crontab` (`id`, `status`, `min`, `hour`, `day`, `month`, `weekday`
 	(1, '#', '*/1', '*', '*', '*', '*', 'ls -l', '>/dev/null 2>&1', NULL);
 /*!40000 ALTER TABLE `crontab` ENABLE KEYS */;
 
+-- Dumping structure for table pihome.email
+DROP TABLE IF EXISTS `email`;
+CREATE TABLE IF NOT EXISTS `email` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sync` tinyint(4) NOT NULL DEFAULT '0',
+  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `smtp` char(50) COLLATE utf16_bin DEFAULT NULL,
+  `username` char(50) COLLATE utf16_bin DEFAULT NULL,
+  `password` char(50) COLLATE utf16_bin DEFAULT NULL,
+  `from` char(50) COLLATE utf16_bin DEFAULT NULL,
+  `to` char(50) COLLATE utf16_bin DEFAULT NULL,
+  `status` tinyint(4) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+
+-- Dumping data for table pihome.email: ~0 rows (approximately)
+/*!40000 ALTER TABLE `email` DISABLE KEYS */;
+/*!40000 ALTER TABLE `email` ENABLE KEYS */;
+
 -- Dumping structure for table pihome.frost_protection
 DROP TABLE IF EXISTS `frost_protection`;
 CREATE TABLE IF NOT EXISTS `frost_protection` (
@@ -293,6 +312,7 @@ CREATE TABLE IF NOT EXISTS `nodes` (
   `child_id_8` int(11) DEFAULT NULL,
   `name` char(50) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   `last_seen` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `notice_interval` int(11) NOT NULL DEFAULT '30',
   `status` char(50) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   `ms_version` char(50) COLLATE utf16_bin DEFAULT NULL,
   `sketch_version` char(50) COLLATE utf16_bin DEFAULT NULL,
