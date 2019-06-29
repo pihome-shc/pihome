@@ -497,7 +497,7 @@ CREATE TABLE IF NOT EXISTS `system` (
 -- Dumping data for table pihome.system: ~0 rows (approximately)
 /*!40000 ALTER TABLE `system` DISABLE KEYS */;
 REPLACE INTO `system` (`id`, `sync`, `purge`, `name`, `version`, `build`, `update_location`, `update_file`, `update_alias`, `country`, `language`, `city`, `zip`, `openweather_api`, `backup_email`, `ping_home`, `timezone`, `shutdown`, `reboot`, `c_f`) VALUES
-	(2, 1, 0, 'PiHome - Smart Heating Control', '1.6', '080419', 'http://www.pihome.eu/updates/', 'current-release-versions.php', 'pihome', 'IE', 'en', 'Portlaoise', NULL, '', '', b'1', 'Europe/Dublin', 0, 0, 0);
+	(2, 1, 0, 'PiHome - Smart Heating Control', '1.61', '290619', 'http://www.pihome.eu/updates/', 'current-release-versions.php', 'pihome', 'IE', 'en', 'Portlaoise', NULL, '', '', b'1', 'Europe/Dublin', 0, 0, 0);
 /*!40000 ALTER TABLE `system` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.user
@@ -620,7 +620,6 @@ CREATE TABLE IF NOT EXISTS `zone_logs` (
 -- Dumping data for table pihome.zone_logs: ~0 rows (approximately)
 /*!40000 ALTER TABLE `zone_logs` DISABLE KEYS */;
 /*!40000 ALTER TABLE `zone_logs` ENABLE KEYS */;
-
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

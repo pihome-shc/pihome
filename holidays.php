@@ -33,7 +33,7 @@ if (isset($_POST['submit'])) {
 	$end_date_time = $_POST['end_date_time'];
 	$etime = date('Y-m-d H:i:s',strtotime($end_date_time));
 
-	$sql_device_insert= "INSERT INTO holidays(active, start_date_time, end_date_time)values('{$holidays_enable}', '{$start_date_time}', '{$end_date_time}')";
+	$sql_device_insert= "INSERT INTO holidays(sync, status, start_date_time, end_date_time, active) VALUES ('0', '0', '{$start_date_time}','{$end_date_time}','{$holidays_enable}')";
 	$result = $conn->query($sql_device_insert);
 	
 	if ($result) {
@@ -66,7 +66,7 @@ if (isset($_POST['submit'])) {
 ?>
 <?php include("header.php");  ?>
 <?php include_once("notice.php"); ?>
-<div id="page-wrapper">
+ <div id="page-wrapper">
 <br>
             <div class="row">
                 <div class="col-lg-12">
@@ -77,3 +77,4 @@ if (isset($_POST['submit'])) {
         </div>
         <!-- /#page-wrapper -->
 <?php include("footer.php");  ?>
+

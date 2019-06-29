@@ -170,7 +170,7 @@ if (!$db_selected) {
 	//Drop Table View If Exist
 	$query = "Drop View if exists zone_view;";
 	$result = $conn->query($query);
-	
+
 	//Create Table View
 	$query = "CREATE VIEW zone_view AS
 	select zone.status, zone.sync, zone.id, zone.index_id, zone.name, zone.type, zone.max_c, zone.max_operation_time, zone.hysteresis_time, 

@@ -37,7 +37,6 @@ join zone on sdtz.zone_id = zone.id
 join zone zt on sdtz.zone_id = zt.id
 where sdtz.`purge` = '0' order by zone.index_id;
 
-
 --Zone View version 2
 Drop View if exists zone_view; 
 CREATE VIEW zone_view AS
