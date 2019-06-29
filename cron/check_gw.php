@@ -13,7 +13,7 @@ echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
 echo "********************************************************\n";
 echo "*   Gateway Script Version 0.3 Build Date 22/01/2018   *\n";
-echo "*          Last Modification Date 15/06/2019           *\n";
+echo "*          Last Modification Date 29/06/2019           *\n";
 echo "*                                Have Fun - PiHome.eu  *\n";
 echo "********************************************************\n";
 echo " \033[0m \n";
@@ -23,6 +23,7 @@ require_once(__DIR__.'../../st_inc/functions.php');
 
 //Set php script execution time in seconds
 ini_set('max_execution_time', 60); 
+$date_time = date('Y-m-d H:i:s');
 $line = "--------------------------------------------------------------------------\n";
 
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Python Gateway Script Status Check Script Started \n"; 
@@ -39,18 +40,19 @@ $find_gw = $row['find_gw'];
 
 //if reboot set to 1 then kill gateway PID and set reboot status to 0
 if ($gw_reboot == '1') {
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Stoping Python Gateway Script \n"; 
 	exec("kill -9 $gw_pid");
 	$query = "UPDATE gateway SET reboot = '0' LIMIT 1;";
 	$conn->query($query);
-	echo mysqli_error($conn)."\n";
+	echo $line;
 }
 
 //if find_gw set to 1 then start the search script and set find_gw to 0
 if ($find_gw == '1') {
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Checking Python Script Status to Find Smart Home Gateway \n";
 	exec("ps ax | grep find_mygw.py", $fgw_pids); 
 	$gw_script_txt = 'python /var/www/cron/find_mygw/find_mygw.py';
 	$fgw_position = searchArray($gw_script_txt, $fgw_pids);
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Checking Python Script Status to Find Smart Home Gateway \n";
 	if($fgw_position===false) {
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Search for Smart Home Gateway \033[41mNot Running\033[0m \n";
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Starting Search for Smart Home Gateway \n";
@@ -67,17 +69,16 @@ if ($find_gw == '1') {
 		echo $line;
 	}
 }
-
 //Check Gateway Logs for last 10 minuts and start search for gateway connected failed. 
-$query = "select count(*) as cnt from  gateway_logs where pid_datetime >= DATE_SUB(NOW(),INTERVAL 10 MINUTE);";
-$result = $conn->query($query);
-$gl_row = mysqli_fetch_array($result);
+$queryg = "select count(*) as cnt from gateway_logs where pid_datetime >= DATE_SUB(NOW(), INTERVAL 10 MINUTE);";
+$resultg = $conn->query($queryg);
+$gl_row = mysqli_fetch_array($resultg);
 $gl_cnt = $gl_row['cnt'];
-if ($gl_cnt > 10){
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Looks like PiHome Lost Connection to Smart Home Gateway \n"; 
+if ($gl_cnt > 9){
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Gateway Connection Lost in Last 10 minutes: ".$gl_cnt." \n";
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Checking Python Script Status to Find Smart Home Gateway \n";
 	//Check if Search Script already started 
-	exec("ps ax | grep find_mygw.py", $fgw_pids); 
+	exec("ps ax | grep find_mygw.py", $fgw_pids);
 	$gw_script_txt = 'python /var/www/cron/find_mygw/find_mygw.py';
 	$fgw_position = searchArray($gw_script_txt, $fgw_pids);
 	if($fgw_position===false) {
@@ -85,7 +86,10 @@ if ($gl_cnt > 10){
 		//If Search script isnt started set to database one
 		$query = "UPDATE gateway SET find_gw='1';";
 		$conn->query($query);
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Gateway Search Status set to 1 \n"; 
+		//Adding Notice Record 
+		//$query = "INSERT INTO notice (sync, `purge`, datetime, message, status) VALUES ('0', '0', '{$date_time}', 'Gateway Connection Lost in Last 10 Minutes ".$gl_cnt."', '1');";
+		//$conn->query($query);
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Gateway Search Status set to 1 \n";
 		echo $line;
 	}
 }
