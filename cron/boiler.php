@@ -250,7 +250,7 @@ if ($zone_c < $frost_c-$zone_sp_deadband){$zone_status="1"; $start_cause="Frost 
 				}elseif (($boost_status=='1') && ($zone_c < $target_c-$zone_sp_deadband)) {$zone_status="1"; $start_cause="Boost Active"; $expected_end_date_time=date('Y-m-d H:i:s', $boost_time);
 				}elseif (($boost_status=='1') && ($zone_c >= $target_c-$zone_sp_deadband) && ($zone_c < $target_c)) {$zone_status=$zone_status_prev; $start_cause="Boost Target Deadband"; $stop_cause="Boost Target Deadband";
 				}elseif (($boost_status=='1') && ($zone_c >= $target_c)) {$zone_status="0"; $stop_cause="Boost Target C Achived";}
-			}elseif($away_status=='1'){$zone_status="0"; $stop_cause="Holidays Active";}
+			}elseif($holidays_status=='1'){$zone_status="0"; $stop_cause="Holidays Active";}
 		}elseif($away_status=='1'){$zone_status="0"; $stop_cause="Away Active";}
 	}elseif($zone_c >= $zone_max_c){$zone_status="0"; $stop_cause="Zone Reached its Max Temperature ".$zone_max_c;}
 	 else{$zone_status="0"; $stop_cause="Hysteresis active ";}
