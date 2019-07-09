@@ -9,7 +9,7 @@
 // *****************************************************************
 // *              Boiler Controller Relay Sketch                   *
 // *            Version 0.31 Build Date 09/01/2019                 *
-// *            Last Modification Date 17/06/2019                  *
+// *            Last Modification Date 10/07/2019                  *
 // *                                          Have Fun - PiHome.eu *
 // *****************************************************************
 
@@ -18,6 +18,11 @@
 
 //Set MY_SPLASH_SCREEN_DISABLED to disable MySensors splash screen. (This saves 120 bytes of flash)
 #define MY_SPLASH_SCREEN_DISABLED
+
+//Define Sketch Name 
+#define SKETCH_NAME "Boiler Relay"
+//Define Sketch Version 
+#define SKETCH_VERSION "0.31"
 
 // Enable and select radio type attached
 #define MY_RADIO_RF24
@@ -28,15 +33,32 @@
 //Define this to use the IRQ pin of the RF24 module (optional). 
 //#define MY_RF24_IRQ_PIN 8
 
+// * - RF24_PA_MIN = -18dBm
+// * - RF24_PA_LOW = -12dBm
+// * - RF24_PA_HIGH = -6dBm
+// * - RF24_PA_MAX = 0dBm
 // Set LOW transmit power level as default, if you have an amplified NRF-module and
 // power your radio separately with a good regulator you can turn up PA level.
-// #define MY_RF24_PA_LEVEL RF24_PA_LOW
 // RF24_PA_MIN RF24_PA_LOW RF24_PA_HIGH RF24_PA_MAX RF24_PA_ERROR
-
 #define MY_RF24_PA_LEVEL RF24_PA_MIN
 //#define MY_DEBUG_VERBOSE_RF24
 
-// RF channel for the sensor net, 0-127 Default is 76
+/**
+ * @brief RF channel for the sensor net, 0-125.
+ * Frequencies: 2400 Mhz - 2525 Mhz
+ * @see https://www.nordicsemi.com/eng/nordic/download_resource/8765/2/42877161/2726
+ * - 0 => 2400 Mhz (RF24 channel 1)
+ * - 1 => 2401 Mhz (RF24 channel 2)
+ * - 76 => 2476 Mhz (RF24 channel 77)
+ * - 83 => 2483 Mhz (RF24 channel 84)
+ * - 124 => 2524 Mhz (RF24 channel 125)
+ * - 125 => 2525 Mhz (RF24 channel 126)
+ * In some countries there might be limitations, in Germany for example only the range
+ * 2400,0 - 2483,5 Mhz is allowed.
+ * @see http://www.bundesnetzagentur.de/SharedDocs/Downloads/DE/Sachgebiete/Telekommunikation/Unternehmen_Institutionen/Frequenzen/Allgemeinzuteilungen/2013_10_WLAN_2,4GHz_pdf.pdf
+ */
+ 
+//Default RF channel Default is 76
 #define MY_RF24_CHANNEL	91
 
 //PiHome Boiler Controller Node ID 
@@ -96,7 +118,8 @@ void setup(){
 void presentation()
 {
 	// Send the sketch version information to the gateway and Controller
-	sendSketchInfo("Boiler Relay", "0.31");
+	//sendSketchInfo("Boiler Relay", "0.31");
+	sendSketchInfo(SKETCH_NAME, SKETCH_VERSION);
 
 	for (int sensor=1, pin=RELAY_1; sensor<=NUMBER_OF_RELAYS; sensor++, pin++) {
 		// Register all sensors to gw (they will be created as child devices)
@@ -118,6 +141,11 @@ void loop(){
 	}
 }
 
+void sendHeartbeat()
+{
+}
+
+
 void receive(const MyMessage &message)
 {
 	// We only expect one type of message from controller. But we better check anyway.
@@ -125,7 +153,7 @@ void receive(const MyMessage &message)
 		
 		//Set the Comms variable to 1 when v_status received 
 		COMMS = 1;
-
+		
 		//digitalWrite(message.sensor-1+RELAY_1, message.getBool()?RELAY_ON:RELAY_OFF);
 		int RELAY_status = (message.sensor-1+RELAY_1, message.getBool()?RELAY_ON:RELAY_OFF);
 		
@@ -146,22 +174,5 @@ void receive(const MyMessage &message)
 			digitalWrite(message.sensor-1+RELAY_1, RELAY_OFF);
 			oldStatus = RELAY_status;
 		}
-		
-		/*
-		message.sensor-1+RELAY_1
-		message received for child id 1 but we minus 1 to make it 0 and then add relay_1 variable value for pin number so we have correct pin number
-		
-		message.getBool()
-		check if message type 
-		
-		?
-		Conditional ternary operator
-		
-		RELAY_ON:RELAY_OFF
-		after Conditional ternary operator it check if value is 0 or 1 and condition get translated to relay on or relay off 
-		*/
-
-		// Store state in eeprom - we dont need to save relay state as controller take care of this, 
-		// saveState(message.sensor, message.getBool());
 	}
 }
