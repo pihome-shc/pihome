@@ -57,6 +57,17 @@ $result = $conn->query($query);
 $away = mysqli_fetch_array($result);
 $away_active = $away['status'];
 
+//query to check holidays status
+$query = "SELECT * FROM holidays WHERE NOW() between start_date_time AND end_date_time AND status = '1' LIMIT 1";
+$result = $conn->query($query);
+$rowcount=mysqli_num_rows($result);
+if ($rowcount > 0) {
+        $holidays = mysqli_fetch_array($result);
+        $holidays_status = $holidays['status'];
+}else {
+        $holidays_status = 0;
+}
+
 $query = "SELECT * FROM zone where zone.purge = '0' ORDER BY index_id asc; ";
 $results = $conn->query($query);
 while ($row = mysqli_fetch_assoc($results)) {
@@ -175,6 +186,13 @@ while ($row = mysqli_fetch_assoc($results)) {
                 $shactive='ion-thermometer';
                 $shcolor='red';                 //special color
                 $target=number_format(DispTemp($conn,$max_room_c),0) . '&deg;';
+            }
+			else if ($holidays_status == '1') {
+                //We are over temp
+                $status='blue';
+                $shactive='fa-paper-plane';
+                $shcolor='';                 
+                $target='';
             }
             else if ($night_climate_status == '1' && $room_c < $nc_min_c) {
                 //We are night climate and heating
@@ -397,12 +415,14 @@ echo '						<a href="javascript:active_away();">
 							<h3 class="degre" ><i class="fa fa-sign-out fa-1x"></i></h3>
 							<h3 class="status"><small class="statuscircle"><i class="fa fa-circle fa-fw '.$awaystatus.'"></i></small>
 							</h3></button></a>';
+							
+							if ($holidays_status=='1'){$holidaystatus="red";}elseif ($holidays_status=='0'){$holidaystatus="blue";}
 ?>
 							<a style="color: #777; cursor: pointer; text-decoration: none;" href="holidays.php">
 							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn">
 							<h3 class="buttontop"><small><?php echo $lang['holidays']; ?></small></h3>
 							<h3 class="degre" ><i class="fa fa-paper-plane fa-1x"></i></h3>
-							<h3 class="status"><small class="statuscircle" style="color:#048afd;"><i class="fa fa-circle fa-fw"></i></small>
+							<h3 class="status"><small class="statuscircle" style="color:#048afd;"><i class="fa fa-circle fa-fw <?php echo $holidaystatus; ?>"></i></small>
 							</h3></button></a>
 
 							<a style="color: #777; cursor: pointer; text-decoration: none;" href="zone_add.php">

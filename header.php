@@ -57,8 +57,9 @@ require_once(__DIR__.'/st_inc/functions.php');
     <!-- Custom CSS -->
     <link href="css/sb-admin-2.css" rel="stylesheet">
 
-    <!--Bootstrap datepicker css -->
-	<link href="css/plugins/datepicker3.css" rel="stylesheet">
+	<!-- Datetimepicker CSS -->
+	<link href="css/plugins/datepicker/bootstrap-datetimepicker.css" rel="stylesheet">
+	
 	
 	<!-- Custom Fonts awesome-->
     <link href="fonts/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
