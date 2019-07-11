@@ -77,6 +77,16 @@ $lang['override'] = "Override";
 $lang['boost'] = "Boost";
 $lang['away'] = "Away";
 $lang['holidays'] = "Holidays";
+$lang['holidays'] = "Holidays";
+$lang['holidays_add'] = "Add Holidays";
+$lang['holidays_enable'] = "Enable Holidays";
+$lang['holidays_add_success'] = "Holidays Added Successfully!!!";
+$lang['holidays_add_error'] = "Holidays addition failed with error: ";
+$lang['holidays_modify_success'] = "Holidays Modified Successfully!!!";
+$lang['holidays_modify_error'] = "Holidays Modification failed with error: ";
+$lang['holidays_departure'] = "Departure";
+$lang['holidays_return'] = "Return";
+$lang['holidays_edit'] = "Edit Holidays";
 
 $lang['night_climate'] = "Night Climate";
 $lang['night_climate_time_success'] = "Night Climate Time Changed Successfully!!!";

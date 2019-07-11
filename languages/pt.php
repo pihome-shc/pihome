@@ -77,6 +77,16 @@ $lang['override'] = "Modo Manual";
 $lang['boost'] = "Boost";
 $lang['away'] = "Fora de Casa";
 $lang['holidays'] = "Modo de Ferias";
+$lang['holidays'] = "Modo de Ferias";
+$lang['holidays_add'] = "Adicionar Feriados";
+$lang['holidays_enable'] = "Ativar Feriados";
+$lang['holidays_add_success'] = "Feriados adicionados com sucesso !!!";
+$lang['holidays_add_error'] = "A adição de feriados falhou com erro: ";
+$lang['holidays_modify_success'] = "Férias Modificadas com Sucesso!!!";
+$lang['holidays_modify_error'] = "Feriados Modificação falhou com erro: ";
+$lang['holidays_departure'] = "Saída";
+$lang['holidays_return'] = "Retorna";
+$lang['holidays_edit'] = "Editar feriados";
 
 $lang['night_climate'] = "Modo Noturno";
 $lang['night_climate_time_success'] = "Horario de Modo Noturno alterado com sucesso!!!";
