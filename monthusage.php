@@ -18,7 +18,7 @@
 * WHAT YOU ARE DOING                                                    *"
 *************************************************************************"
 */
-echo "<h4>PiHome Boiler Usage</h4></p>Total time boiler schedule to run, actuall time boiler ran and boiler gas consumption saved by PiHome. </p>";
+echo "<h4>".$lang['graph_boiler_usage']."</h4></p>".$lang['graph_boiler_usage_text']."</p>";
 
 $arr_name='month_usage';
 $query="select date(start_datetime) as month, 

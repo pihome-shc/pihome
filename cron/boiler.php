@@ -12,8 +12,8 @@ echo " \033[0m \n";
 echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
 echo "*******************************************************\n";
-echo "*   Boiler Script Version 0.51 Build Date 31/01/2018  *\n";
-echo "*   Update on 08/10/218                               *\n";
+echo "*   Boiler Script Version 0.52 Build Date 31/01/2018  *\n";
+echo "*   Update on 16/06/2019                              *\n";
 echo "*                                Have Fun - PiHome.eu *\n";
 echo "*******************************************************\n";
 echo " \033[0m \n";
@@ -49,6 +49,17 @@ $result = $conn->query($query);
 $away = mysqli_fetch_array($result);
 $away_status = $away['status'];
 
+//query to check holidays status
+$query = "SELECT * FROM holidays WHERE NOW() between start_date_time AND end_date_time AND active = '1' LIMIT 1";
+$result = $conn->query($query);
+$rowcount=mysqli_num_rows($result);
+if ($rowcount > 0) {
+        $holidays = mysqli_fetch_array($result);
+        $holidays_status = $holidays['active'];
+}else {
+        $holidays_status = 0;
+}
+
 //query to get frost protection temperature
 $query = "SELECT * FROM frost_protection ORDER BY id desc LIMIT 1;";
 $result = $conn->query($query);
@@ -67,6 +78,10 @@ echo "--------------------------------------------------------------------------
 //following variable set to 0 on start for array index. 
 $boiler_index = '0';
 $zone_index = '0';
+
+//following variable set to current day of the week.
+$dow = idate('w');
+
 $query = "SELECT * FROM zone_view where status = 1 order by index_id asc;";
 $results = $conn->query($query);
 while ($row = mysqli_fetch_assoc($results)) {
@@ -75,33 +90,26 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$zone_max_c=$row['max_c'];
 	$zone_max_operation_time=$row['max_operation_time'];
 	$zone_hysteresis_time=$row['hysteresis_time'];
+	$zone_sp_deadband=$row['sp_deadband'];
 	$zone_sensor_id=$row['sensors_id'];
 	$zone_sensor_child_id=$row['sensor_child_id'];
 	$zone_controler_id=$row['controler_id'];
 	$zone_controler_child_id=$row['controler_child_id'];
 	$zone_gpio_pin=$row['gpio_pin'];
 	
-	//query to get temperature from messages_in table 
-	//$query = "SELECT * FROM messages_in_view_24h WHERE node_id = {$zone_sensor_id} ORDER BY datetime desc LIMIT 1;";
-	$query = "SELECT * FROM messages_in_view_24h WHERE node_id = {$zone_sensor_id} AND child_id = {$zone_sensor_child_id} ORDER BY datetime desc LIMIT 1;";
+	//query to get temperature from messages_in_view_24h table view 
+	$query = "SELECT * FROM messages_in_view_24h WHERE node_id = '{$zone_sensor_id}' AND child_id = {$zone_sensor_child_id} ORDER BY datetime desc LIMIT 1;";
 	$result = $conn->query($query);
 	$sensor = mysqli_fetch_array($result);
 	$zone_c = $sensor['payload'];
-							
-	/*$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between `start` AND `end` AND zone_id = {$zone_id} AND time_status = '1' LIMIT 1;";
-	$result = $conn->query($query);
-	$schedule = mysqli_fetch_array($result);
-	$sch_status = $schedule['tz_status'];
-	$sch_start_time = $schedule['start'];
-	$sch_end_time = $schedule['end'];
-	$sch_c = $schedule['temperature'];
-	*/
+
 	//Have to account for midnight rollover conditions
-    $query = "SELECT * FROM schedule_daily_time_zone_view WHERE ((`end`>`start` AND CURTIME() between `start` AND `end`) OR (`end`<`start` AND CURTIME()<`end`) OR (`end`<`start` AND CURTIME()>`start`)) AND zone_id = {$zone_id} AND time_status = '1' LIMIT 1;";
+    $query = "SELECT * FROM schedule_daily_time_zone_view WHERE ((`end`>`start` AND CURTIME() between `start` AND `end`) OR (`end`<`start` AND CURTIME()<`end`) OR (`end`<`start` AND CURTIME()>`start`)) AND zone_id = {$zone_id} AND time_status = '1' AND (WeekDays & (1 << {$dow})) > 0 LIMIT 1;";
     //echo $query . PHP_EOL;
     $result = $conn->query($query);
     if(mysqli_num_rows($result)<=0){
         $sch_status=0;
+		$sch_c=0;
     }else{
         $schedule = mysqli_fetch_array($result);
         $sch_status = $schedule['tz_status'];
@@ -118,13 +126,17 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$override_c = $override['temperature'];
 
 	//query to check boost status and get temperature from boost table 
-	$query = "SELECT * FROM boost WHERE zone_id = {$zone_id} LIMIT 1;";
+	$query = "SELECT * FROM boost WHERE zone_id = {$zone_id} AND status = 1 LIMIT 1;";
 	$result = $conn->query($query);
-	$boost = mysqli_fetch_array($result);
-	$boost_status = $boost['status'];
-	$boost_time = $boost['time'];
-	$boost_c = $boost['temperature'];
-	$boost_minute = $boost['minute'];
+	if (mysqli_num_rows($result) != 0){  
+		$boost = mysqli_fetch_array($result);
+		$boost_status = $boost['status'];
+		$boost_time = $boost['time'];
+		$boost_c = $boost['temperature'];
+		$boost_minute = $boost['minute'];  
+	} else { 
+		$boost_status = '0';
+	}
 
 	//query to check night climate status and get temperature from night climate table 
 	$query = "select * from schedule_night_climat_zone_view WHERE zone_id = {$zone_id} LIMIT 1;";
@@ -151,26 +163,29 @@ while ($row = mysqli_fetch_assoc($results)) {
 	}
 
 	//check boost time is passed, if it passed then update db and set to boost status to 0
-	$phpdate = strtotime( $boost_time );
-	$boost_time = $phpdate + ($boost_minute * 60);
-	$now=strtotime(date('Y-m-d H:i:s'));
-	if (($boost_time > $now) && ($boost_status=='1')){
-		$boost_active='1';
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boost is Active for This Zone \n";
-	}elseif (($boost_time < $now) && ($boost_status=='1')){
-		$boost_active='0';
-		$query = "UPDATE boost SET status = '{$boost_active}', sync = '0' WHERE zone_id = {$row['id']} LIMIT 1";
-		$conn->query($query);
-		/* 
-		Following is commented out if you dont have Boost Console Build. 
-		$query = "SELECT * FROM boost WHERE zone_id ={$row['id']}";
-		$bresults = mysql_query($query, $connection);
-		$brow = mysqli_fetch_assoc($bresults);
-		$brow['boost_button_id'];
-		$brow['boost_button_child_id'];
-		$query = "UPDATE messages_out SET payload = '{$boost_active}', sent = '0' WHERE zone_id = {$row['id']} AND node_id = {$brow['boost_button_id']} AND child_id = {$brow['boost_button_child_id']} LIMIT 1";
-		mysql_query($query, $connection);
-		*/
+	if ($boost_status=='1'){
+		$phpdate = strtotime( $boost_time );
+		$boost_time = $phpdate + ($boost_minute * 60);
+		$now=strtotime(date('Y-m-d H:i:s'));
+		if (($boost_time > $now) && ($boost_status=='1')){
+			$boost_active='1';
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boost is Active for This Zone \n";
+		}elseif (($boost_time < $now) && ($boost_status=='1')){
+			$boost_active='0';
+			//You can comment out if you dont have Boost Button Console installed.  
+			$query = "SELECT * FROM boost WHERE zone_id ={$row['id']} AND status = '1';";
+			$bresults = $conn->query($query);
+			$brow = mysqli_fetch_assoc($bresults);
+			$brow['boost_button_id'];
+			$brow['boost_button_child_id'];
+			$query = "UPDATE messages_out SET payload = '{$boost_active}', sent = '0' WHERE zone_id = {$row['id']} AND node_id = {$brow['boost_button_id']} AND child_id = {$brow['boost_button_child_id']} LIMIT 1;";
+			$conn->query($query);
+			//update Boost Records in database
+			$query = "UPDATE boost SET status = '{$boost_active}', sync = '0' WHERE zone_id = {$row['id']};";
+			$conn->query($query);
+		}else {
+			$boost_active='0';
+		}
 	}else {
 		$boost_active='0';
 	}
@@ -183,9 +198,10 @@ while ($row = mysqli_fetch_assoc($results)) {
 	//    1    00-05    0.3
 	//    2    06-10    0.4
 	//    3    11-15    0.5
-	//    4    15-20    0.6
+	//    4    16-20    0.6
+	//    5    21-30    0.7
     $weather_fact = 0;
-    if ($weather_c <= 5 ) {$weather_fact = 0.2;}elseif ($weather_c <= 10 ) {$weather_fact = 0.3;} elseif($weather_c <= 15 ) {$weather_fact = 0.4;}elseif($weather_c <= 20 ) {$weather_fact = 0.5;}
+    if ($weather_c <= 5 ) {$weather_fact = 0.3;} elseif ($weather_c <= 10 ) {$weather_fact = 0.4;} elseif ($weather_c <= 15 ) {$weather_fact = 0.5;} elseif ($weather_c <= 20 ) {$weather_fact = 0.6;} elseif ($weather_c <= 30 ) {$weather_fact = 0.7;}
     $zone_c = $zone_c + $weather_fact; //Add to Actual Zone Temperature to Predict Accurate Temperature
 
 	//Following line to decide which temperature is target temperature 
@@ -202,26 +218,42 @@ while ($row = mysqli_fetch_assoc($results)) {
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Hysteresis time: ".date('Y-m-d H:i:s',$hysteresis_time)." \n";
 		}else{$hysteresis='0';}
 	}
+	
+	//Get previous command for zone for use with deadband
+	$query = "SELECT * FROM messages_out WHERE node_id ='$zone_controler_id' AND child_id = '$zone_controler_child_id' LIMIT 1;";
+	$result = $conn->query($query);
+	$command_out = mysqli_fetch_array($result);
+	$zone_status_prev = $command_out['payload'];
+	
+	
 	//initialize two variable
 	$start_cause ='';
 	$stop_cause = '';
-if ($zone_c < $frost_c){$zone_status="1"; $start_cause="Frost Protection";}
+if ($zone_c < $frost_c-$zone_sp_deadband){$zone_status="1"; $start_cause="Frost Protection";}
+	elseif(($zone_c >= $frost_c-$zone_sp_deadband) && ($zone_c < $frost_c)){$zone_status=$zone_status_prev; $start_cause="Frost Protection Deadband"; $stop_cause="Frost Protection Deadband";}
 	elseif(($zone_c >= $frost_c) && ($zone_c < $zone_max_c) && ($hysteresis=='0')){ 
 		if ($away_status=='0'){
-			if($boost_status=='0'){$zone_status="0"; $stop_cause="Boost Finished";
-				if ($night_climate_status =='0') {
-					if (($sch_status =='1') && ($zone_c < $target_c)){$zone_status="1"; $start_cause="Schedule Started"; $expected_end_date_time=date('Y-m-d '.$sch_end_time.''); }
-					if (($sch_status =='1') && ($zone_c > $target_c)){$zone_status="0"; $stop_cause="Schedule Target C Achieved"; }
-					if (($sch_status =='1') && ($override_status=='1') && ($zone_c < $target_c)){$zone_status="1"; $start_cause="Schedule Override Started"; $expected_end_date_time=date('Y-m-d '.$sch_end_time.'');} 
-					if (($sch_status =='1') && ($override_status=='1') && ($zone_c > $target_c)){$zone_status="0"; $stop_cause="Schedule Override Target C Achieved";} 
-					if (($sch_status =='0') &&($override_status=='0')){$zone_status="0"; $stop_cause="No Schedule For This Zone \n"; } 
-					if ($sch_status=='0') {$zone_status="0"; $stop_cause="No Schedule"; } 
-				}elseif($night_climate_status=='1' && $zone_c < $target_c){$zone_status="1"; $start_cause="Night Climate"; $expected_end_date_time=date('Y-m-d '.$nc_end_time_rc.'');
-				}elseif($night_climate_status=='1' && $zone_c >= $target_c){$zone_status="0"; $start_cause="Night Climate C Reached"; $expected_end_date_time=date('Y-m-d '.$nc_end_time_rc.'');}
-			}elseif ($boost_status=='1' && $zone_c < $target_c) {$zone_status="1"; $start_cause="Boost Active"; $expected_end_date_time=date('Y-m-d H:i:s', $boost_time);
-			}elseif ($boost_status=='1' && $zone_c > $target_c) {$zone_status="0"; $stop_cause="Boost Target C Achived";}
+			if ($holidays_status=='0'){
+				if($boost_status=='0'){$zone_status="0"; $stop_cause="Boost Finished";
+					if ($night_climate_status =='0') {
+						if (($sch_status =='1') && ($zone_c < $target_c-$zone_sp_deadband)){$zone_status="1"; $start_cause="Schedule Started"; $expected_end_date_time=date('Y-m-d '.$sch_end_time.''); }
+						if (($sch_status =='1') && ($zone_c >= $target_c-$zone_sp_deadband) && ($zone_c < $target_c)){$zone_status=$zone_status_prev; $start_cause="Schedule Target Deadband"; $stop_cause="Schedule Target Deadband"; }
+						if (($sch_status =='1') && ($zone_c >= $target_c)){$zone_status="0"; $stop_cause="Schedule Target C Achieved"; }
+						if (($sch_status =='1') && ($override_status=='1') && ($zone_c < $target_c-$zone_sp_deadband)){$zone_status="1"; $start_cause="Schedule Override Started"; $expected_end_date_time=date('Y-m-d '.$sch_end_time.'');} 
+						if (($sch_status =='1') && ($override_status=='1') && ($zone_c >= $target_c-$zone_sp_deadband) && ($zone_c < $target_c)){$zone_status=$zone_status_prev; $start_cause="Schedule Override Target Deadband"; $stop_cause="Schedule Override Target Deadband";}
+						if (($sch_status =='1') && ($override_status=='1') && ($zone_c >= $target_c)){$zone_status="0"; $stop_cause="Schedule Override Target C Achieved";} 
+						if (($sch_status =='0') &&($override_status=='0')){$zone_status="0"; $stop_cause="No Schedule For This Zone \n"; } 
+						if ($sch_status=='0') {$zone_status="0"; $stop_cause="No Schedule"; } 
+					}elseif(($night_climate_status=='1') && ($zone_c < $target_c-$zone_sp_deadband)){$zone_status="1"; $start_cause="Night Climate"; $expected_end_date_time=date('Y-m-d '.$nc_end_time_rc.'');
+					}elseif(($night_climate_status=='1') && ($zone_c >= $target_c-$zone_sp_deadband) && ($zone_c < $target_c)){$zone_status=$zone_status_prev; $start_cause="Night Climate Deadband"; $stop_cause="Night Climate Deadband"; $expected_end_date_time=date('Y-m-d '.$nc_end_time_rc.'');
+					}elseif(($night_climate_status=='1') && ($zone_c >= $target_c)){$zone_status="0"; $stop_cause="Night Climate C Reached"; $expected_end_date_time=date('Y-m-d '.$nc_end_time_rc.'');}
+				}elseif (($boost_status=='1') && ($zone_c < $target_c-$zone_sp_deadband)) {$zone_status="1"; $start_cause="Boost Active"; $expected_end_date_time=date('Y-m-d H:i:s', $boost_time);
+				}elseif (($boost_status=='1') && ($zone_c >= $target_c-$zone_sp_deadband) && ($zone_c < $target_c)) {$zone_status=$zone_status_prev; $start_cause="Boost Target Deadband"; $stop_cause="Boost Target Deadband";
+				}elseif (($boost_status=='1') && ($zone_c >= $target_c)) {$zone_status="0"; $stop_cause="Boost Target C Achived";}
+			}elseif($holidays_status=='1'){$zone_status="0"; $stop_cause="Holidays Active";}
 		}elseif($away_status=='1'){$zone_status="0"; $stop_cause="Away Active";}
-	}else{$zone_status="0"; $stop_cause="Zone Reached its Max Temperature ".$zone_max_c;;}
+	}elseif($zone_c >= $zone_max_c){$zone_status="0"; $stop_cause="Zone Reached its Max Temperature ".$zone_max_c;}
+	 else{$zone_status="0"; $stop_cause="Hysteresis active ";}
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone ID: \033[41m".$zone_id. "\033[0m \n";
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Controller: \033[41m".$zone_controler_id."\033[0m Controller Child: \033[41m".$zone_controler_child_id."\033[0m Zone Status: \033[41m".$zone_status."\033[0m \n";	
 if ($zone_status=='1') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Start Cause: ".$start_cause." - Target C:\033[41m".$target_c."\033[0m Zone C:\033[31m".$zone_c."\033[0m \n";}
@@ -232,7 +264,7 @@ if (!empty($zone_gpio_pin)){
 	Zone Vole Wired to Raspberry Pi GPIO Section: Zone Vole Connected Raspberry Pi GPIO. 
 	****************************************************************************************/
 	$relay_status = ($zone_status == '1') ? $relay_on : $relay_off;
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone:  GIOP Relay Status: \033[41m".$relay_status. "\033[0m (0=On, 1=Off) \n";
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: GIOP Relay Status: \033[41m".$relay_status. "\033[0m (0=On, 1=Off) \n";
 	exec("/usr/local/bin/gpio write ".$zone_gpio_pin." ".$relay_status ); 
 	exec("/usr/local/bin/gpio mode ".$zone_gpio_pin." out");
 }
@@ -285,6 +317,8 @@ if (in_array("1", $boiler)) {
 	exec("/usr/local/bin/gpio mode ".$boiler_goip_pin ." out");
 
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Node ID: \033[41m".$boiler_node_id."\033[0m Child ID: \033[41m".$boiler_node_child_id."\033[0m \n";	
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler GIOP: \033[41m".$boiler_goip_pin. "\033[0m Status: \033[41m".$relay_on."\033[0m (0=On, 1=Off) \n";
+	
 	if ($boiler_fire_status != $new_boiler_status){
 		//insert date and time into boiler log table so we can record boiler start date and time.
 		$bsquery = "INSERT INTO boiler_logs(start_datetime, start_cause, expected_end_date_time) VALUES ('{$date_time}', '{$start_cause}', '{$expected_end_date_time}');";
@@ -324,7 +358,8 @@ if (in_array("1", $boiler)) {
 	exec("/usr/local/bin/gpio write ".$boiler_goip_pin ." ".$relay_off ); 
 	exec("/usr/local/bin/gpio mode ".$boiler_goip_pin ." out");
 	
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Node ID: \033[41m".$boiler_node_id."\033[0m Child ID: \033[41m".$boiler_node_child_id."\033[0m \n";	
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Node ID: \033[41m".$boiler_node_id."\033[0m Child ID: \033[41m".$boiler_node_child_id."\033[0m \n";
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler GIOP: \033[41m".$boiler_goip_pin. "\033[0m Status: \033[41m".$relay_off."\033[0m (0=On, 1=Off) \n";
 	if ($boiler_fire_status != $new_boiler_status){
 		//Update last record with boiler stop date and time in boiler log table. 
 		$query = "UPDATE boiler_logs SET stop_datetime = '{$date_time}', stop_cause = '{$stop_cause}' ORDER BY id DESC LIMIT 1";
@@ -369,26 +404,10 @@ if (TimeIsBetweenTwoTimes($current_time, $start_time, $end_time)) {
 	$result = url_get_contents($url);
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiHome Says: ".$result."\n";
 	echo "---------------------------------------------------------------------------------------- \n";
-	
-/*
-	//Updating PiConnect API Key to System Table
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiConnect Saving API Key to System Settings \n";
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiConnect API: \033[1;33m".$uid."\033[0m \n";
-	$query = "UPDATE piconnect SET api_key = '{$uid}' LIMIT 1";
-	$result = $conn->query($query);
-	if ($result) {
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiConnect API Key Updated Successfully. \n";
-	}else {
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiConnect API Key Update Failed.".mysqli_error($conn)." \n";
-	}
-	
-*/
-
 }
 
-
-echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Fired Status: ".$new_boiler_status."\n";	
-echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Hysteresis Status: ".$hysteresis."\n";
+echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Fired Status: \033[41m".$new_boiler_status."\033[0m \n";	
+echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Hysteresis Status: \033[41m".$hysteresis."\033[0m \n";
 echo "---------------------------------------------------------------------------------------- \n";
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Script Ended \n"; 
 echo "\033[32m****************************************************************************************\033[0m  \n";

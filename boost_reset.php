@@ -33,6 +33,5 @@ while ($row = mysqli_fetch_assoc($results)) {
 	if (($boost_time > $now) && ($row["active"]=='1')){$boost='1';}else {$boost='0';}
 	$query = "UPDATE boost SET active = '{$boost}' WHERE id = {$row['id']} LIMIT 1";
 	$conn->query($query);
-}
-?>
+}?>
 <?php if(isset($conn)) { $conn->close();} ?>

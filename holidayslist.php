@@ -31,7 +31,6 @@ require_once(__DIR__.'/st_inc/functions.php');
                         </div>
                         <!-- /.panel-heading -->
  <div class="panel-body">
- <p>Holiday Module isn’t implanted yet!!!! </p>
  
  <ul class="chat"> 
  				 <li class="left clearfix">

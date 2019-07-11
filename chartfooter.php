@@ -44,15 +44,51 @@ $sunset = $weather_row['sunset']* 1000 ;
 	<script type="text/javascript" src="js/plugins/flot/curvedLines.js"></script>
 
 <script type="text/javascript">
-var ground_floor = <?php echo json_encode($ground_floor); ?>;
-var first_floor = <?php echo json_encode($first_floor); ?>;
-var weather_c = <?php echo json_encode($weather_c); ?>;
+// distinct color implementation for plot lines 
+function rainbow(numOfSteps, step) {
+    var r, g, b;
+    var h = step / numOfSteps;
+    var i = ~~(h * 6);
+    var f = h * 6 - i;
+    var q = 1 - f;
+    switch(i % 6){
+        case 0: r = 1; g = f; b = 0; break;
+        case 1: r = q; g = 1; b = 0; break;
+        case 2: r = 0; g = 1; b = f; break;
+        case 3: r = 0; g = q; b = 1; break;
+        case 4: r = f; g = 0; b = 1; break;
+        case 5: r = 1; g = 0; b = q; break;
+    }
+    var c = "#" + ("00" + (~ ~(r * 255)).toString(16)).slice(-2) + ("00" + (~ ~(g * 255)).toString(16)).slice(-2) + ("00" + (~ ~(b * 255)).toString(16)).slice(-2);
+    return (c);
+}
 
+// create dataset based on all available zones
 var dataset = [
-	{label: "Ground Floor", data: ground_floor, color: "#DE000F"}, 
-	{label: "First Floor", data: first_floor, color: "#7D0096"},
-	{label: "Out Side", data: weather_c, color: "#009604"}
-];
+<?php
+    $querya ="select * from zone_view where `type` = 'Heating' order BY index_id asc;";
+    $resulta = $conn->query($querya);
+    $counter = 0;
+    $count = mysqli_num_rows($resulta) + 1;
+    while ($row = mysqli_fetch_assoc($resulta)) {
+        // grab the zone names to be displayed in the plot legend
+        $zone_name=$row['name'];
+        $zone_sensor_id=$row['sensors_id'];
+		$zone_sensor_child_id=$row['sensors_child_id'];
+        
+        $query="select * from messages_in_view_24h where node_id = '{$zone_sensor_id}' AND child_id = '{$zone_sensor_child_id}';";
+        $result = $conn->query($query);
+        // create array of pairs of x and y values for every zone
+        $zone_temp = array();
+        while ($rowb = mysqli_fetch_assoc($result)) { 
+            $zone_temp[] = array(strtotime($rowb['datetime']) * 1000, $rowb['payload']);
+        }
+        // create dataset entry using distinct color based on zone index(to have the same color everytime chart is opened)
+        echo "{label: \"".$zone_name."\", data: ".json_encode($zone_temp).", color: rainbow(".$count.",".++$counter.") }, \n";
+    }
+    // add outside weather temperature
+    echo "{label: \"".$lang['graph_outsie']."\", data: ".json_encode($weather_c).", color: rainbow(".$count.",".++$counter.") }, \n";
+?> ];
 
 //background-color for boiler on time 
 var markings = [
@@ -61,7 +97,7 @@ $query="select start_datetime, stop_datetime from zone_log_view where (start_dat
 $results = $conn->query($query);
 $count=mysqli_num_rows($results); 
 while ($row = mysqli_fetch_assoc($results)) {
-	if((--$count)==-1) break;
+if((--$count)==-1) break;
 	$boiler_start = strtotime($row['start_datetime']) * 1000;
 if (is_null($row['stop_datetime'])) {
 	$boiler_stop = strtotime("now") * 1000;
@@ -86,7 +122,7 @@ $(document).ready(function () {
 var hot_water = <?php echo json_encode($hot_water); ?>;
 //var immersion_room = <?php echo json_encode($immersion_room); ?>;
 //var dataset_c = [{label: "Hot Water ", data: hot_water, color: "#0077FF"}, {label: "Immersion Room ", data: immersion_room, color: "#DE000F"} ];
-var dataset_c = [{label: "Hot Water ", data: hot_water, color: "#0077FF"}];
+var dataset_c = [{label: "<?php echo $lang['hot_water']; ?> ", data: hot_water, color: "#0077FF"}];
 
 //background-color for boiler on time 
 var markings_chwater = [
@@ -95,10 +131,12 @@ $query="select start_datetime, stop_datetime from zone_log_view where (start_dat
 $results = $conn->query($query);
 $count=mysqli_num_rows($results); 
 while ($row = mysqli_fetch_assoc($results)) {
-	if((--$count)==0) break;
-$boiler_start = strtotime($row['start_datetime']) * 1000;
-$boiler_stop = strtotime($row['stop_datetime'])* 1000;
-echo "{ xaxis: { from: ".$boiler_stop.", to: ".$boiler_start." }, color: \"#ffe9dc\" },  \n" ;
+if((--$count)==-1) break;
+	$boiler_start = strtotime($row['start_datetime']) * 1000;
+if (is_null($row['stop_datetime'])) {
+	$boiler_stop = strtotime("now") * 1000;
+} else {$boiler_stop = strtotime($row['stop_datetime']) * 1000;}
+	echo "{ xaxis: { from: ".$boiler_start.", to: ".$boiler_stop." }, color: \"#ffe9dc\" },  \n" ;
 } ?> ];
 
 var options_two = {
@@ -118,7 +156,7 @@ $(document).ready(function () {
 var system_c = <?php echo json_encode($system_c); ?>;
 //var pi_box = <?php echo json_encode($pi_box); ?>;
 //var dataset_hw = [{label: "CPU  ", data: system_c, color: "#DE000F"},{label: "Pi Box  ", data: pi_box, color: "#7D0096"} ];
-var dataset_hw = [{label: "CPU  ", data: system_c, color: "#DE000F"}];
+var dataset_hw = [{label: "<?php echo $lang['cpu']; ?> ", data: system_c, color: "#DE000F"}];
 
 //background-color for All boiler on time 
 var markings_boiler = [
@@ -127,10 +165,12 @@ $query="select start_datetime, stop_datetime from zone_log_view where (start_dat
 $results = $conn->query($query);
 $count=mysqli_num_rows($results); 
 while ($row = mysqli_fetch_assoc($results)) {
-	if((--$count)==0) break;
+	if((--$count)==-1) break;
 $boiler_start = strtotime($row['start_datetime']) * 1000;
-$boiler_stop = strtotime($row['stop_datetime'])* 1000;
-echo "{ xaxis: { from: ".$boiler_stop.", to: ".$boiler_start." }, color: \"#ffe9dc\" },  \n" ;
+if (is_null($row['stop_datetime'])) {
+	$boiler_stop = strtotime("now") * 1000;
+} else {$boiler_stop = strtotime($row['stop_datetime']) * 1000;}
+	echo "{ xaxis: { from: ".$boiler_start.", to: ".$boiler_stop." }, color: \"#ffe9dc\" },  \n" ;
 } ?> ];
 
 var options_three = {
@@ -156,7 +196,7 @@ $.fn.UseTooltip = function () {
                 showTooltip(item.pageX,
                         item.pageY,
                         color,
-                        "<strong>" + item.series.label + "</strong> At: " + (new Date(x).getHours()<10?'0':'') + new Date(x).getHours() + ":"  + (new Date(x).getMinutes()<10?'0':'') + new Date(x).getMinutes() +"<br> <strong>Temp : " + $.formatNumber(y, { format: "#,###", locale: "us" }) + "&deg;</strong> ");
+                        "<strong>" + item.series.label + "</strong> At: " + (new Date(x).getHours()<10?'0':'') + new Date(x).getHours() + ":"  + (new Date(x).getMinutes()<10?'0':'') + new Date(x).getMinutes() +"<br> <strong><?php echo $lang['temp']; ?>  : " + $.formatNumber(y, { format: "#,###", locale: "us" }) + "&deg;</strong> ");
             }
         } else {
             $("#tooltip").remove();
@@ -201,9 +241,9 @@ var on_minuts = <?php echo json_encode($on_minuts); ?>;
 var save_minuts = <?php echo json_encode($save_minuts); ?>;
 
 var dataset_mu = [
-{label: "Total Time  ", data: total_minuts, color: "#DE000F"},
-{label: "Consumed Time  ", data: on_minuts, color: "#7D0096"}, 
-{label: "Saved Time  ", data: save_minuts, color: "#009604"} ];
+{label: "<?php echo $lang['graph_total_time']; ?>  ", data: total_minuts, color: "#DE000F"},
+{label: "<?php echo $lang['graph_consumed_time']; ?>   ", data: on_minuts, color: "#7D0096"}, 
+{label: "<?php echo $lang['graph_saved_time']; ?>   ", data: save_minuts, color: "#009604"} ];
 
 /*
 Timeformat specifiers
@@ -246,7 +286,7 @@ $.fn.UseTooltipu = function () {
                 var y = item.datapoint[1];
                 var color = item.series.color;                        
                 showTooltipu(item.pageX, item.pageY, color,
-                "<strong>" + item.series.label + " in " + z +" <strong><br>Hours : " + $.formatNumber(y, { format: "#,###", locale: "us" }) + "</strong> ");                
+                "<strong>" + item.series.label + " in " + z +" <strong><br><?php echo $lang['hours']; ?>  : " + $.formatNumber(y, { format: "#,###", locale: "us" }) + "</strong> ");                
             }
         } else {
             $("#tooltip").remove();

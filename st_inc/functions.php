@@ -25,8 +25,6 @@ require_once(__DIR__.'/connection.php');
 //date_default_timezone_set("Europe/Dublin"); // You can set Timezone Manually and uncomment this line and comment out following line 
 date_default_timezone_set(settings($conn, 'timezone'));
 
-//$sysversion="0.125";
-
 // this function is deprecated --- prepare mysql statement 
 function mysqli_prep($value) {
 	$magic_quotes_active = get_magic_quotes_gpc();
@@ -94,12 +92,14 @@ function ShowWeather($conn)
     $weather = mysqli_fetch_array($result);    
     $c_f = settings($conn, 'c_f');
     
-    echo 'Outside: ' . $weather['c'] . '&deg;&nbsp;';
+    echo 'Outside: ' .DispTemp($conn,$weather['c']). '&deg;&nbsp;';
     if($c_f==1 || $c_f=='1')
         echo 'F';
     else
         echo 'C';
-    echo '<span><img border="0" width="24" src="images/' . $weather['img'] . '.png" title="' . $weather['title'] . ' - ' . $weather['description'] . '"></span>';
+    $Img='images/' . $weather['img'] . '.png';
+    if(file_exists($Img))
+        echo '<span><img border="0" width="24" src="' . $Img . '" title="' . $weather['title'] . ' - ' . $weather['description'] . '"></span>';
     echo '<span>' . $weather['title'] . ' - ' . $weather['description'] . '</span>';
 }
   
@@ -302,13 +302,36 @@ function DispTemp($conn,$C)
 * @return int
 *   Degrees in C
 */
-function TempToDB($conn,$T)
-{
+function TempToDB($conn,$T){
     $c_f = settings($conn, 'c_f');
-    if($c_f==1 || $c_f=='1')
-    {
+    if($c_f==1 || $c_f=='1'){
         return round(($T-32)*5/9,1);
     }
     return round($T,1);
 }
+
+
+
+
+function my_exec($cmd, $input='')
+{
+    $proc=proc_open($cmd, array(0=>array('pipe', 'r'), 1=>array('pipe', 'w'), 2=>array('pipe', 'w')), $pipes);
+    fwrite($pipes[0], $input);fclose($pipes[0]);
+    $stdout=stream_get_contents($pipes[1]);fclose($pipes[1]);
+    $stderr=stream_get_contents($pipes[2]);fclose($pipes[2]);
+    $rtn=proc_close($proc);
+    return array('stdout'=>$stdout,
+                 'stderr'=>$stderr,
+                 'return'=>$rtn
+                );
+}
+
+function Convert_CRLF($string, $line_break=PHP_EOL)
+{
+    $patterns = array(  "/(\r\n|\r|\n)/" );
+    $replacements = array(  $line_break );
+    $string = preg_replace($patterns, $replacements, $string);
+    return $string;
+}
+
 ?>

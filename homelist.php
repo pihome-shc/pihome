@@ -26,14 +26,14 @@ require_once(__DIR__.'/st_inc/functions.php');
 ?>
 <div class="panel panel-primary">
                         <div class="panel-heading">
-                            <div class="Light"><i class="fa fa-home fa-fw"></i> Home
+                            <div class="Light"><i class="fa fa-home fa-fw"></i> <?php echo $lang['home']; ?>
 						<div class="pull-right"> <div class="btn-group"><?php echo date("H:i"); ?></div> </div>
                         </div></div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
 							<a style="color: #777; cursor: pointer; text-decoration: none;" data-toggle="collapse" data-parent="#accordion" href="#collapseone">
 							<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn">
-                                <h3><small>One Touch</small></h3>
+                                <h3><small><?php echo $lang['one_touch']; ?></small></h3>
                                 <h3 class="degre" style="margin-top:0px;"><i class="fa fa-bullseye fa-2x"></i></h3>
                                 <h3 class="status"></h3>
 							</button></a>
@@ -70,7 +70,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$result = $conn->query($query);
 	$sensor = mysqli_fetch_array($result);
 	$sensor_id = $sensor['node_id'];
-	$sensor_child_id = $sensor['sensor_child_id'];
+	$sensor_child_id = $row['sensor_child_id'];
 	
 	//query to get temperature from table with sensor id 
 	//$query = "SELECT * FROM messages_in WHERE node_id = '{$sensor_id}' ORDER BY id desc LIMIT 1 ";
@@ -101,14 +101,19 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$ovactive = $override['status'];
 	$override_c = $override['temperature'];
 	
-	//query to check override status and get temperature from override table 
-	$query = "SELECT * FROM boost WHERE zone_id = {$row['id']} LIMIT 1";
+	//query to check boost status and get temperature from boost table 
+	//$query = "SELECT * FROM boost WHERE zone_id = {$zone_id} LIMIT 1;";
+	$query = "SELECT * FROM boost WHERE zone_id = {$row['id']} AND status = 1 LIMIT 1;";
 	$result = $conn->query($query);
-	$boost = mysqli_fetch_array($result);
-	$bactive = $boost['status'];
-	$time = $boost['time'];
-	$boost_c = $boost['temperature'];
-	$minute = $boost['minute'];
+	if (mysqli_num_rows($result) != 0){  
+		$boost = mysqli_fetch_array($result);
+		$bactive = $boost['status'];
+		$time = $boost['time'];
+		$boost_c = $boost['temperature'];
+		$minute = $boost['minute'];  
+	} else { 
+		$bactive = '0';
+	}
 
 	//query to check night cliemate status and get temperature from night climate table 
 	$query = "select * from schedule_night_climat_zone_view WHERE zone_id = {$row['id']} LIMIT 1";
@@ -127,8 +132,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	} else {
 		$night_climate_status='0';
 	}
-	
-    
+	//Boost and Override Array
 	$boost_arr[$boost_index] = $bactive;
 	$boost_index = $boost_index+1;
 	$override_arr[$override_index] = $ovactive;
@@ -263,17 +267,16 @@ while ($row = mysqli_fetch_assoc($results)) {
 	<div class="modal-content">
 	<div class="modal-header">
 	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-	<h5 class="modal-title">'.$row['name'].' - Active Schedules for Today</h5>
+	<h5 class="modal-title">'.$row['name'].' - '.$lang['schedule_active_today'].'</h5>
 	</div>
 	<div class="modal-body">';
-	//$squery = "SELECT * FROM schedule_daily_time_zone_view where zone_id ='{$row['id']}' AND tz_status = 1 ORDER BY start asc";
 	$squery = "SELECT * FROM schedule_daily_time_zone_view where zone_id ='{$row['id']}' AND tz_status = 1  AND (WeekDays & (1 << {$dow})) > 0 ORDER BY start asc";
 	$sresults = $conn->query($squery);
 	if (mysqli_num_rows($sresults) == 0){
-		echo '<div class=\"list-group\"><a href="#" class="list-group-item"><i class="fa fa-exclamation-triangle red"></i>&nbsp;&nbsp;No Schedule Found for '.$row['name'].'!!! </a>';
+		echo '<div class=\"list-group\"><a href="#" class="list-group-item"><i class="fa fa-exclamation-triangle red"></i>&nbsp;&nbsp;'.$lang['schedule_active_today'].' '.$row['name'].'!!! </a>';
 	} else {
 		//echo '<h4>'.mysqli_num_rows($sresults).' Schedule Records found.</h4>';
-		echo '<p>You can Disable Schedule by clicking on temperature circle.</p>
+		echo '<p>'.$lang['schedule_disble'].'</p>
 		<br>
 		<div class=\"list-group\">' ;
 		while ($srow = mysqli_fetch_assoc($sresults)) {
@@ -288,7 +291,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 			<span class="pull-right text-muted sch_list"><em>'. $srow['start'].' - ' .$srow['end'].'</em></span></a>';
 		}
 	}
-	echo '</div></div><div class="modal-footer"><button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
+	echo '</div></div><div class="modal-footer"><button type="button" class="btn btn-default btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
 	</div></div></div></div>';				
 						
 //end of while loop	<a href="javascript:active_away();">
@@ -335,7 +338,7 @@ echo '</h3></button>';
 	<div class="modal-content">
 	<div class="modal-header">
 	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-	<h5 class="modal-title">'.$boiler_name.' - Recent Logs </h5>
+	<h5 class="modal-title">'.$boiler_name.' - '.$lang['boiler_recent_logs'].'</h5>
 	</div>
 	<div class="modal-body">';
 	
@@ -343,29 +346,27 @@ echo '</h3></button>';
 	from boiler_logs order by id desc limit 5";
 	$bresults = $conn->query($bquery);
 	if (mysqli_num_rows($bresults) == 0){
-		echo '<div class=\"list-group\"><a href="#" class="list-group-item"><i class="fa fa-exclamation-triangle red"></i>&nbsp;&nbsp;No boiler log record found !!! </a>';
+		echo '<div class=\"list-group\"><a href="#" class="list-group-item"><i class="fa fa-exclamation-triangle red"></i>&nbsp;&nbsp;'.$lang['boiler_no_log'].'</a>';
 	} else {
-		echo '<p class="text-muted">'. mysqli_num_rows($bresults) .' Last Boiler Log Records. </p>
+		echo '<p class="text-muted">'. mysqli_num_rows($bresults) .' '.$lang['boiler_last_records'].'</p>
 		<div class=\"list-group\">' ;
-		echo '<a href="#" class="list-group-item"> <i class="ionicons ion-flame fa-1x red"></i> Start &nbsp; - &nbsp;End <span class="pull-right text-muted"><em> On Minuts </em></span></a>';
+		echo '<a href="#" class="list-group-item"> <i class="ionicons ion-flame fa-1x red"></i> Start &nbsp; - &nbsp;End <span class="pull-right text-muted"><em> '.$lang['boiler_on_minuts'].' </em></span></a>';
 		while ($brow = mysqli_fetch_assoc($bresults)) {
 			echo '<a href="#" class="list-group-item"> <i class="ionicons ion-flame fa-1x red"></i> '. $brow['start_datetime'].' - ' .$brow['stop_datetime'].' <span class="pull-right text-muted"><em> '.$brow['on_minuts'].'&nbsp;</em></span></a>';
 		}
 	}
 	echo '</div>
-	</div><div class="modal-footer"><button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
+	</div><div class="modal-footer"><button type="button" class="btn btn-default btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
 	</div></div></div></div>';	
 ?>
 
-
 <!-- One touch buttons -->
-
 							<div id="collapseone" class="panel-collapse collapse animated fadeIn">
 <?php 
 							if (in_array("1", $override_arr)) {$override_status='red';}else{$override_status='blue';}
 echo '						<a style="color: #777; cursor: pointer; text-decoration: none;" href="override.php">
 							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn">
-							<h3 class="buttontop"><small>Override</small></h3>
+							<h3 class="buttontop"><small>'.$lang['override'].'</small></h3>
 							<h3 class="degre" ><i class="fa fa-refresh fa-1x"></i></h3>
 							<h3 class="status"><small class="statuscircle"><i class="fa fa-circle fa-fw '.$override_status.'"></i></small>
 							</h3></button></a>';
@@ -373,7 +374,7 @@ echo '						<a style="color: #777; cursor: pointer; text-decoration: none;" href
 							if (in_array("1", $boost_arr)) {$boost_status='red';}else{$boost_status='blue';}
 echo '						<a style="color: #777; cursor: pointer; text-decoration: none;" href="boost.php">
 							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn">
-							<h3 class="buttontop"><small>Boost</small></h3>
+							<h3 class="buttontop"><small>'.$lang['boost'].'</small></h3>
 							<h3 class="degre" ><i class="fa fa-rocket fa-1x"></i></h3>
 							<h3 class="status"><small class="statuscircle"><i class="fa fa-circle fa-fw '.$boost_status.'"></i></small>
 							</h3></button></a>';
@@ -384,7 +385,7 @@ echo '						<a style="color: #777; cursor: pointer; text-decoration: none;" href
 							if ($row['status'] == 1) {$night_status='red';}else{$night_status='blue';}
 echo '						<a style="color: #777; cursor: pointer; text-decoration: none;" href="night_climate.php">
 							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn">
-							<h3 class="buttontop"><small>Night Climate</small></h3>
+							<h3 class="buttontop"><small>'.$lang['night_climate'].'</small></h3>
 							<h3 class="degre" ><i class="fa fa-bed fa-1x"></i></h3>
 							<h3 class="status"><small class="statuscircle"><i class="fa fa-circle fa-fw '.$night_status.'"></i></small>
 							</h3></button>';
@@ -392,21 +393,21 @@ echo '						<a style="color: #777; cursor: pointer; text-decoration: none;" href
 							if ($away_active=='1'){$awaystatus="red";}elseif ($away_active=='0'){$awaystatus="blue";}
 echo '						<a href="javascript:active_away();">
 							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn">
-							<h3 class="buttontop"><small>Away</small></h3>
+							<h3 class="buttontop"><small>'.$lang['away'].'</small></h3>
 							<h3 class="degre" ><i class="fa fa-sign-out fa-1x"></i></h3>
 							<h3 class="status"><small class="statuscircle"><i class="fa fa-circle fa-fw '.$awaystatus.'"></i></small>
 							</h3></button></a>';
 ?>
 							<a style="color: #777; cursor: pointer; text-decoration: none;" href="holidays.php">
 							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn">
-							<h3 class="buttontop"><small>Holidays</small></h3>
+							<h3 class="buttontop"><small><?php echo $lang['holidays']; ?></small></h3>
 							<h3 class="degre" ><i class="fa fa-paper-plane fa-1x"></i></h3>
 							<h3 class="status"><small class="statuscircle" style="color:#048afd;"><i class="fa fa-circle fa-fw"></i></small>
 							</h3></button></a>
 
 							<a style="color: #777; cursor: pointer; text-decoration: none;" href="zone_add.php">
 							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn">
-							<h3 class="buttontop"><small>Add Zone</small></h3>
+							<h3 class="buttontop"><small><?php echo $lang['zone_add']; ?></small></h3>
 							<h3 class="degre" ><i class="fa fa-plus fa-1x"></i></h3>
 							<h3 class="status"><small class="statuscircle" style="color:#048afd;"><i class="fa fa-fw"></i></small>
 							</h3></button></a>

@@ -20,7 +20,7 @@
 */
 
 //boiler usage time 
-echo "<h4>PiHome Saving</h4></p>These Savings are based on schedule start and stop time. </p>";
+echo "<h4>".$lang['graph_saving']."</h4></p>".$lang['graph_saving_text']."</p>";
 $query="select date(start_datetime) as date, 
 sum(TIMESTAMPDIFF(MINUTE, start_datetime, expected_end_date_time)) as total_minuts,
 sum(TIMESTAMPDIFF(MINUTE, start_datetime, stop_datetime)) as on_minuts, 

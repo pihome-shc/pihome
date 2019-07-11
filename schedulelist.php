@@ -25,7 +25,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 ?>
                     <div class="panel panel-primary">
                         <div class="panel-heading">
-                            <i class="fa fa-clock-o fa-fw"></i> Schedule   
+                            <i class="fa fa-clock-o fa-fw"></i> <?php echo $lang['schedule']; ?>   
 						<div class="pull-right"> <div class="btn-group"><?php echo date("H:i"); ?></div> </div>
                         </div>
                         <!-- /.panel-heading -->
@@ -39,7 +39,7 @@ require_once(__DIR__.'/st_inc/functions.php');
                          <div class="header">
                              <strong class="primary-font">   </strong> 
 							 <small class="pull-right text-muted">
-								Add Schedule <i class="fa fa-chevron-right fa-fw"></i></a>
+								<?php echo $lang['schedule_add']; ?>  <i class="fa fa-chevron-right fa-fw"></i></a>
                              </small>
                          </div>
                      </div>
@@ -48,7 +48,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 //following variable set to 0 on start for array index. 
 $sch_time_index = '0';
 //$query = "SELECT time_id, time_status, `start`, `end`, tz_id, tz_status, zone_id, index_id, zone_name, temperature, max(temperature) as max_c FROM schedule_daily_time_zone_view group by time_id ORDER BY start asc";
-$query = "SELECT time_id, time_status, `start`, `end`, WeekDays,tz_id, tz_status, zone_id, index_id, zone_name, temperature, max(temperature) as max_c FROM schedule_daily_time_zone_view group by time_id ORDER BY start asc";
+$query = "SELECT time_id, time_status, `start`, `end`, WeekDays,tz_id, tz_status, zone_id, index_id, zone_name, temperature, FORMAT(max(temperature),2) as max_c FROM schedule_daily_time_zone_view group by time_id ORDER BY start asc";
 $results = $conn->query($query);
 while ($row = mysqli_fetch_assoc($results)) {
 
@@ -70,7 +70,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	//time shchedule listing
 	echo '
 	<li class="left clearfix scheduleli animated fadeIn">
-	<a href="javascript:active_schedule('.$row["time_id"].');"><span class="chat-img pull-left"><div class="circle '. $shactive.'"><p class="schdegree">'.$row["max_c"].'&deg;</p></div></span></a>
+	<a href="javascript:active_schedule('.$row["time_id"].');"><span class="chat-img pull-left"><div class="circle '. $shactive.'"><p class="schdegree">'.DispTemp($conn, number_format($row["max_c"]),1).'&deg;</p></div></span></a>
 	
 	<a style="color: #333; cursor: pointer; text-decoration: none;" data-toggle="collapse" data-parent="#accordion" href="#collapse'.$row['tz_id'].'">
 	<div class="chat-body clearfix">
@@ -101,7 +101,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	echo '
 		<div class="list-group">
 		<div class="list-group-item">
-		<i class="ionicons '.$status_icon.' fa-lg '.$status_color.'"></i>  '.$datarw['zone_name'].'<span class="pull-right text-muted small"><em>'.number_format(DispTemp($conn,$datarw['temperature']),0).'&deg;</em></span>
+		<i class="ionicons '.$status_icon.' fa-lg '.$status_color.'"></i>  '.$datarw['zone_name'].'<span class="pull-right text-muted small"><em>'.number_format(DispTemp($conn,$datarw['temperature']),1).'&deg;</em></span>
 		</div>';
 	}
 

@@ -98,7 +98,7 @@
 //#define MY_DEBUG_VERBOSE_RF24
 
 // RF channel for the sensor net, 0-127
-#define MY_RF24_CHANNEL	74
+#define MY_RF24_CHANNEL	91
 //RF24_250KBPS for 250kbs, RF24_1MBPS for 1Mbps, or RF24_2MBPS for 2Mbps
 #define RF24_DATARATE 	   RF24_250KBPS
 
@@ -147,9 +147,9 @@
 
 // Flash leds on rx/tx/err
 // Led pins used if blinking feature is enabled above
-#define MY_DEFAULT_ERR_LED_PIN 5  // Error led pin
+#define MY_DEFAULT_ERR_LED_PIN 16  // Error led pin
 #define MY_DEFAULT_RX_LED_PIN  16  // Receive led pin
-#define MY_DEFAULT_TX_LED_PIN  2  // the PCB, on board LED
+#define MY_DEFAULT_TX_LED_PIN  16  // the PCB, on board LED
 
 #if defined(MY_USE_UDP)
 #include <WiFiUdp.h>

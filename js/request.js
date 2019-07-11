@@ -40,7 +40,6 @@ function delete_zone(wid){
 	request('db.php', 'GET', quest, function(){ window.location="settings.php?zone_deleted"; } );
 }
 
-
 //activate and deactivate holidays schedule 
 function active_holidays(wid){
 	var quest = "?w=holidays&o=active&wid=" + wid + "&frost_temp=0";
@@ -83,7 +82,6 @@ function active_away(){
 	request('db.php', 'GET', quest, function(){ $('#homelist').load('homelist.php'); } );
 }
 
-
 //update frost temperate 
 function update_frost(){
     var idata="w=frost&o=update";
@@ -124,7 +122,25 @@ function update_units(){
     });
 }
 
-
+//update language
+function update_lang(){
+    var idata="w=lang&o=update";
+    idata+="&lang_val="+$("#new_lang").val();
+    idata+="&wid=0";
+    $.get('db.php',idata)
+    .done(function(odata){
+        if(odata.Success)
+            reload_page();
+        else
+            console.log(odata.Message);
+    })
+    .fail(function( jqXHR, textStatus, errorThrown ){
+        if(jqXHR==401 || jqXHR==403) return;
+        console.log("update_lang: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
+    })
+    .always(function() {
+    });
+}
 
 function reload_page()
 {
@@ -137,31 +153,26 @@ function reload_page()
     window.location.href=loc.protocol + '//' + loc.host + loc.pathname;
 }
 
-
 //delete user account 
 function del_user(wid){
 	var quest = "?w=user&o=delete&wid=" + wid + "&frost_temp=0";
 	request('db.php', 'GET', quest, function(){ window.location="settings.php?del_user"; });
 }
-
+//reboot pi
 function reboot() {  
   	var quest = "?w=reboot" + "&o=0" + "&frost_temp=0" + "&wid=0";
 	request('db.php', 'GET', quest, function(){ window.location="settings.php?reboot"; });
     //window.location="settings.php?status=reboot";  
 }
 
+//shutdown Pi
 function shutdown() {  
   	var quest = "?w=shutdown" + "&o=0" + "&frost_temp=0" + "&wid=0";
 	request('db.php', 'GET', quest, function(){ window.location="settings.php?shutdown"; });
     //window.location="settings.php?status=reboot";  
 }
 
-function find_gw() {  
-  	var quest = "?w=find_gw" + "&o=0" + "&frost_temp=0" + "&wid=0";
-	request('db.php', 'GET', quest, function(){ window.location="settings.php"; });
-    //window.location="settings.php?status=reboot";  
-}
-
+//start database backup <--- this function need some work. 
 function db_backup() {  
   	var quest = "?w=db_backup" + "&o=0" + "&frost_temp=0" + "&wid=0";
 	request('db.php', 'GET', quest, function(){ window.location="settings.php?db_backup"; });
@@ -172,4 +183,76 @@ function db_backup() {
 function resetgw(wid){
 	var quest = "?w=resetgw&o=0&wid=" + wid + "&frost_temp=0";
 	request('db.php', 'GET', quest, function(){ window.location="settings.php"; });
+}
+
+//triger search for PiHome network Gateway. 
+function find_gw() {  
+  	var quest = "?w=find_gw" + "&o=0" + "&frost_temp=0" + "&wid=0";
+	request('db.php', 'GET', quest, function(){ window.location="settings.php"; });
+    //window.location="settings.php?status=reboot";  
+}
+
+//update Gateway 
+function setup_gateway(){
+var idata="w=setup_gateway&o=update&status="+document.getElementById("checkbox1").checked;
+    idata+="&gw_type="+document.getElementById("gw_type").value;
+	idata+="&gw_location="+document.getElementById("gw_location").value;
+	idata+="&gw_port="+document.getElementById("gw_port").value;
+	idata+="&gw_timout="+document.getElementById("gw_timout").value;
+    idata+="&wid=0";
+    $.get('db.php',idata)
+    .done(function(odata){
+        if(odata.Success)
+            reload_page();
+        else
+            console.log(odata.Message);
+    })
+    .fail(function( jqXHR, textStatus, errorThrown ){
+        if(jqXHR==401 || jqXHR==403) return;
+        console.log("setup_gateway: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
+    })
+    .always(function() {
+    });
+}
+
+//update PiConnect 
+function setup_piconnect(){
+var idata="w=setup_piconnect&o=update&status="+document.getElementById("checkbox0").checked;
+    idata+="&api_key="+document.getElementById("api_key").value;
+    idata+="&wid=0";
+    $.get('db.php',idata)
+    .done(function(odata){
+        if(odata.Success)
+            reload_page();
+        else
+            console.log(odata.Message);
+    })
+    .fail(function( jqXHR, textStatus, errorThrown ){
+        if(jqXHR==401 || jqXHR==403) return;
+        console.log("setup_piconnect: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
+    })
+    .always(function() {
+    });
+}
+
+
+function mqtt_delete(wid){
+    var result = confirm("Confirm delete MQTT server?");
+    if (!result) return;
+
+    var idata="w=mqtt&o=delete";
+    idata+="&wid="+wid;
+    $.get('db.php',idata)
+    .done(function(odata){
+        if(odata.Success)
+            $('#ajaxModal').modal('hide')
+        else
+            console.log(odata.Message);
+    })
+    .fail(function( jqXHR, textStatus, errorThrown ){
+        if(jqXHR==401 || jqXHR==403) return;
+        console.log("delete_mqtt: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
+    })
+    .always(function() {
+    });
 }

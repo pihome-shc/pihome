@@ -18,7 +18,6 @@ echo "*                                    Have Fun - PiHome.eu *\n";
 echo "***********************************************************\n";
 echo " \033[0m \n";
 
-
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
 

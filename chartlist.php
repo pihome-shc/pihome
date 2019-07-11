@@ -20,7 +20,7 @@
 */
 
 $graphs_page = '1';
-echo "<h4>PiHome Temperature Graps</h4></p>Temperature Graphs for last 24 hours for all Zones. </p>";
+echo "<h4>".$lang['graph_temperature']."</h4></p>".$lang['graph_24h']."</p>";
 /*
 //query to get system table
 $query = "SELECT * FROM location where zone IS NOT NULL AND zone != '' ORDER BY index_id asc";
@@ -70,7 +70,7 @@ while ($row = mysqli_fetch_assoc($resulta)) {
 	//echo "</pre>";
 }
 
-*/
+
 
 $query="select * from messages_in_view_24h where node_id= 21";
 $result = $conn->query($query);
@@ -89,7 +89,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 }
 
 
-
+*/
 
 //weather temperature
 $query="select * from messages_in_view_24h where node_id= 1";
@@ -99,6 +99,7 @@ $weather_c = array();
 while ($row = mysqli_fetch_assoc($result)) { 
    $weather_c[] = array(strtotime($row['datetime']) * 1000, $row['payload']);
 }
+
 
 //hot water temperature
 $query="select * from messages_in_view_24h where node_id= 30";

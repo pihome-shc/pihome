@@ -37,6 +37,7 @@ if (isset($_POST['submit'])) {
 	$max_c = mysqli_prepare($_POST['max_c']);
 	$max_operation_time = mysqli_prepare($_POST['max_operation_time']);
 	$hysteresis_time = mysqli_prepare($_POST['hysteresis_time']);
+	$sp_deadband = mysqli_prepare($_POST['sp_deadband']);
 	$sensor_id = mysqli_prepare($_POST['sensor_id']);
 	$controler = mysqli_prepare($_POST['controler_id']);
 	$controler_id = mysqli_prepare($_POST['controler_id']);
@@ -58,14 +59,17 @@ if (isset($_POST['submit'])) {
 	$found_product = mysqli_fetch_array($result);
 	$controler_id = $found_product['id'];
 	
-	//query to search node id for boost button
-	$query = "SELECT * FROM nodes WHERE node_id = '{$boost_button_id}' LIMIT 1";
-	$result = $conn->query($query);
-	$found_product = mysqli_fetch_array($result);
-	$boost_button_id = $found_product['node_id'];
+	//If boost button console isnt installed then no need to add this to message_out
+	if ($boost_button_id != 'None'){
+		//query to search node id for boost button
+		$query = "SELECT * FROM nodes WHERE node_id = '{$boost_button_id}' LIMIT 1";
+		$result = $conn->query($query);
+		$found_product = mysqli_fetch_array($result);
+		$boost_button_id = $found_product['node_id'];
+	}
 	
-	$query = "INSERT INTO zone (status, index_id, name, type, max_c, max_operation_time, hysteresis_time, sensor_id, sensor_child_id, controler_id, controler_child_id, boiler_id) 
-	VALUES ('{$zone_status}', '{$index_id}', '{$name}', '{$type}', '{$max_c}', '{$max_operation_time}', '{$hysteresis_time}', '{$sensor_id}', '{$sensor_child_id}', '{$controler_id}', '{$controler_child_id}', '{$boiler_id}');";
+	$query = "INSERT INTO zone (status, index_id, name, type, max_c, max_operation_time, hysteresis_time, sp_deadband, sensor_id, sensor_child_id, controler_id, controler_child_id, boiler_id) 
+	VALUES ('{$zone_status}', '{$index_id}', '{$name}', '{$type}', '{$max_c}', '{$max_operation_time}', '{$hysteresis_time}', '{$sp_deadband}', '{$sensor_id}', '{$sensor_child_id}', '{$controler_id}', '{$controler_child_id}', '{$boiler_id}');";
 	$result = $conn->query($query);
 	$zone_id = mysqli_insert_id($conn);
 
@@ -75,7 +79,7 @@ if (isset($_POST['submit'])) {
 		$error = "<p>{$LANG['add_purchase_failed']}</p> <p>" .mysqli_error($conn). "</p>";
 	}
 	//Add Zone to message out table at same time to send out instructions to controller for each zone. 
-	$query = "INSERT INTO messages_out (node_id, child_id, sub_type, ack, type, payload, sent, zone_id)VALUES ('{$controler}','{$controler_child_id}', '1', '1', '2', '0', '0', '{$zone_id}');";
+	$query = "INSERT INTO messages_out (node_id, child_id, sub_type, ack, type, payload, sent, zone_id)VALUES ('{$controler}','{$controler_child_id}', '1', '0', '2', '0', '0', '{$zone_id}');";
 	$result = $conn->query($query);
 	if ($result) {
 		$message_success .= "<p>Zone Controler Record Added Successfuly.</p>";
@@ -83,13 +87,16 @@ if (isset($_POST['submit'])) {
 		$error = "<p>Zone Controler Recrd Addition Failed!!!</p> <p>" .mysqli_error($conn). "</p>";
 	}
 
-	//Add Zone Boost Button Console to message out table at same time
-	$query = "INSERT INTO messages_out (node_id, child_id, sub_type, payload, sent, zone_id)VALUES ('{$boost_button_id}','{$boost_button_child_id}', '2', '0', '1', '{$zone_id}');";
-	$result = mysqli_fetch_array($query, $connection);
-	if ($result) {
-		$message_success .= "<p>Zone Boost Button Record Added Successfuly.</p>";
-	} else {
-		$error = "<p>Zone Boost Button Recrd Addition Failed!!!</p> <p>" .mysqli_error($conn). "</p>";
+	//If boost button console isnt installed then no need to add this to message_out
+	if ($boost_button_id != 'None'){
+		//Add Zone Boost Button Console to message out table at same time
+		$query = "INSERT INTO messages_out (node_id, child_id, sub_type, payload, sent, zone_id)VALUES ('{$boost_button_id}','{$boost_button_child_id}', '2', '0', '1', '{$zone_id}');";
+		$result = mysqli_fetch_array($query, $connection);
+		if ($result) {
+			$message_success .= "<p>Zone Boost Button Record Added Successfuly.</p>";
+		} else {
+			$error = "<p>Zone Boost Button Recrd Addition Failed!!!</p> <p>" .mysqli_error($conn). "</p>";
+		}
 	}
 	
 	//Add Zone to boost table at same time
@@ -181,6 +188,10 @@ $row = mysqli_fetch_assoc($result);
 <div class="form-group" class="control-label"><label>Hysteresis Time</label>
 <input class="form-control" placeholder="Hysteresis Time for Safty, Please consult your motorized volve technical manule for more details. Default is 3 Minuts." value="<?php echo $row['hysteresis_time']; ?>" id="hysteresis_time" name="hysteresis_time" data-error="Hysteresis time for safty, Please consult your motorized volve technical manule for more details. Default is 3 Minuts." pattern="[0-9]+([\,|\.][0-9]+)?"  autocomplete="off" required>
 <div class="help-block with-errors"></div></div>	
+
+<div class="form-group" class="control-label"><label><?php echo $lang['zone_sp_deadband']; ?></label>
+<input class="form-control" placeholder="<?php echo $lang['zone_sp_deadband_help']; ?>" value="<?php echo $row['sp_deadband']; ?>" id="sp_deadband" name="sp_deadband" data-error="<?php echo $lang['zone_sp_deadband_error']; ?>" pattern="[0-9]+([\,|\.][0-9]+)?"  autocomplete="off" required>
+<div class="help-block with-errors"></div></div>
 
 <div class="form-group" class="control-label"><label>Temperature Sensor ID</label>
 <select id="sensor_id" name="sensor_id" class="form-control select2" data-error="Sensor ID can not be empty!" autocomplete="off" required>
@@ -285,14 +296,8 @@ echo "<option>$boiler_id</option>";} ?>
                         <!-- /.panel-body -->
 						<div class="panel-footer">
 <?php 
-$query="select * from weather";
-$result = $conn->query($query);
-$weather = mysqli_fetch_array($result);
+ShowWeather($conn);
 ?>
-Outside: <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
-<span><img border="0" width="24" src="images/<?php echo $weather['img'];?>.png" title="<?php echo $weather['title'];?> - 
-<?php echo $weather['description'];?>"></span> <span><?php echo $weather['title'];?> - 
-<?php echo $weather['description'];?></span>
                             <div class="pull-right">
                                 <div class="btn-group">
                                 </div>

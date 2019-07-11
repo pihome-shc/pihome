@@ -23,6 +23,7 @@ require_once(__DIR__.'/st_inc/session.php');
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
+
 ?>
 <?php include("header.php"); ?>
         <div id="page-wrapper">
@@ -39,23 +40,24 @@ require_once(__DIR__.'/st_inc/functions.php');
 
                 <form data-toggle="validator" role="form" method="post" action="holidays.php" id="form-join">
 
-				<div class="checkbox checkbox-default checkbox-circle">
-                <input id="checkbox1" class="styled" type="checkbox" name="holidays_enable" value="1" >
-                <label for="checkbox1"> Enable </label>
-                <div class="help-block with-errors"></div></div>
+                <div class="checkbox checkbox-default checkbox-circle">
+                <input id="checkbox0" class="styled" type="checkbox" name="holidays_enable" value="1" <?php if(isset($_POST['holidays_enable'])){ echo "checked";}?>>
+                <label for="checkbox0"> <?php echo $lang['schedule_enable']; ?></label></div>
+
 
 
 				<div class="form-group" class="control-label"><label> <i class="fa fa-paper-plane fa-1x"></i> Departure </label>
-				<input class="form-control input-sm" id="start_date_time" name="start_date_time" value="" placeholder="Holidays Start Date" required>
+				<input class="form-control input-sm" type="datetime-local" id="start_date_time" name="start_date_time" value="<?php if(isset($_POST['start_date'])) { echo $_POST['start_date_time']; } ?>" placeholder="Holiday Start Date" required>
                 <div class="help-block with-errors"></div></div>
 				
+
 				<div class="form-group" class="control-label"><label>  <i class="fa fa-home fa-fw fa-1x"></i> Return </label>
-				<input class="form-control input-sm" id="end_date_time" name="end_date_time" value="" placeholder="Holidyas End Date " required>
-                <div class="help-block with-errors"></div></div>				
+                                <input class="form-control input-sm" type="datetime-local" id="end_date_time" name="end_date_time" value="<?php if(isset($_POST['end_time_time'])) { echo $_POST['end_date_time']; } ?>" placeholder="Holiday End Date" required>
+                 <div class="help-block with-errors"></div></div>				
 
 
-                <a href="holidays.php"><button type="button" class="btn btn-primary btn-sm" >Cancel</button></a>
-                <input type="submit" name="submit" value="Submit" class="btn btn-default btn-sm">
+                <a href="holidays.php"><button type="button" class="btn btn-primary btn-sm" ><?php echo $lang['cancel']; ?></button></a>
+                <input type="submit" name="submit" value="<?php echo $lang['submit']; ?>" class="btn btn-default btn-sm login">
 				</form>
 						</div>
                         <!-- /.panel-body -->
@@ -64,6 +66,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 ShowWeather($conn);
 ?>
 
+                        </div>
                     </div>
                 </div>
                 <!-- /.col-lg-4 -->

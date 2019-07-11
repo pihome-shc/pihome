@@ -51,8 +51,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 						header("Refresh: 3; url=settings.php");
 					} else {$error = "<p>Password chaneg failed.</p> <p>".mysqli_error($conn)."</p>";}
 		} 
-
-		}
+	}
 $query = "SELECT * FROM user WHERE id = {$id}";
 $results = $conn->query($query);	
 $row = mysqli_fetch_assoc($results);
