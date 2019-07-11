@@ -227,6 +227,23 @@ CREATE TABLE IF NOT EXISTS `gateway_logs` (
 /*!40000 ALTER TABLE `gateway_logs` DISABLE KEYS */;
 /*!40000 ALTER TABLE `gateway_logs` ENABLE KEYS */;
 
+-- Dumping structure for table pihome.holidays
+DROP TABLE IF EXISTS `holidays`;
+CREATE TABLE IF NOT EXISTS `holidays` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sync` tinyint(4) NOT NULL DEFAULT '0',
+  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `status` tinyint(4) DEFAULT NULL,
+  `start_date_time` datetime DEFAULT NULL,
+  `end_date_time` datetime DEFAULT NULL,
+  `active` tinyint(4) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+
+-- Dumping data for table pihome.holidays: ~0 rows (approximately)
+/*!40000 ALTER TABLE `holidays` DISABLE KEYS */;
+/*!40000 ALTER TABLE `holidays` ENABLE KEYS */;
+
 -- Dumping structure for table pihome.messages_in
 DROP TABLE IF EXISTS `messages_in`;
 CREATE TABLE IF NOT EXISTS `messages_in` (
