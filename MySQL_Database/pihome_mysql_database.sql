@@ -236,7 +236,6 @@ CREATE TABLE IF NOT EXISTS `holidays` (
   `status` tinyint(4) DEFAULT NULL,
   `start_date_time` datetime DEFAULT NULL,
   `end_date_time` datetime DEFAULT NULL,
-  `active` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
