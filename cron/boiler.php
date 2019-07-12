@@ -50,12 +50,12 @@ $away = mysqli_fetch_array($result);
 $away_status = $away['status'];
 
 //query to check holidays status
-$query = "SELECT * FROM holidays WHERE NOW() between start_date_time AND end_date_time AND active = '1' LIMIT 1";
+$query = "SELECT * FROM holidays WHERE NOW() between start_date_time AND end_date_time AND status = '1' LIMIT 1";
 $result = $conn->query($query);
 $rowcount=mysqli_num_rows($result);
 if ($rowcount > 0) {
         $holidays = mysqli_fetch_array($result);
-        $holidays_status = $holidays['active'];
+        $holidays_status = $holidays['status'];
 }else {
         $holidays_status = 0;
 }
@@ -259,10 +259,7 @@ while ($row = mysqli_fetch_assoc($results)) {
           echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Temperature sensor communication timeout for This Zone ".$temp_reading_time."\n";
       }
   }  
-  
-  
-  
-	
+
 	//initialize two variable
 	$start_cause ='';
 	$stop_cause = '';
