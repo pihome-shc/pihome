@@ -71,6 +71,17 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$sensor = mysqli_fetch_array($result);
 	$sensor_id = $sensor['node_id'];
 	$sensor_child_id = $row['sensor_child_id'];
+  $sensor_seen = $sensor['last_seen']; //not using this cause it updates on battery update 
+  $sensor_notice = $sensor['notice_interval'];
+  
+  //Get data from nodes table
+  $query = "SELECT * FROM nodes WHERE id ={$row['controler_id']} LIMIT 1;";
+  $result = $conn->query($query);
+  $controler_node = mysqli_fetch_array($result);
+  $controler_seen = $controler_node['last_seen'];
+  $controler_notice = $controler_node['notice_interval'];
+  
+
 	
 	//query to get temperature from table with sensor id 
 	//$query = "SELECT * FROM messages_in WHERE node_id = '{$sensor_id}' ORDER BY id desc LIMIT 1 ";
@@ -78,6 +89,28 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$result = $conn->query($query);
 	$roomtemp = mysqli_fetch_array($result);
 	$room_c = $roomtemp['payload'];	
+  $temp_reading_time = $roomtemp['datetime'];
+  
+  
+  //Calculate zone fail
+  
+  $zone_fault = 0;
+  if   ($controler_notice > 0) {
+      $now=strtotime(date('Y-m-d H:i:s'));
+      $controler_seen_time = strtotime($controler_seen);
+      if ($controler_seen_time  < ($now - ($controler_notice*60))){
+          $zone_fault = 1;
+      }
+  }
+  
+  if   ($sensor_notice > 0) {
+      $now=strtotime(date('Y-m-d H:i:s'));
+      $sensor_seen_time = strtotime($temp_reading_time); //using time from messages_in
+      if ($sensor_seen_time  < ($now - ($sensor_notice*60))){
+          $zone_fault = 1;
+      }
+  }   
+
 	
 	//query to get schedule and temperature from table 
 	$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between start AND end AND zone_id = {$row['id']} AND tz_status = '1' AND (WeekDays & (1 << {$dow})) > 0 LIMIT 1";
@@ -157,101 +190,110 @@ while ($row = mysqli_fetch_assoc($results)) {
     //  boost(rocket) 
     //  override(refresh) 
     //  bed(bed)
-    if ($room_c < $frost_c) {
-        //We don't care about any other conditions, protect against frost
-        $status='red';
-        $shactive='ion-ios-snowy';
-        $shcolor='';
-        $target=number_format(DispTemp($conn,$frost_c),0) . '&deg;';
+    
+    if ($zone_fault == '1') {
+      //Zone fault
+      $status='';  
+      $shactive='ion-android-cancel';
+      $shcolor='red';
+      $target='';     //show no target temperature
     }
-    else 
-    {
-        //we aren't in danger of freezing, so check our normal conditions.
-        if ($away_active == '0') {
-            //We are under normal operating conditions.
-            if ($room_c >= $max_room_c) {
-                //We are over temp
-                $status='orange';
-                $shactive='ion-thermometer';
-                $shcolor='red';                 //special color
-                $target=number_format(DispTemp($conn,$max_room_c),0) . '&deg;';
-            }
-            else if ($night_climate_status == '1' && $room_c < $nc_min_c) {
-                //We are night climate and heating
-                $status='red';   
-                $shactive='fa-bed';
-                $shcolor='';
-                $target=number_format(DispTemp($conn,$nc_min_c),0) . '&deg;';
-            }    
-            else if ($night_climate_status == '1' && $room_c >= $nc_min_c) {
-                //We are night climate and NOT heating
-                $status='orange';
-                $shactive='fa-bed';
-                $shcolor='';
-                $target=number_format(DispTemp($conn,$nc_min_c),0) . '&deg;';
-            }    
-            else if ($bactive == '1' && $room_c < $boost_c) {
-                //We are boost and heating
-                $status='red';   
-                $shactive='fa-rocket';
-                $shcolor='';
-                $target=number_format(DispTemp($conn,$boost_c),0) . '&deg;';
-            }
-            else if ($bactive == '1' && $room_c >= $boost_c) {
-                //We are boost and NOT heating
-                $status='orange';
-                $shactive='fa-rocket';
-                $shcolor='';
-                $target=number_format(DispTemp($conn,$boost_c),0) . '&deg;';
-            }
-            //else if (($sch_status == 1) && ($ovactive == '1') && ($room_c < $schedule_c)) {
-			else if (($ovactive == '1') && ($room_c < $override_c)) {
-                //We are override scheduled and heating
-                $status="blue";
-                $shactive='fa-refresh';
-                $shcolor='';
-                $target=number_format(DispTemp($conn,$override_c),0) . '&deg;';
-            }
-            else if (($ovactive == '1') && ($room_c >= $override_c)) {
-                //We are override scheduled and NOT heating
-                $status='orange';
-                $shactive='fa-refresh';
-                $shcolor='';
-                $target=number_format(DispTemp($conn,$override_c),0) . '&deg;';
-            }
-            else if (($sch_status == 1) && ($room_c < $schedule_c)) {
-                //We are scheduled and heating
-                $status='red';   
-                $shactive='ion-ios-clock-outline';
-                $shcolor='';
-                $target=number_format(DispTemp($conn,$schedule_c),0) . '&deg;';
-            }
-            else if (($sch_status == 1) && ($room_c >= $schedule_c)) {
-                //We are scheduled and heating
-                $status='orange';
-                $shactive='ion-ios-clock-outline';
-                $shcolor='';
-                $target=number_format(DispTemp($conn,$schedule_c),0) . '&deg;';
-            }
-            else {
-                //We shouldn't get here.
-                $status='';      
-				//$shactive='fa-question';
-				$shactive='';
-                $shcolor='';
-                $target='';     //show no target temperature
-            }            
-        }
-        else
-        {
-            //We are away
-            $status='blue';  
-            $shactive='fa-sign-out';
-            $shcolor='';
-            $target='';     //show no target temperature
-        }
+    else{
+      if ($room_c < $frost_c) {
+          //We don't care about any other conditions, protect against frost
+          $status='red';
+          $shactive='ion-ios-snowy';
+          $shcolor='';
+          $target=number_format(DispTemp($conn,$frost_c),0) . '&deg;';
+      }
+      else 
+      {
+          //we aren't in danger of freezing, so check our normal conditions.
+          if ($away_active == '0') {
+              //We are under normal operating conditions.
+              if ($room_c >= $max_room_c) {
+                  //We are over temp
+                  $status='orange';
+                  $shactive='ion-thermometer';
+                  $shcolor='red';                 //special color
+                  $target=number_format(DispTemp($conn,$max_room_c),0) . '&deg;';
+              }
+              else if ($night_climate_status == '1' && $room_c < $nc_min_c) {
+                  //We are night climate and heating
+                  $status='red';   
+                  $shactive='fa-bed';
+                  $shcolor='';
+                  $target=number_format(DispTemp($conn,$nc_min_c),0) . '&deg;';
+              }    
+              else if ($night_climate_status == '1' && $room_c >= $nc_min_c) {
+                  //We are night climate and NOT heating
+                  $status='orange';
+                  $shactive='fa-bed';
+                  $shcolor='';
+                  $target=number_format(DispTemp($conn,$nc_min_c),0) . '&deg;';
+              }    
+              else if ($bactive == '1' && $room_c < $boost_c) {
+                  //We are boost and heating
+                  $status='red';   
+                  $shactive='fa-rocket';
+                  $shcolor='';
+                  $target=number_format(DispTemp($conn,$boost_c),0) . '&deg;';
+              }
+              else if ($bactive == '1' && $room_c >= $boost_c) {
+                  //We are boost and NOT heating
+                  $status='orange';
+                  $shactive='fa-rocket';
+                  $shcolor='';
+                  $target=number_format(DispTemp($conn,$boost_c),0) . '&deg;';
+              }
+              //else if (($sch_status == 1) && ($ovactive == '1') && ($room_c < $schedule_c)) {
+  			else if (($ovactive == '1') && ($room_c < $override_c)) {
+                  //We are override scheduled and heating
+                  $status="blue";
+                  $shactive='fa-refresh';
+                  $shcolor='';
+                  $target=number_format(DispTemp($conn,$override_c),0) . '&deg;';
+              }
+              else if (($ovactive == '1') && ($room_c >= $override_c)) {
+                  //We are override scheduled and NOT heating
+                  $status='orange';
+                  $shactive='fa-refresh';
+                  $shcolor='';
+                  $target=number_format(DispTemp($conn,$override_c),0) . '&deg;';
+              }
+              else if (($sch_status == 1) && ($room_c < $schedule_c)) {
+                  //We are scheduled and heating
+                  $status='red';   
+                  $shactive='ion-ios-clock-outline';
+                  $shcolor='';
+                  $target=number_format(DispTemp($conn,$schedule_c),0) . '&deg;';
+              }
+              else if (($sch_status == 1) && ($room_c >= $schedule_c)) {
+                  //We are scheduled and heating
+                  $status='orange';
+                  $shactive='ion-ios-clock-outline';
+                  $shcolor='';
+                  $target=number_format(DispTemp($conn,$schedule_c),0) . '&deg;';
+              }
+              else {
+                  //We shouldn't get here.
+                  $status='';      
+  				//$shactive='fa-question';
+  				$shactive='';
+                  $shcolor='';
+                  $target='';     //show no target temperature
+              }            
+          }
+          else
+          {
+              //We are away
+              $status='blue';  
+              $shactive='fa-sign-out';
+              $shcolor='';
+              $target='';     //show no target temperature
+          }
+      }
     }
-
     //Left small circular icon/color status
     echo '<small class="statuscircle"><i class="fa fa-circle fa-fw ' . $status . '"></i></small>';
     //Middle target temp
