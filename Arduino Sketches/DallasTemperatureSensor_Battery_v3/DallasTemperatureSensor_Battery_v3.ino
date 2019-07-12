@@ -8,8 +8,8 @@
 //    S M A R T   H E A T I N G   C O N T R O L 
 // *****************************************************************
 // *       Battery Powered OneWire DS18B20 Temperature Sensor      *
-// *           Version 0.31 Build Date 06/11/2017                  *
-// *            Last Modification Date 09/05/2019                  *
+// *           Version 0.32 Build Date 06/11/2017                  *
+// *            Last Modification Date 10/07/2019                  *
 // *                                          Have Fun - PiHome.eu *
 // *****************************************************************
 
@@ -57,12 +57,15 @@
 #define CHILD_ID_BATT 1
 #define CHILD_ID_TEMP 0
 
-#define COMPARE_TEMP 1 // Send temperature only if changed? 1 = Yes 0 = No
-#define COMPARE_BVOLT 1 // Send battery voltage only if changed? 1 = Yes 0 = No
+#define COMPARE_TEMP 25 // Send temperature only if changed? 1 = Yes 0 = No, > 1 - force send if it value not sent that number of times and value is valid (keep lower than notice interval)
+#define COMPARE_BVOLT 1 // Send battery voltage only if changed? 1 = Yes 0 = No, > 1 - force send if it value not sent that number of times
 #define ONE_WIRE_BUS 3 // Pin where dallase sensor is connected 
 
 #define MAX_ATTACHED_DS18B20 2
 unsigned long SLEEP_TIME = 56000; // Sleep time between reads (in milliseconds)
+
+int batteryNotSentCount=0;
+int temperatureNotSentCount[MAX_ATTACHED_DS18B20];
 
 // Battery related init
 int BATTERY_SENSE_PIN = A0;  // select the input pin for the battery sense point
@@ -105,7 +108,7 @@ void setup(){
 
 void presentation() {
 	// Send the sketch version information to the gateway and Controller
-	sendSketchInfo("Temperature Sensor", "0.31");
+	sendSketchInfo("Temperature Sensor", "0.32");
 	// Fetch the number of attached temperature sensors  
 	numSensors = sensors.getDeviceCount();
 	//Blink LED as number of sensors attached
@@ -164,10 +167,19 @@ void loop(){
 			sendBatteryLevel(batteryPcnt);
 			oldBatteryV = batteryV;
 		}
-	#else
+	#elif COMPARE_BVOLT == 0
 		send(msgBatt.set(batteryV, 2));
 		sendBatteryLevel(batteryPcnt);
-		oldBatteryV = batteryV; 
+  #else
+    if (oldBatteryV != batteryV || batteryNotSentCount>=COMPARE_BVOLT) {
+      send(msgBatt.set(batteryV, 2));
+      sendBatteryLevel(batteryPcnt);
+      oldBatteryV = batteryV;
+      batteryNotSentCount=0;
+    }
+    else{
+      batteryNotSentCount++;
+    }
 	#endif
 
 	// Fetch temperatures from Dallas sensors
@@ -183,14 +195,30 @@ void loop(){
 		// Only send data if temperature has changed and no error
 		#if COMPARE_TEMP == 1
 			if (lastTemperature[i] != temperature && temperature != -127.00 && temperature != 85.00) {
-		#else
-			if (temperature != -127.00 && temperature != 85.00) {
-		#endif
-			// Send in the new temperature
-			send(msg.setSensor(i).set(temperature,1));
-			// Save new temperatures for next compare
-			lastTemperature[i]=temperature;
+        // Send in the new temperature
+        send(msg.setSensor(i).set(temperature,1));
+        // Save new temperatures for next compare
+        lastTemperature[i]=temperature;       
 			}
+		#elif COMPARE_TEMP == 0
+			if (temperature != -127.00 && temperature != 85.00) {
+        // Send in the new temperature
+        send(msg.setSensor(i).set(temperature,1));
+      }
+		#else
+      if ((lastTemperature[i] != temperature || temperatureNotSentCount[i]>=COMPARE_TEMP) && temperature != -127.00 && temperature != 85.00) {
+        // Send in the new temperature
+        send(msg.setSensor(i).set(temperature,1));
+        // Save new temperatures for next compare
+        lastTemperature[i]=temperature; 
+        //Reset values not sent count
+        temperatureNotSentCount[i]=0;      
+      }
+      else{
+        lastTemperature[i]=temperature; 
+        temperatureNotSentCount[i]++;
+      }
+    #endif
 		}
 		//Condition to check battery levell is lower then minimum then blink led 3 times
 		if (batteryV < 2.9) { //for 18650 Battery Powered Sensor 
