@@ -97,6 +97,15 @@ $lang['override'] = "Forcer";
 $lang['boost'] = "Booster";
 $lang['away'] = "De sortie";
 $lang['holidays'] = "Vacances";
+$lang['holidays_add'] = "Ajouter un Vacances";
+$lang['holidays_enable'] = "Activer le Vacances";
+$lang['holidays_add_success'] = "Vacances ajoutées avec succès !!!";
+$lang['holidays_add_error'] = "L'ajout de jours fériés a échoué avec l'erreur: ";
+$lang['holidays_modify_success'] = "Vacances  modifiée avec succès !!!";
+$lang['holidays_modify_error'] = "La modification de la Vacances a échoué avec l'erreur :";
+$lang['holidays_departure'] = "Départ";
+$lang['holidays_return'] = "Revenir";
+$lang['holidays_edit'] = "Modifier le Vacances";
 
 $lang['night_climate'] = "Régulation thermique nocturne";
 $lang['night_climate_time_success'] = "Période de régulation thermique nocturne modifiée avec succès !!!";

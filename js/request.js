@@ -46,6 +46,12 @@ function active_holidays(wid){
 	request('db.php', 'GET', quest, function(){ $('#holidayslist').load('holidayslist.php'); } );
 }
 
+//delete holidays
+function delete_holidays(wid){
+        var quest = "?w=holidays&o=delete&wid=" + wid + "&frost_temp=0";
+        request('db.php', 'GET', quest, function(){ $('#holidayslist').load('holidayslist.php'); } );
+}
+
 //activate and deactivate schedule 
 function active_schedule(wid){
 	var quest = "?w=schedule&o=active&wid=" + wid + "&frost_temp=0";

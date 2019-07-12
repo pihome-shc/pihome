@@ -35,9 +35,9 @@
     <!-- Metis Menu Plugin JavaScript -->
     <script src="js/plugins/metisMenu/metisMenu.min.js"></script>
 
-	<!-- bootstrap datepicker JavaScript
-	<script src="js/plugins/datepicker/bootstrap-datepicker.js"></script>
- -->
+	<!-- bootstrap datepicker JavaScript -->
+	<script src="js/plugins/datepicker/bootstrap-datetimepicker.js"></script>
+
  
     <!-- Custom Theme JavaScript -->
     <script src="js/sb-admin-2.js"></script>
@@ -140,6 +140,17 @@ if (($_SERVER['REQUEST_URI'] == '/schedule_add.php') OR ($_SERVER['SCRIPT_NAME']
 	}
 }
 ?>
+
+<?php if (($_SERVER['REQUEST_URI'] == '/holidays_add.php') OR ($_SERVER['SCRIPT_NAME'] == '/holidays_edit.php')){ ?>
+    $(".form_datetime").datetimepicker({
+        //format: "dd MM yyyy - hh:ii",
+		format: "yyyy-mm-dd hh:ii",
+        autoclose: true,
+        todayBtn: true,
+        startDate: "2019-07-09 10:00",
+        minuteStep: 10
+    });
+<?php } ?>
 </script>
 
 <?php if ($_SERVER['REQUEST_URI'] == '/chart.php'){include("chartfooter.php");} ?>

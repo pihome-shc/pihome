@@ -59,29 +59,29 @@ if(($what=="zone") && ($opp=="delete")){
 	$query = "UPDATE zone SET zone.purge='1', zone.sync='0' WHERE id = '".$wid."'";
 	$conn->query($query);
 }
-/* Holiday Module isn’t implanted yet!!!! leave code here for future.  
+
 //Holidays 
 if($what=="holidays"){
 	if($opp=="active"){
 		$query = "SELECT * FROM holidays WHERE id ='".$wid."'";
 		$results = $conn->query($query);	
 		$row = mysqli_fetch_assoc($results);
-		$da= $row['active'];
+		$da= $row['status'];
 		if($da=="1"){ $set="0"; }else{ $set="1"; }
-		$query  = "UPDATE holidays SET active='".$set."' WHERE id = '".$wid."'";
+		$query  = "UPDATE holidays SET status='".$set."' WHERE id = '".$wid."'";
 		$conn->query($query);
 	}elseif ($opp=="delete") {
 		$query = "DELETE FROM holidays WHERE id ='".$wid."'";
 		$conn->query($query);
 	}
 }
-*/
 
 //Users accounts
 if(($what=="user") && ($opp=="delete")){
 		$query = "DELETE FROM user WHERE id = '".$wid."'"; 
 		$conn->query($query);
 }
+
 //Heating Schedule 
 if($what=="schedule"){
 	if($opp=="active"){
@@ -148,14 +148,9 @@ if($what=="boost"){
 		if($boost_status=="1"){ $set="0"; }else{ $set="1";}
 		$query = "UPDATE boost SET status = '{$set}', sync = '0', time = '{$time}' WHERE id = '{$wid}' LIMIT 1";
 		$conn->query($query);
-		//First check if Boost Button Console exit
-		$query = "SELECT * FROM nodes WHERE node_id = '{$boost_button_id}' AND child_id = {$row['boost_button_child_id']} LIMIT 1;";
-		$rowcount=$conn->query($query);
-		if(mysqli_num_rows($rowcount)!=0){
-			//this line update message out for Boost Button Console
-			$query = "UPDATE messages_out SET payload = '{$set}', datetime = '{$time}', sent = '0', sync = '0' WHERE zone_id = '{$zone_id}' AND node_id = {$row['boost_button_id']} AND child_id = {$row['boost_button_child_id']} LIMIT 1";
-			$conn->query($query);
-		}
+		//this line update message out 
+		$query = "UPDATE messages_out SET payload = '{$set}', datetime = '{$time}', sent = '0', sync = '0' WHERE zone_id = '{$zone_id}' AND node_id = {$row['boost_button_id']} AND child_id = {$row['boost_button_child_id']} LIMIT 1";
+		$conn->query($query);
 	}
 }
 //Away 
@@ -274,9 +269,6 @@ if($what=="setup_piconnect"){
 	//Update boiler logs to sync 
 	$query = "UPDATE boiler_logs SET `sync`='0';";
 	$result = $conn->query($query);
-	//upate override records to sync 
-	$query = "UPDATE override SET `sync` ='0';";
-	$result = $conn->query($query);
 	//upate boost records to sync 
 	$query = "UPDATE boost SET `sync` ='0';";
 	$result = $conn->query($query);
@@ -347,15 +339,50 @@ if($what=="db_backup"){
 
 //Reboot System
 if($what=="reboot"){
-	exec("python /var/www/reboot.py"); 
+	
+	//Stop Cron Service 
+	//systemctl stop cron.service
+	exec("systemctl stop cron.service");
+	
+	//Kill Gateway Process
+	$query = "SELECT * FROM gateway where status = 1 order by id asc LIMIT 1;";
+	$result = $conn->query($query);
+	$row = mysqli_fetch_array($result);
+	$gw_pid = $row['pid'];
+	exec("kill -9 $gw_pid");
+	
+	//Stop MySQL/MariaDB Service
+	//systemctl stop mysql.service
+	exec("systemctl stop mysql.service"); 
+	
+	//exec("python /var/www/reboot.py"); 
 	$info_message = "Server is rebooting <small> Please Do not Refresh... </small>";
 }
 
 //Shutdown System
 if($what=="shutdown"){
+	
+	/*
+	//Stop Cron Service 
+	//systemctl stop cron.service
+	exec("systemctl stop cron.service");
+	
+	//Kill Gateway Process
+	$query = "SELECT * FROM gateway where status = 1 order by id asc LIMIT 1;";
+	$result = $conn->query($query);
+	$row = mysqli_fetch_array($result);
+	$gw_pid = $row['pid'];
+	exec("kill -9 $gw_pid");
+	
+	//Stop MySQL/MariaDB Service
+	//systemctl stop mysql.service
+	exec("systemctl stop mysql.service"); 
+	*/
+	//Shutdown System
 	exec("python /var/www/shutdown.py"); 
 	$info_message = "Server is Shutting down <small> Please Do not Refresh... </small>";
 }
+
 
 //Search for network gateway
 if($what=="find_gw"){
