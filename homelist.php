@@ -81,46 +81,44 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$sensor = mysqli_fetch_array($result);
 	$sensor_id = $sensor['node_id'];
 	$sensor_child_id = $row['sensor_child_id'];
-  $sensor_seen = $sensor['last_seen']; //not using this cause it updates on battery update 
-  $sensor_notice = $sensor['notice_interval'];
-  
-  //Get data from nodes table
-  $query = "SELECT * FROM nodes WHERE id ={$row['controler_id']} LIMIT 1;";
-  $result = $conn->query($query);
-  $controler_node = mysqli_fetch_array($result);
-  $controler_seen = $controler_node['last_seen'];
-  $controler_notice = $controler_node['notice_interval'];
+	$sensor_seen = $sensor['last_seen']; //not using this cause it updates on battery update 
+	$sensor_notice = $sensor['notice_interval'];
+	
+	//Get data from nodes table
+	$query = "SELECT * FROM nodes WHERE id ={$row['controler_id']} LIMIT 1;";
+	$result = $conn->query($query);
+	$controler_node = mysqli_fetch_array($result);
+	$controler_seen = $controler_node['last_seen'];
+	$controler_notice = $controler_node['notice_interval'];
   
 
-	
 	//query to get temperature from table with sensor id 
 	//$query = "SELECT * FROM messages_in WHERE node_id = '{$sensor_id}' ORDER BY id desc LIMIT 1 ";
 	$query = "SELECT * FROM messages_in WHERE node_id = '{$sensor_id}' AND child_id = '{$sensor_child_id}' ORDER BY id desc LIMIT 1 ";
 	$result = $conn->query($query);
 	$roomtemp = mysqli_fetch_array($result);
 	$room_c = $roomtemp['payload'];	
-  $temp_reading_time = $roomtemp['datetime'];
+	$temp_reading_time = $roomtemp['datetime'];
   
   
-  //Calculate zone fail
-  
-  $zone_fault = 0;
-  if   ($controler_notice > 0) {
-      $now=strtotime(date('Y-m-d H:i:s'));
-      $controler_seen_time = strtotime($controler_seen);
-      if ($controler_seen_time  < ($now - ($controler_notice*60))){
-          $zone_fault = 1;
-      }
-  }
-  
-  if   ($sensor_notice > 0) {
-      $now=strtotime(date('Y-m-d H:i:s'));
-      $sensor_seen_time = strtotime($temp_reading_time); //using time from messages_in
-      if ($sensor_seen_time  < ($now - ($sensor_notice*60))){
-          $zone_fault = 1;
-      }
-  }   
-
+  //Check Zone Controller Fault
+	$zone_ctr_fault = 0;
+	$zone_sensor_fault = 0;
+	if($controler_notice > 0) {
+		$now=strtotime(date('Y-m-d H:i:s'));
+		$controler_seen_time = strtotime($controler_seen);
+		if($controler_seen_time  < ($now - ($controler_notice*60))){
+			$zone_ctr_fault = 1;
+		}
+	}
+	//Check Zone Temperature Sensors Fault 
+	if($sensor_notice > 0) {
+		$now=strtotime(date('Y-m-d H:i:s'));
+		$sensor_seen_time = strtotime($temp_reading_time); //using time from messages_in
+		if ($sensor_seen_time  < ($now - ($sensor_notice*60))){
+			$zone_sensor_fault = 1;
+		}
+	}   
 	
 	//query to get schedule and temperature from table 
 	$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between start AND end AND zone_id = {$row['id']} AND tz_status = '1' AND (WeekDays & (1 << {$dow})) > 0 LIMIT 1";
@@ -200,8 +198,8 @@ while ($row = mysqli_fetch_assoc($results)) {
     //  boost(rocket) 
     //  override(refresh) 
     //  bed(bed)
-    
-    if ($zone_fault == '1') {
+    	
+    if (($zone_ctr_fault == '1') OR ($zone_sensor_fault == '1')) {
       //Zone fault
       $status='';  
       $shactive='ion-android-cancel';
@@ -219,7 +217,7 @@ while ($row = mysqli_fetch_assoc($results)) {
       else 
       {
           //we aren't in danger of freezing, so check our normal conditions.
-          if ( $away_active != '1' && $holidays_active != '1') {
+          if ($away_active == '0') {
               //We are under normal operating conditions.
               if ($room_c >= $max_room_c) {
                   //We are over temp
@@ -303,12 +301,11 @@ while ($row = mysqli_fetch_assoc($results)) {
           }
           else
           {
-            //We are away or on holiday
-            $status='blue';
-            if ($away_active == '1') {$shactive='fa-sign-out';} else {$shactive='fa-paper-plane';}
-            $shcolor='';
-            $target='';     //show no target temperature
-            $style="margin-left: 48px;";
+              //We are away
+              $status='blue';  
+              $shactive='fa-sign-out';
+              $shcolor='';
+              $target='';     //show no target temperature
           }
       }
     }
@@ -330,6 +327,10 @@ while ($row = mysqli_fetch_assoc($results)) {
 	<h5 class="modal-title">'.$row['name'].' - '.$lang['schedule_active_today'].'</h5>
 	</div>
 	<div class="modal-body">';
+	if (($zone_ctr_fault == '1') OR ($zone_sensor_fault == '1')) {
+		echo "Zone Fault Text Goes here!!!!";
+	}
+	
 	$squery = "SELECT * FROM schedule_daily_time_zone_view where zone_id ='{$row['id']}' AND tz_status = 1  AND (WeekDays & (1 << {$dow})) > 0 ORDER BY start asc";
 	$sresults = $conn->query($squery);
 	if (mysqli_num_rows($sresults) == 0){
