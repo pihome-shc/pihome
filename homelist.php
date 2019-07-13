@@ -219,7 +219,7 @@ while ($row = mysqli_fetch_assoc($results)) {
       else 
       {
           //we aren't in danger of freezing, so check our normal conditions.
-          if ($away_active == '0') {
+          if ( $away_active != '1' && $holidays_active != '1') {
               //We are under normal operating conditions.
               if ($room_c >= $max_room_c) {
                   //We are over temp
@@ -303,11 +303,12 @@ while ($row = mysqli_fetch_assoc($results)) {
           }
           else
           {
-              //We are away
-              $status='blue';  
-              $shactive='fa-sign-out';
-              $shcolor='';
-              $target='';     //show no target temperature
+            //We are away or on holiday
+            $status='blue';
+            if ($away_active == '1') {$shactive='fa-sign-out';} else {$shactive='fa-paper-plane';}
+            $shcolor='';
+            $target='';     //show no target temperature
+            $style="margin-left: 48px;";
           }
       }
     }
