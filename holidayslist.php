@@ -68,7 +68,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 					 <a style="color: #333; cursor: pointer; text-decoration: none;" data-toggle="collapse" data-parent="#accordion" href="#collapse'.$row['id'].'">
                      <div class="header">
                      <div class="text-info">&nbsp;&nbsp;&nbsp;&nbsp;From: '.$row['start_date_time'].' </div> 
-					 <div class="text-info">&nbsp;&nbsp;&nbsp;&nbsp;Until: '.$row['end_date_time'].'</div></a>
+					 <div class="text-info">&nbsp;&nbsp;&nbsp;&nbsp;Until: &nbsp;&nbsp;'.$row['end_date_time'].'</div></a>
 
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	<a href="javascript:delete_holidays('.$row["id"].');"><button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></button> </a>
