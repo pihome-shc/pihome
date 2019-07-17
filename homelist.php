@@ -88,6 +88,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$query = "SELECT * FROM nodes WHERE id ={$row['controler_id']} LIMIT 1;";
 	$result = $conn->query($query);
 	$controler_node = mysqli_fetch_array($result);
+	$controler_id = $controler_node['node_id'];
 	$controler_seen = $controler_node['last_seen'];
 	$controler_notice = $controler_node['notice_interval'];
   
@@ -324,38 +325,44 @@ while ($row = mysqli_fetch_assoc($results)) {
 	<div class="modal-content">
 	<div class="modal-header">
 	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-	<h5 class="modal-title">'.$row['name'].' - '.$lang['schedule_active_today'].'</h5>
+	<h5 class="modal-title">'.$row['name'].'</h5>
 	</div>
 	<div class="modal-body">';
-	if (($zone_ctr_fault == '1') OR ($zone_sensor_fault == '1')) {
-		echo "Zone Fault Text Goes here!!!!";
-	}
+	if ($zone_ctr_fault == '1') {
+		echo '<div class="red">Zone Controller ID '.$controler_id. ' last seen at '.$controler_seen.'. Heating system will resume its normal operation once this issue is fixed.</div>';
+		//echo $zone_senros_txt;
+	}elseif ($zone_sensor_fault == '1'){
+		echo '<div class="red">Zone Temperature Sensor ID '.$sensor_id. ' last seen at '.$sensor_seen.'. Heating system will resume for this zone its normal operation once this issue is fixed.</div>';
+	}else{
 	
-	$squery = "SELECT * FROM schedule_daily_time_zone_view where zone_id ='{$row['id']}' AND tz_status = 1  AND (WeekDays & (1 << {$dow})) > 0 ORDER BY start asc";
-	$sresults = $conn->query($squery);
-	if (mysqli_num_rows($sresults) == 0){
-		echo '<div class=\"list-group\"><a href="#" class="list-group-item"><i class="fa fa-exclamation-triangle red"></i>&nbsp;&nbsp;'.$lang['schedule_active_today'].' '.$row['name'].'!!! </a>';
-	} else {
-		//echo '<h4>'.mysqli_num_rows($sresults).' Schedule Records found.</h4>';
-		echo '<p>'.$lang['schedule_disble'].'</p>
-		<br>
-		<div class=\"list-group\">' ;
-		while ($srow = mysqli_fetch_assoc($sresults)) {
-			$shactive="orangesch_list";
-			$time = strtotime(date("G:i:s")); 
-			$start_time = strtotime($srow['start']);
-			$end_time = strtotime($srow['end']);
-			if ($time >$start_time && $time <$end_time){$shactive="redsch_list";}
-			//this line to pass unique argument  "?w=schedule_list&o=active&wid=" href="javascript:delete_schedule('.$srow["id"].');"
-			echo ' <a href="javascript:schedule_zone('.$srow['tz_id'].');" class="list-group-item">
-			<div class="circle_list '. $shactive.'"> <p class="schdegree">'.number_format(DispTemp($conn,$srow['temperature']),0).'&deg;</p></div>
-			<span class="pull-right text-muted sch_list"><em>'. $srow['start'].' - ' .$srow['end'].'</em></span></a>';
+		$squery = "SELECT * FROM schedule_daily_time_zone_view where zone_id ='{$row['id']}' AND tz_status = 1  AND (WeekDays & (1 << {$dow})) > 0 ORDER BY start asc";
+		$sresults = $conn->query($squery);
+		if (mysqli_num_rows($sresults) == 0){
+			echo '<div class=\"list-group\"><a href="#" class="list-group-item"><i class="fa fa-exclamation-triangle red"></i>&nbsp;&nbsp;'.$lang['schedule_active_today'].' '.$row['name'].'!!! </a>';
+		} else {
+			//echo '<h4>'.mysqli_num_rows($sresults).' Schedule Records found.</h4>';
+			echo '<p>'.$lang['schedule_disble'].'</p>
+			<br>
+			<div class=\"list-group\">' ;
+			while ($srow = mysqli_fetch_assoc($sresults)) {
+				$shactive="orangesch_list";
+				$time = strtotime(date("G:i:s")); 
+				$start_time = strtotime($srow['start']);
+				$end_time = strtotime($srow['end']);
+				if ($time >$start_time && $time <$end_time){$shactive="redsch_list";}
+				//this line to pass unique argument  "?w=schedule_list&o=active&wid=" href="javascript:delete_schedule('.$srow["id"].');"
+				echo ' <a href="javascript:schedule_zone('.$srow['tz_id'].');" class="list-group-item">
+				<div class="circle_list '. $shactive.'"> <p class="schdegree">'.number_format(DispTemp($conn,$srow['temperature']),0).'&deg;</p></div>
+				<span class="pull-right text-muted sch_list"><em>'. $srow['start'].' - ' .$srow['end'].'</em></span></a>';
+			}
 		}
+		echo '</div>';
 	}
-	echo '</div></div><div class="modal-footer"><button type="button" class="btn btn-default btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
+	echo '
+	</div><div class="modal-footer"><button type="button" class="btn btn-default btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
 	</div></div></div></div>';				
 						
-//end of while loop	<a href="javascript:active_away();">
+//end of while loop
 }
 
 
