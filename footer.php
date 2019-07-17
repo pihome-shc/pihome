@@ -126,7 +126,7 @@ $(document).ready(function(){
 
 <script>
 <?php 
-if (($_SERVER['REQUEST_URI'] == '/schedule_add.php') OR ($_SERVER['SCRIPT_NAME'] == '/schedule_edit.php')){
+if (($_SERVER['SCRIPT_NAME'] == '/schedule_edit.php') OR ($_SERVER['SCRIPT_NAME'] == '/schedule_add.php')){
 	$query = "select * from zone where status = 1;";
 	$results = $conn->query($query);	
 	while ($row = mysqli_fetch_assoc($results)) { ?>

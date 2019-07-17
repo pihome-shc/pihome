@@ -61,6 +61,8 @@ if(($what=="zone") && ($opp=="delete")){
 }
 
 //Holidays 
+//following variable set to 0 on start for array index.
+$sch_time_index = '0';
 if($what=="holidays"){
 	if($opp=="active"){
 		$query = "SELECT * FROM holidays WHERE id ='".$wid."'";
@@ -71,8 +73,21 @@ if($what=="holidays"){
 		$query  = "UPDATE holidays SET status='".$set."' WHERE id = '".$wid."'";
 		$conn->query($query);
 	}elseif ($opp=="delete") {
-		$query = "DELETE FROM holidays WHERE id ='".$wid."'";
+                $query = "SELECT * FROM schedule_daily_time_zone WHERE holidays_id = '".$wid."'";
+		$results = $conn->query($query);
+		while ($row = mysqli_fetch_assoc($results)) {
+			$hid = $row['schedule_daily_time_id'];
+                	$schedule_time[$sch_time_index] = $hid;
+                	$sch_time_index = $sch_time_index+1;
+		}
+                $query = "DELETE FROM holidays WHERE id = '".$wid."'";
+                $conn->query($query);
+		$query = "DELETE FROM schedule_daily_time_zone WHERE holidays_id = '".$wid."';";
 		$conn->query($query);
+                for ($x = 0; $x <= $sch_time_index; $x++) {
+                        $query = "DELETE FROM schedule_daily_time WHERE id = '".$schedule_time[$x]."';";
+                        $conn->query($query);
+                }
 	}
 }
 
