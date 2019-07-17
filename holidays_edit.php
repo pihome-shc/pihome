@@ -71,12 +71,12 @@ $holidays_row = mysqli_fetch_assoc($results);
 				<label for="checkbox0"> <?php echo $lang['holidays_enable']; ?></label></div>
 
 				<div class="form-group input-append date form_datetime" class="control-label"><label><i class="fa fa-paper-plane fa-1x"></i> <?php echo $lang['holidays_departure']; ?></label>
-				<input class="form-control input-sm" type="text" id="start_date_time" name="start_date_time" value="<?php if(isset($_POST['start_date_time'])) { echo $_POST['start_date_time']; } else { echo $holidays_row['start_date_time']; }?>" placeholder="Holiday Start Date & Time " required>
+				<input class="form-control input-sm" type="text" id="start_date_time" name="start_date_time" value="<?php if(isset($_POST['start_date_time'])) { echo $_POST['start_date_time']; } else { echo $holidays_row['start_date_time']; }?>" placeholder="Holiday Start Date & Time " readonly required>
 				<span class="add-on"><i class="icon-th"></i></span>
                 <div class="help-block with-errors"></div></div>
 				
 				<div class="form-group input-append date form_datetime" class="control-label"><label> <i class="fa fa-home fa-fw fa-1x"></i> <?php echo $lang['holidays_return']; ?></label>
-				<input class="form-control input-sm" type="text" id="end_date_time" name="end_date_time" value="<?php if(isset($_POST['end_date_time'])) { echo $_POST['end_date_time']; } else { echo $holidays_row['end_date_time']; }?>" placeholder="Holiday End Date & Time " required>
+				<input class="form-control input-sm" type="text" id="end_date_time" name="end_date_time" value="<?php if(isset($_POST['end_date_time'])) { echo $_POST['end_date_time']; } else { echo $holidays_row['end_date_time']; }?>" placeholder="Holiday End Date & Time " readonly required>
 				<span class="add-on"><i class="icon-th"></i></span>
                 <div class="help-block with-errors"></div></div>
 

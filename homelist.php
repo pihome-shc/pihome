@@ -1,13 +1,13 @@
-<?php 
+<?php
 /*
-   _____    _   _    _                             
-  |  __ \  (_) | |  | |                            
-  | |__) |  _  | |__| |   ___    _ __ ___     ___  
-  |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \ 
-  | |      | | | |  | | | (_) | | | | | | | |  __/ 
-  |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___| 
+   _____    _   _    _
+  |  __ \  (_) | |  | |
+  | |__) |  _  | |__| |   ___    _ __ ___     ___
+  |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \
+  | |      | | | |  | | | (_) | | | | | | | |  __/
+  |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___|
 
-     S M A R T   H E A T I N G   C O N T R O L 
+     S M A R T   H E A T I N G   C O N T R O L
 
 *************************************************************************"
 * PiHome is Raspberry Pi based Central Heating Control systems. It runs *"
@@ -19,7 +19,7 @@
 *************************************************************************"
 */
 
-require_once(__DIR__.'/st_inc/session.php'); 
+require_once(__DIR__.'/st_inc/session.php');
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
@@ -37,21 +37,21 @@ require_once(__DIR__.'/st_inc/functions.php');
                                 <h3 class="degre" style="margin-top:0px;"><i class="fa fa-bullseye fa-2x"></i></h3>
                                 <h3 class="status"></h3>
 							</button></a>
-<?php 
+<?php
 //query to get frost protection temperature
 $query = "SELECT * FROM frost_protection ORDER BY id desc LIMIT 1; ";
 $result = $conn->query($query);
 $frost_q = mysqli_fetch_array($result);
 $frost_c = $frost_q['temperature'];
 
-//following two variable set to 0 on start for array index. 
+//following two variable set to 0 on start for array index.
 $boost_index = '0';
 $override_index = '0';
 
 //following variable set to current day of the week.
 $dow = idate('w');
 
-//query to check away status 
+//query to check away status
 $query = "SELECT * FROM away LIMIT 1";
 $result = $conn->query($query);
 $away = mysqli_fetch_array($result);
@@ -76,31 +76,28 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$zone_enable=$row['status'];
 
 	//query to get node id from nodes table
-	$query = "SELECT * FROM nodes WHERE id = {$row['sensor_id']} AND nodes.`purge` = '0' LIMIT 1;";
+	$query = "SELECT * FROM nodes WHERE id = {$row['sensor_id']} AND nodes.`purge` = '0' AND status IS NOT NULL LIMIT 1;";
 	$result = $conn->query($query);
 	$sensor = mysqli_fetch_array($result);
 	$sensor_id = $sensor['node_id'];
 	$sensor_child_id = $row['sensor_child_id'];
-	$sensor_seen = $sensor['last_seen']; //not using this cause it updates on battery update 
+	$sensor_seen = $sensor['last_seen']; //not using this cause it updates on battery update
 	$sensor_notice = $sensor['notice_interval'];
 	
 	//Get data from nodes table
-	$query = "SELECT * FROM nodes WHERE id ={$row['controler_id']} LIMIT 1;";
+	$query = "SELECT * FROM nodes WHERE id ={$row['controler_id']} AND status = 'Active' LIMIT 1;";
 	$result = $conn->query($query);
 	$controler_node = mysqli_fetch_array($result);
 	$controler_id = $controler_node['node_id'];
 	$controler_seen = $controler_node['last_seen'];
 	$controler_notice = $controler_node['notice_interval'];
   
-
-	//query to get temperature from table with sensor id 
-	//$query = "SELECT * FROM messages_in WHERE node_id = '{$sensor_id}' ORDER BY id desc LIMIT 1 ";
-	$query = "SELECT * FROM messages_in WHERE node_id = '{$sensor_id}' AND child_id = '{$sensor_child_id}' ORDER BY id desc LIMIT 1 ";
+	//query to get temperature from table with sensor id
+	$query = "SELECT * FROM messages_in WHERE node_id = '{$sensor_id}' AND child_id = '{$sensor_child_id}' ORDER BY id desc LIMIT 1;";
 	$result = $conn->query($query);
 	$roomtemp = mysqli_fetch_array($result);
-	$room_c = $roomtemp['payload'];	
+	$room_c = $roomtemp['payload'];
 	$temp_reading_time = $roomtemp['datetime'];
-  
   
   //Check Zone Controller Fault
 	$zone_ctr_fault = 0;
@@ -112,18 +109,24 @@ while ($row = mysqli_fetch_assoc($results)) {
 			$zone_ctr_fault = 1;
 		}
 	}
-	//Check Zone Temperature Sensors Fault 
+	
+	//Check Zone Temperature Sensors Fault
 	if($sensor_notice > 0) {
 		$now=strtotime(date('Y-m-d H:i:s'));
 		$sensor_seen_time = strtotime($temp_reading_time); //using time from messages_in
 		if ($sensor_seen_time  < ($now - ($sensor_notice*60))){
 			$zone_sensor_fault = 1;
 		}
-	}   
-	
-	//query to get schedule and temperature from table 
-	$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between start AND end AND zone_id = {$row['id']} AND tz_status = '1' AND (WeekDays & (1 << {$dow})) > 0 LIMIT 1";
-	//$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between start AND end AND zone_id = {$row['id']} AND tz_status = '1' LIMIT 1";
+	}
+
+	//query to get schedule and temperature from table
+	if ($holidays_status) {
+		$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between start AND end AND zone_id = {$row['id']} AND tz_status = '1' AND (WeekDays & (1 << {$dow})) > 0 AND holidays_id IS NOT NULL LIMIT 1";
+		//$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between start AND end AND zone_id = {$row['id']} AND tz_status = '1' AND (WeekDays & (1 << {$dow})) > 0 LIMIT 1";
+	} else {
+		$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between start AND end AND zone_id = {$row['id']} AND tz_status = '1' AND (WeekDays & (1 << {$dow})) > 0 AND holidays_id IS NULL LIMIT 1";
+		//$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between start AND end AND zone_id = {$row['id']} AND tz_status = '1' LIMIT 1";
+	}
 	$sch_results = $conn->query($query);
 	$schedule = mysqli_fetch_array($sch_results);
 	$zone_status = $schedule['tz_status'];
@@ -131,33 +134,39 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$end_time = $schedule['end'];
 	$schedule_c = $schedule['temperature'];
 	$sch_status = $schedule['time_status'];
+  	if (isset($schedule['holidays_id'])) {
+    		$sch_holidays = 1;
+    		$sch_boiler_holidays = 1;
+  	} else {
+    		$sch_holidays = 0;
+	}
 	$shactive=" ";
 	/*
 	$sch_status = $schedule['status'];
 	$sch_active = $schedule['active'];
 	*/
-	//query to check override status and get temperature from override table 
+	//query to check override status and get temperature from override table
 	$query = "SELECT * FROM override WHERE zone_id = {$row['id']} LIMIT 1";
 	$result = $conn->query($query);
 	$override = mysqli_fetch_array($result);
 	$ovactive = $override['status'];
 	$override_c = $override['temperature'];
 	
-	//query to check boost status and get temperature from boost table 
+	//query to check boost status and get temperature from boost table
 	//$query = "SELECT * FROM boost WHERE zone_id = {$zone_id} LIMIT 1;";
 	$query = "SELECT * FROM boost WHERE zone_id = {$row['id']} AND status = 1 LIMIT 1;";
 	$result = $conn->query($query);
-	if (mysqli_num_rows($result) != 0){  
+	if (mysqli_num_rows($result) != 0){
 		$boost = mysqli_fetch_array($result);
 		$bactive = $boost['status'];
 		$time = $boost['time'];
 		$boost_c = $boost['temperature'];
-		$minute = $boost['minute'];  
-	} else { 
+		$minute = $boost['minute'];
+	} else {
 		$bactive = '0';
 	}
 
-	//query to check night cliemate status and get temperature from night climate table 
+	//query to check night cliemate status and get temperature from night climate table
 	$query = "select * from schedule_night_climat_zone_view WHERE zone_id = {$row['id']} LIMIT 1";
 	$result = $conn->query($query);
 	$night_climate = mysqli_fetch_array($result);
@@ -179,8 +188,6 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$boost_index = $boost_index+1;
 	$override_arr[$override_index] = $ovactive;
 	$override_index = $override_index+1;
-    
-    
    	echo '<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-href="#" data-toggle="modal" data-target="#'.$row['type'].''.$row['id'].'" data-backdrop="static" data-keyboard="false">
 	<h3><small>'.$row['name'].'</small></h3>
 	<h3 class="degre">'.number_format(DispTemp($conn,$room_c),1).'&deg;</h3>
@@ -189,15 +196,15 @@ while ($row = mysqli_fetch_assoc($results)) {
     //Left is circle with color showing heating, on target, away
 	//  #dc0000 red     - heating
 	//  #F0AD4E orance  - on target, or above max
-	//  #5292f7 blue    - away, or 
+	//  #5292f7 blue    - away, or
     //Middle is target temperature
-    //Right is icon for 
-    //  frost(snowy) 
-    //  away(signout) 
-    //  scheduled(clockoutline) 
-    //  over temp(thermometer) 
-    //  boost(rocket) 
-    //  override(refresh) 
+    //Right is icon for
+    //  frost(snowy)
+    //  away(signout)
+    //  scheduled(clockoutline)
+    //  over temp(thermometer)
+    //  boost(rocket)
+    //  override(refresh)
     //  bed(bed)
     	
     if (($zone_ctr_fault == '1') OR ($zone_sensor_fault == '1')) {
@@ -227,8 +234,8 @@ while ($row = mysqli_fetch_assoc($results)) {
                   $shcolor='red';                 //special color
                   $target=number_format(DispTemp($conn,$max_room_c),0) . '&deg;';
             }
-			else if ($holidays_status == '1') {
-                //We are over temp
+			else if (($holidays_status == '1') &&  ($sch_holidays == '0')) {
+                //We are on holiday
                 $status='blue';
                 $shactive='fa-paper-plane';
                 $shcolor='';                 
@@ -329,12 +336,37 @@ while ($row = mysqli_fetch_assoc($results)) {
 	</div>
 	<div class="modal-body">';
 	if ($zone_ctr_fault == '1') {
-		echo '<div class="red">Zone Controller ID '.$controler_id. ' last seen at '.$controler_seen.'. Heating system will resume its normal operation once this issue is fixed.</div>';
+		echo '
+			<ul class="chat">
+			<li class="left clearfix">
+				<div class="header">
+				<strong class="primary-font red">Sensor Fault!!!</strong> 
+				<small class="pull-right text-muted">
+					<i class="fa fa-clock-o fa-fw"></i> '.secondsToWords(($controler_seen)*60).' ago 
+				</small>
+				<br><br>
+				<p>Controller ID '.$sensor_id.' last seen at '.$controler_seen.' </p>
+				<p class="text-info">Heating system will resume its normal operation once this issue is fixed. </p>
+				</div>
+			</li>
+		</ul>';
 		//echo $zone_senros_txt;
 	}elseif ($zone_sensor_fault == '1'){
-		echo '<div class="red">Zone Temperature Sensor ID '.$sensor_id. ' last seen at '.$sensor_seen.'. Heating system will resume for this zone its normal operation once this issue is fixed.</div>';
+		echo '
+		<ul class="chat">
+			<li class="left clearfix">
+				<div class="header">
+				<strong class="primary-font red">Sensor Fault!!!</strong> 
+				<small class="pull-right text-muted">
+					<i class="fa fa-clock-o fa-fw"></i> '.secondsToWords(($sensor_seen)*60).' ago 
+				</small>
+				<br><br>
+				<p>Sensor ID '.$sensor_id.' last seen at '.$sensor_seen.' <br>Last Temperature reading received at '.$temp_reading_time.' </p>
+				<p class="text-info"> Heating system will resume for this zone its normal operation once this issue is fixed. </p>
+				</div>
+			</li>
+		</ul>';
 	}else{
-	
 		$squery = "SELECT * FROM schedule_daily_time_zone_view where zone_id ='{$row['id']}' AND tz_status = 1  AND (WeekDays & (1 << {$dow})) > 0 ORDER BY start asc";
 		$sresults = $conn->query($squery);
 		if (mysqli_num_rows($sresults) == 0){
@@ -346,7 +378,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 			<div class=\"list-group\">' ;
 			while ($srow = mysqli_fetch_assoc($sresults)) {
 				$shactive="orangesch_list";
-				$time = strtotime(date("G:i:s")); 
+				$time = strtotime(date("G:i:s"));
 				$start_time = strtotime($srow['start']);
 				$end_time = strtotime($srow['end']);
 				if ($time >$start_time && $time <$end_time){$shactive="redsch_list";}
@@ -360,13 +392,13 @@ while ($row = mysqli_fetch_assoc($results)) {
 	}
 	echo '
 	</div><div class="modal-footer"><button type="button" class="btn btn-default btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
-	</div></div></div></div>';				
+	</div></div></div></div>';
 						
 //end of while loop
 }
 
 
-//BOILER BUTTON 
+//BOILER BUTTON
 //query to get last boiler operation time and hysteresis time
 $query = "SELECT * FROM boiler LIMIT 1";
 $result = $conn->query($query);
@@ -382,14 +414,15 @@ $result = $conn->query($query);
 $boiler_onoff = mysqli_fetch_array($result);
 $boiler_last_off = $boiler_onoff['stop_datetime'];
 
-//check if hysteresis is passed its time or not 
+//check if hysteresis is passed its time or not
 $hysteresis='0';
 if (isset($boiler_last_off)){
 	$boiler_last_off = strtotime( $boiler_last_off );
 	$boiler_hysteresis_time = $boiler_last_off + ($boiler_hysteresis_time * 60);
 	$now=strtotime(date('Y-m-d H:i:s'));
 	if ($boiler_hysteresis_time > $now){$hysteresis='1';}
-} else {$hysteresis='0';}
+} else {$hysteresis='0';
+}
 
 if ($fired_status=='1'){$boiler_colour="red";} elseif ($fired_status=='0'){$boiler_colour="blue";}
 echo '<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-toggle="modal" href="#boiler" data-backdrop="static" data-keyboard="false">
@@ -409,7 +442,7 @@ echo '</h3></button>';
 	<h5 class="modal-title">'.$boiler_name.' - '.$lang['boiler_recent_logs'].'</h5>
 	</div>
 	<div class="modal-body">';
-	
+
 	$bquery = "select DATE_FORMAT(start_datetime, '%H:%i') as start_datetime, DATE_FORMAT(stop_datetime, '%H:%i') as stop_datetime , DATE_FORMAT(expected_end_date_time, '%H:%i') as expected_end_date_time, TIMESTAMPDIFF(MINUTE, start_datetime, stop_datetime) as on_minuts
 	from boiler_logs order by id desc limit 5";
 	$bresults = $conn->query($bquery);
@@ -425,12 +458,12 @@ echo '</h3></button>';
 	}
 	echo '</div>
 	</div><div class="modal-footer"><button type="button" class="btn btn-default btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
-	</div></div></div></div>';	
+	</div></div></div></div>';
 ?>
 
 <!-- One touch buttons -->
 							<div id="collapseone" class="panel-collapse collapse animated fadeIn">
-<?php 
+<?php
 							if (in_array("1", $override_arr)) {$override_status='red';}else{$override_status='blue';}
 echo '						<a style="color: #777; cursor: pointer; text-decoration: none;" href="override.php">
 							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn">
@@ -448,7 +481,7 @@ echo '						<a style="color: #777; cursor: pointer; text-decoration: none;" href
 							</h3></button></a>';
 							
 							$query = "SELECT * FROM schedule_night_climate_time WHERE id = 1";
-							$results = $conn->query($query);	
+							$results = $conn->query($query);
 							$row = mysqli_fetch_assoc($results);
 							if ($row['status'] == 1) {$night_status='red';}else{$night_status='blue';}
 echo '						<a style="color: #777; cursor: pointer; text-decoration: none;" href="night_climate.php">
@@ -465,7 +498,7 @@ echo '						<a href="javascript:active_away();">
 							<h3 class="degre" ><i class="fa fa-sign-out fa-1x"></i></h3>
 							<h3 class="status"><small class="statuscircle"><i class="fa fa-circle fa-fw '.$awaystatus.'"></i></small>
 							</h3></button></a>';
-if ($holidays_status=='1'){$holidaystatus="red";}elseif ($holidays_status=='0'){$holidaystatus="blue";}
+							if ($holidays_status=='1'){$holidaystatus="red";}elseif ($holidays_status=='0'){$holidaystatus="blue";}
 ?>
 							<a style="color: #777; cursor: pointer; text-decoration: none;" href="holidays.php">
 							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn">
@@ -484,16 +517,16 @@ if ($holidays_status=='1'){$holidaystatus="red";}elseif ($holidays_status=='0'){
 							</div></div>
                         <!-- /.panel-body -->
 						<div class="panel-footer">
-<?php 
+<?php
 ShowWeather($conn);
 ?>
 
                             <div class="pull-right">
                                 <div class="btn-group">
 <?php
-$query="select date(start_datetime) as date, 
+$query="select date(start_datetime) as date,
 sum(TIMESTAMPDIFF(MINUTE, start_datetime, expected_end_date_time)) as total_minuts,
-sum(TIMESTAMPDIFF(MINUTE, start_datetime, stop_datetime)) as on_minuts, 
+sum(TIMESTAMPDIFF(MINUTE, start_datetime, stop_datetime)) as on_minuts,
 (sum(TIMESTAMPDIFF(MINUTE, start_datetime, expected_end_date_time)) - sum(TIMESTAMPDIFF(MINUTE, start_datetime, stop_datetime))) as save_minuts
 from boiler_logs WHERE date(start_datetime) = CURDATE() GROUP BY date(start_datetime) asc";
 $result = $conn->query($query);

@@ -1,13 +1,13 @@
-<?php 
+<?php
 /*
-   _____    _   _    _                             
-  |  __ \  (_) | |  | |                            
-  | |__) |  _  | |__| |   ___    _ __ ___     ___  
-  |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \ 
-  | |      | | | |  | | | (_) | | | | | | | |  __/ 
-  |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___| 
+   _____    _   _    _
+  |  __ \  (_) | |  | |
+  | |__) |  _  | |__| |   ___    _ __ ___     ___
+  |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \
+  | |      | | | |  | | | (_) | | | | | | | |  __/
+  |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___|
 
-     S M A R T   H E A T I N G   C O N T R O L 
+     S M A R T   H E A T I N G   C O N T R O L
 
 *************************************************************************"
 * PiHome is Raspberry Pi based Central Heating Control systems. It runs *"
@@ -18,37 +18,37 @@
 * WHAT YOU ARE DOING                                                    *"
 *************************************************************************"
 */
-require_once(__DIR__.'/st_inc/session.php'); 
+require_once(__DIR__.'/st_inc/session.php');
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
 ?>
                     <div class="panel panel-primary">
                         <div class="panel-heading">
-                            <i class="fa fa-clock-o fa-fw"></i> <?php echo $lang['schedule']; ?>   
+                            <i class="fa fa-clock-o fa-fw"></i> <?php echo $lang['schedule']; ?>
 						<div class="pull-right"> <div class="btn-group"><?php echo date("H:i"); ?></div> </div>
                         </div>
                         <!-- /.panel-heading -->
  <div class="panel-body">
- <ul class="chat"> 
+ <ul class="chat">
  				 <li class="left clearfix">
                      <a href="schedule_add.php" style="color: #777; cursor: pointer;" ><span class="chat-img pull-left">
                         <div class="circle orangesch"> <i class="ionicons ion-plus"></i> </div>
                      </span>
                      <div class="chat-body clearfix">
                          <div class="header">
-                             <strong class="primary-font">   </strong> 
+                             <strong class="primary-font">   </strong>
 							 <small class="pull-right text-muted">
 								<?php echo $lang['schedule_add']; ?>  <i class="fa fa-chevron-right fa-fw"></i></a>
                              </small>
                          </div>
                      </div>
                 </li>
-<?php 
-//following variable set to 0 on start for array index. 
+<?php
+//following variable set to 0 on start for array index.
 $sch_time_index = '0';
 //$query = "SELECT time_id, time_status, `start`, `end`, tz_id, tz_status, zone_id, index_id, zone_name, temperature, max(temperature) as max_c FROM schedule_daily_time_zone_view group by time_id ORDER BY start asc";
-$query = "SELECT time_id, time_status, `start`, `end`, WeekDays,tz_id, tz_status, zone_id, index_id, zone_name, temperature, FORMAT(max(temperature),2) as max_c FROM schedule_daily_time_zone_view group by time_id ORDER BY start asc";
+$query = "SELECT time_id, time_status, `start`, `end`, WeekDays,tz_id, tz_status, zone_id, index_id, zone_name, temperature, FORMAT(max(temperature),2) as max_c FROM schedule_daily_time_zone_view WHERE holidays_id IS NULL group by time_id ORDER BY start asc";
 $results = $conn->query($query);
 while ($row = mysqli_fetch_assoc($results)) {
 
@@ -59,22 +59,22 @@ while ($row = mysqli_fetch_assoc($results)) {
         if($row["WeekDays"]  & (1 << 4)){ $Thursday_status_icon="ion-checkmark-circled"; $Thursday_status_color="orangefa"; }else{ $Thursday_status_icon="ion-close-circled"; $Thursday_status_color="bluefa"; }
         if($row["WeekDays"]  & (1 << 5)){ $Friday_status_icon="ion-checkmark-circled"; $Friday_status_color="orangefa"; }else{ $Friday_status_icon="ion-close-circled"; $Friday_status_color="bluefa"; }
         if($row["WeekDays"]  & (1 << 6)){ $Saturday_status_icon="ion-checkmark-circled"; $Saturday_status_color="orangefa"; }else{ $Saturday_status_icon="ion-close-circled"; $Saturday_status_color="bluefa"; }
-		
+
 	if($row["time_status"]=="0"){ $shactive="bluesch"; }else{ $shactive="orangesch"; }
-	$time = strtotime(date("G:i:s")); 
+	$time = strtotime(date("G:i:s"));
 	$start_time = strtotime($row['start']);
 	$end_time = strtotime($row['end']);
 	if($row["WeekDays"]  & (1 << idate('w'))){if ($time >$start_time && $time <$end_time && $row["time_status"]=="1"){$shactive="redsch";}}
-	
+
 
 	//time shchedule listing
 	echo '
 	<li class="left clearfix scheduleli animated fadeIn">
 	<a href="javascript:active_schedule('.$row["time_id"].');"><span class="chat-img pull-left"><div class="circle '. $shactive.'"><p class="schdegree">'.DispTemp($conn, number_format($row["max_c"]),1).'&deg;</p></div></span></a>
-	
+
 	<a style="color: #333; cursor: pointer; text-decoration: none;" data-toggle="collapse" data-parent="#accordion" href="#collapse'.$row['tz_id'].'">
 	<div class="chat-body clearfix">
-	<div class="header text-info">&nbsp;&nbsp;'. $row['start'].' - ' .$row['end'].' &nbsp;&nbsp; 
+	<div class="header text-info">&nbsp;&nbsp;'. $row['start'].' - ' .$row['end'].' &nbsp;&nbsp;
 
 	<small class="pull-right pull-right-days">
 	&nbsp;&nbsp;&nbsp;&nbsp;S&nbsp;&nbsp;&nbsp;M&nbsp;&nbsp;&nbsp;T&nbsp;&nbsp;W&nbsp;&nbsp;&nbsp;T&nbsp;&nbsp;&nbsp;F&nbsp;&nbsp;&nbsp;S<br>
@@ -93,8 +93,8 @@ while ($row = mysqli_fetch_assoc($results)) {
 	<div id="collapse'.$row["tz_id"].'" class="panel-collapse collapse">
 	<br>';
 
-	//zone listing of each time schedule 
-	$query="SELECT * FROM  schedule_daily_time_zone_view WHERE time_id = {$row['time_id']} order by index_id";
+	//zone listing of each time schedule
+	$query="SELECT * FROM  schedule_daily_time_zone_view WHERE holidays_id IS NULL AND time_id = {$row['time_id']} order by index_id";
 	$result = $conn->query($query);
 	while ($datarw=mysqli_fetch_array($result)) {
 	if($datarw["tz_status"]=="0"){ $status_icon="ion-close-circled"; $status_color="bluefa"; }else{ $status_icon="ion-checkmark-circled"; $status_color="orangefa"; }
@@ -105,10 +105,10 @@ while ($row = mysqli_fetch_assoc($results)) {
 		</div>';
 	}
 
-//delete and edit button for each schedule			
+//delete and edit button for each schedule
 echo '
 <div class="list-group-item">
-<a href="javascript:delete_schedule('.$row["time_id"].');"><button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></button> </a>	
+<a href="javascript:delete_schedule('.$row["time_id"].');"><button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></button> </a>
 <a href="schedule_edit.php?id='.$row["time_id"].'" class="btn btn-default btn-xs login"><span class="ionicons ion-edit"></span></a>
 
 </div>
@@ -116,7 +116,7 @@ echo '
  </div>
  </div>
  </div>
- </li>';				
+ </li>';
 
 //calculate total time of day schedule using array schedule_time with index as sch_time_index variable
 	if($row["time_status"]=="1"){
@@ -132,7 +132,7 @@ echo '
                        </div>
                         <!-- /.panel-body -->
 						<div class="panel-footer">
-<?php 
+<?php
 ShowWeather($conn);
 ?>
                             <div class="pull-right">
