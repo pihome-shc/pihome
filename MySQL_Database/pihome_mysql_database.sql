@@ -16,13 +16,12 @@
 --* DO NOT MAKE ANY CHANGES TO YOUR HEATING SYSTEM UNTILL UNLESS YOU KNOW *
 --* WHAT YOU ARE DOING                                                    *
 --*************************************************************************
---                                                      Have Fun - PiHome
--- Host:                         192.168.99.9
--- Server version:               5.5.47-0+deb7u1 - (Debian)
--- Server OS:                    debian-linux-gnu
--- HeidiSQL Version:             9.5.0.5459
--- ------------------------------------------------------------------------
-
+-- --------------------------------------------------------
+-- Host:                         192.168.99.11
+-- Server version:               10.3.15-MariaDB-1 - Raspbian testing-staging
+-- Server OS:                    debian-linux-gnueabihf
+-- HeidiSQL Version:             10.2.0.5599
+-- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;
@@ -30,41 +29,40 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
-
 -- Dumping structure for table pihome.away
 DROP TABLE IF EXISTS `away`;
 CREATE TABLE IF NOT EXISTS `away` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `status` tinyint(4) DEFAULT NULL,
-  `start_datetime` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `start_datetime` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `end_datetime` timestamp NULL DEFAULT NULL,
-  `away_button_id` int(11) DEFAULT '40',
-  `away_button_child_id` int(11) DEFAULT '4',
+  `away_button_id` int(11) DEFAULT 40,
+  `away_button_child_id` int(11) DEFAULT 4,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
--- Dumping data for table pihome.away: ~0 rows (approximately)
+-- Dumping data for table pihome.away: 1 rows
 /*!40000 ALTER TABLE `away` DISABLE KEYS */;
 REPLACE INTO `away` (`id`, `sync`, `purge`, `status`, `start_datetime`, `end_datetime`, `away_button_id`, `away_button_child_id`) VALUES
-	(1, 1, 0, 0, '2019-06-14 09:45:31', NULL, 40, 4);
+	(1, 1, 0, 0, '2019-07-16 18:45:07', NULL, 40, 4);
 /*!40000 ALTER TABLE `away` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.boiler
 DROP TABLE IF EXISTS `boiler`;
 CREATE TABLE IF NOT EXISTS `boiler` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
-  `status` tinyint(4) DEFAULT '0',
-  `fired_status` tinyint(4) DEFAULT '0',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
+  `status` tinyint(4) DEFAULT 0,
+  `fired_status` tinyint(4) DEFAULT 0,
   `name` char(50) CHARACTER SET utf16 COLLATE utf16_bin DEFAULT 'Gas Boiler',
   `node_id` int(11) DEFAULT NULL,
-  `node_child_id` int(11) DEFAULT '1',
-  `hysteresis_time` tinyint(4) DEFAULT '3',
-  `max_operation_time` tinyint(4) DEFAULT '60',
-  `datetime` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `node_child_id` int(11) DEFAULT 1,
+  `hysteresis_time` tinyint(4) DEFAULT 3,
+  `max_operation_time` tinyint(4) DEFAULT 60,
+  `datetime` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `gpio_pin` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_boiler_zone` (`node_id`),
@@ -74,15 +72,15 @@ CREATE TABLE IF NOT EXISTS `boiler` (
 -- Dumping data for table pihome.boiler: ~0 rows (approximately)
 /*!40000 ALTER TABLE `boiler` DISABLE KEYS */;
 REPLACE INTO `boiler` (`id`, `sync`, `purge`, `status`, `fired_status`, `name`, `node_id`, `node_child_id`, `hysteresis_time`, `max_operation_time`, `datetime`, `gpio_pin`) VALUES
-	(1, 1, 0, 1, 0, 'Gas Boiler', 5, 1, 3, 60, '2019-06-20 00:43:10', 24);
+	(1, 0, 0, 1, 0, 'Gas Boiler', 5, 1, 3, 60, '2019-07-17 16:00:01', 24);
 /*!40000 ALTER TABLE `boiler` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.boiler_logs
 DROP TABLE IF EXISTS `boiler_logs`;
 CREATE TABLE IF NOT EXISTS `boiler_logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `start_datetime` timestamp NULL DEFAULT NULL,
   `start_cause` char(50) COLLATE utf16_bin DEFAULT NULL,
   `stop_datetime` timestamp NULL DEFAULT NULL,
@@ -99,30 +97,29 @@ CREATE TABLE IF NOT EXISTS `boiler_logs` (
 DROP TABLE IF EXISTS `boost`;
 CREATE TABLE IF NOT EXISTS `boost` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
-  `status` tinyint(4) DEFAULT '0',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
+  `status` tinyint(4) DEFAULT 0,
   `zone_id` int(11) DEFAULT NULL,
-  `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `temperature` tinyint(4) DEFAULT NULL,
-  `minute` tinyint(4) DEFAULT '30',
+  `minute` tinyint(4) DEFAULT 30,
   `boost_button_id` int(11) DEFAULT NULL,
   `boost_button_child_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_boost_zone` (`zone_id`),
   CONSTRAINT `FK_boost_zone` FOREIGN KEY (`zone_id`) REFERENCES `zone` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
--- Dumping data for table pihome.boost: ~7 rows (approximately)
+-- Dumping data for table pihome.boost: ~6 rows (approximately)
 /*!40000 ALTER TABLE `boost` DISABLE KEYS */;
 REPLACE INTO `boost` (`id`, `sync`, `purge`, `status`, `zone_id`, `time`, `temperature`, `minute`, `boost_button_id`, `boost_button_child_id`) VALUES
-	(8, 1, 0, 0, 33, '2019-06-19 19:59:14', 23, 30, 40, 1),
-	(9, 1, 0, 0, 34, '2019-06-11 23:41:24', 23, 30, 40, 3),
-	(10, 1, 0, 0, 35, '2019-06-20 00:45:48', 30, 40, 0, 0),
-	(12, 1, 0, 0, 35, '2019-06-20 00:45:06', 35, 60, 40, 4),
-	(13, 1, 0, 0, 35, '2019-06-20 00:45:51', 40, 70, 40, 5),
-	(14, 1, 0, 0, 35, '2019-06-20 00:46:10', 50, 80, 40, 5),
-	(15, 1, 0, 0, 35, '2019-06-20 00:46:02', 60, 90, 40, 5);
+	(8, 1, 0, 0, 33, '2019-07-12 21:21:19', 23, 30, 40, 1),
+	(9, 1, 0, 0, 34, '2019-07-09 10:59:11', 23, 30, 40, 3),
+	(10, 1, 0, 0, 35, '2019-07-12 15:38:26', 40, 50, 0, 0),
+	(12, 1, 0, 0, 35, '2019-07-12 15:17:16', 50, 60, 40, 4),
+	(13, 1, 0, 0, 35, '2019-07-12 15:17:18', 60, 80, 40, 5),
+	(18, 1, 0, 0, 35, '2019-07-12 15:17:18', 70, 100, 40, 5);
 /*!40000 ALTER TABLE `boost` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.crontab
@@ -151,8 +148,8 @@ REPLACE INTO `crontab` (`id`, `status`, `min`, `hour`, `day`, `month`, `weekday`
 DROP TABLE IF EXISTS `email`;
 CREATE TABLE IF NOT EXISTS `email` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `smtp` char(50) COLLATE utf16_bin DEFAULT NULL,
   `username` char(50) COLLATE utf16_bin DEFAULT NULL,
   `password` char(50) COLLATE utf16_bin DEFAULT NULL,
@@ -160,9 +157,9 @@ CREATE TABLE IF NOT EXISTS `email` (
   `to` char(50) COLLATE utf16_bin DEFAULT NULL,
   `status` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
--- Dumping data for table pihome.email: ~0 rows (approximately)
+-- Dumping data for table pihome.email: 0 rows
 /*!40000 ALTER TABLE `email` DISABLE KEYS */;
 /*!40000 ALTER TABLE `email` ENABLE KEYS */;
 
@@ -170,10 +167,10 @@ CREATE TABLE IF NOT EXISTS `email` (
 DROP TABLE IF EXISTS `frost_protection`;
 CREATE TABLE IF NOT EXISTS `frost_protection` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
-  `datetime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `temperature` float NOT NULL DEFAULT '5',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
+  `datetime` timestamp NULL DEFAULT current_timestamp(),
+  `temperature` float NOT NULL DEFAULT 5,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
@@ -187,17 +184,17 @@ REPLACE INTO `frost_protection` (`id`, `sync`, `purge`, `datetime`, `temperature
 DROP TABLE IF EXISTS `gateway`;
 CREATE TABLE IF NOT EXISTS `gateway` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `status` tinyint(4) NOT NULL DEFAULT '0',
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `status` tinyint(4) NOT NULL DEFAULT 0,
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `type` char(50) COLLATE utf16_bin NOT NULL DEFAULT 'serial' COMMENT 'serial or wifi',
   `location` char(50) COLLATE utf16_bin NOT NULL DEFAULT '/dev/ttyAMA0' COMMENT 'ip address or serial port location i.e. /dev/ttyAMA0',
   `port` char(50) COLLATE utf16_bin NOT NULL DEFAULT '115200' COMMENT 'port number 5003 or baud rate115200 for serial gateway',
   `timout` char(50) COLLATE utf16_bin NOT NULL DEFAULT '3',
   `pid` char(50) COLLATE utf16_bin DEFAULT NULL,
   `pid_running_since` char(50) COLLATE utf16_bin DEFAULT NULL,
-  `reboot` tinyint(4) DEFAULT '0',
-  `find_gw` tinyint(4) DEFAULT '0',
+  `reboot` tinyint(4) DEFAULT 0,
+  `find_gw` tinyint(4) DEFAULT 0,
   `version` char(50) COLLATE utf16_bin DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
@@ -205,21 +202,21 @@ CREATE TABLE IF NOT EXISTS `gateway` (
 -- Dumping data for table pihome.gateway: ~0 rows (approximately)
 /*!40000 ALTER TABLE `gateway` DISABLE KEYS */;
 REPLACE INTO `gateway` (`id`, `status`, `sync`, `purge`, `type`, `location`, `port`, `timout`, `pid`, `pid_running_since`, `reboot`, `find_gw`, `version`) VALUES
-	(1, 1, 1, 0, 'wifi', '192.168.99.5', '5003', '3', '15832', 'Wed Jun 19 19:02:01 2019', 0, 1, '2.3.1\n');
+	(1, 0, 0, 0, 'wifi', '192.168.99.3', '5003', '3', '3793', '', 0, 1, '2.3.1\n');
 /*!40000 ALTER TABLE `gateway` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.gateway_logs
 DROP TABLE IF EXISTS `gateway_logs`;
 CREATE TABLE IF NOT EXISTS `gateway_logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `type` char(50) COLLATE utf16_bin DEFAULT 'wifi' COMMENT 'serial or wifi',
   `location` char(50) COLLATE utf16_bin DEFAULT '192.168.99.3' COMMENT 'ip address or serial port location i.e. /dev/ttyAMA0',
   `port` char(50) COLLATE utf16_bin DEFAULT '5003' COMMENT 'port number or baud rate for serial gateway',
   `pid` char(50) COLLATE utf16_bin DEFAULT NULL,
   `pid_start_time` char(50) COLLATE utf16_bin DEFAULT NULL,
-  `pid_datetime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `pid_datetime` timestamp NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
@@ -231,13 +228,14 @@ CREATE TABLE IF NOT EXISTS `gateway_logs` (
 DROP TABLE IF EXISTS `holidays`;
 CREATE TABLE IF NOT EXISTS `holidays` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `status` tinyint(4) DEFAULT NULL,
   `start_date_time` datetime DEFAULT NULL,
   `end_date_time` datetime DEFAULT NULL,
+  `active` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
 -- Dumping data for table pihome.holidays: ~0 rows (approximately)
 /*!40000 ALTER TABLE `holidays` DISABLE KEYS */;
@@ -247,48 +245,53 @@ CREATE TABLE IF NOT EXISTS `holidays` (
 DROP TABLE IF EXISTS `messages_in`;
 CREATE TABLE IF NOT EXISTS `messages_in` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `node_id` char(15) COLLATE utf16_bin DEFAULT NULL,
   `child_id` tinyint(4) DEFAULT NULL,
   `sub_type` int(11) DEFAULT NULL,
   `payload` decimal(10,2) DEFAULT NULL,
-  `datetime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `datetime` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
--- Dumping data for table pihome.messages_in: ~0 rows (approximately)
+-- Dumping data for table pihome.messages_in: ~1 rows (approximately)
 /*!40000 ALTER TABLE `messages_in` DISABLE KEYS */;
+REPLACE INTO `messages_in` (`id`, `sync`, `purge`, `node_id`, `child_id`, `sub_type`, `payload`, `datetime`) VALUES
+	(2, 0, 0, '0', 0, NULL, 54.20, '2019-07-18 20:30:01'),
+	(3, 0, 0, '0', 0, NULL, 53.70, '2019-07-18 20:35:02');
 /*!40000 ALTER TABLE `messages_in` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.messages_out
 DROP TABLE IF EXISTS `messages_out`;
 CREATE TABLE IF NOT EXISTS `messages_out` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `node_id` char(50) COLLATE utf32_bin NOT NULL COMMENT 'Node ID',
   `child_id` int(11) NOT NULL COMMENT 'Child Sensor',
   `sub_type` int(11) NOT NULL COMMENT 'Command Type',
   `ack` int(11) NOT NULL COMMENT 'Ack Req/Resp',
   `type` int(11) NOT NULL COMMENT 'Type',
   `payload` varchar(100) CHARACTER SET utf8 NOT NULL COMMENT 'Payload',
-  `sent` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Sent Status 0 No - 1 Yes',
-  `datetime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Current datetime',
+  `sent` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'Sent Status 0 No - 1 Yes',
+  `datetime` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT 'Current datetime',
   `zone_id` int(11) NOT NULL COMMENT 'Zone ID related to this entery',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf32 COLLATE=utf32_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf32 COLLATE=utf32_bin;
 
--- Dumping data for table pihome.messages_out: ~7 rows (approximately)
+-- Dumping data for table pihome.messages_out: ~9 rows (approximately)
 /*!40000 ALTER TABLE `messages_out` DISABLE KEYS */;
 REPLACE INTO `messages_out` (`id`, `sync`, `purge`, `node_id`, `child_id`, `sub_type`, `ack`, `type`, `payload`, `sent`, `datetime`, `zone_id`) VALUES
-	(15, 0, 0, '101', 1, 1, 1, 2, '0', 1, '2019-06-20 00:46:59', 33),
-	(17, 0, 0, '101', 2, 1, 1, 2, '0', 1, '2019-06-20 00:47:00', 34),
-	(19, 0, 0, '101', 3, 1, 1, 2, '0', 1, '2019-06-20 00:47:01', 35),
-	(21, 0, 0, '40', 1, 1, 0, 2, '0', 1, '2019-06-19 19:59:02', 33),
+	(15, 0, 0, '101', 1, 1, 1, 2, '0', 0, '2019-07-17 16:00:01', 33),
+	(17, 0, 0, '101', 2, 1, 1, 2, '0', 0, '2019-07-17 16:00:01', 34),
+	(19, 0, 0, '101', 3, 1, 1, 2, '0', 0, '2019-07-17 16:00:01', 35),
+	(21, 0, 0, '40', 1, 1, 0, 2, '0', 1, '2019-07-12 21:21:02', 33),
 	(22, 0, 0, '40', 2, 1, 0, 2, '0', 1, '2019-06-17 16:02:48', 34),
 	(23, 0, 0, '40', 3, 1, 0, 2, '0', 1, '2019-06-17 16:02:49', 35),
-	(24, 0, 0, '100', 1, 1, 1, 2, '0', 1, '2019-06-20 00:47:03', 0);
+	(24, 0, 0, '100', 1, 1, 1, 2, '0', 0, '2019-07-17 16:00:01', 0),
+	(25, 0, 0, '40', 255, 3, 0, 1, '00:16', 1, '2019-03-20 00:16:38', 0),
+	(26, 0, 0, '40', 1, 2, 0, 47, '18:08', 1, '2019-03-20 00:02:24', 0);
 /*!40000 ALTER TABLE `messages_out` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.mqtt
@@ -297,11 +300,11 @@ CREATE TABLE IF NOT EXISTS `mqtt` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '',
   `ip` varchar(39) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '127.0.0.1',
-  `port` int(11) NOT NULL DEFAULT '1883',
+  `port` int(11) NOT NULL DEFAULT 1883,
   `username` varchar(50) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '',
   `password` varchar(50) COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT '',
-  `enabled` tinyint(4) NOT NULL DEFAULT '1',
-  `type` int(11) NOT NULL DEFAULT '0',
+  `enabled` tinyint(4) NOT NULL DEFAULT 1,
+  `type` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
@@ -315,8 +318,8 @@ REPLACE INTO `mqtt` (`id`, `name`, `ip`, `port`, `username`, `password`, `enable
 DROP TABLE IF EXISTS `nodes`;
 CREATE TABLE IF NOT EXISTS `nodes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `node_id` char(50) COLLATE utf16_bin NOT NULL,
   `child_id_1` int(11) DEFAULT NULL,
   `child_id_2` int(11) DEFAULT NULL,
@@ -327,37 +330,38 @@ CREATE TABLE IF NOT EXISTS `nodes` (
   `child_id_7` int(11) DEFAULT NULL,
   `child_id_8` int(11) DEFAULT NULL,
   `name` char(50) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
-  `last_seen` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `notice_interval` int(11) NOT NULL DEFAULT '30',
+  `last_seen` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
+  `notice_interval` int(11) NOT NULL DEFAULT 30,
+  `min_voltage` decimal(10,2) DEFAULT NULL,
   `status` char(50) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   `ms_version` char(50) COLLATE utf16_bin DEFAULT NULL,
   `sketch_version` char(50) COLLATE utf16_bin DEFAULT NULL,
   `repeater` tinyint(4) DEFAULT NULL COMMENT 'Repeater Feature Enabled=1 or Disable=0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
 -- Dumping data for table pihome.nodes: ~7 rows (approximately)
 /*!40000 ALTER TABLE `nodes` DISABLE KEYS */;
-REPLACE INTO `nodes` (`id`, `sync`, `purge`, `node_id`, `child_id_1`, `child_id_2`, `child_id_3`, `child_id_4`, `child_id_5`, `child_id_6`, `child_id_7`, `child_id_8`, `name`, `last_seen`, `status`, `ms_version`, `sketch_version`, `repeater`) VALUES
-	(0, 1, 0, '0', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Zone Controller Relay', '2019-06-07 17:28:21', NULL, NULL, NULL, NULL),
-	(1, 1, 0, '21', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Temperature Sensor', '2019-06-20 00:42:08', 'Active', '2.3.1\n', '0.31', NULL),
-	(2, 1, 0, '20', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Temperature Sensor', '2019-06-20 00:33:08', 'Active', '2.3.1\n', '0.31', NULL),
-	(4, 1, 0, '30', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Temperature Sensor', '2019-06-20 00:40:08', 'Active', '2.3.1\n', '0.31', NULL),
-	(5, 1, 0, '100', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Boiler Relay', '2019-06-19 00:22:08', 'Active', '2.3.1\n', '0.31', NULL),
-	(7, 1, 0, '101', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Zone Controller Relay', '2019-06-07 17:28:39', NULL, '2.1.1\n', '1.23', NULL),
-	(8, 1, 0, '40', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Button Console', '2019-06-07 17:28:42', NULL, '2.1.1\n', '1.32', NULL);
+REPLACE INTO `nodes` (`id`, `sync`, `purge`, `node_id`, `child_id_1`, `child_id_2`, `child_id_3`, `child_id_4`, `child_id_5`, `child_id_6`, `child_id_7`, `child_id_8`, `name`, `last_seen`, `notice_interval`, `min_voltage`, `status`, `ms_version`, `sketch_version`, `repeater`) VALUES
+	(0, 1, 0, '0', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Zone Controller Relay', '2019-07-11 13:46:21', 0, NULL, NULL, NULL, NULL, NULL),
+	(1, 1, 0, '21', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Temperature Sensor', '2019-07-17 15:01:08', 60, NULL, 'Active', '2.3.1\n', '0.31', NULL),
+	(2, 1, 0, '20', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Temperature Sensor', '2019-07-17 14:47:08', 45, NULL, 'Active', '2.3.1\n', '0.31', NULL),
+	(4, 1, 0, '30', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Temperature Sensor', '2019-07-17 14:48:06', 45, NULL, 'Active', '2.3.1\n', '0.31', NULL),
+	(5, 1, 0, '100', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Boiler Relay', '2019-07-18 20:10:44', 45, NULL, 'Active', '2.3.1\n', '0.31', NULL),
+	(7, 1, 0, '101', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Zone Controller Relay', '2019-07-18 20:10:47', 45, NULL, 'Active', '2.1.1\n', '1.23', NULL),
+	(8, 1, 0, '40', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Button Console', '2019-07-12 00:29:15', 0, NULL, NULL, '2.1.1\n', '1.32', NULL);
 /*!40000 ALTER TABLE `nodes` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.nodes_battery
 DROP TABLE IF EXISTS `nodes_battery`;
 CREATE TABLE IF NOT EXISTS `nodes_battery` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `node_id` int(11) DEFAULT NULL,
   `bat_voltage` decimal(10,2) DEFAULT NULL,
   `bat_level` decimal(10,2) DEFAULT NULL,
-  `update` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `update` timestamp NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
@@ -369,13 +373,13 @@ CREATE TABLE IF NOT EXISTS `nodes_battery` (
 DROP TABLE IF EXISTS `notice`;
 CREATE TABLE IF NOT EXISTS `notice` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0',
-  `datetime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0,
+  `datetime` timestamp NULL DEFAULT current_timestamp(),
   `message` varchar(200) COLLATE utf16_bin DEFAULT NULL,
   `status` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=181 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
 -- Dumping data for table pihome.notice: ~0 rows (approximately)
 /*!40000 ALTER TABLE `notice` DISABLE KEYS */;
@@ -385,30 +389,30 @@ CREATE TABLE IF NOT EXISTS `notice` (
 DROP TABLE IF EXISTS `override`;
 CREATE TABLE IF NOT EXISTS `override` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
-  `status` tinyint(4) DEFAULT '0',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
+  `status` tinyint(4) DEFAULT 0,
   `zone_id` int(11) DEFAULT NULL,
-  `time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `temperature` tinyint(4) DEFAULT '22',
+  `time` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `temperature` tinyint(4) DEFAULT 22,
   PRIMARY KEY (`id`),
   KEY `FK_override_zone` (`zone_id`),
   CONSTRAINT `FK_override_zone` FOREIGN KEY (`zone_id`) REFERENCES `zone` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
 -- Dumping data for table pihome.override: ~3 rows (approximately)
 /*!40000 ALTER TABLE `override` DISABLE KEYS */;
 REPLACE INTO `override` (`id`, `sync`, `purge`, `status`, `zone_id`, `time`, `temperature`) VALUES
-	(8, 1, 0, 0, 33, '2019-06-19 12:15:31', 24),
-	(9, 1, 0, 0, 34, '2019-06-07 12:34:45', 24),
-	(10, 1, 0, 0, 35, '2019-06-19 19:22:19', 35);
+	(8, 1, 0, 0, 33, '2019-07-12 06:59:53', 24),
+	(9, 1, 0, 0, 34, '2019-07-09 10:28:38', 24),
+	(10, 1, 0, 0, 35, '2019-06-30 14:39:50', 35);
 /*!40000 ALTER TABLE `override` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.piconnect
 DROP TABLE IF EXISTS `piconnect`;
 CREATE TABLE IF NOT EXISTS `piconnect` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `status` int(11) NOT NULL DEFAULT '0',
+  `status` int(11) NOT NULL DEFAULT 0,
   `protocol` varchar(50) COLLATE utf16_bin DEFAULT NULL,
   `url` varchar(50) COLLATE utf16_bin DEFAULT NULL,
   `script` char(50) COLLATE utf16_bin DEFAULT NULL,
@@ -426,14 +430,14 @@ REPLACE INTO `piconnect` (`id`, `status`, `protocol`, `url`, `script`, `api_key`
 DROP TABLE IF EXISTS `schedule_daily_time`;
 CREATE TABLE IF NOT EXISTS `schedule_daily_time` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `status` tinyint(4) DEFAULT NULL,
   `start` time DEFAULT NULL,
   `end` time DEFAULT NULL,
-  `WeekDays` smallint(6) NOT NULL DEFAULT '127',
+  `WeekDays` smallint(6) NOT NULL DEFAULT 127,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
 -- Dumping data for table pihome.schedule_daily_time: ~0 rows (approximately)
 /*!40000 ALTER TABLE `schedule_daily_time` DISABLE KEYS */;
@@ -443,19 +447,19 @@ CREATE TABLE IF NOT EXISTS `schedule_daily_time` (
 DROP TABLE IF EXISTS `schedule_daily_time_zone`;
 CREATE TABLE IF NOT EXISTS `schedule_daily_time_zone` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `status` tinyint(4) DEFAULT NULL,
   `schedule_daily_time_id` int(11) DEFAULT NULL,
   `zone_id` int(11) DEFAULT NULL,
-  `temperature` float NOT NULL DEFAULT '0',
+  `temperature` float NOT NULL DEFAULT 0,
   `holidays_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_schedule_daily_time_zone_schedule_daily_time` (`schedule_daily_time_id`),
   KEY `FK_schedule_daily_time_zone_zone` (`zone_id`),
   CONSTRAINT `FK_schedule_daily_time_zone_schedule_daily_time` FOREIGN KEY (`schedule_daily_time_id`) REFERENCES `schedule_daily_time` (`id`),
   CONSTRAINT `FK_schedule_daily_time_zone_zone` FOREIGN KEY (`zone_id`) REFERENCES `zone` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
 -- Dumping data for table pihome.schedule_daily_time_zone: ~0 rows (approximately)
 /*!40000 ALTER TABLE `schedule_daily_time_zone` DISABLE KEYS */;
@@ -465,8 +469,8 @@ CREATE TABLE IF NOT EXISTS `schedule_daily_time_zone` (
 DROP TABLE IF EXISTS `schedule_night_climate_time`;
 CREATE TABLE IF NOT EXISTS `schedule_night_climate_time` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `status` tinyint(4) DEFAULT NULL,
   `start_time` time DEFAULT '21:00:00',
   `end_time` time DEFAULT '06:00:00',
@@ -476,32 +480,32 @@ CREATE TABLE IF NOT EXISTS `schedule_night_climate_time` (
 -- Dumping data for table pihome.schedule_night_climate_time: ~0 rows (approximately)
 /*!40000 ALTER TABLE `schedule_night_climate_time` DISABLE KEYS */;
 REPLACE INTO `schedule_night_climate_time` (`id`, `sync`, `purge`, `status`, `start_time`, `end_time`) VALUES
-	(1, 1, 0, 0, '18:00:00', '23:30:00');
+	(1, 1, 0, 0, '22:00:00', '05:30:00');
 /*!40000 ALTER TABLE `schedule_night_climate_time` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.schedule_night_climat_zone
 DROP TABLE IF EXISTS `schedule_night_climat_zone`;
 CREATE TABLE IF NOT EXISTS `schedule_night_climat_zone` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `status` tinyint(4) DEFAULT NULL,
   `zone_id` int(11) DEFAULT NULL,
   `schedule_night_climate_id` int(11) DEFAULT NULL,
-  `min_temperature` float NOT NULL DEFAULT '18',
-  `max_temperature` float NOT NULL DEFAULT '21',
+  `min_temperature` float NOT NULL DEFAULT 18,
+  `max_temperature` float NOT NULL DEFAULT 21,
   PRIMARY KEY (`id`),
   KEY `FK_schedule_zone_night_climat_zone` (`zone_id`),
   KEY `FK_schedule_zone_night_climat_schedule_night_climate` (`schedule_night_climate_id`),
   CONSTRAINT `FK_schedule_zone_night_climat_schedule_night_climate` FOREIGN KEY (`schedule_night_climate_id`) REFERENCES `schedule_night_climate_time` (`id`),
   CONSTRAINT `FK_schedule_zone_night_climat_zone` FOREIGN KEY (`zone_id`) REFERENCES `zone` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
 -- Dumping data for table pihome.schedule_night_climat_zone: ~3 rows (approximately)
 /*!40000 ALTER TABLE `schedule_night_climat_zone` DISABLE KEYS */;
 REPLACE INTO `schedule_night_climat_zone` (`id`, `sync`, `purge`, `status`, `zone_id`, `schedule_night_climate_id`, `min_temperature`, `max_temperature`) VALUES
 	(8, 1, 0, 0, 33, 1, 18, 20),
-	(9, 1, 0, 1, 34, 1, 19, 21),
+	(9, 1, 0, 1, 34, 1, 18, 20),
 	(10, 1, 0, 1, 35, 1, 19, 21);
 /*!40000 ALTER TABLE `schedule_night_climat_zone` ENABLE KEYS */;
 
@@ -509,8 +513,8 @@ REPLACE INTO `schedule_night_climat_zone` (`id`, `sync`, `purge`, `status`, `zon
 DROP TABLE IF EXISTS `system`;
 CREATE TABLE IF NOT EXISTS `system` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `name` varchar(50) COLLATE utf16_bin DEFAULT NULL,
   `version` varchar(50) CHARACTER SET latin1 DEFAULT NULL,
   `build` varchar(50) COLLATE utf16_bin DEFAULT NULL,
@@ -525,16 +529,16 @@ CREATE TABLE IF NOT EXISTS `system` (
   `backup_email` char(100) COLLATE utf16_bin DEFAULT NULL,
   `ping_home` bit(1) DEFAULT b'1',
   `timezone` varchar(50) COLLATE utf16_bin DEFAULT 'Europe/Dublin',
-  `shutdown` tinyint(4) DEFAULT '0',
-  `reboot` tinyint(4) DEFAULT '0',
-  `c_f` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0=C, 1=F',
+  `shutdown` tinyint(4) DEFAULT 0,
+  `reboot` tinyint(4) DEFAULT 0,
+  `c_f` tinyint(4) NOT NULL DEFAULT 0 COMMENT '0=C, 1=F',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
 -- Dumping data for table pihome.system: ~0 rows (approximately)
 /*!40000 ALTER TABLE `system` DISABLE KEYS */;
 REPLACE INTO `system` (`id`, `sync`, `purge`, `name`, `version`, `build`, `update_location`, `update_file`, `update_alias`, `country`, `language`, `city`, `zip`, `openweather_api`, `backup_email`, `ping_home`, `timezone`, `shutdown`, `reboot`, `c_f`) VALUES
-	(2, 1, 0, 'PiHome - Smart Heating Control', '1.61', '290619', 'http://www.pihome.eu/updates/', 'current-release-versions.php', 'pihome', 'IE', 'en', 'Portlaoise', NULL, '', '', b'1', 'Europe/Dublin', 0, 0, 0);
+	(2, 1, 0, 'PiHome - Smart Heating Control', '1.61', '180719', 'http://www.pihome.eu/updates/', 'current-release-versions.php', 'pihome', 'IE', 'en', 'Portlaoise', NULL, '', '', b'1', 'Europe/Dublin', 0, 0, 0);
 /*!40000 ALTER TABLE `system` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.user
@@ -546,7 +550,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `username` varchar(25) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `cpdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `cpdate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `account_date` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `backup` tinyint(4) DEFAULT NULL,
   `users` tinyint(4) DEFAULT NULL,
@@ -568,20 +572,164 @@ CREATE TABLE IF NOT EXISTS `userhistory` (
   `username` varchar(50) DEFAULT NULL,
   `password` varchar(50) DEFAULT NULL,
   `date` datetime DEFAULT NULL,
-  `audit` tinytext,
-  `ipaddress` tinytext,
+  `audit` tinytext DEFAULT NULL,
+  `ipaddress` tinytext DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=144 DEFAULT CHARSET=latin1;
 
--- Dumping data for table pihome.userhistory: ~0 rows (approximately)
+-- Dumping data for table pihome.userhistory: ~139 rows (approximately)
 /*!40000 ALTER TABLE `userhistory` DISABLE KEYS */;
+REPLACE INTO `userhistory` (`id`, `username`, `password`, `date`, `audit`, `ipaddress`) VALUES
+	(1, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-04-07 19:10:05', 'Failed', '192.168.99.4'),
+	(2, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-04-08 00:59:46', 'Failed', '192.168.99.12'),
+	(3, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-05-20 16:11:34', 'Failed', '192.168.99.12'),
+	(4, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-05-20 18:50:50', 'Failed', '192.168.99.12'),
+	(5, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-05-22 16:12:18', 'Failed', '192.168.99.12'),
+	(6, 'Admin ', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-05-23 22:05:30', 'Failed', '192.168.99.6'),
+	(7, 'Admin ', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-05-24 00:27:44', 'Failed', '192.168.99.6'),
+	(8, 'Admin ', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-05-25 00:57:58', 'Failed', '192.168.99.6'),
+	(9, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-05-25 02:25:37', 'Failed', '192.168.99.12'),
+	(10, 'Admin ', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-05-25 02:54:49', 'Failed', '192.168.99.6'),
+	(11, 'Admin ', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-05-25 10:44:01', 'Failed', '192.168.99.6'),
+	(12, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-05-25 14:32:24', 'Failed', '192.168.99.12'),
+	(13, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-05-27 11:06:13', 'Failed', '192.168.99.12'),
+	(14, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-05-28 17:14:03', 'Failed', '192.168.99.8'),
+	(15, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-01 19:01:52', 'Failed', '192.168.99.8'),
+	(16, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-02 21:13:44', 'Failed', '192.168.99.4'),
+	(17, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-03 20:22:18', 'Failed', '192.168.99.4'),
+	(18, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-07 01:37:01', 'Failed', '192.168.99.12'),
+	(19, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-07 02:20:45', 'Failed', '192.168.99.6'),
+	(20, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-07 08:37:30', 'Failed', '192.168.99.12'),
+	(21, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-07 14:58:13', 'Failed', '192.168.99.5'),
+	(22, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-07 15:59:50', 'Failed', '192.168.99.12'),
+	(23, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-07 21:26:18', 'Failed', '192.168.99.4'),
+	(24, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-08 13:12:38', 'Failed', '192.168.99.4'),
+	(25, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-08 14:12:04', 'Failed', '192.168.99.4'),
+	(26, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-08 16:36:15', 'Failed', '192.168.99.4'),
+	(27, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-08 17:25:25', 'Failed', '192.168.99.4'),
+	(28, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-08 23:00:08', 'Failed', '192.168.99.4'),
+	(29, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-09 14:27:28', 'Failed', '192.168.99.12'),
+	(30, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-09 18:57:44', 'Failed', '192.168.99.12'),
+	(31, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-11 01:38:35', 'Failed', '192.168.99.4'),
+	(32, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-11 18:28:01', 'Failed', '192.168.99.12'),
+	(33, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-11 21:07:37', 'Failed', '192.168.99.4'),
+	(34, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-11 23:28:08', 'Failed', '192.168.99.12'),
+	(35, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-12 08:38:57', 'Failed', '192.168.99.12'),
+	(36, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-15 00:50:50', 'Failed', '192.168.99.12'),
+	(37, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-15 02:28:12', 'Failed', '192.168.99.12'),
+	(38, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-15 11:19:50', 'Failed', '192.168.99.4'),
+	(39, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-15 11:27:14', 'Failed', '192.168.99.4'),
+	(40, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-15 12:58:30', 'Failed', '192.168.99.4'),
+	(41, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-15 14:28:44', 'Failed', '192.168.99.4'),
+	(42, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-15 17:40:28', 'Failed', '192.168.99.4'),
+	(43, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-16 21:20:16', 'Failed', '192.168.99.4'),
+	(44, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-17 16:03:21', 'Failed', '192.168.99.12'),
+	(45, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-17 23:03:30', 'Failed', '192.168.99.12'),
+	(46, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-18 11:32:10', 'Failed', '192.168.99.12'),
+	(47, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-18 11:36:41', 'Failed', '192.168.99.4'),
+	(48, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-18 23:32:06', 'Failed', '192.168.99.12'),
+	(49, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-19 19:21:45', 'Failed', '192.168.99.6'),
+	(50, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-20 00:24:20', 'Failed', '192.168.99.6'),
+	(51, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-20 00:37:35', 'Failed', '192.168.99.12'),
+	(52, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-20 08:25:09', 'Failed', '192.168.99.6'),
+	(53, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-20 23:43:57', 'Failed', '192.168.99.12'),
+	(54, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-21 21:31:45', 'Failed', '192.168.99.3'),
+	(55, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-21 23:33:57', 'Failed', '192.168.99.3'),
+	(56, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-22 10:07:56', 'Failed', '192.168.99.3'),
+	(57, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-22 11:53:53', 'Failed', '192.168.99.4'),
+	(58, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-22 13:01:32', 'Failed', '192.168.99.3'),
+	(59, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-22 15:06:33', 'Failed', '192.168.99.13'),
+	(60, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-22 16:54:48', 'Failed', '192.168.99.13'),
+	(61, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-22 17:08:50', 'Failed', '192.168.99.4'),
+	(62, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-22 22:35:26', 'Failed', '192.168.99.4'),
+	(63, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-23 00:54:05', 'Failed', '192.168.99.12'),
+	(64, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-24 11:12:11', 'Failed', '192.168.99.12'),
+	(65, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-24 11:26:01', 'Failed', '192.168.99.4'),
+	(66, 'admin', 'bed128365216c019988915ed3add75fb', '2019-06-24 12:57:41', 'Failed', '192.168.99.12'),
+	(67, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-24 12:57:48', 'Failed', '192.168.99.12'),
+	(68, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-24 17:59:19', 'Failed', '192.168.99.12'),
+	(69, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-24 21:49:19', 'Failed', '192.168.99.3'),
+	(70, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-24 22:00:10', 'Failed', '192.168.99.3'),
+	(71, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-24 23:32:08', 'Failed', '192.168.99.7'),
+	(72, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-25 16:01:55', 'Failed', '192.168.99.12'),
+	(73, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-25 16:26:48', 'Failed', '192.168.99.7'),
+	(74, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-26 13:04:56', 'Failed', '192.168.99.7'),
+	(75, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-26 14:17:42', 'Failed', '192.168.99.12'),
+	(76, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-26 21:47:28', 'Failed', '192.168.99.4'),
+	(77, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-27 17:30:33', 'Failed', '192.168.99.12'),
+	(78, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-27 20:51:39', 'Failed', '192.168.99.7'),
+	(79, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-27 22:28:04', 'Failed', '192.168.99.4'),
+	(80, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-28 12:26:20', 'Failed', '192.168.99.12'),
+	(81, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-28 14:37:37', 'Failed', '192.168.99.12'),
+	(82, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-28 18:42:12', 'Failed', '192.168.99.12'),
+	(83, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-29 02:11:28', 'Failed', '192.168.99.12'),
+	(84, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-29 10:05:51', 'Failed', '192.168.99.7'),
+	(85, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-06-29 23:05:22', 'Failed', '192.168.99.7'),
+	(86, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-02 22:28:36', 'Failed', '192.168.99.7'),
+	(87, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-03 17:25:58', 'Failed', '192.168.99.4'),
+	(88, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-04 19:57:35', 'Failed', '192.168.99.4'),
+	(89, '\' or 1=1 --', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-06 14:39:18', 'Failed', '192.168.99.4'),
+	(90, '\' or 1=1 --', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-06 14:40:27', 'Failed', '192.168.99.4'),
+	(91, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-06 14:41:20', 'Failed', '192.168.99.4'),
+	(92, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-06 17:02:47', 'Failed', '192.168.99.4'),
+	(93, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-07 00:49:23', 'Failed', '192.168.99.4'),
+	(94, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-07 22:51:50', 'Failed', '192.168.99.6'),
+	(95, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-08 01:19:49', 'Failed', '192.168.99.12'),
+	(96, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-08 12:48:36', 'Failed', '192.168.99.12'),
+	(97, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-08 23:40:06', 'Failed', '192.168.99.6'),
+	(98, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-09 01:25:43', 'Failed', '192.168.99.12'),
+	(99, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-09 12:43:01', 'Failed', '192.168.99.12'),
+	(100, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-09 13:12:20', 'Failed', '192.168.99.6'),
+	(101, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-09 14:08:23', 'Failed', '192.168.99.12'),
+	(102, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-09 14:30:27', 'Failed', '192.168.99.6'),
+	(103, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-09 15:46:15', 'Failed', '192.168.99.6'),
+	(104, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-09 17:19:07', 'Failed', '192.168.99.4'),
+	(105, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-09 23:46:58', 'Failed', '192.168.99.12'),
+	(106, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-10 00:52:23', 'Failed', '192.168.99.12'),
+	(107, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-10 08:48:07', 'Failed', '192.168.99.6'),
+	(108, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-10 11:36:28', 'Failed', '192.168.99.12'),
+	(109, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-10 15:17:30', 'Failed', '192.168.99.6'),
+	(110, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-10 17:17:43', 'Failed', '192.168.99.6'),
+	(111, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-11 13:04:11', 'Failed', '192.168.99.12'),
+	(112, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-11 16:12:11', 'Failed', '192.168.99.12'),
+	(113, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-12 00:18:58', 'Failed', '192.168.99.12'),
+	(114, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-12 09:25:31', 'Failed', '192.168.99.12'),
+	(115, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-12 14:26:00', 'Failed', '192.168.99.4'),
+	(116, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-12 15:25:49', 'Failed', '192.168.99.4'),
+	(117, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-12 16:48:31', 'Failed', '192.168.99.12'),
+	(118, 'Admin ', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-12 17:42:39', 'Failed', '192.168.99.5'),
+	(119, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-12 17:49:11', 'Failed', '192.168.99.5'),
+	(120, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-12 22:25:14', 'Failed', '192.168.99.12'),
+	(121, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-12 22:56:56', 'Failed', '192.168.99.4'),
+	(122, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-13 11:00:26', 'Failed', '192.168.99.4'),
+	(123, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-13 14:01:14', 'Failed', '192.168.99.4'),
+	(124, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-13 18:50:35', 'Failed', '192.168.99.4'),
+	(125, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-13 21:27:57', 'Failed', '192.168.99.4'),
+	(126, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-14 23:49:22', 'Failed', '192.168.99.4'),
+	(127, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-15 02:14:04', 'Failed', '192.168.99.5'),
+	(128, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-15 14:55:41', 'Failed', '192.168.99.6'),
+	(129, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-16 11:25:38', 'Failed', '192.168.99.4'),
+	(130, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-16 12:40:52', 'Failed', '192.168.99.12'),
+	(131, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-16 16:26:45', 'Failed', '192.168.99.12'),
+	(132, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-16 18:40:16', 'Failed', '192.168.99.12'),
+	(133, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-16 21:18:03', 'Failed', '192.168.99.12'),
+	(134, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-17 01:28:54', 'Failed', '192.168.99.6'),
+	(135, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-17 09:07:56', 'Failed', '192.168.99.6'),
+	(136, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-17 11:14:32', 'Failed', '192.168.99.12'),
+	(137, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-17 12:33:01', 'Failed', '192.168.99.6'),
+	(138, 'Admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-17 13:44:45', 'Failed', '192.168.99.6'),
+	(139, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-17 15:53:43', 'Failed', '192.168.99.12'),
+	(140, 'admin', 'fadd442110a54e4b7985d99ffb96681f', '2019-07-17 22:59:41', 'Failed', '192.168.99.4'),
+	(141, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-17 22:59:46', 'Failed', '192.168.99.4'),
+	(142, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-18 12:41:06', 'Failed', '192.168.99.12'),
+	(143, 'admin', '0f5f9ba0136d5a8588b3fc70ec752869', '2019-07-18 20:05:40', 'Failed', '192.168.99.4');
 /*!40000 ALTER TABLE `userhistory` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.weather
 DROP TABLE IF EXISTS `weather`;
 CREATE TABLE IF NOT EXISTS `weather` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
   `location` varchar(50) COLLATE utf8_bin DEFAULT NULL,
   `c` tinyint(4) DEFAULT NULL,
   `wind_speed` varchar(50) COLLATE utf8_bin DEFAULT NULL,
@@ -590,22 +738,22 @@ CREATE TABLE IF NOT EXISTS `weather` (
   `sunrise` varchar(50) COLLATE utf8_bin DEFAULT NULL,
   `sunset` varchar(50) COLLATE utf8_bin DEFAULT NULL,
   `img` varchar(50) COLLATE utf8_bin DEFAULT NULL,
-  `last_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Last weather update',
+  `last_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT 'Last weather update',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- Dumping data for table pihome.weather: ~0 rows (approximately)
 /*!40000 ALTER TABLE `weather` DISABLE KEYS */;
 REPLACE INTO `weather` (`id`, `sync`, `location`, `c`, `wind_speed`, `title`, `description`, `sunrise`, `sunset`, `img`, `last_update`) VALUES
-	(1, 1, 'Portlaoise', 11, '6', 'Clouds', 'broken clouds', '1561003356', '1561064325', '04n', '2019-06-20 00:00:15');
+	(1, 0, 'Portlaoise', 18, '7', 'Clouds', 'scattered clouds', '1563423906', '1563482717', '03d', '2019-07-18 19:30:02');
 /*!40000 ALTER TABLE `weather` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.zone
 DROP TABLE IF EXISTS `zone`;
 CREATE TABLE IF NOT EXISTS `zone` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `status` tinyint(4) DEFAULT NULL,
   `index_id` tinyint(4) DEFAULT NULL,
   `name` char(50) COLLATE utf8_bin DEFAULT NULL,
@@ -614,7 +762,7 @@ CREATE TABLE IF NOT EXISTS `zone` (
   `max_c` tinyint(4) DEFAULT NULL,
   `max_operation_time` tinyint(4) DEFAULT NULL,
   `hysteresis_time` tinyint(4) DEFAULT NULL,
-  `sp_deadband` float NOT NULL DEFAULT '0.5'
+  `sp_deadband` float NOT NULL DEFAULT 0.5,
   `sensor_id` int(11) DEFAULT NULL,
   `sensor_child_id` int(11) DEFAULT NULL,
   `controler_id` int(11) DEFAULT NULL,
@@ -628,22 +776,22 @@ CREATE TABLE IF NOT EXISTS `zone` (
   CONSTRAINT `FK_zone_boiler` FOREIGN KEY (`boiler_id`) REFERENCES `boiler` (`id`),
   CONSTRAINT `FK_zone_nodes` FOREIGN KEY (`sensor_id`) REFERENCES `nodes` (`id`),
   CONSTRAINT `FK_zone_nodes_2` FOREIGN KEY (`controler_id`) REFERENCES `nodes` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- Dumping data for table pihome.zone: ~3 rows (approximately)
 /*!40000 ALTER TABLE `zone` DISABLE KEYS */;
-REPLACE INTO `zone` (`id`, `sync`, `purge`, `status`, `index_id`, `name`, `type`, `model`, `max_c`, `max_operation_time`, `hysteresis_time`, `sensor_id`, `sensor_child_id`, `controler_id`, `controler_child_id`, `boiler_id`, `gpio_pin`) VALUES
-	(33, 1, 0, 1, 1, 'Ground Floor', 'Heating', 'DE000F', 25, 60, 3, 1, 0, 7, 1, 1, 21),
-	(34, 1, 0, 1, 2, 'First Floor', 'Heating', '7D0096', 25, 60, 3, 2, 0, 7, 2, 1, 22),
-	(35, 1, 0, 1, 5, 'Ch. Hot Water', 'Water', '009604', 70, 90, 3, 4, 0, 7, 3, 1, 23);
+REPLACE INTO `zone` (`id`, `sync`, `purge`, `status`, `index_id`, `name`, `type`, `model`, `max_c`, `max_operation_time`, `hysteresis_time`, `sp_deadband`, `sensor_id`, `sensor_child_id`, `controler_id`, `controler_child_id`, `boiler_id`, `gpio_pin`) VALUES
+	(33, 1, 0, 1, 1, 'Ground Floor', 'Heating', 'DE000F', 25, 60, 3, 0.5, 1, 0, 7, 1, 1, 21),
+	(34, 1, 0, 1, 2, 'First Floor', 'Heating', '7D0096', 25, 60, 3, 0.5, 2, 0, 7, 2, 1, 22),
+	(35, 1, 0, 1, 5, 'Ch. Hot Water', 'Water', '009604', 70, 90, 3, 0.5, 4, 0, 7, 3, 1, 23);
 /*!40000 ALTER TABLE `zone` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.zone_logs
 DROP TABLE IF EXISTS `zone_logs`;
 CREATE TABLE IF NOT EXISTS `zone_logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `zone_id` int(11) DEFAULT NULL,
   `boiler_log_id` int(11) DEFAULT NULL,
   `status` int(11) DEFAULT NULL,
