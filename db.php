@@ -433,6 +433,28 @@ if($what=="setup_gateway"){
 }
 
 
+//Setup E-mail Setting
+if($what=="setup_email"){
+	$status = $_GET['status'];
+	$e_smtp = $_GET['e_smtp'];
+	$e_username = $_GET['e_username'];
+	$e_password = $_GET['e_password'];
+	$e_from_address = $_GET['e_from_address'];
+	$e_to_address = $_GET['e_to_address'];
+	if ($status=='true'){$status = '1';} else {$status = '0';}
+	$query = "UPDATE email SET smtp = '".$e_smtp."', username = '".$e_username."', password = '".$e_password."', `from` = '".$e_from_address."', `to` = '".$e_to_address."', status = '".$status."' where ID = 1;";
+	if($conn->query($query)){
+		header('Content-type: application/json');
+		echo json_encode(array('Success'=>'Success','Query'=>$query));
+		return;
+	}else{
+		header('Content-type: application/json');
+		echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+		return;
+	}
+}
+
+
 if($what=="mqtt"){
 	if($opp=="delete"){
         $query = "DELETE FROM `mqtt` WHERE `id`=" . $_GET['wid'] . ";";

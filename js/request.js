@@ -221,6 +221,30 @@ var idata="w=setup_gateway&o=update&status="+document.getElementById("checkbox1"
     });
 }
 
+//update email 
+function setup_email(){
+var idata="w=setup_email&o=update&status="+document.getElementById("checkbox2").checked;
+    idata+="&e_smtp="+document.getElementById("e_smtp").value;
+	idata+="&e_username="+document.getElementById("e_username").value;
+	idata+="&e_password="+document.getElementById("e_password").value;
+	idata+="&e_from_address="+document.getElementById("e_from_address").value;
+	idata+="&e_to_address="+document.getElementById("e_to_address").value;
+    idata+="&wid=0";
+    $.get('db.php',idata)
+    .done(function(odata){
+        if(odata.Success)
+            reload_page();
+        else
+            console.log(odata.Message);
+    })
+    .fail(function( jqXHR, textStatus, errorThrown ){
+        if(jqXHR==401 || jqXHR==403) return;
+        console.log("setup_gateway: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
+    })
+    .always(function() {
+    });
+}
+
 //update PiConnect 
 function setup_piconnect(){
 var idata="w=setup_piconnect&o=update&status="+document.getElementById("checkbox0").checked;
