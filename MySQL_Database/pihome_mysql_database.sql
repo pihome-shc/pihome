@@ -333,7 +333,7 @@ CREATE TABLE IF NOT EXISTS `nodes` (
   `last_seen` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
   `notice_interval` int(11) NOT NULL DEFAULT 30,
   `min_voltage` decimal(10,2) DEFAULT NULL,
-  `status` char(50) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  `status` CHAR(50) NULL DEFAULT 'Active' COLLATE 'utf8_bin',
   `ms_version` char(50) COLLATE utf16_bin DEFAULT NULL,
   `sketch_version` char(50) COLLATE utf16_bin DEFAULT NULL,
   `repeater` tinyint(4) DEFAULT NULL COMMENT 'Repeater Feature Enabled=1 or Disable=0',
