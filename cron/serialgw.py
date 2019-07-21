@@ -23,7 +23,7 @@ print "********************************************************"
 print "* MySensors 2.2 Serial Gateway Communication Script    *"
 print "* to communicate with MySensors Nodes, for more info   *"
 print "* please check MySensors API. Build Date: 18/09/2017   *"
-print "*      Version 0.04 - Last Modified 11/06/2019         *"
+print "*      Version 0.05 - Last Modified 21/07/2019         *"
 print "*                                 Have Fun - PiHome.eu *"
 print "********************************************************"
 print " "
@@ -145,7 +145,7 @@ while 1:
 				row = int(row[0])
 				if (row == 0):
 					print "1: Adding Node ID:",node_id, "MySensors Version:", payload, "\n\n"
-					cur.execute('INSERT INTO nodes(node_id, ms_version) VALUES(%s, %s)', (node_id, payload))
+					cur.execute('INSERT INTO nodes(node_id, status, ms_version) VALUES(%s, %s, %s)', (node_id, 'Active', payload))
 					con.commit()
 				else: 
 					print "1: Node ID:",node_id," Already Exist In Node Table, Updating MS Version \n\n"
