@@ -357,7 +357,7 @@ if($what=="reboot"){
 	
 	//Stop Cron Service 
 	//systemctl stop cron.service
-	exec("systemctl stop cron.service");
+	//exec("systemctl stop cron.service");
 	
 	//Kill Gateway Process
 	$query = "SELECT * FROM gateway where status = 1 order by id asc LIMIT 1;";
@@ -368,9 +368,9 @@ if($what=="reboot"){
 	
 	//Stop MySQL/MariaDB Service
 	//systemctl stop mysql.service
-	exec("systemctl stop mysql.service"); 
+	//exec("systemctl stop mysql.service"); 
 	
-	//exec("python /var/www/reboot.py"); 
+	exec("python /var/www/reboot.py"); 
 	$info_message = "Server is rebooting <small> Please Do not Refresh... </small>";
 }
 
