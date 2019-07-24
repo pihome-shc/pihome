@@ -442,7 +442,7 @@ echo '
 	<div class="help-block with-errors"></div></div>
 
 	<div class="form-group" class="control-label"><label>'.$lang['email_password'].' </label>
-	<input class="form-control input-sm" type="text" id="e_password" name="e_password" value="'.$erow['password'].'" placeholder="Password for e-mail Server">
+	<input class="form-control input-sm" type="password" id="e_password" name="e_password" value="'.$erow['password'].'" placeholder="Password for e-mail Server">
 	<div class="help-block with-errors"></div></div>
 
 	<div class="form-group" class="control-label"><label>'.$lang['email_from_address'].' </label>

@@ -33,7 +33,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 <div class="panel-body">
 <ul class="chat"> 
 <?php 
-$query = "SELECT boost.id, boost.status, boost.zone_id, zone.index_id, boost.time, boost.temperature, boost.minute FROM boost join zone on boost.zone_id = zone.id WHERE boost.`purge` = '0' order by zone.index_id";
+$query = "SELECT boost.id, boost.status, boost.zone_id, zone.index_id, boost.time, boost.temperature, boost.minute FROM boost join zone on boost.zone_id = zone.id WHERE boost.`purge` = '0' order by zone.index_id, boost.temperature;";
 $results = $conn->query($query);
 while ($row = mysqli_fetch_assoc($results)) {
 	//query to search location device_id		
@@ -63,7 +63,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 		<span class="pull-right text-muted small"><em> <img src="images/'.$pi_image.'" border="0"></em></span>
 		<br>';
 		if($row["status"]=="1"){echo '&nbsp;&nbsp;'.date("Y-m-d H:i", $boost_time).'';}
-		else{echo '&nbsp;&nbsp;'. number_format(($row['minute'] / 60),2).'h';}
+		else{echo '&nbsp;&nbsp;'. number_format(($row['minute']),0).' minutes';}
 		echo '';
 		echo '</div></div></li>';				
 	}	

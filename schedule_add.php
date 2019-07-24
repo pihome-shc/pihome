@@ -144,7 +144,7 @@ if (isset($_POST['submit'])) {
 				<input class="form-control input-sm" type="time" id="end_time" name="end_time" value="<?php if(isset($_POST['end_time'])) { echo $_POST['end_time']; } ?>" placeholder="End Time" required>
                 <div class="help-block with-errors"></div></div>
 <?php
-$query = "select * from zone where status = 1 order by index_id asc;";
+$query = "select * from zone where status = 1 AND `purge`= 0 order by index_id asc;";
 $results = $conn->query($query);
 while ($row = mysqli_fetch_assoc($results)) {
 ?>
