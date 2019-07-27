@@ -344,18 +344,20 @@ if (in_array("1", $boiler)) {
 	$query = "UPDATE boiler SET sync = '0', fired_status = '{$new_boiler_status}' WHERE id ='1' LIMIT 1";
 	$conn->query($query);
 
-	/***************************************************************************************
-	GAS Boiler Wirelss Section:	MySensors Wireless Relay module for your GAS Boiler control
-	****************************************************************************************/
-	//update messages_out table with sent status to 0 and payload to as boiler status.
-	$query = "UPDATE messages_out SET sent = '0', payload = '{$new_boiler_status}' WHERE node_id ='{$boiler_node_id}' AND child_id = '{$boiler_node_child_id}' LIMIT 1;";
-	$conn->query($query);
-
-	/***************************************************************************************
-	Boiler Wired to Raspberry Pi GPIO Section: Make sure you have WiringPi installed.
-	****************************************************************************************/
-	exec("/usr/local/bin/gpio write ".$boiler_goip_pin ." ".$relay_on );
-	exec("/usr/local/bin/gpio mode ".$boiler_goip_pin ." out");
+	if (!empty($boiler_goip_pin)){
+		/***************************************************************************************
+		Boiler Wired to Raspberry Pi GPIO Section: Make sure you have WiringPi installed.
+		****************************************************************************************/
+		exec("/usr/local/bin/gpio write ".$boiler_goip_pin ." ".$relay_on );
+		exec("/usr/local/bin/gpio mode ".$boiler_goip_pin ." out");
+	} else {
+	        /***************************************************************************************
+        	GAS Boiler Wirelss Section:     MySensors Wireless Relay module for your GAS Boiler control
+        	****************************************************************************************/
+        	//update messages_out table with sent status to 0 and payload to as boiler status.
+        	$query = "UPDATE messages_out SET sent = '0', payload = '{$new_boiler_status}' WHERE node_id ='{$boiler_node_id}' AND child_id = '{$boiler_node_child_id}' LIMIT 1;";
+        	$conn->query($query);
+	}
 
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Node ID: \033[41m".$boiler_node_id."\033[0m Child ID: \033[41m".$boiler_node_child_id."\033[0m \n";
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler GIOP: \033[41m".$boiler_goip_pin. "\033[0m Status: \033[41m".$relay_on."\033[0m (0=On, 1=Off) \n";
@@ -386,18 +388,20 @@ if (in_array("1", $boiler)) {
 	$query = "UPDATE boiler SET sync = '0', fired_status = '{$new_boiler_status}' WHERE id ='1' LIMIT 1";
 	$conn->query($query);
 
-	/***************************************************************************************
-	GAS Boiler Wirelss Section:	MySensors Wireless Relay module for your GAS Boiler control
-	****************************************************************************************/
-	//update messages_out table with sent status to 0 and payload to as boiler status.
-	$query = "UPDATE messages_out SET sent = '0', payload = '{$new_boiler_status}' WHERE node_id ='{$boiler_node_id}' AND child_id = '{$boiler_node_child_id}' LIMIT 1;";
-	$conn->query($query);
-
-	/***************************************************************************************
-	Boiler Wired to Raspberry Pi GPIO Section: Make sure you have WiringPi installed.
-	****************************************************************************************/
-	exec("/usr/local/bin/gpio write ".$boiler_goip_pin ." ".$relay_off );
-	exec("/usr/local/bin/gpio mode ".$boiler_goip_pin ." out");
+	if (!empty($boiler_goip_pin)){
+		/***************************************************************************************
+		Boiler Wired to Raspberry Pi GPIO Section: Make sure you have WiringPi installed.
+		****************************************************************************************/
+		exec("/usr/local/bin/gpio write ".$boiler_goip_pin ." ".$relay_off );
+		exec("/usr/local/bin/gpio mode ".$boiler_goip_pin ." out");
+	} else {
+	        /***************************************************************************************
+        	GAS Boiler Wirelss Section:     MySensors Wireless Relay module for your GAS Boiler control
+        	****************************************************************************************/
+        	//update messages_out table with sent status to 0 and payload to as boiler status.
+        	$query = "UPDATE messages_out SET sent = '0', payload = '{$new_boiler_status}' WHERE node_id ='{$boiler_node_id}' AND child_id = '{$boiler_node_child_id}' LIMIT 1;";
+        	$conn->query($query);
+	}
 
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Node ID: \033[41m".$boiler_node_id."\033[0m Child ID: \033[41m".$boiler_node_child_id."\033[0m \n";
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler GIOP: \033[41m".$boiler_goip_pin. "\033[0m Status: \033[41m".$relay_off."\033[0m (0=On, 1=Off) \n";
