@@ -336,13 +336,18 @@ while ($row = mysqli_fetch_assoc($results)) {
 	</div>
 	<div class="modal-body">';
 	if ($zone_ctr_fault == '1') {
+		$date_time = date('Y-m-d H:i:s');
+		$datetime1 = strtotime("$date_time");
+		$datetime2 = strtotime("$controler_seen");
+		$interval  = abs($datetime2 - $datetime1);
+		$ctr_minutes   = round($interval / 60);
 		echo '
 			<ul class="chat">
 			<li class="left clearfix">
 				<div class="header">
-				<strong class="primary-font red">Sensor Fault!!!</strong> 
+				<strong class="primary-font red">Controller Fault!!!</strong> 
 				<small class="pull-right text-muted">
-					<i class="fa fa-clock-o fa-fw"></i> '.secondsToWords(($controler_seen)*60).' ago 
+					<i class="fa fa-clock-o fa-fw"></i> '.secondsToWords(($ctr_minutes)*60).' ago 
 				</small>
 				<br><br>
 				<p>Controller ID '.$sensor_id.' last seen at '.$controler_seen.' </p>
@@ -352,13 +357,18 @@ while ($row = mysqli_fetch_assoc($results)) {
 		</ul>';
 		//echo $zone_senros_txt;
 	}elseif ($zone_sensor_fault == '1'){
+		$date_time = date('Y-m-d H:i:s');
+		$datetime1 = strtotime("$date_time");
+		$datetime2 = strtotime("$sensor_seen");
+		$interval  = abs($datetime2 - $datetime1);
+		$sensor_minutes   = round($interval / 60);
 		echo '
 		<ul class="chat">
 			<li class="left clearfix">
 				<div class="header">
 				<strong class="primary-font red">Sensor Fault!!!</strong> 
 				<small class="pull-right text-muted">
-					<i class="fa fa-clock-o fa-fw"></i> '.secondsToWords(($sensor_seen)*60).' ago 
+					<i class="fa fa-clock-o fa-fw"></i> '.secondsToWords(($sensor_minutes)*60).' ago 
 				</small>
 				<br><br>
 				<p>Sensor ID '.$sensor_id.' last seen at '.$sensor_seen.' <br>Last Temperature reading received at '.$temp_reading_time.' </p>

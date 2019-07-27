@@ -403,6 +403,98 @@ echo '</div></div>
     </div>
 </div>';
 
+
+//email settings model
+echo '
+<div class="modal fade" id="email_setting" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                <h5 class="modal-title">'.$lang['email_settings'].'</h5>
+            </div>
+            <div class="modal-body">';
+$gquery = "SELECT * FROM email";
+$gresult = $conn->query($gquery);
+$erow = mysqli_fetch_array($gresult);
+
+echo '<p class="text-muted">'.$lang['email_text'].'</p>';
+echo '
+	<form data-toggle="validator" role="form" method="post" action="settings.php" id="form-join">
+	
+	<div class="form-group" class="control-label">
+	<div class="checkbox checkbox-default checkbox-circle">';
+	if ($erow['status'] == '1'){
+		echo '<input id="checkbox2" class="styled" type="checkbox" value="1" name="status" checked>';
+	}else {
+		echo '<input id="checkbox2" class="styled" type="checkbox" value="1" name="status">';
+	}
+echo ' 
+
+	<label for="checkbox2"> '.$lang['email_enable'].'</label></div></div>
+	
+	<div class="form-group" class="control-label"><label>'.$lang['email_smtp_server'].'</label>
+	<input class="form-control input-sm" type="text" id="e_smtp" name="e_smtp" value="'.$erow['smtp'].'" placeholder="e-mail SMTP Server Address ">
+	<div class="help-block with-errors"></div></div>
+	
+	<div class="form-group" class="control-label"><label>'.$lang['email_username'].' </label>
+	<input class="form-control input-sm" type="text" id="e_username" name="e_username" value="'.$erow['username'].'" placeholder="Username for e-mail Server">
+	<div class="help-block with-errors"></div></div>
+
+	<div class="form-group" class="control-label"><label>'.$lang['email_password'].' </label>
+	<input class="form-control input-sm" type="password" id="e_password" name="e_password" value="'.$erow['password'].'" placeholder="Password for e-mail Server">
+	<div class="help-block with-errors"></div></div>
+
+	<div class="form-group" class="control-label"><label>'.$lang['email_from_address'].' </label>
+	<input class="form-control input-sm" type="text" id="e_from_address" name="e_from_address" value="'.$erow['from'].'" placeholder="From e-mail" >
+	<div class="help-block with-errors"></div></div>
+
+	<div class="form-group" class="control-label"><label>'.$lang['email_to_address'].' </label>
+	<input class="form-control input-sm" type="text" id="e_to_address" name="e_to_address" value="'.$erow['to'].'" placeholder="To e-mail Address">
+	<div class="help-block with-errors"></div></div>';
+
+echo '</div>
+            <div class="modal-footer">
+				<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
+				<input type="button" name="submit" value="Save" class="btn btn-default login btn-sm" onclick="setup_email()">
+				
+            </div>
+        </div>
+    </div>
+</div>';
+
+//Alert Setting model
+echo '
+<div class="modal fade" id="node_alerts" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                <h5 class="modal-title">'.$lang['node_alerts'].'</h5>
+            </div>
+            <div class="modal-body">
+<p class="text-muted"> '.$lang['node_alerts_text'].' </p>';
+$query = "SELECT * FROM nodes where node_id != 0 ORDER BY node_id asc";
+$results = $conn->query($query);
+echo '	<div class=\"list-group\">';
+echo '<a href="#" class="list-group-item">Node ID - Name  <span class="pull-right text-muted small"><em>Notice</em> - <em>Last Seen</em></span></a>'; 
+	
+while ($row = mysqli_fetch_assoc($results)) {
+	echo '<a href="#" class="list-group-item">'.$row['node_id'].' - '.$row['name'].'  <span class="pull-right text-muted small">
+	<em>'.$row['notice_interval'].'</em> - 
+	<em>'.$row['last_seen'].'</em>
+	
+	</span></a>'; 	
+}
+echo '</div></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>';
+
+
 //cronetab model	
 echo '
 <div class="modal fade" id="cron_jobs" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

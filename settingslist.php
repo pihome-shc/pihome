@@ -116,7 +116,19 @@ $("#ajaxModal").on("show.bs.modal", function(e) {
 							<h3 class="degre" ><i class="fa fa-heartbeat red"></i></h3>
 							<h3 class="status"></small></h3>
                             </button>
+							
+							<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-href="#" data-toggle="modal" data-target="#email_setting">
+							<h3 class="buttontop"><small><?php echo $lang['email']; ?></small></h3>
+							<h3 class="degre" ><i class="fa fa-envelope blueinfo"></i></h3>
+							<h3 class="status"></small></h3>
+                            </button>
 
+							<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-href="#" data-toggle="modal" data-target="#node_alerts">
+							<h3 class="buttontop"><small><?php echo $lang['node_alerts']; ?></small></h3>
+							<h3 class="degre" ><i class="ion-android-notifications-none blueinfo"></i></h3>
+							<h3 class="status"></small></h3>
+                            </button>
+							
 							<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-href="edit_gpio.php" data-toggle="modal" data-target="#cron_jobs">
 							<h3 class="buttontop"><small><?php echo $lang['cron_jobs']; ?></small></h3>
 							<h3 class="degre" ><i class="ionicons ion-ios-timer-outline blue"></i></h3>

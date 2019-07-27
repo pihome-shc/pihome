@@ -27,7 +27,7 @@ if(isset($_GET['id'])) {
         $holidays_id = $_GET['id'];
         $return_url = "holidays.php";
 } else {
-        $holidays_id = NULL;
+        $holidays_id = "NULL";
         $return_url = "schedule.php";
 }
 
@@ -73,10 +73,16 @@ if (isset($_POST['submit'])) {
 	foreach($_POST['id'] as $id){
 		$id = $_POST['id'][$id];
 		$status = isset($_POST['status'][$id]) ? $_POST['status'][$id] : "0";
-		$status = $_POST['status'][$id];
+		//$status = $_POST['status'][$id];
 		$temp=TempToDB($conn,$_POST['temp'][$id]);
-		$query = "INSERT INTO schedule_daily_time_zone(sync, status, schedule_daily_time_id, zone_id, temperature, holidays_id) VALUES ('0', '{$status}', '{$schedule_daily_time_id}','{$id}','" . number_format($temp,1) . "','{$holidays_id}')";
+		$query = "INSERT INTO schedule_daily_time_zone(sync, `status`, schedule_daily_time_id, zone_id, temperature, holidays_id) VALUES ('0', '{$status}', '{$schedule_daily_time_id}','{$id}','".number_format($temp,1)."',{$holidays_id}); ";
 		$zoneresults = $conn->query($query);
+		//echo $query;
+		if ($zoneresults) {
+			$message_success = "<p>".$lang['zone_record_success']."</p>";
+		} else {
+			$error = "<p>".$lang['zone_record_fail']." </p> <p>" .mysqli_error($conn). "</p>";
+		}
 	}
 }
 ?>
@@ -130,7 +136,6 @@ if (isset($_POST['submit'])) {
     		<label for="checkbox7"> <?php echo $lang['sat']; ?></label></div></div>
 			</div>
 
-
 				<div class="form-group" class="control-label"><label><?php echo $lang['start_time']; ?></label>
 				<input class="form-control input-sm" type="time" id="start_time" name="start_time" value="<?php if(isset($_POST['start_time'])) { echo $_POST['start_time']; } ?>" placeholder="Start Time" required>
                 <div class="help-block with-errors"></div></div>
@@ -139,7 +144,7 @@ if (isset($_POST['submit'])) {
 				<input class="form-control input-sm" type="time" id="end_time" name="end_time" value="<?php if(isset($_POST['end_time'])) { echo $_POST['end_time']; } ?>" placeholder="End Time" required>
                 <div class="help-block with-errors"></div></div>
 <?php
-$query = "select * from zone where status = 1;";
+$query = "select * from zone where status = 1 AND `purge`= 0 order by index_id asc;";
 $results = $conn->query($query);
 while ($row = mysqli_fetch_assoc($results)) {
 ?>

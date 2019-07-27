@@ -180,6 +180,7 @@ $lang['boiler'] = "Boiler";
 $lang['boost'] = "Boost";
 $lang['sensors'] = "Sensors";
 $lang['gateway'] = "Gateway";
+$lang['node_alerts'] = "Node Alerts";
 $lang['cron_jobs'] = "Cron Jobs";
 $lang['services'] = "Services";
 $lang['mqtt'] = "MQTT";
@@ -272,6 +273,17 @@ $lang['type'] = "Type";
 $lang['add_conn'] = "Add Conn";
 $lang['services'] = "Services";
 $lang['system'] = "Systems";
-$lang['system'] = "Systems";
 $lang['more_language'] = "More Languages...";
+
+$lang['node_alerts_text'] = "Node Alerts Settings: These settings will help to identify if there is probelm with ";
+$lang['email'] = "E-Mail";
+$lang['email_enable'] = "Enable E-Mail";
+$lang['email_settings'] = "E-Mail Settings";
+$lang['email_text'] = "E-Mail Settings for Alerts Purpose, if you do not want to setup Alerts your do not need to configure these settings. ";
+$lang['email_smtp_server'] = "SMTP Server Address";
+$lang['email_username'] = "Username";
+$lang['email_password'] = "Password";
+$lang['email_from_address'] = "From e-mail";
+$lang['email_to_address'] = "To e-mail";
+
 ?>

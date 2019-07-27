@@ -66,7 +66,6 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$end_time = strtotime($row['end']);
 	if($row["WeekDays"]  & (1 << idate('w'))){if ($time >$start_time && $time <$end_time && $row["time_status"]=="1"){$shactive="redsch";}}
 
-
 	//time shchedule listing
 	echo '
 	<li class="left clearfix scheduleli animated fadeIn">

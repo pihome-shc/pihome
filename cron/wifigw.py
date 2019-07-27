@@ -23,7 +23,7 @@ print "********************************************************"
 print "* MySensors Wifi/Ethernet Gateway Communication Script *"
 print "* to communicate with MySensors Nodes, for more info   *"
 print "* please check MySensors API. Build Date: 18/09/2017   *"
-print "*      Version 0.07 - Last Modified 11/06/2019         *"
+print "*      Version 0.08 - Last Modified 20/07/2019         *"
 print "*                                 Have Fun - PiHome.eu *"
 print "********************************************************"
 print " " + bc.ENDC
@@ -105,7 +105,6 @@ while 1:
 			# help http://stackoverflow.com/questions/21740359/python-mysqldb-typeerror-not-all-arguments-converted-during-string-formatting
 			cur.execute('UPDATE `messages_out` set sent=1 where id=%s', [out_id]) #update DB so this message will not be processed in next loop
 			con.commit() #commit above
-			time.sleep(.100) # Wait for 100 milliseconds
 	except mdb.Error, e:
 		print "Error %d: %s" % (e.args[0], e.args[1])
 		sys.exit(1)
@@ -163,11 +162,12 @@ while 1:
 				row = int(row[0])
 				if (row == 0):
 					print "1: Adding Node ID:",node_id, "MySensors Version:", payload, "\n\n"
-					cur.execute('INSERT INTO nodes(node_id, ms_version) VALUES(%s, %s)', (node_id, payload))
+					cur.execute('INSERT INTO nodes(node_id, status, ms_version) VALUES(%s, %s, %s)', (node_id, 'Active', payload))
 					con.commit()
 				else: 
 					print "1: Node ID:",node_id," Already Exist In Node Table, Updating MS Version \n\n"
 					cur.execute('UPDATE nodes SET ms_version = %s where node_id = %s', (payload, node_id))
+					
 					con.commit()
 	
 			# ..::Step One B::..
@@ -294,4 +294,4 @@ while 1:
 		finally:
 			if con:
 				con.close()
-	time.sleep(1)
+	time.sleep(0.1)

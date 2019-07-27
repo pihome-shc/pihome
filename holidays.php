@@ -23,46 +23,6 @@ require_once(__DIR__.'/st_inc/session.php');
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
-
-if (isset($_POST['submit'])) {
-	$holidays_enable = isset($_POST['holidays_enable']) ? $_POST['holidays_enable'] : "0";
-
-	$start_date_time = $_POST['start_date_time'];
-	$stime = date('Y-m-d H:i:s',strtotime($start_date_time));
-	
-	$end_date_time = $_POST['end_date_time'];
-	$etime = date('Y-m-d H:i:s',strtotime($end_date_time));
-
-	$sql_device_insert= "INSERT INTO holidays(sync, status, start_date_time, end_date_time, active) VALUES ('0', '0', '{$start_date_time}','{$end_date_time}','{$holidays_enable}')";
-	$result = $conn->query($sql_device_insert);
-	
-	if ($result) {
-		// Success!
-		$message_success = "All Done";
-	} else {
-				// Display error message.
-		$error .= "<p>" . mysqli_error($conn) . "</p>";
-	}				
- }
- 	if(isset($_GET['id'])) {
-		$id = $_GET['id'];
-		$query = "SELECT * FROM holidays WHERE id = {$id} LIMIT 1";
-		$get_product = $conn->query($query);
-		$found_product = mysqli_fetch_array($get_product);
-		if (!$found_product) {
-			$error_message = "No record found for database record number " . $id .mysqli_error($conn);
-		} else {		
-			$query = "DELETE FROM holidays WHERE id = {$id} LIMIT 1";
-			$result = $conn->query($query);
-			if ($result) {
-				// Success!
-				$message_success = "Record Delete Successfully";
-			} else {
-				$error = "<p>Something went wrong! please try again...</p>";
-				$error .= "<p>" .mysqli_error($conn). "</p>";
-			}
-		}
-	}
 ?>
 <?php include("header.php");  ?>
 <?php include_once("notice.php"); ?>
@@ -70,7 +30,11 @@ if (isset($_POST['submit'])) {
 <br>
             <div class="row">
                 <div class="col-lg-12">
-<div id="holidayslist"></div>
+                        <div id="holidayslist" >
+                                   <div class="text-center"><br><br><p><?php echo $lang['please_wait_text']; ?></p>
+                                   <br><br><img src="images/loader.gif">
+                                   </div>
+                                   </div>
                 <!-- /.col-lg-4 -->
             </div>
             <!-- /.row -->

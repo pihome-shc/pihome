@@ -357,7 +357,7 @@ if($what=="reboot"){
 	
 	//Stop Cron Service 
 	//systemctl stop cron.service
-	exec("systemctl stop cron.service");
+	//exec("systemctl stop cron.service");
 	
 	//Kill Gateway Process
 	$query = "SELECT * FROM gateway where status = 1 order by id asc LIMIT 1;";
@@ -368,9 +368,9 @@ if($what=="reboot"){
 	
 	//Stop MySQL/MariaDB Service
 	//systemctl stop mysql.service
-	exec("systemctl stop mysql.service"); 
+	//exec("systemctl stop mysql.service"); 
 	
-	//exec("python /var/www/reboot.py"); 
+	exec("python /var/www/reboot.py"); 
 	$info_message = "Server is rebooting <small> Please Do not Refresh... </small>";
 }
 
@@ -421,6 +421,28 @@ if($what=="setup_gateway"){
 	$gw_timout = $_GET['gw_timout'];
 	if ($status=='true'){$status = '1';}else {$status = '0';}
 	$query = "UPDATE gateway SET status = '".$status."', `sync` = '0', type = '".$gw_type."', location = '".$gw_location."', port = '".$gw_port."', timout = '".$gw_timout."' where ID = 1;";
+	if($conn->query($query)){
+		header('Content-type: application/json');
+		echo json_encode(array('Success'=>'Success','Query'=>$query));
+		return;
+	}else{
+		header('Content-type: application/json');
+		echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+		return;
+	}
+}
+
+
+//Setup E-mail Setting
+if($what=="setup_email"){
+	$status = $_GET['status'];
+	$e_smtp = $_GET['e_smtp'];
+	$e_username = $_GET['e_username'];
+	$e_password = $_GET['e_password'];
+	$e_from_address = $_GET['e_from_address'];
+	$e_to_address = $_GET['e_to_address'];
+	if ($status=='true'){$status = '1';} else {$status = '0';}
+	$query = "UPDATE email SET smtp = '".$e_smtp."', username = '".$e_username."', password = '".$e_password."', `from` = '".$e_from_address."', `to` = '".$e_to_address."', status = '".$status."' where ID = 1;";
 	if($conn->query($query)){
 		header('Content-type: application/json');
 		echo json_encode(array('Success'=>'Success','Query'=>$query));
