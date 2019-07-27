@@ -350,7 +350,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 					<i class="fa fa-clock-o fa-fw"></i> '.secondsToWords(($ctr_minutes)*60).' ago 
 				</small>
 				<br><br>
-				<p>Controller ID '.$sensor_id.' last seen at '.$controler_seen.' </p>
+				<p>Controller ID '.$controler_id.' last seen at '.$controler_seen.' </p>
 				<p class="text-info">Heating system will resume its normal operation once this issue is fixed. </p>
 				</div>
 			</li>
