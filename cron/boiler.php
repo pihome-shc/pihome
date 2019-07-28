@@ -43,6 +43,13 @@ $boiler_hysteresis_time = $row['hysteresis_time'];
 $boiler_max_operation_time = $row['max_operation_time'];
 $boiler_goip_pin = $row['gpio_pin'];
 
+//Get data from nodes table
+$query = "SELECT * FROM nodes WHERE node_id ='$boiler_node_id' AND status IS NOT NULL LIMIT 1;";
+$result = $conn->query($query);
+$boiler_node = mysqli_fetch_array($result);
+$boiler_seen = $boiler_node['last_seen'];
+$boiler_notice = $boiler_node['notice_interval'];
+
 //query to check away status
 $query = "SELECT * FROM away LIMIT 1";
 $result = $conn->query($query);
@@ -254,7 +261,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 		$controler_seen_time = strtotime($controler_seen);
 		if ($controler_seen_time  < ($now - ($controler_notice*60))){
 			$zone_fault = 1;
-			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone valve communication timeout for This Zone ".$controler_seen."\n";
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone valve communication timeout for This Zone. Node Last Seen: ".$controler_seen."\n";
 		}
 	}
 	if($sensor_notice > 0) {
@@ -262,9 +269,18 @@ while ($row = mysqli_fetch_assoc($results)) {
       $sensor_seen_time = strtotime($temp_reading_time); //using time from messages_in
       if ($sensor_seen_time  < ($now - ($sensor_notice*60))){
           $zone_fault = 1;
-          echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Temperature sensor communication timeout for This Zone ".$temp_reading_time."\n";
+          echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Temperature sensor communication timeout for This Zone. Last temperature reading: ".$temp_reading_time."\n";
       }
 	}
+  if($boiler_notice > 0){
+		$now=strtotime(date('Y-m-d H:i:s'));
+		$boiler_seen_time = strtotime($boiler_seen);
+		if ($boiler_seen_time  < ($now - ($boiler_notice*60))){
+			$zone_fault = 1;
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler controler communication timeout. Boiler Last Seen: ".$boiler_seen."\n";
+		}
+	}
+
 
 	//initialize two variable
 	$start_cause ='';
