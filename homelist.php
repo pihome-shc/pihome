@@ -67,6 +67,36 @@ if ($rowcount > 0) {
 }else {
         $holidays_status = 0;
 }
+
+
+//GET BOILER DATA AND FAIL ZONES IF BOILER COMMS TIMEOUT
+//query to get last boiler operation time and hysteresis time
+$query = "SELECT * FROM boiler LIMIT 1";
+$result = $conn->query($query);
+$row = mysqli_fetch_array($result);
+$fired_status = $row['fired_status'];
+$boiler_name = $row['name'];
+$boiler_max_operation_time = $row['max_operation_time'];
+$boiler_hysteresis_time = $row['hysteresis_time'];
+
+//Get data from nodes table
+$query = "SELECT * FROM nodes WHERE id = {$row['node_id']} AND status IS NOT NULL LIMIT 1";
+$result = $conn->query($query);
+$boiler_node = mysqli_fetch_array($result);
+$boiler_id = $boiler_node['node_id'];
+$boiler_seen = $boiler_node['last_seen'];
+$boiler_notice = $boiler_node['notice_interval'];
+
+//Check Boiler Fault
+$boiler_fault = 0;
+if($boiler_notice > 0){
+  $now=strtotime(date('Y-m-d H:i:s'));
+  $boiler_seen_time = strtotime($boiler_seen);
+  if ($boiler_seen_time  < ($now - ($boiler_notice*60))){
+    $boiler_fault = 1;
+  }
+}
+
 $query = "SELECT * FROM zone where zone.purge = '0' ORDER BY index_id asc; ";
 $results = $conn->query($query);
 while ($row = mysqli_fetch_assoc($results)) {
@@ -207,7 +237,7 @@ while ($row = mysqli_fetch_assoc($results)) {
     //  override(refresh)
     //  bed(bed)
     	
-    if (($zone_ctr_fault == '1') OR ($zone_sensor_fault == '1')) {
+    if (($zone_ctr_fault == '1') OR ($zone_sensor_fault == '1') OR $boiler_fault == '1') {
       //Zone fault
       $status='';  
       $shactive='ion-android-cancel';
@@ -335,7 +365,28 @@ while ($row = mysqli_fetch_assoc($results)) {
 	<h5 class="modal-title">'.$row['name'].'</h5>
 	</div>
 	<div class="modal-body">';
-	if ($zone_ctr_fault == '1') {
+  if ($boiler_fault == '1') {
+		$date_time = date('Y-m-d H:i:s');
+		$datetime1 = strtotime("$date_time");
+		$datetime2 = strtotime("$boiler_seen");
+		$interval  = abs($datetime2 - $datetime1);
+		$ctr_minutes   = round($interval / 60);
+		echo '
+			<ul class="chat">
+			<li class="left clearfix">
+				<div class="header">
+				<strong class="primary-font red">Boiler Fault!!!</strong> 
+				<small class="pull-right text-muted">
+					<i class="fa fa-clock-o fa-fw"></i> '.secondsToWords(($ctr_minutes)*60).' ago 
+				</small>
+				<br><br>
+				<p>Node ID '.$boiler_id.' last seen at '.$boiler_seen.' </p>
+				<p class="text-info">Heating system will resume its normal operation once this issue is fixed. </p>
+				</div>
+			</li>
+		</ul>';
+  
+  }elseif ($zone_ctr_fault == '1') {
 		$date_time = date('Y-m-d H:i:s');
 		$datetime1 = strtotime("$date_time");
 		$datetime2 = strtotime("$controler_seen");
@@ -409,14 +460,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 
 
 //BOILER BUTTON
-//query to get last boiler operation time and hysteresis time
-$query = "SELECT * FROM boiler LIMIT 1";
-$result = $conn->query($query);
-$row = mysqli_fetch_array($result);
-$fired_status = $row['fired_status'];
-$boiler_name = $row['name'];
-$boiler_max_operation_time = $row['max_operation_time'];
-$boiler_hysteresis_time = $row['hysteresis_time'];
+
 
 //query to get last boiler statues change time
 $query = "SELECT * FROM boiler_logs ORDER BY id desc LIMIT 1 ";
@@ -438,8 +482,9 @@ if ($fired_status=='1'){$boiler_colour="red";} elseif ($fired_status=='0'){$boil
 echo '<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-toggle="modal" href="#boiler" data-backdrop="static" data-keyboard="false">
 		<h3 class="text-info"><small>'.$boiler_name.'</small></h3>
 		<h3 class="degre" ><i class="ionicons ion-flame fa-1x '.$boiler_colour.'"></i></h3>';
-if($hysteresis=='0') { echo'<h3 class="status"><small class="statusdegree"></small><small style="margin-left: 48px;" class="statuszoon"></small>';}
-if($hysteresis=='1') {echo'<h3 class="status"><small class="statusdegree"></small><small style="margin-left: 70px;" class="statuszoon"><i class="fa fa-hourglass fa-1x orange"></i> </small>';}
+if($boiler_fault=='1') {echo'<h3 class="status"><small class="statusdegree"></small><small style="margin-left: 70px;" class="statuszoon"><i class="fa ion-android-cancel fa-1x red"></i> </small>';}
+elseif($hysteresis=='1') {echo'<h3 class="status"><small class="statusdegree"></small><small style="margin-left: 70px;" class="statuszoon"><i class="fa fa-hourglass fa-1x orange"></i> </small>';}
+else { echo'<h3 class="status"><small class="statusdegree"></small><small style="margin-left: 48px;" class="statuszoon"></small>';}
 echo '</h3></button>';
 
 
@@ -452,7 +497,27 @@ echo '</h3></button>';
 	<h5 class="modal-title">'.$boiler_name.' - '.$lang['boiler_recent_logs'].'</h5>
 	</div>
 	<div class="modal-body">';
-
+  if ($boiler_fault == '1') {
+		$date_time = date('Y-m-d H:i:s');
+		$datetime1 = strtotime("$date_time");
+		$datetime2 = strtotime("$boiler_seen");
+		$interval  = abs($datetime2 - $datetime1);
+		$ctr_minutes   = round($interval / 60);
+		echo '
+			<ul class="chat">
+			<li class="left clearfix">
+				<div class="header">
+				<strong class="primary-font red">Boiler Fault!!!</strong> 
+				<small class="pull-right text-muted">
+					<i class="fa fa-clock-o fa-fw"></i> '.secondsToWords(($ctr_minutes)*60).' ago 
+				</small>
+				<br><br>
+				<p>Node ID '.$boiler_id.' last seen at '.$boiler_seen.' </p>
+				<p class="text-info">Heating system will resume its normal operation once this issue is fixed. </p>
+				</div>
+			</li>
+		</ul>';
+  }
 	$bquery = "select DATE_FORMAT(start_datetime, '%H:%i') as start_datetime, DATE_FORMAT(stop_datetime, '%H:%i') as stop_datetime , DATE_FORMAT(expected_end_date_time, '%H:%i') as expected_end_date_time, TIMESTAMPDIFF(MINUTE, start_datetime, stop_datetime) as on_minuts
 	from boiler_logs order by id desc limit 5";
 	$bresults = $conn->query($bquery);
