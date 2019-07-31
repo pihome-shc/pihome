@@ -233,6 +233,35 @@ if($what=="lang"){
         }
 	}
 }
+
+//Boiler Settings
+if($what=="boiler_settings"){
+	$status = $_GET['status'];
+	$name = $_GET['name'];
+	$node_id = $_GET['node_id'];
+	$node_child_id = $_GET['node_child_id'];
+	$hysteresis_time = $_GET['hysteresis_time'];
+	$max_operation_time = $_GET['max_operation_time'];
+	$gpio_pin = $_GET['gpio_pin'];
+	if ($status=='true'){$status = '1';} else {$status = '0';}
+	
+	//Get actual node it from nodes table
+	$query = "SELECT * FROM nodes WHERE node_id ='".$node_id."'";
+	$results = $conn->query($query);
+	$row = mysqli_fetch_assoc($results);
+	$node_id= $row['id'];
+	$query = "UPDATE boiler SET status = '".$status."', name = '".$name."', node_id = '".$node_id."', node_child_id = '".$node_child_id."', hysteresis_time = '".$hysteresis_time."', max_operation_time = '".$max_operation_time."', gpio_pin = '".$gpio_pin."' where ID = 1;";
+	if($conn->query($query)){
+		header('Content-type: application/json');
+		echo json_encode(array('Success'=>'Success','Query'=>$query));
+		return;
+	}else{
+		header('Content-type: application/json');
+		echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+		return;
+	}
+}
+
 //update openweather
 if($what=="openweather"){
 	if($opp=="update"){

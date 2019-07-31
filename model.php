@@ -162,29 +162,137 @@ echo '
 
 //Boiler settings
 echo '
-<div class="modal fade" id="boiler_safety_setup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="boiler" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
                 <h5 class="modal-title">'.$lang['boiler_settings'].'</h5>
             </div>
-            <div class="modal-body">
-<p class="text-muted"> Boiler safety settings i.e. <i class="ionicons ion-ios-timer blue"></i> '.$lang['boiler_hysteresis_text'].'</p>';
-$query = "SELECT * FROM boiler_view";
+            <div class="modal-body">';
+$query = "SELECT * FROM boiler;";
 $results = $conn->query($query);
-echo '	<div class=\"list-group\">';
-while ($row = mysqli_fetch_assoc($results)) {
-	echo " <a href=\"#\" class=\"list-group-item\">
-	<i class=\"ionicons ion-flame fa-1x red\"></i> ".$row['name']." - ".$lang['node'].": ".$row['node_id']." ".$lang['child'].": ".$row['node_child_id']."
-	 - GPIO Pin: ".$row['gpio_pin']."
-	<span class=\"pull-right \"><em>&nbsp;&nbsp;<i class=\"ionicons ion-ios-timer blue\"></i> ".$row['hysteresis_time']. " </em></span>
-	</a>";
-}
-echo '</div></div>
+$brow = mysqli_fetch_array($results);
+echo '<p class="text-muted">'.$lang['boiler_info_text'].'</p>';
+
+echo '
+	<form data-toggle="validator" role="form" method="post" action="settings.php" id="form-join">
+	
+	<div class="form-group" class="control-label">
+	<div class="checkbox checkbox-default checkbox-circle">';
+	if ($brow['status'] == '1'){
+		echo '<input id="checkbox2" class="styled" type="checkbox" value="1" name="status" checked Disabled>';
+	}else {
+		echo '<input id="checkbox2" class="styled" type="checkbox" value="1" name="status" Disabled>';
+	}
+	echo '<label for="checkbox2"> '.$lang['boiler_enable'].'</label></div></div>
+	
+	<div class="form-group" class="control-label"><label>'.$lang['boiler_name'].'</label>
+	<input class="form-control input-sm" type="text" id="name" name="name" value="'.$brow['name'].'" placeholder="Boiler Name to Display on Screen ">
+	<div class="help-block with-errors"></div></div>
+
+	<div class="form-group" class="control-label"><label>'.$lang['boiler_node_id'].'</label>
+	<select class="form-control input-sm" type="text" id="node_id" name="node_id">';
+	//get current node_id from nodes table 
+	$query = "SELECT * FROM nodes WHERE id ='".$brow['node_id']."' Limit 1;";
+	$result = $conn->query($query);
+	$row = mysqli_fetch_assoc($result);
+	$node_id= $row['node_id'];
+	
+	echo '<option value="'.$node_id.'" selected>'.($node_id=='0' ? 'N/A' : $node_id).'</option>';
+	
+	//get list from nodes table to display 
+	$query = "SELECT * FROM nodes where name = 'Boiler Relay' OR name = 'Boiler Controller' AND node_id!=0;";
+	$result = $conn->query($query);
+	if ($result){
+		while ($nrow=mysqli_fetch_array($result)) {
+			echo '<option value="'.$nrow['node_id'].'">'.$nrow['node_id'].'</option>';
+		}
+	}
+	echo '<option value="0">N/A</option>
+	</select>
+    <div class="help-block with-errors"></div></div>';
+	
+	echo '
+	<div class="form-group" class="control-label"><label>'.$lang['boiler_node_child_id'].'</label>
+	<select class="form-control input-sm" type="text" id="node_child_id" name="node_child_id">
+	<option selected>'.$brow['node_child_id'].'</option>
+	<option value="0">0</option>
+	<option value="1">1</option>
+	<option value="2">2</option>
+	<option value="3">3</option>
+	<option value="4">4</option>
+	<option value="5">5</option>
+	<option value="6">6</option>
+	<option value="7">7</option>
+	<option value="8">8</option>
+	</select>
+    <div class="help-block with-errors"></div></div>
+	
+	<div class="form-group" class="control-label"><label>'.$lang['boiler_relay_gpio'].'</label> <small class="text-muted">'.$lang['boiler_relay_gpio_text'].'</small>
+	<select id="gpio_pin" name="gpio_pin" class="form-control select2" autocomplete="off" required>
+	<option value="'.$brow['gpio_pin'].'" selected>'.($brow['gpio_pin']=='0' ? 'N/A' : $brow['gpio_pin']).'</option>
+	<option value="0">N/A</option>
+	<option value="1">1</option>
+	<option value="2">2</option>
+	<option value="3">3</option>
+	<option value="4">4</option>
+	<option value="5">5</option>
+	<option value="6">6</option>
+	<option value="7">7</option>
+	<option value="21">21</option>
+	<option value="22">22</option>
+	<option value="23">23</option>
+	<option value="24">24</option>
+	<option value="25">25</option>
+	<option value="26">26</option>
+	<option value="27">27</option>
+	<option value="28">28</option>
+	<option value="29">29</option>
+	</select>				
+	<div class="help-block with-errors"></div></div>
+
+	<div class="form-group" class="control-label"><label>'.$lang['boiler_hysteresis_time'].'</label> <small class="text-muted">'.$lang['boiler_hysteresis_time_info'].'</small>
+	<select class="form-control input-sm" type="text" id="hysteresis_time" name="hysteresis_time">
+	<option selected>'.$brow['hysteresis_time'].'</option>
+	<option value="0">0</option>
+	<option value="1">1</option>
+	<option value="2">2</option>
+	<option value="3">3</option>
+	<option value="4">4</option>
+	<option value="5">5</option>
+	<option value="6">6</option>
+	<option value="7">7</option>
+	<option value="8">8</option>
+	</select>
+    <div class="help-block with-errors"></div></div>
+
+	<div class="form-group" class="control-label"><label>'.$lang['max_operation_time'].'</label> <small class="text-muted">'.$lang['max_operation_time_info'].'</small>
+	<select class="form-control input-sm" type="text" id="max_operation_time" name="max_operation_time">
+	<option selected>'.$brow['max_operation_time'].'</option>
+	<option value="30">30</option>
+	<option value="40">40</option>
+	<option value="45">45</option>
+	<option value="50">50</option>
+	<option value="55">55</option>
+	<option value="60">60</option>
+	<option value="65">65</option>
+	<option value="70">70</option>
+	<option value="80">80</option>
+	<option value="85">85</option>
+	<option value="90">90</option>
+	<option value="95">95</option>
+	<option value="100">100</option>
+	<option value="110">110</option>
+	<option value="120">120</option>
+	</select>
+    <div class="help-block with-errors"></div></div>';
+	echo '</div>
             <div class="modal-footer">
-				<button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
-             </div>
+				<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
+				<input type="button" name="submit" value="Save" class="btn btn-default login btn-sm" onclick="boiler_settings()">
+				
+            </div>
         </div>
     </div>
 </div>';

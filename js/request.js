@@ -148,6 +148,31 @@ function update_lang(){
     });
 }
 
+//update boiler settings
+function boiler_settings(){
+var idata="w=boiler_settings&o=update&status="+document.getElementById("checkbox2").checked;
+    idata+="&name="+document.getElementById("name").value;
+	idata+="&node_id="+document.getElementById("node_id").value;
+	idata+="&node_child_id="+document.getElementById("node_child_id").value;
+	idata+="&gpio_pin="+document.getElementById("gpio_pin").value;
+	idata+="&hysteresis_time="+document.getElementById("hysteresis_time").value;
+	idata+="&max_operation_time="+document.getElementById("max_operation_time").value;
+    idata+="&wid=0";
+    $.get('db.php',idata)
+    .done(function(odata){
+        if(odata.Success)
+            reload_page();
+        else
+            console.log(odata.Message);
+    })
+    .fail(function( jqXHR, textStatus, errorThrown ){
+        if(jqXHR==401 || jqXHR==403) return;
+        console.log("boiler_settings: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
+    })
+    .always(function() {
+    });
+}
+
 function reload_page()
 {
     var loc = window.location;
@@ -239,7 +264,7 @@ var idata="w=setup_email&o=update&status="+document.getElementById("checkbox2").
     })
     .fail(function( jqXHR, textStatus, errorThrown ){
         if(jqXHR==401 || jqXHR==403) return;
-        console.log("setup_gateway: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
+        console.log("setup_email: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
     })
     .always(function() {
     });
