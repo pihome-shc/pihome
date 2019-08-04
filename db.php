@@ -243,14 +243,29 @@ if($what=="boiler_settings"){
 	$hysteresis_time = $_GET['hysteresis_time'];
 	$max_operation_time = $_GET['max_operation_time'];
 	$gpio_pin = $_GET['gpio_pin'];
+	$notice_interval = $_GET['notice_interval'];
 	if ($status=='true'){$status = '1';} else {$status = '0';}
 	
-	//Get actual node it from nodes table
-	$query = "SELECT * FROM nodes WHERE node_id ='".$node_id."'";
+	//Get id from nodes table
+	$query = "SELECT * FROM nodes WHERE node_id ='".$node_id."' LIMIT 1";
 	$results = $conn->query($query);
 	$row = mysqli_fetch_assoc($results);
-	$node_id= $row['id'];
-	$query = "UPDATE boiler SET status = '".$status."', name = '".$name."', node_id = '".$node_id."', node_child_id = '".$node_child_id."', hysteresis_time = '".$hysteresis_time."', max_operation_time = '".$max_operation_time."', gpio_pin = '".$gpio_pin."' where ID = 1;";
+	
+	//Update Notice Interval for Boiler Node. 
+	$query = "UPDATE nodes SET notice_interval = '".$notice_interval."' WHERE `id`=".$row['id'].";";
+	$conn->query($query);
+		
+	//Check messages_out for Boiler Node ID
+	$query = "SELECT * FROM messages_out WHERE node_id='".$node_id."' LIMIT 1;";
+	$result = $conn->query($query);
+	if (mysqli_num_rows($result)==0){
+		//Update messages_out for Boiler Node. 
+		$query = "INSERT INTO messages_out (`sync`, `purge`, node_id, child_id, sub_type, ack, type, payload, sent, zone_id) VALUES (0, 0, '".$node_id."', '".$node_child_id."', 1, 1, 2, 0, 0, 0);";
+		$conn->query($query);
+	}
+
+	//Update Boiler Setting 
+	$query = "UPDATE boiler SET status = '".$status."', name = '".$name."', node_id = '".$row['id']."', node_child_id = '".$node_child_id."', hysteresis_time = '".$hysteresis_time."', max_operation_time = '".$max_operation_time."', gpio_pin = '".$gpio_pin."' where ID = 1;";
 	if($conn->query($query)){
 		header('Content-type: application/json');
 		echo json_encode(array('Success'=>'Success','Query'=>$query));

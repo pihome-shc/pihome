@@ -157,6 +157,7 @@ var idata="w=boiler_settings&o=update&status="+document.getElementById("checkbox
 	idata+="&gpio_pin="+document.getElementById("gpio_pin").value;
 	idata+="&hysteresis_time="+document.getElementById("hysteresis_time").value;
 	idata+="&max_operation_time="+document.getElementById("max_operation_time").value;
+	idata+="&notice_interval="+document.getElementById("notice_interval").value;
     idata+="&wid=0";
     $.get('db.php',idata)
     .done(function(odata){

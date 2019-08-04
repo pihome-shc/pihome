@@ -191,13 +191,14 @@ echo '
 	<input class="form-control input-sm" type="text" id="name" name="name" value="'.$brow['name'].'" placeholder="Boiler Name to Display on Screen ">
 	<div class="help-block with-errors"></div></div>
 
-	<div class="form-group" class="control-label"><label>'.$lang['boiler_node_id'].'</label>
+	<div class="form-group" class="control-label"><label>'.$lang['boiler_node_id'].'</label> <small class="text-muted">'.$lang['boiler_node_id_info'].'</small>
 	<select class="form-control input-sm" type="text" id="node_id" name="node_id">';
 	//get current node_id from nodes table 
 	$query = "SELECT * FROM nodes WHERE id ='".$brow['node_id']."' Limit 1;";
 	$result = $conn->query($query);
 	$row = mysqli_fetch_assoc($result);
-	$node_id= $row['node_id'];
+	$node_id=$row['node_id'];
+	$notice_interval=$row['notice_interval'];
 	
 	echo '<option value="'.$node_id.'" selected>'.($node_id=='0' ? 'N/A' : $node_id).'</option>';
 	
@@ -286,7 +287,23 @@ echo '
 	<option value="110">110</option>
 	<option value="120">120</option>
 	</select>
-    <div class="help-block with-errors"></div></div>';
+    <div class="help-block with-errors"></div></div>
+	
+	<div class="form-group" class="control-label"><label>'.$lang['notice_interval'].'</label> <small class="text-muted">'.$lang['notice_interval_info'].'</small>
+	<select class="form-control input-sm" type="text" id="notice_interval" name="notice_interval">
+	<option selected>'.$notice_interval.'</option>
+	<option value="5">5</option>
+	<option value="7">7</option>
+	<option value="9">9</option>
+	<option value="11">11</option>
+	<option value="13">13</option>
+	<option value="15">15</option>
+	<option value="17">17</option>
+	<option value="19">19</option>
+	</select>
+    <div class="help-block with-errors"></div></div>
+	';
+
 	echo '</div>
             <div class="modal-footer">
 				<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
