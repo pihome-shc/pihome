@@ -73,9 +73,10 @@ if (isset($_POST['submit'])) {
 	foreach($_POST['id'] as $id){
 		$id = $_POST['id'][$id];
 		$status = isset($_POST['status'][$id]) ? $_POST['status'][$id] : "0";
+		$coop = isset($_POST['coop'][$id]) ? $_POST['coop'][$id] : "0";
 		//$status = $_POST['status'][$id];
 		$temp=TempToDB($conn,$_POST['temp'][$id]);
-		$query = "INSERT INTO schedule_daily_time_zone(sync, `status`, schedule_daily_time_id, zone_id, temperature, holidays_id) VALUES ('0', '{$status}', '{$schedule_daily_time_id}','{$id}','".number_format($temp,1)."',{$holidays_id}); ";
+		$query = "INSERT INTO schedule_daily_time_zone(sync, `status`, schedule_daily_time_id, zone_id, temperature, holidays_id, coop) VALUES ('0', '{$status}', '{$schedule_daily_time_id}','{$id}','".number_format($temp,1)."',{$holidays_id},{$coop}); ";
 		$zoneresults = $conn->query($query);
 		//echo $query;
 		if ($zoneresults) {
@@ -148,7 +149,7 @@ $query = "select * from zone where status = 1 AND `purge`= 0 order by index_id a
 $results = $conn->query($query);
 while ($row = mysqli_fetch_assoc($results)) {
 ?>
-
+	<hr>
 	<input type="hidden" name="id[<?php echo $row["id"];?>]" value="<?php echo $row["id"];?>">
 
 	<div class="checkbox checkbox-default  checkbox-circle">
@@ -174,6 +175,11 @@ while ($row = mysqli_fetch_assoc($results)) {
 		$max = 80;
 	}
 	?>
+	<div class="checkbox checkbox-default  checkbox-circle">
+    <input id="coop<?php echo $row["id"];?>" class="styled" type="checkbox" name="coop[<?php echo $row["id"];?>]" value="1" >
+    <label for="coop<?php echo $row["id"];?>">Coop start</label>
+    <div class="help-block with-errors"></div></div>
+    
 	<div class="slidecontainer">
 		<h4><?php echo $lang['temperature']; ?>: <span id="val<?php echo $row["id"];?>"></span>&deg;</h4><br>
 		<input type="range" min="<?php echo $min; ?>" max="<?php echo $max; ?>" step="0.5" value="15.0" class="slider" id="bb<?php echo $row["id"];?>" name="temp[<?php echo $row["id"];?>]">

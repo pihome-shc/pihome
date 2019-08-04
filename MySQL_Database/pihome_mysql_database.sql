@@ -455,6 +455,7 @@ CREATE TABLE IF NOT EXISTS `schedule_daily_time_zone` (
   `zone_id` int(11) DEFAULT NULL,
   `temperature` float NOT NULL DEFAULT 0,
   `holidays_id` int(11) DEFAULT NULL,
+  `coop` tinyint(4) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `FK_schedule_daily_time_zone_schedule_daily_time` (`schedule_daily_time_id`),
   KEY `FK_schedule_daily_time_zone_zone` (`zone_id`),

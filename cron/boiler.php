@@ -129,6 +129,8 @@ while ($row = mysqli_fetch_assoc($results)) {
 		$sch_start_time = $schedule['start'];
 		$sch_end_time = $schedule['end'];
 		$sch_c = $schedule['temperature'];
+		$sch_coop = $schedule['coop'];
+
 		if (isset($schedule['holidays_id'])) {
 			$sch_holidays = '1';
 		}
@@ -293,7 +295,8 @@ while ($row = mysqli_fetch_assoc($results)) {
 				if (($holidays_status=='0') || ($sch_holidays=='1')) {
 					if($boost_status=='0'){$zone_status="0"; $stop_cause="Boost Finished";
 						if ($night_climate_status =='0') {
-							if (($sch_status =='1') && ($zone_c < $target_c-$zone_sp_deadband)){$zone_status="1"; $start_cause="Schedule Started"; $expected_end_date_time=date('Y-m-d '.$sch_end_time.''); }
+							if (($sch_status =='1') && ($zone_c < $target_c-$zone_sp_deadband)&&(($sch_coop == 0)||($boiler_fire_status == "1"))){$zone_status="1"; $start_cause="Schedule Started"; $expected_end_date_time=date('Y-m-d '.$sch_end_time.''); }
+							if (($sch_status =='1') && ($zone_c < $target_c-$zone_sp_deadband)&&($sch_coop == 1)&&($boiler_fire_status == "0")){$zone_status="0"; $stop_cause="Coop Start Schedule Waiting for Boiler Start"; $expected_end_date_time=date('Y-m-d '.$sch_end_time.''); }
 							if (($sch_status =='1') && ($zone_c >= $target_c-$zone_sp_deadband) && ($zone_c < $target_c)){$zone_status=$zone_status_prev; $start_cause="Schedule Target Deadband"; $stop_cause="Schedule Target Deadband"; }
 							if (($sch_status =='1') && ($zone_c >= $target_c)){$zone_status="0"; $stop_cause="Schedule Target C Achieved"; }
 							if (($sch_status =='1') && ($override_status=='1') && ($zone_c < $target_c-$zone_sp_deadband)){$zone_status="1"; $start_cause="Schedule Override Started"; $expected_end_date_time=date('Y-m-d '.$sch_end_time.'');}

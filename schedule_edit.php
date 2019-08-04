@@ -82,8 +82,9 @@ if (isset($_POST['submit'])) {
 		$id = $_POST['id'][$id];
 		$status = isset($_POST['status'][$id]) ? $_POST['status'][$id] : "0";
 		$status = $_POST['status'][$id];
+		$coop = $_POST['coop'][$id];
 		$temp=TempToDB($conn,$_POST['temp'][$id]);
-		$query = "UPDATE schedule_daily_time_zone SET sync = '0', status = '{$status}', temperature = '" . number_format($temp,1) . "' WHERE id = '{$id}' LIMIT 1";
+		$query = "UPDATE schedule_daily_time_zone SET sync = '0', status = '{$status}', temperature = '" . number_format($temp,1) . "', coop = '{$coop}' WHERE id = '{$id}' LIMIT 1";
 		$zoneresults = $conn->query($query);
 	}
 }
@@ -153,6 +154,7 @@ $query = "select * from schedule_daily_time_zone_view where time_id = {$time_id}
 $results = $conn->query($query);
 while ($row = mysqli_fetch_assoc($results)) {
 ?>
+	<hr>
 	<input type="hidden" name="id[<?php echo $row["tz_id"];?>]" value="<?php echo $row["tz_id"];?>">
 
 	<div class="checkbox checkbox-default  checkbox-circle">
@@ -183,6 +185,11 @@ if($row['tz_status'] == 1){
 		$max = 80;
 	}
 	?>
+	<div class="checkbox checkbox-default  checkbox-circle">
+    <input id="coop<?php echo $row["tz_id"];?>" class="styled" type="checkbox" name="coop[<?php echo $row["tz_id"];?>]" value="1" <?php $check = ($row['coop'] == 1) ? 'checked' : ''; echo $check; ?> >
+    <label for="coop<?php echo $row["tz_id"];?>">Coop start</label>
+    <div class="help-block with-errors"></div></div>
+    
 	<div class="slidecontainer">
 		<h4><?php echo $lang['temperature']; ?>: <span id="val<?php echo $row["zone_id"];?>"></span>&deg;</h4><br>
 		<input type="range" min="<?php echo $min; ?>" max="<?php echo $max; ?>" step="0.5" value="<?php echo DispTemp($conn, $row['temperature']) ?>" class="slider" id="bb<?php echo $row["zone_id"];?>" name="temp[<?php echo $row["tz_id"];?>]">
