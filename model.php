@@ -292,6 +292,7 @@ echo '
 	<div class="form-group" class="control-label"><label>'.$lang['notice_interval'].'</label> <small class="text-muted">'.$lang['notice_interval_info'].'</small>
 	<select class="form-control input-sm" type="text" id="notice_interval" name="notice_interval">
 	<option selected>'.$notice_interval.'</option>
+	<option value="0">0</option>
 	<option value="5">5</option>
 	<option value="7">7</option>
 	<option value="9">9</option>
