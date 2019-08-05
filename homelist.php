@@ -113,7 +113,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$sensor_child_id = $row['sensor_child_id'];
 	$sensor_seen = $sensor['last_seen']; //not using this cause it updates on battery update
 	$sensor_notice = $sensor['notice_interval'];
-	
+
 	//Get data from nodes table
 	$query = "SELECT * FROM nodes WHERE id ={$row['controler_id']} AND status = 'Active' LIMIT 1;";
 	$result = $conn->query($query);
@@ -121,14 +121,14 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$controler_id = $controler_node['node_id'];
 	$controler_seen = $controler_node['last_seen'];
 	$controler_notice = $controler_node['notice_interval'];
-  
+
 	//query to get temperature from table with sensor id
 	$query = "SELECT * FROM messages_in WHERE node_id = '{$sensor_id}' AND child_id = '{$sensor_child_id}' ORDER BY id desc LIMIT 1;";
 	$result = $conn->query($query);
 	$roomtemp = mysqli_fetch_array($result);
 	$room_c = $roomtemp['payload'];
 	$temp_reading_time = $roomtemp['datetime'];
-  
+
   //Check Zone Controller Fault
 	$zone_ctr_fault = 0;
 	$zone_sensor_fault = 0;
@@ -139,7 +139,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 			$zone_ctr_fault = 1;
 		}
 	}
-	
+
 	//Check Zone Temperature Sensors Fault
 	if($sensor_notice > 0) {
 		$now=strtotime(date('Y-m-d H:i:s'));
@@ -151,10 +151,10 @@ while ($row = mysqli_fetch_assoc($results)) {
 
 	//query to get schedule and temperature from table
 	if ($holidays_status) {
-		$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between start AND end AND zone_id = {$row['id']} AND tz_status = '1' AND (WeekDays & (1 << {$dow})) > 0 AND holidays_id IS NOT NULL LIMIT 1";
+		$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between start AND end AND zone_id = {$row['id']} AND time_status = '1' AND tz_status = '1' AND (WeekDays & (1 << {$dow})) > 0 AND holidays_id IS NOT NULL LIMIT 1";
 		//$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between start AND end AND zone_id = {$row['id']} AND tz_status = '1' AND (WeekDays & (1 << {$dow})) > 0 LIMIT 1";
 	} else {
-		$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between start AND end AND zone_id = {$row['id']} AND tz_status = '1' AND (WeekDays & (1 << {$dow})) > 0 AND holidays_id IS NULL LIMIT 1";
+		$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between start AND end AND zone_id = {$row['id']} AND time_status = '1' AND tz_status = '1' AND (WeekDays & (1 << {$dow})) > 0 AND holidays_id IS NULL LIMIT 1";
 		//$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between start AND end AND zone_id = {$row['id']} AND tz_status = '1' LIMIT 1";
 	}
 	$sch_results = $conn->query($query);
@@ -181,7 +181,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$override = mysqli_fetch_array($result);
 	$ovactive = $override['status'];
 	$override_c = $override['temperature'];
-	
+
 	//query to check boost status and get temperature from boost table
 	//$query = "SELECT * FROM boost WHERE zone_id = {$zone_id} LIMIT 1;";
 	$query = "SELECT * FROM boost WHERE zone_id = {$row['id']} AND status = 1 LIMIT 1;";
@@ -236,10 +236,10 @@ while ($row = mysqli_fetch_assoc($results)) {
     //  boost(rocket)
     //  override(refresh)
     //  bed(bed)
-    	
+
     if (($zone_ctr_fault == '1') OR ($zone_sensor_fault == '1') OR $boiler_fault == '1') {
       //Zone fault
-      $status='';  
+      $status='';
       $shactive='ion-android-cancel';
       $shcolor='red';
       $target='';     //show no target temperature
@@ -252,7 +252,7 @@ while ($row = mysqli_fetch_assoc($results)) {
           $shcolor='';
           $target=number_format(DispTemp($conn,$frost_c),0) . '&deg;';
       }
-      else 
+      else
       {
           //we aren't in danger of freezing, so check our normal conditions.
           if ($away_active == '0') {
@@ -268,26 +268,26 @@ while ($row = mysqli_fetch_assoc($results)) {
                 //We are on holiday
                 $status='blue';
                 $shactive='fa-paper-plane';
-                $shcolor='';                 
-                $target='';		   
+                $shcolor='';
+                $target='';
               }
               else if ($night_climate_status == '1' && $room_c < $nc_min_c) {
                   //We are night climate and heating
-                  $status='red';   
+                  $status='red';
                   $shactive='fa-bed';
                   $shcolor='';
                   $target=number_format(DispTemp($conn,$nc_min_c),0) . '&deg;';
-              }    
+              }
               else if ($night_climate_status == '1' && $room_c >= $nc_min_c) {
                   //We are night climate and NOT heating
                   $status='orange';
                   $shactive='fa-bed';
                   $shcolor='';
                   $target=number_format(DispTemp($conn,$nc_min_c),0) . '&deg;';
-              }    
+              }
               else if ($bactive == '1' && $room_c < $boost_c) {
                   //We are boost and heating
-                  $status='red';   
+                  $status='red';
                   $shactive='fa-rocket';
                   $shcolor='';
                   $target=number_format(DispTemp($conn,$boost_c),0) . '&deg;';
@@ -316,7 +316,7 @@ while ($row = mysqli_fetch_assoc($results)) {
               }
               else if (($sch_status == 1) && ($room_c < $schedule_c)) {
                   //We are scheduled and heating
-                  $status='red';   
+                  $status='red';
                   $shactive='ion-ios-clock-outline';
                   $shcolor='';
                   $target=number_format(DispTemp($conn,$schedule_c),0) . '&deg;';
@@ -330,17 +330,17 @@ while ($row = mysqli_fetch_assoc($results)) {
               }
               else {
                   //We shouldn't get here.
-                  $status='';      
+                  $status='';
   				//$shactive='fa-question';
   				$shactive='';
                   $shcolor='';
                   $target='';     //show no target temperature
-              }            
+              }
           }
           else
           {
               //We are away
-              $status='blue';  
+              $status='blue';
               $shactive='fa-sign-out';
               $shcolor='';
               $target='';     //show no target temperature
@@ -354,7 +354,7 @@ while ($row = mysqli_fetch_assoc($results)) {
     //Right icon for what/why
     echo '<small class="statuszoon"><i class="fa ' . $shactive . ' ' . $shcolor . ' fa-fw"></i></small>';
     echo '</h3></button>';      //close out status and button
-	
+
 
 	//Zone Schedule listing model
 	echo '<div class="modal fade" id="'.$row['type'].''.$row['id'].'" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -375,9 +375,9 @@ while ($row = mysqli_fetch_assoc($results)) {
 			<ul class="chat">
 			<li class="left clearfix">
 				<div class="header">
-				<strong class="primary-font red">Boiler Fault!!!</strong> 
+				<strong class="primary-font red">Boiler Fault!!!</strong>
 				<small class="pull-right text-muted">
-					<i class="fa fa-clock-o fa-fw"></i> '.secondsToWords(($ctr_minutes)*60).' ago 
+					<i class="fa fa-clock-o fa-fw"></i> '.secondsToWords(($ctr_minutes)*60).' ago
 				</small>
 				<br><br>
 				<p>Node ID '.$boiler_id.' last seen at '.$boiler_seen.' </p>
@@ -385,7 +385,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 				</div>
 			</li>
 		</ul>';
-  
+
   }elseif ($zone_ctr_fault == '1') {
 		$date_time = date('Y-m-d H:i:s');
 		$datetime1 = strtotime("$date_time");
@@ -396,9 +396,9 @@ while ($row = mysqli_fetch_assoc($results)) {
 			<ul class="chat">
 			<li class="left clearfix">
 				<div class="header">
-				<strong class="primary-font red">Controller Fault!!!</strong> 
+				<strong class="primary-font red">Controller Fault!!!</strong>
 				<small class="pull-right text-muted">
-					<i class="fa fa-clock-o fa-fw"></i> '.secondsToWords(($ctr_minutes)*60).' ago 
+					<i class="fa fa-clock-o fa-fw"></i> '.secondsToWords(($ctr_minutes)*60).' ago
 				</small>
 				<br><br>
 				<p>Controller ID '.$controler_id.' last seen at '.$controler_seen.' </p>
@@ -417,9 +417,9 @@ while ($row = mysqli_fetch_assoc($results)) {
 		<ul class="chat">
 			<li class="left clearfix">
 				<div class="header">
-				<strong class="primary-font red">Sensor Fault!!!</strong> 
+				<strong class="primary-font red">Sensor Fault!!!</strong>
 				<small class="pull-right text-muted">
-					<i class="fa fa-clock-o fa-fw"></i> '.secondsToWords(($sensor_minutes)*60).' ago 
+					<i class="fa fa-clock-o fa-fw"></i> '.secondsToWords(($sensor_minutes)*60).' ago
 				</small>
 				<br><br>
 				<p>Sensor ID '.$sensor_id.' last seen at '.$sensor_seen.' <br>Last Temperature reading received at '.$temp_reading_time.' </p>
@@ -454,7 +454,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	echo '
 	</div><div class="modal-footer"><button type="button" class="btn btn-default btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
 	</div></div></div></div>';
-						
+
 //end of while loop
 }
 
@@ -507,9 +507,9 @@ echo '</h3></button>';
 			<ul class="chat">
 			<li class="left clearfix">
 				<div class="header">
-				<strong class="primary-font red">Boiler Fault!!!</strong> 
+				<strong class="primary-font red">Boiler Fault!!!</strong>
 				<small class="pull-right text-muted">
-					<i class="fa fa-clock-o fa-fw"></i> '.secondsToWords(($ctr_minutes)*60).' ago 
+					<i class="fa fa-clock-o fa-fw"></i> '.secondsToWords(($ctr_minutes)*60).' ago
 				</small>
 				<br><br>
 				<p>Node ID '.$boiler_id.' last seen at '.$boiler_seen.' </p>
@@ -554,7 +554,7 @@ echo '						<a style="color: #777; cursor: pointer; text-decoration: none;" href
 							<h3 class="degre" ><i class="fa fa-rocket fa-1x"></i></h3>
 							<h3 class="status"><small class="statuscircle"><i class="fa fa-circle fa-fw '.$boost_status.'"></i></small>
 							</h3></button></a>';
-							
+
 							$query = "SELECT * FROM schedule_night_climate_time WHERE id = 1";
 							$results = $conn->query($query);
 							$row = mysqli_fetch_assoc($results);
@@ -565,7 +565,7 @@ echo '						<a style="color: #777; cursor: pointer; text-decoration: none;" href
 							<h3 class="degre" ><i class="fa fa-bed fa-1x"></i></h3>
 							<h3 class="status"><small class="statuscircle"><i class="fa fa-circle fa-fw '.$night_status.'"></i></small>
 							</h3></button>';
-							
+
 							if ($away_active=='1'){$awaystatus="red";}elseif ($away_active=='0'){$awaystatus="blue";}
 echo '						<a href="javascript:active_away();">
 							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn">
