@@ -92,6 +92,21 @@ $lang['boiler_no_log'] = "Aucune données n'a pu être trouvé pour la chaudièr
 $lang['boiler_last_records'] = "Dernières données enregistrées pour la chaudière.";
 $lang['boiler_on_minuts'] = "Nombre de minutes actif";
 $lang['boiler_recent_logs'] = "Données enregistrées récentes";
+$lang['boiler_enable'] = "Enable Boiler";
+$lang['boiler_name'] = "Boiler Display Name";
+$lang['boiler_node_id'] = "Node ID";
+$lang['boiler_node_id_info'] = "Boiler Controller Node ID";
+$lang['boiler_node_child_id'] = "Node Child ID";
+$lang['boiler_relay_gpio'] = "GPIO Pin";
+$lang['boiler_relay_gpio_text'] = "Refer to WiringPi GPIO Pin Numbering for this <a href=\"http://www.pihome.eu/2017/10/13/wiringpi-installation/\" target=\"_blank\" >GPIO Pin</a>";
+$lang['boiler_hysteresis_time'] = "Hysteresis Time";
+$lang['boiler_hysteresis_time_info'] = "Delay Between Stop and Start of Boiler in minutes, Default is 3 minuts";
+$lang['max_operation_time'] = "Max Operation Time";
+$lang['max_operation_time_info'] = "Continus Max Running Time of Boiler in minutes";
+$lang['boiler_info_text'] = "Boiler/Heat Shource Settings and how Boiler/Heat shource is intract with PiHome i.e Wirelss Controller or Connected to GPIO Pin";
+$lang['notice_interval'] = "Notice Interval";
+$lang['notice_interval_info'] = "Timeout for Boiler Controller in minutes Before Controller Marked Faulty";
+
 
 $lang['override'] = "Forcer";
 $lang['boost'] = "Booster";

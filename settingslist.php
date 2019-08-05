@@ -81,7 +81,7 @@ $("#ajaxModal").on("show.bs.modal", function(e) {
 							<h3 class="status"></small></h3>
                             </button>
 
-							<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-href="edit_boiler.php" data-toggle="modal" data-target="#boiler_safety_setup">
+							<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-href="edit_boiler.php" data-toggle="modal" data-target="#boiler">
 							<h3 class="buttontop"><small><?php echo $lang['boiler']; ?></small></h3>
 							<h3 class="degre" ><i class="ionicons ion-flame fa-1x red"></i></h3>
 							<h3 class="status"></small></h3>
