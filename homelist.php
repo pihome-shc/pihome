@@ -163,6 +163,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$start_time = $schedule['start'];
 	$end_time = $schedule['end'];
 	$schedule_c = $schedule['temperature'];
+	$schedule_coop = $schedule['coop'];
 	$sch_status = $schedule['time_status'];
   	if (isset($schedule['holidays_id'])) {
     		$sch_holidays = 1;
@@ -314,13 +315,20 @@ while ($row = mysqli_fetch_assoc($results)) {
                   $shcolor='';
                   $target=number_format(DispTemp($conn,$override_c),0) . '&deg;';
               }
-              else if (($sch_status == 1) && ($room_c < $schedule_c)) {
+              else if (($sch_status == 1) && ($room_c < $schedule_c) && (($schedule_coop == 0)||($fired_status == 1))) {
                   //We are scheduled and heating
                   $status='red';
                   $shactive='ion-ios-clock-outline';
                   $shcolor='';
                   $target=number_format(DispTemp($conn,$schedule_c),0) . '&deg;';
               }
+              else if (($sch_status == 1) && ($room_c < $schedule_c)&&($schedule_coop == 1)&&($fired_status == 0)) {
+                  //We are coop scheduled and waiting for boiler start
+                  $status='blueinfo';   
+                  $shactive='ion-ios-clock-outline';
+                  $shcolor='orange';
+                  $target=number_format(DispTemp($conn,$schedule_c),0) . '&deg;';
+              }              
               else if (($sch_status == 1) && ($room_c >= $schedule_c)) {
                   //We are scheduled and heating
                   $status='orange';
