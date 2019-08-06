@@ -187,7 +187,7 @@ if($row['tz_status'] == 1){
 	?>
 	<div class="checkbox checkbox-default  checkbox-circle">
     <input id="coop<?php echo $row["tz_id"];?>" class="styled" type="checkbox" name="coop[<?php echo $row["tz_id"];?>]" value="1" <?php $check = ($row['coop'] == 1) ? 'checked' : ''; echo $check; ?> >
-    <label for="coop<?php echo $row["tz_id"];?>">Coop start</label>
+    <label for="coop<?php echo $row["tz_id"];?>">Coop Start</label> <i class="fa fa-info-circle fa-lg text-info" data-container="body" data-toggle="popover" data-placement="right" data-content="<?php echo $lang['schedule_coop_help']; ?>"></i>
     <div class="help-block with-errors"></div></div>
     
 	<div class="slidecontainer">

@@ -185,6 +185,8 @@ $lang['schedule_next'] = "Prochain programme";
 $lang['schedule_time_modify_success'] = "Période du programme modifiée avec succès !!!";
 $lang['schedule_time_modify_error'] = "La modification de la période du programme a échoué avec l'erreur :";
 $lang['schedule_edit'] = "Modifier le programme";
+$lang['schedule_coop_help'] = "Option for zone schedule with coop start. Coop start schedule won't start zone heating if boiler is not already running. If boiler is running and temperature is below setpoint minus deadband schedule will start the zone heating, after starting it operates as any other schedule and will stop the zone heating when setpoint temperature is reached.";
+
 
 $lang['graph'] = "Graphique";
 $lang['graph_temperature'] = "Graphiques de température de PiHome";

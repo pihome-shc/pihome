@@ -177,7 +177,8 @@ while ($row = mysqli_fetch_assoc($results)) {
 	?>
 	<div class="checkbox checkbox-default  checkbox-circle">
     <input id="coop<?php echo $row["id"];?>" class="styled" type="checkbox" name="coop[<?php echo $row["id"];?>]" value="1" >
-    <label for="coop<?php echo $row["id"];?>">Coop start</label>
+    <label for="coop<?php echo $row["id"];?>">Coop Start</label>
+	<i class="fa fa-info-circle fa-lg text-info" data-container="body" data-toggle="popover" data-placement="right" data-content="<?php echo $lang['schedule_coop_help']; ?>"></i>
     <div class="help-block with-errors"></div></div>
     
 	<div class="slidecontainer">

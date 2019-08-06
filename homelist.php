@@ -436,7 +436,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 			</li>
 		</ul>';
 	}else{
-		$squery = "SELECT * FROM schedule_daily_time_zone_view where zone_id ='{$row['id']}' AND tz_status = 1  AND (WeekDays & (1 << {$dow})) > 0 ORDER BY start asc";
+		$squery = "SELECT * FROM schedule_daily_time_zone_view where zone_id ='{$row['id']}' AND tz_status = 1 AND time_status = '1' AND (WeekDays & (1 << {$dow})) > 0 ORDER BY start asc";
 		$sresults = $conn->query($squery);
 		if (mysqli_num_rows($sresults) == 0){
 			echo '<div class=\"list-group\"><a href="#" class="list-group-item"><i class="fa fa-exclamation-triangle red"></i>&nbsp;&nbsp;'.$lang['schedule_active_today'].' '.$row['name'].'!!! </a>';
