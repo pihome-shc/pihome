@@ -247,7 +247,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$controler_node = mysqli_fetch_array($result);
 	$controler_seen = $controler_node['last_seen'];
 	$controler_notice = $controler_node['notice_interval'];
-	
+
 	$query = "SELECT * FROM nodes WHERE node_id ='$zone_sensor_id' AND status IS NOT NULL LIMIT 1;";
 	$result = $conn->query($query);
 	$sensor_node = mysqli_fetch_array($result);
@@ -316,7 +316,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Controller: \033[41m".$zone_controler_id."\033[0m Controller Child: \033[41m".$zone_controler_child_id."\033[0m Zone Status: \033[41m".$zone_status."\033[0m \n";
 	if ($zone_status=='1') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Start Cause: ".$start_cause." - Target C:\033[41m".$target_c."\033[0m Zone C:\033[31m".$zone_c."\033[0m \n";}
 	if ($zone_status=='0') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Stop Cause: ".$stop_cause." - Target C:\033[41m".$target_c."\033[0m Zone C:\033[31m".$zone_c."\033[0m \n";}
-	
+
 	if (!empty($zone_gpio_pin)){
 		/***************************************************************************************
 		Zone Vole Wired to Raspberry Pi GPIO Section: Zone Vole Connected Raspberry Pi GPIO.
@@ -326,22 +326,22 @@ while ($row = mysqli_fetch_assoc($results)) {
 		exec("/usr/local/bin/gpio write ".$zone_gpio_pin." ".$relay_status );
 		exec("/usr/local/bin/gpio mode ".$zone_gpio_pin." out");
 	}
-	
+
 	/***************************************************************************************
 	Zone Vole Wireless Section: MySensors Wireless Relay module for your Zone vole control.
 	****************************************************************************************/
 	//update messages_out table with sent status to 0 and payload to as zone status.
 	$query = "UPDATE messages_out SET sent = '0', payload = '{$zone_status}' WHERE node_id ='$zone_controler_id' AND child_id = '$zone_controler_child_id' LIMIT 1;";
 	$conn->query($query);
-	
+
 	//all zone status to boiler array and increment array index
 	$boiler[$boiler_index] = $zone_status;
 	$boiler_index = $boiler_index+1;
-	
+
 	//all zone ids and status to multidimensional Array. and increment array index.
 	$zone_log[$zone_index] = (array('zone_id' =>$zone_id, 'status'=>$zone_status));
 	$zone_index = $zone_index+1;
-	
+
 	echo "---------------------------------------------------------------------------------------- \n";
 } //end of while loop
 
