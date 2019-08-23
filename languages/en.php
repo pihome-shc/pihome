@@ -109,6 +109,18 @@ $lang['night_climate_error'] = "Night Climate Changes Failed with error: ";
 $lang['night_climate_temp_success'] = "Night Climate Temp Changed Successfully!!!";
 $lang['night_climate_enable'] = "Enable Night Climate";
 
+$lang['add_boost'] = "Add Boost";
+$lang['boost_time_info'] = "Maximum Boost Time in Minutes";
+$lang['boost_time'] = "Boost Time";
+$lang['boost_temperature'] = "Boost Temperature";
+$lang['boost_temperature_info'] = "Maximum Target Boost Temperature ";
+$lang['boost_info_text'] = "Create Boost Option for Zone";
+$lang['boost_console_id'] = "Boost Console ID";
+$lang['boost_console_id_info'] = "If you have Boost Console installed you can select from list.";
+$lang['boost_button_child_id'] = "Boost Button";
+$lang['boost_button_child_id_info'] = "Select which button on Boost Console can triger this Boost";
+
+
 $lang['zone'] = "Zone";
 $lang['zone_add'] = "Add Zone";
 $lang['zone_enable'] = "Enable Zone ";
