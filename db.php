@@ -154,9 +154,8 @@ if($what=="boost"){
 		}else {
 			$time = date("Y-m-d H:i:s");
 		}
-		
-		$query = "SELECT * FROM boost WHERE id ='".$wid."'";
-		$results = $conn->query($query);	
+		$query = "SELECT * FROM boost WHERE id ='".$wid."';";
+		$results = $conn->query($query);
 		$row = mysqli_fetch_assoc($results);
 		$boost_status= $row['status'];
 		$zone_id=$row['zone_id'];
@@ -166,6 +165,52 @@ if($what=="boost"){
 		//this line update message out 
 		$query = "UPDATE messages_out SET payload = '{$set}', datetime = '{$time}', sent = '0', sync = '0' WHERE zone_id = '{$zone_id}' AND node_id = {$row['boost_button_id']} AND child_id = {$row['boost_button_child_id']} LIMIT 1";
 		$conn->query($query);
+	}
+	if($opp=="delete"){
+		//get list of Boost console Id and Child ID
+		$query = "select * from boost WHERE id = '".$wid."';"; 
+		$results = $conn->query($query);
+		$row = mysqli_fetch_assoc($results);
+		$boost_button_id= $row['boost_button_id'];
+		$boost_button_child_id=$row['boost_button_child_id'];
+		//delete from message_out related to this boost. 
+		$query = "DELETE FROM messages_out WHERE node_id = '".$boost_button_id."' AND child_id = '".$boost_button_child_id."' LIMIT 1;"; 
+		$conn->query($query);
+		//Now delete from Boost 
+		$query = "DELETE FROM boost WHERE id = '".$wid."';"; 
+		$conn->query($query);
+		if($conn->query($query)){
+            header('Content-type: application/json');
+            echo json_encode(array('Success'=>'Success','Query'=>$query));
+            return;
+        }else{
+            header('Content-type: application/json');
+            echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+            return;
+        }
+	}
+	if($opp=="add"){
+		$zone_id = $_GET['zone_id'];
+		$boost_time = $_GET['boost_time'];
+		$boost_temperature = $_GET['boost_temperature'];
+		$boost_console_id = $_GET['boost_console_id'];
+		$boost_button_child_id = $_GET['boost_button_child_id'];
+		//If boost Console is selected then add to messages_out table.
+		if ($boost_console_id != '0'){
+			$query = "INSERT INTO messages_out (node_id, child_id, sub_type, ack, type, payload, zone_id) VALUES ('{$boost_console_id}', '{$boost_button_child_id}', '1', '0', '2', '0', '{$zone_id}')";
+			$conn->query($query);
+		}
+		//Add record to Boost table
+		$query = "INSERT INTO boost (status, zone_id, temperature, minute, boost_button_id, boost_button_child_id) VALUES ('0', '{$zone_id}', '{$boost_temperature}', '{$boost_time}', '{$boost_console_id}', '{$boost_button_child_id}')";
+		if($conn->query($query)){
+            header('Content-type: application/json');
+            echo json_encode(array('Success'=>'Success','Query'=>$query));
+            return;
+        }else{
+            header('Content-type: application/json');
+            echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+            return;
+        }
 	}
 }
 //Away 

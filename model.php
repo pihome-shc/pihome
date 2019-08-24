@@ -326,16 +326,130 @@ echo '
             </div>
             <div class="modal-body">
 <p class="text-muted"> '.$lang['boost_settings_text'].'</p>';
-$query = "SELECT * FROM boost_view ORDER BY index_id asc";
+$query = "SELECT * FROM boost_view ORDER BY index_id ASC, `MINUTE` asc;";
 $results = $conn->query($query);
 echo '	<div class=\"list-group\">';
 while ($row = mysqli_fetch_assoc($results)) {
-	echo "<a href=\"#\" class=\"list-group-item\"><i class=\"fa fa-rocket fa-fw blueinfo\"></i> ".$row['name']."
-	<span class=\"pull-right text-muted small\"><em>".$row['minute']." minute ".number_format(DispTemp($conn,$row['temperature']),0)."&deg;  </em></span></a>"; 
+	echo '<div class="list-group-item"><i class="fa fa-rocket fa-fw blueinfo"></i> '.$row['name'].'
+	<span class="pull-right text-muted small"><em>'.$row['minute'].' minute '.number_format(DispTemp($conn,$row['temperature']),0).'&deg; </em> 
+	<a href="javascript:delete_boost('.$row["id"].');"><button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></button> </a></span>
+	</div>'; 
 }
 echo '</div></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
+				<button class="btn btn-default login btn-sm" data-href="#" data-toggle="modal" data-target="#add_boost">'.$lang['add_boost'].'</button>
+				
+            </div>
+        </div>
+    </div>
+</div>';
+
+//Add Boost
+echo '
+<div class="modal fade" id="add_boost" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                <h5 class="modal-title">'.$lang['add_boost'].'</h5>
+            </div>
+            <div class="modal-body">';
+echo '<p class="text-muted">'.$lang['boost_info_text'].'</p>
+	<form data-toggle="validator" role="form" method="post" action="settings.php" id="form-join">
+	
+	<div class="form-group" class="control-label"><label>'.$lang['zone'].'</label> 
+	<select class="form-control input-sm" type="text" id="zone_id" name="zone_id">';
+	//Get Zone List
+	$query = "SELECT * FROM zone where status = 1;";
+	$result = $conn->query($query);
+	if ($result){
+		while ($zrow=mysqli_fetch_array($result)) {
+			echo '<option value="'.$zrow['id'].'">'.$zrow['name'].'</option>';
+		}
+	}
+	echo '
+	</select>
+    <div class="help-block with-errors"></div></div>
+	
+	<div class="form-group" class="control-label"><label>'.$lang['boost_temperature'].'</label> <small class="text-muted">'.$lang['boost_temperature_info'].'</small>
+	<select class="form-control input-sm" type="text" id="boost_temperature" name="boost_temperature">
+	<option value="20">20</option>
+	<option value="21">22</option>
+	<option value="23">23</option>
+	<option value="24">24</option>
+	<option value="25">25</option>
+	<option value="30">30</option>
+	<option value="35">35</option>
+	<option value="40">40</option>
+	<option value="45">45</option>
+	<option value="50">50</option>
+	<option value="55">55</option>
+	<option value="60">60</option>
+	<option value="65">65</option>
+	<option value="70">70</option>
+	<option value="75">75</option>
+	<option value="80">80</option>
+	<option value="85">85</option>
+	<option value="90">90</option>
+	<option value="95">95</option>
+	</select>
+    <div class="help-block with-errors"></div></div>
+
+	<div class="form-group" class="control-label"><label>'.$lang['boost_time'].'</label> <small class="text-muted">'.$lang['boost_time_info'].'</small>
+	<select class="form-control input-sm" type="text" id="boost_time" name="boost_time">
+	<option value="20">20</option>
+	<option value="25">25</option>
+	<option value="30">30</option>
+	<option value="35">35</option>
+	<option value="40">40</option>
+	<option value="45">45</option>
+	<option value="50">50</option>
+	<option value="55">55</option>
+	<option value="60">60</option>
+	<option value="65">65</option>
+	<option value="70">70</option>
+	<option value="80">80</option>
+	<option value="85">85</option>
+	<option value="90">90</option>
+	<option value="95">95</option>
+	<option value="100">100</option>
+	<option value="110">110</option>
+	<option value="120">120</option>
+	</select>
+    <div class="help-block with-errors"></div></div>
+	
+	<div class="form-group" class="control-label"><label>'.$lang['boost_console_id'].'</label> <small class="text-muted">'.$lang['boost_console_id_info'].'</small>
+	<select class="form-control input-sm" type="text" id="boost_console_id" name="boost_console_id">';
+	//get list from nodes table to display 
+	$query = "SELECT * FROM nodes where name = 'Button Console' OR name = 'Boost Controller' AND node_id!=0;";
+	$result = $conn->query($query);
+	if ($result){
+		while ($nrow=mysqli_fetch_array($result)) {
+			echo '<option value="'.$nrow['node_id'].'">'.$nrow['node_id'].'</option>';
+		}
+	}
+	echo '<option value="0">N/A</option>
+	</select>
+    <div class="help-block with-errors"></div></div>
+	
+	<div class="form-group" class="control-label"><label>'.$lang['boost_button_child_id'].'</label> <small class="text-muted">'.$lang['boost_button_child_id_info'].'</small>
+	<select class="form-control input-sm" type="text" id="boost_button_child_id" name="boost_button_child_id">
+	<option value="0">N/A</option>
+	<option value="1">1</option>
+	<option value="2">2</option>
+	<option value="3">3</option>
+	<option value="4">4</option>
+	<option value="5">5</option>
+	<option value="6">6</option>
+	<option value="7">7</option>
+	<option value="8">8</option>
+	</select>
+    <div class="help-block with-errors"></div></div>	';
+echo '</div>
+            <div class="modal-footer">
+				<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
+				<input type="button" name="submit" value="Save" class="btn btn-default login btn-sm" onclick="add_boost()">
 				
             </div>
         </div>
