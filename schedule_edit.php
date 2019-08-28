@@ -81,11 +81,17 @@ if (isset($_POST['submit'])) {
 	foreach($_POST['id'] as $id){
 		$id = $_POST['id'][$id];
 		$status = isset($_POST['status'][$id]) ? $_POST['status'][$id] : "0";
-		$status = $_POST['status'][$id];
 		$coop = $_POST['coop'][$id];
+		$coop = isset($_POST['coop'][$id]) ? $_POST['coop'][$id] : "0";
 		$temp=TempToDB($conn,$_POST['temp'][$id]);
 		$query = "UPDATE schedule_daily_time_zone SET sync = '0', status = '{$status}', temperature = '" . number_format($temp,1) . "', coop = '{$coop}' WHERE id = '{$id}' LIMIT 1";
 		$zoneresults = $conn->query($query);
+		if ($zoneresults) {
+			//$message_success .= " & ".$lang['schedule_temp_modify_success'];
+			//header("Refresh: 3; url=".$return_url);
+		} else {
+			$error = "<p>". $lang['schedule_temp_modify_success'].mysqli_error($conn)."</p>";
+		}
 	}
 }
 ?>
@@ -187,7 +193,8 @@ if($row['tz_status'] == 1){
 	?>
 	<div class="checkbox checkbox-default  checkbox-circle">
     <input id="coop<?php echo $row["tz_id"];?>" class="styled" type="checkbox" name="coop[<?php echo $row["tz_id"];?>]" value="1" <?php $check = ($row['coop'] == 1) ? 'checked' : ''; echo $check; ?> >
-    <label for="coop<?php echo $row["tz_id"];?>">Coop Start</label> <i class="fa fa-info-circle fa-lg text-info" data-container="body" data-toggle="popover" data-placement="right" data-content="<?php echo $lang['schedule_coop_help']; ?>"></i>
+    <label for="coop<?php echo $row["tz_id"];?>">Coop Start</label> <i class="glyphicon glyphicon-leaf green"></i>
+	<i class="fa fa-info-circle fa-lg text-info" data-container="body" data-toggle="popover" data-placement="right" data-content="<?php echo $lang['schedule_coop_help']; ?>"></i>
     <div class="help-block with-errors"></div></div>
     
 	<div class="slidecontainer">

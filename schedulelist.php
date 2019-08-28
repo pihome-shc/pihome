@@ -93,14 +93,16 @@ while ($row = mysqli_fetch_assoc($results)) {
 	<br>';
 
 	//zone listing of each time schedule
-	$query="SELECT * FROM  schedule_daily_time_zone_view WHERE holidays_id IS NULL AND time_id = {$row['time_id']} order by index_id";
+	$query="SELECT * FROM  schedule_daily_time_zone_view WHERE holidays_id IS NULL AND time_id = {$row['time_id']} order by index_id;";
 	$result = $conn->query($query);
 	while ($datarw=mysqli_fetch_array($result)) {
 	if($datarw["tz_status"]=="0"){ $status_icon="ion-close-circled"; $status_color="bluefa"; }else{ $status_icon="ion-checkmark-circled"; $status_color="orangefa"; }
+	if($datarw["coop"]=="1"){$coop = '<i class="glyphicon glyphicon-leaf green" data-container="body" data-toggle="popover" data-placement="right" data-content="'.$lang['schedule_coop_help'].'"></i>';}else{$coop = '';}
+	
 	echo '
 		<div class="list-group">
 		<div class="list-group-item">
-		<i class="ionicons '.$status_icon.' fa-lg '.$status_color.'"></i>  '.$datarw['zone_name'].'<span class="pull-right text-muted small"><em>'.number_format(DispTemp($conn,$datarw['temperature']),1).'&deg;</em></span>
+		<i class="ionicons '.$status_icon.' fa-lg '.$status_color.'"></i>  '.$datarw['zone_name'].' '.$coop.'<span class="pull-right text-muted small"><em>'.number_format(DispTemp($conn,$datarw['temperature']),1).'&deg;</em></span>
 		</div>';
 	}
 
