@@ -155,7 +155,7 @@ if (($_SERVER['SCRIPT_NAME'] == '/schedule_edit.php') OR ($_SERVER['SCRIPT_NAME'
 </script>
 
 <script>
-<?php if (($_SERVER['SCRIPT_NAME'] == '/schedule_edit.php') OR ($_SERVER['SCRIPT_NAME'] == '/schedule_add.php')){ ?>
+<?php if (($_SERVER['SCRIPT_NAME'] == '/schedule_edit.php') OR ($_SERVER['SCRIPT_NAME'] == '/schedule_add.php') OR ($_SERVER['SCRIPT_NAME'] == '/schedule.php')){ ?>
 	 // popover
 	$("[data-toggle=popover]")
 		.popover()

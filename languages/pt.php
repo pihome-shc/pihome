@@ -178,6 +178,8 @@ $lang['schedule_time_modify_success'] = "Horario de Agendamento alterado com suc
 $lang['schedule_time_modify_error'] = "Horario de Agendamento falhou com o seguine erro: ";
 $lang['schedule_edit'] = "Editar Agendamento";
 $lang['schedule_coop_help'] = "Option for zone schedule with coop start. Coop start schedule won't start zone heating if boiler is not already running. If boiler is running and temperature is below setpoint minus deadband schedule will start the zone heating, after starting it operates as any other schedule and will stop the zone heating when setpoint temperature is reached.";
+$lang['schedule_temp_modify_success'] = "Schedule Temperature Modification Successfully";
+$lang['schedule_temp_modify_error'] = "Schedule Temperature Modification failed with error: ";
 
 $lang['graph'] = "Grafico";
 $lang['graph_temperature'] = "Grafico de temperatura do PiHome";
