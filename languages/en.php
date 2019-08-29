@@ -109,6 +109,18 @@ $lang['night_climate_error'] = "Night Climate Changes Failed with error: ";
 $lang['night_climate_temp_success'] = "Night Climate Temp Changed Successfully!!!";
 $lang['night_climate_enable'] = "Enable Night Climate";
 
+$lang['add_boost'] = "Add Boost";
+$lang['boost_time_info'] = "Maximum Boost Time in Minutes";
+$lang['boost_time'] = "Boost Time";
+$lang['boost_temperature'] = "Boost Temperature";
+$lang['boost_temperature_info'] = "Maximum Target Boost Temperature ";
+$lang['boost_info_text'] = "Create Boost Option for Zone";
+$lang['boost_console_id'] = "Boost Console ID";
+$lang['boost_console_id_info'] = "If you have Boost Console installed you can select from list.";
+$lang['boost_button_child_id'] = "Boost Button";
+$lang['boost_button_child_id_info'] = "Select which button on Boost Console can triger this Boost";
+
+
 $lang['zone'] = "Zone";
 $lang['zone_add'] = "Add Zone";
 $lang['zone_enable'] = "Enable Zone ";
@@ -161,11 +173,14 @@ $lang['zone_sp_deadband_error'] = "Deadband below setpoint temperature used for 
 $lang['schedule'] = "Schedule";
 $lang['schedule_add'] = "Add Schedule";
 $lang['schedule_enable'] = "Enable Schedule";
-$lang['schedule_time_add_error'] = "Schedule Time Addition failed with error:";
+$lang['schedule_time_add_error'] = "Schedule Time Addition failed with error: ";
 $lang['schedule_next'] = "Next Schedule";
-$lang['schedule_time_modify_success'] = "Schedule Time Modified Successfully!!!";
+$lang['schedule_time_modify_success'] = "Schedule Time Modified Successfully";
 $lang['schedule_time_modify_error'] = "Schedule Time Modification failed with error: ";
 $lang['schedule_edit'] = "Edit Schedule";
+$lang['schedule_coop_help'] = "Option for zone schedule with coop start. Coop start schedule won't start zone heating if boiler is not already running. If boiler is running and temperature is below setpoint minus deadband schedule will start the zone heating, after starting it operates as any other schedule and will stop the zone heating when setpoint temperature is reached.";
+$lang['schedule_temp_modify_success'] = "Schedule Temperature Modification Successfully";
+$lang['schedule_temp_modify_error'] = "Schedule Temperature Modification failed with error: ";
 
 $lang['graph'] = "Graph";
 $lang['graph_temperature'] = "PiHome Temperature Graps";
@@ -290,7 +305,7 @@ $lang['services'] = "Services";
 $lang['system'] = "Systems";
 $lang['more_language'] = "More Languages...";
 
-$lang['node_alerts_text'] = "Node Alerts Settings: These settings will help to identify if there is probelm with ";
+$lang['node_alerts_text'] = "Node Alerts Settings: These settings will help to identify if there is probelm with any Node, This is fail safe. ";
 $lang['email'] = "E-Mail";
 $lang['email_enable'] = "Enable E-Mail";
 $lang['email_settings'] = "E-Mail Settings";
@@ -300,5 +315,12 @@ $lang['email_username'] = "Username";
 $lang['email_password'] = "Password";
 $lang['email_from_address'] = "From e-mail";
 $lang['email_to_address'] = "To e-mail";
+
+$lang['node_alerts_edit'] = "Edit Node Alert Settings";
+$lang['node_alerts_edit_info'] = "Fail the Zone on Temperature/Controller node timeout. Fault will be indicated on home screen. Fail monitoring is disabled for the Node if Notify Interval is set to 0.";
+$lang['notice_interval'] = "Notice Interval";
+$lang['notice_interval_info'] = "Set Notice Interval in minuts. ";
+
+
 
 ?>

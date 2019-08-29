@@ -107,6 +107,16 @@ $lang['boiler_info_text'] = "Boiler/Heat Shource Settings and how Boiler/Heat sh
 $lang['notice_interval'] = "Notice Interval";
 $lang['notice_interval_info'] = "Timeout for Boiler Controller in minutes Before Controller Marked Faulty";
 
+$lang['add_boost'] = "Add Boost";
+$lang['boost_time_info'] = "Maximum Boost Time in Minutes";
+$lang['boost_time'] = "Boost Time";
+$lang['boost_temperature'] = "Boost Temperature";
+$lang['boost_temperature_info'] = "Maximum Target Boost Temperature ";
+$lang['boost_info_text'] = "Create Boost Option for Zone";
+$lang['boost_console_id'] = "Boost Console ID";
+$lang['boost_console_id_info'] = "If you have Boost Console installed you can select from list.";
+$lang['boost_button_child_id'] = "Boost Button";
+$lang['boost_button_child_id_info'] = "Select which button on Boost Console can triger this Boost";
 
 $lang['override'] = "Forcer";
 $lang['boost'] = "Booster";
@@ -185,6 +195,9 @@ $lang['schedule_next'] = "Prochain programme";
 $lang['schedule_time_modify_success'] = "Période du programme modifiée avec succès !!!";
 $lang['schedule_time_modify_error'] = "La modification de la période du programme a échoué avec l'erreur :";
 $lang['schedule_edit'] = "Modifier le programme";
+$lang['schedule_coop_help'] = "Option for zone schedule with coop start. Coop start schedule won't start zone heating if boiler is not already running. If boiler is running and temperature is below setpoint minus deadband schedule will start the zone heating, after starting it operates as any other schedule and will stop the zone heating when setpoint temperature is reached.";
+$lang['schedule_temp_modify_success'] = "Schedule Temperature Modification Successfully";
+$lang['schedule_temp_modify_error'] = "Schedule Temperature Modification failed with error: ";
 
 $lang['graph'] = "Graphique";
 $lang['graph_temperature'] = "Graphiques de température de PiHome";

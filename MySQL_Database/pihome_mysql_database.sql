@@ -455,6 +455,7 @@ CREATE TABLE IF NOT EXISTS `schedule_daily_time_zone` (
   `zone_id` int(11) DEFAULT NULL,
   `temperature` float NOT NULL DEFAULT 0,
   `holidays_id` int(11) DEFAULT NULL,
+  `coop` tinyint(4) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `FK_schedule_daily_time_zone_schedule_daily_time` (`schedule_daily_time_id`),
   KEY `FK_schedule_daily_time_zone_zone` (`zone_id`),
@@ -539,7 +540,7 @@ CREATE TABLE IF NOT EXISTS `system` (
 -- Dumping data for table pihome.system: ~0 rows (approximately)
 /*!40000 ALTER TABLE `system` DISABLE KEYS */;
 REPLACE INTO `system` (`id`, `sync`, `purge`, `name`, `version`, `build`, `update_location`, `update_file`, `update_alias`, `country`, `language`, `city`, `zip`, `openweather_api`, `backup_email`, `ping_home`, `timezone`, `shutdown`, `reboot`, `c_f`) VALUES
-	(2, 1, 0, 'PiHome - Smart Heating Control', '1.63', '010819', 'http://www.pihome.eu/updates/', 'current-release-versions.php', 'pihome', 'IE', 'en', 'Portlaoise', NULL, '', '', b'1', 'Europe/Dublin', 0, 0, 0);
+	(2, 1, 0, 'PiHome - Smart Heating Control', '1.64', '230819', 'http://www.pihome.eu/updates/', 'current-release-versions.php', 'pihome', 'IE', 'en', 'Portlaoise', NULL, '', '', b'1', 'Europe/Dublin', 0, 0, 0);
 /*!40000 ALTER TABLE `system` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.user

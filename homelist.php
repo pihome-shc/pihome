@@ -163,6 +163,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$start_time = $schedule['start'];
 	$end_time = $schedule['end'];
 	$schedule_c = $schedule['temperature'];
+	$schedule_coop = $schedule['coop'];
 	$sch_status = $schedule['time_status'];
   	if (isset($schedule['holidays_id'])) {
     		$sch_holidays = 1;
@@ -314,13 +315,20 @@ while ($row = mysqli_fetch_assoc($results)) {
                   $shcolor='';
                   $target=number_format(DispTemp($conn,$override_c),0) . '&deg;';
               }
-              else if (($sch_status == 1) && ($room_c < $schedule_c)) {
+              else if (($sch_status == 1) && ($room_c < $schedule_c) && (($schedule_coop == 0)||($fired_status == 1))) {
                   //We are scheduled and heating
                   $status='red';
                   $shactive='ion-ios-clock-outline';
                   $shcolor='';
                   $target=number_format(DispTemp($conn,$schedule_c),0) . '&deg;';
               }
+              else if (($sch_status == 1) && ($room_c < $schedule_c)&&($schedule_coop == 1)&&($fired_status == 0)) {
+                  //We are coop scheduled and waiting for boiler start
+                  $status='blueinfo';   
+                  $shactive='ion-ios-clock-outline';
+                  $shcolor='orange';
+                  $target=number_format(DispTemp($conn,$schedule_c),0) . '&deg;';
+              }              
               else if (($sch_status == 1) && ($room_c >= $schedule_c)) {
                   //We are scheduled and heating
                   $status='orange';
@@ -428,7 +436,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 			</li>
 		</ul>';
 	}else{
-		$squery = "SELECT * FROM schedule_daily_time_zone_view where zone_id ='{$row['id']}' AND tz_status = 1  AND (WeekDays & (1 << {$dow})) > 0 ORDER BY start asc";
+		$squery = "SELECT * FROM schedule_daily_time_zone_view where zone_id ='{$row['id']}' AND tz_status = 1 AND time_status = '1' AND (WeekDays & (1 << {$dow})) > 0 ORDER BY start asc";
 		$sresults = $conn->query($squery);
 		if (mysqli_num_rows($sresults) == 0){
 			echo '<div class=\"list-group\"><a href="#" class="list-group-item"><i class="fa fa-exclamation-triangle red"></i>&nbsp;&nbsp;'.$lang['schedule_active_today'].' '.$row['name'].'!!! </a>';

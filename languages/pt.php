@@ -108,6 +108,17 @@ $lang['night_climate_error'] = "A alteraçao de Horario de Modo Noturno falhou co
 $lang['night_climate_temp_success'] = "Temperatura de Modo Noturno alterado com sucesso!!!";
 $lang['night_climate_enable'] = "Ligar Modo Noturno";
 
+$lang['add_boost'] = "Add Boost";
+$lang['boost_time_info'] = "Maximum Boost Time in Minutes";
+$lang['boost_time'] = "Boost Time";
+$lang['boost_temperature'] = "Boost Temperature";
+$lang['boost_temperature_info'] = "Maximum Target Boost Temperature ";
+$lang['boost_info_text'] = "Create Boost Option for Zone";
+$lang['boost_console_id'] = "Boost Console ID";
+$lang['boost_console_id_info'] = "If you have Boost Console installed you can select from list.";
+$lang['boost_button_child_id'] = "Boost Button";
+$lang['boost_button_child_id_info'] = "Select which button on Boost Console can triger this Boost";
+
 $lang['zone'] = "Zona";
 $lang['zone_add'] = "Adicionar Zona";
 $lang['zone_enable'] = "Ligar Zona ";
@@ -166,6 +177,9 @@ $lang['schedule_next'] = "Proximo Agendamento";
 $lang['schedule_time_modify_success'] = "Horario de Agendamento alterado com sucesso!!!";
 $lang['schedule_time_modify_error'] = "Horario de Agendamento falhou com o seguine erro: ";
 $lang['schedule_edit'] = "Editar Agendamento";
+$lang['schedule_coop_help'] = "Option for zone schedule with coop start. Coop start schedule won't start zone heating if boiler is not already running. If boiler is running and temperature is below setpoint minus deadband schedule will start the zone heating, after starting it operates as any other schedule and will stop the zone heating when setpoint temperature is reached.";
+$lang['schedule_temp_modify_success'] = "Schedule Temperature Modification Successfully";
+$lang['schedule_temp_modify_error'] = "Schedule Temperature Modification failed with error: ";
 
 $lang['graph'] = "Grafico";
 $lang['graph_temperature'] = "Grafico de temperatura do PiHome";

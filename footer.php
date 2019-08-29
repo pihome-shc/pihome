@@ -138,6 +138,7 @@ if (($_SERVER['SCRIPT_NAME'] == '/schedule_edit.php') OR ($_SERVER['SCRIPT_NAME'
 		}
 <?php
 	}
+
 }
 ?>
 
@@ -150,6 +151,14 @@ if (($_SERVER['SCRIPT_NAME'] == '/schedule_edit.php') OR ($_SERVER['SCRIPT_NAME'
         startDate: "2019-07-09 10:00",
         minuteStep: 10
     });
+<?php } ?>
+</script>
+
+<script>
+<?php if (($_SERVER['SCRIPT_NAME'] == '/schedule_edit.php') OR ($_SERVER['SCRIPT_NAME'] == '/schedule_add.php') OR ($_SERVER['SCRIPT_NAME'] == '/schedule.php')){ ?>
+	 // popover
+	$("[data-toggle=popover]")
+		.popover()
 <?php } ?>
 </script>
 
