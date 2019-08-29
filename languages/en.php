@@ -193,6 +193,9 @@ $lang['graph_outsie'] = "Outside";
 $lang['graph_total_time'] = "Total Time";
 $lang['graph_consumed_time'] = "Consumed Time";
 $lang['graph_saved_time'] = "Saved Time";
+$lang['graph_settings'] = "Zone Graph Settings";
+$lang['graph_settings_text'] = "Select which Heatings Zones will be graphed. ";
+
 $lang['user_change_password'] = "Change Password";
 $lang['user_logout'] = "Logout";
 
