@@ -160,6 +160,38 @@ echo '
     </div>
 </div>';
 
+//Graph model
+echo '
+<div class="modal fade" id="zone_graph" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                <h5 class="modal-title">'.$lang['graph_settings'].'</h5>
+            </div>
+            <div class="modal-body">
+<p class="text-muted">'.$lang['graph_settings_text'].'</p>';
+$query = "select * from zone_view where type = 'Heating' order by index_id asc";
+$results = $conn->query($query);
+echo '  <div class=\"list-group\">';
+while ($row = mysqli_fetch_assoc($results)) {
+?>
+        <hr>
+        <div class="checkbox checkbox-default  checkbox-circle">
+        <input id="checkbox<?php echo $row["id"];?>" class="styled" type="checkbox" name="graph_it[<?php echo $row["id"];?>]" value="1" <?php $check = ($row['graph_it'] == 1) ? 'checked' : ''; echo $check; ?> onclick="$('#<?php echo $row["id"];?>').toggle();">
+        <label for="checkbox<?php echo $row["id"];?>"><?php echo $row["name"];?></label>
+        <div class="help-block with-errors"></div></div>
+<?php }
+echo '
+</div></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
+                <input type="button" name="submit" value="Save" class="btn btn-default login btn-sm" onclick="setup_graph()">
+            </div>
+        </div>
+    </div>
+</div>';
+
 //Boiler settings
 echo '
 <div class="modal fade" id="boiler" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

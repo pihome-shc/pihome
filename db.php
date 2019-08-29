@@ -543,6 +543,31 @@ if($what=="setup_email"){
 	}
 }
 
+//Setup Graph Setting
+if($what=="setup_graph"){
+        $sel_query = "select * from zone where type = 'Heating' order by index_id asc";
+        $results = $conn->query($sel_query);
+        while ($row = mysqli_fetch_assoc($results)) {
+                $checkbox = 'checkbox'.$row['id'];
+                $graph_it =  $_GET[$checkbox];
+                if ($graph_it=='true'){$graph_it = '1';} else {$graph_it = '0';}
+                $query = "UPDATE zone SET graph_it = '".$graph_it."' WHERE ID='".$row['id']."' LIMIT 1;";
+                $update_error=0;
+                if(!$conn->query($query)){
+                        $update_error=1;
+                }
+        }
+        if($update_error==0){
+                header('Content-type: application/json');
+                echo json_encode(array('Success'=>'Success','Query'=>$query));
+                return;
+        }else{
+                header('Content-type: application/json');
+                echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+                return;
+        }
+}
+
 
 if($what=="mqtt"){
 	if($opp=="delete"){

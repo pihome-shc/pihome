@@ -66,7 +66,7 @@ function rainbow(numOfSteps, step) {
 // create dataset based on all available zones
 var dataset = [
 <?php
-    $querya ="select * from zone_view where `type` = 'Heating' order BY index_id asc;";
+    $querya ="select * from zone_view where `type` = 'Heating'  AND `graph_it` order BY index_id asc;";
     $resulta = $conn->query($querya);
     $counter = 0;
     $count = mysqli_num_rows($resulta) + 1;

@@ -312,6 +312,30 @@ var idata="w=setup_email&o=update&status="+document.getElementById("checkbox2").
     });
 }
 
+//update graph
+function setup_graph(){
+var x = document.getElementsByTagName("input");
+var i;
+var idata="w=setup_graph&o=update";
+    for (i = 0; i < x.length; i++) {
+        idata+="&"+x[i].id+"="+x[i].checked;
+    }
+    idata+="&wid=0";
+    $.get('db.php',idata)
+    .done(function(odata){
+        if(odata.Success)
+            reload_page();
+        else
+            console.log(odata.Message);
+    })
+    .fail(function( jqXHR, textStatus, errorThrown ){
+        if(jqXHR==401 || jqXHR==403) return;
+        console.log("setup_graph: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
+    })
+    .always(function() {
+    });
+}
+
 //update PiConnect 
 function setup_piconnect(){
 var idata="w=setup_piconnect&o=update&status="+document.getElementById("checkbox0").checked;
