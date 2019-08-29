@@ -178,7 +178,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 ?>
         <hr>
         <div class="checkbox checkbox-default  checkbox-circle">
-        <input id="checkbox<?php echo $row["id"];?>" class="styled" type="checkbox" name="graph_it[<?php echo $row["id"];?>]" value="1" <?php $check = ($row['graph_it'] == 1) ? 'checked' :$
+        <input id="checkbox<?php echo $row["id"];?>" class="styled" type="checkbox" name="graph_it[<?php echo $row["id"];?>]" value="1" <?php $check = ($row['graph_it'] == 1) ? 'checked' : ''; echo $check; ?> onclick="$('#<?php echo $row["id"];?>').toggle();">
         <label for="checkbox<?php echo $row["id"];?>"><?php echo $row["name"];?></label>
         <div class="help-block with-errors"></div></div>
 <?php }
