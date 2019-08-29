@@ -619,6 +619,7 @@ CREATE TABLE IF NOT EXISTS `zone` (
   `name` char(50) COLLATE utf8_bin DEFAULT NULL,
   `type` char(50) COLLATE utf8_bin DEFAULT NULL,
   `model` char(50) COLLATE utf8_bin DEFAULT NULL,
+  `graph_it` tinyint(1) NOT NULL DEFAULT '1',
   `max_c` tinyint(4) DEFAULT NULL,
   `max_operation_time` tinyint(4) DEFAULT NULL,
   `hysteresis_time` tinyint(4) DEFAULT NULL,
