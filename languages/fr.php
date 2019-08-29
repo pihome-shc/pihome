@@ -210,6 +210,9 @@ $lang['graph_outsie'] = "Extérieur";
 $lang['graph_total_time'] = "Durée totale";
 $lang['graph_consumed_time'] = "Durée d'activation du chauffage";
 $lang['graph_saved_time'] = "Durée d'activation du chauffage évitée";
+$lang['graph_settings'] = "Paramètres de graphique de zone";
+$lang['graph_settings_text'] = "Sélectionnez les zones de chauffage qui seront représentées. ";
+
 $lang['user_change_password'] = "Changement du mot de passe";
 $lang['user_logout'] = "Se déconnecter";
 
