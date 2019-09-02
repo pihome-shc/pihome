@@ -8,14 +8,14 @@
 --
 --    S M A R T   H E A T I N G   C O N T R O L
 --
---*************************************************************************
---* PiHome is Raspberry Pi based Central Heating Control systems. It runs *
---* from web interface and it comes with ABSOLUTELY NO WARRANTY, to the   *
---* extent permitted by applicable law. I take no responsibility for any  *
---* loss or damage to you or your property.                               *
---* DO NOT MAKE ANY CHANGES TO YOUR HEATING SYSTEM UNTILL UNLESS YOU KNOW *
---* WHAT YOU ARE DOING                                                    *
---*************************************************************************
+-- *************************************************************************
+-- * PiHome is Raspberry Pi based Central Heating Control systems. It runs *
+-- * from web interface and it comes with ABSOLUTELY NO WARRANTY, to the   *
+-- * extent permitted by applicable law. I take no responsibility for any  *
+-- * loss or damage to you or your property.                               *
+-- * DO NOT MAKE ANY CHANGES TO YOUR HEATING SYSTEM UNTILL UNLESS YOU KNOW *
+-- * WHAT YOU ARE DOING                                                    *
+-- *************************************************************************
 -- --------------------------------------------------------
 -- Host:                         192.168.99.11
 -- Server version:               10.3.15-MariaDB-1 - Raspbian testing-staging
@@ -296,17 +296,19 @@ REPLACE INTO `messages_out` (`id`, `sync`, `purge`, `node_id`, `child_id`, `sub_
 
 -- Dumping structure for table pihome.mqtt
 DROP TABLE IF EXISTS `mqtt`;
-CREATE TABLE IF NOT EXISTS `mqtt` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) COLLATE NOT NULL DEFAULT '',
-  `ip` varchar(39) COLLATE NOT NULL DEFAULT '127.0.0.1',
-  `port` int(11) NOT NULL DEFAULT 1883,
-  `username` varchar(50) NOT NULL DEFAULT '',
-  `password` varchar(50)  NOT NULL DEFAULT '',
-  `enabled` tinyint(4) NOT NULL DEFAULT 1,
-  `type` int(11) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE='utf16_bin';
+CREATE TABLE `mqtt` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`name` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'utf16_bin',
+	`ip` VARCHAR(39) NOT NULL DEFAULT '127.0.0.1' COLLATE 'utf16_bin',
+	`port` INT(11) NOT NULL DEFAULT '1883',
+	`username` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'utf16_bin',
+	`password` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'utf16_bin',
+	`enabled` TINYINT(4) NOT NULL DEFAULT '1',
+	`type` INT(11) NOT NULL DEFAULT '0',
+	PRIMARY KEY (`id`)
+)
+COLLATE='utf16_bin'
+ENGINE=InnoDB;
 
 -- Dumping data for table pihome.mqtt: ~0 rows (approximately)
 /*!40000 ALTER TABLE `mqtt` DISABLE KEYS */;
