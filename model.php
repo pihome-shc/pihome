@@ -753,7 +753,7 @@ echo '<table>
         <th class="col-xs-1">Node ID</th>
         <th class="col-xs-4">Name</th>
         <th class="col-xs-5">Last Seen</th>
-        <th class="col-xs-2">Notice Interval</th>
+        <th class="pull-right text">Notice Interval</th>
     </tr>';
 
 while ($row = mysqli_fetch_assoc($results)) {
@@ -762,7 +762,7 @@ while ($row = mysqli_fetch_assoc($results)) {
             <td>'.$row['node_id'].'</td>
             <td>'.$row['name'].'</td>
             <td>'.$row['last_seen'].'</td>
-            <td><input id="'.$row["node_id"].'" type="value" style="border: none" name="notice_interval" value="'.$row["notice_interval"].'" placeholder="Notice Interval" required/></td>
+            <td><input id="'.$row["node_id"].'" type="value" class="form-control pull-right" style="border: none" name="notice_interval" value="'.$row["notice_interval"].'" placeholder="Notice Interval" required/></td>
         </tr>';
 
 }
