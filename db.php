@@ -568,6 +568,29 @@ if($what=="setup_graph"){
         }
 }
 
+//update Node Alerts Notice Interval
+if($what=="node_alerts"){
+        $sel_query = "SELECT * FROM nodes where node_id != 0 AND status = 'Active' ORDER BY node_id asc";
+        $results = $conn->query($sel_query);
+        while ($row = mysqli_fetch_assoc($results)) {
+                $node_id = $row['node_id'];
+                $notice_interval =  $_GET[$node_id];
+                $query = "UPDATE nodes SET notice_interval = '".$notice_interval."' WHERE node_id='".$row['node_id']."' LIMIT 1;";
+                $update_error=0;
+                if(!$conn->query($query)){
+                        $update_error=1;
+                }
+        }
+        if($update_error==0){
+                header('Content-type: application/json');
+                echo json_encode(array('Success'=>'Success','Query'=>$query));
+                return;
+        }else{
+                header('Content-type: application/json');
+                echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+                return;
+        }
+}
 
 if($what=="mqtt"){
 	if($opp=="delete"){

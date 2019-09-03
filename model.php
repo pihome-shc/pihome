@@ -741,31 +741,40 @@ echo '
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
                 <h5 class="modal-title">'.$lang['node_alerts'].'</h5>
             </div>
             <div class="modal-body">
 <p class="text-muted"> '.$lang['node_alerts_text'].' </p>';
-$query = "SELECT * FROM nodes where node_id != 0 ORDER BY node_id asc";
+$query = "SELECT * FROM nodes where node_id != 0 AND status = 'Active' ORDER BY node_id asc";
 $results = $conn->query($query);
-echo '	<div class=\"list-group\">';
-echo '<a href="#" class="list-group-item">Node ID - Name  <span class="pull-right text-muted small"><em>Notice</em> - <em>Last Seen</em></span></a>'; 
-	
+echo '<table>
+    <tr>
+        <th class="col-xs-1">Node ID</th>
+        <th class="col-xs-4">Name</th>
+        <th class="col-xs-5">Last Seen</th>
+        <th class="pull-right text">Notice Interval</th>
+    </tr>';
+
 while ($row = mysqli_fetch_assoc($results)) {
-	echo '<a href="#" class="list-group-item">'.$row['node_id'].' - '.$row['name'].'  <span class="pull-right text-muted small">
-	<em>'.$row['notice_interval'].'</em> - 
-	<em>'.$row['last_seen'].'</em>
-	
-	</span></a>'; 	
+    echo '
+        <tr>
+            <td>'.$row['node_id'].'</td>
+            <td>'.$row['name'].'</td>
+            <td>'.$row['last_seen'].'</td>
+            <td><input id="'.$row["node_id"].'" type="value" class="form-control pull-right" style="border: none" name="notice_interval" value="'.$row["notice_interval"].'" placeholder="Notice Interval" required/></td>
+        </tr>';
+
 }
-echo '</div></div>
+
+echo '</table></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
+                <input type="button" name="submit" value="Save" class="btn btn-default login btn-sm" onclick="node_alerts()">
             </div>
         </div>
     </div>
 </div>';
-
 
 //cronetab model	
 echo '
