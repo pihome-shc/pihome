@@ -21,7 +21,7 @@
 -- You Must create following View Talbes in MySQL for PiHome Smart Heating to work
 
 
-----Schedule List with zone details view table version 1.x
+-- Schedule List with zone details view table version 1.x
 Drop View if exists schedule_daily_time_zone_view;
 CREATE VIEW schedule_daily_time_zone_view AS
 select ss.id as time_id, ss.status as time_status, sstart.start, send.end, sWeekDays.WeekDays,
@@ -36,7 +36,7 @@ join zone on sdtz.zone_id = zone.id
 join zone zt on sdtz.zone_id = zt.id
 where sdtz.`purge` = '0' order by zone.index_id;
 
---Zone View version 2
+-- Zone View version 2
 Drop View if exists zone_view;
 CREATE VIEW zone_view AS
 select zone.status, zone.sync, zone.id, zone.index_id, zone.name, zone.type, zone.graph_it, zone.max_c, zone.max_operation_time, zone.hysteresis_time,
@@ -51,7 +51,7 @@ join nodes msv on zone.sensor_id = msv.id
 join nodes skv on zone.sensor_id = skv.id
 where zone.`purge` = '0';
 
---Boiler View
+-- Boiler View
 Drop View if exists boiler_view;
 CREATE VIEW boiler_view AS
 select boiler.status, boiler.sync, boiler.`purge`, boiler.fired_status, boiler.name, nodes.node_id, boiler.node_child_id, boiler.hysteresis_time, boiler.max_operation_time, boiler.gpio_pin
@@ -60,7 +60,7 @@ join nodes on boiler.node_id = nodes.id
 where boiler.`purge` = '0';
 
 
---Boost View
+-- Boost View
 Drop View if exists boost_view;
 CREATE VIEW boost_view AS
 select boost.id, boost.`status`, boost.sync, boost.zone_id, zone_idx.index_id, zone.name, boost.temperature, boost.minute
@@ -69,7 +69,7 @@ join zone on boost.zone_id = zone.id
 join zone zone_idx on boost.zone_id = zone_idx.id;
 
 
---Override View
+-- Override View
 Drop View if exists override_view;
 CREATE VIEW override_view AS
 select override.`status`, override.sync, override.zone_id, zone_idx.index_id, zone.name, override.time, override.temperature
@@ -77,7 +77,7 @@ from override
 join zone on override.zone_id = zone.id
 join zone zone_idx on override.zone_id = zone_idx.id;
 
-----Schedule List with zone details view table version 1.x
+-- Schedule List with zone details view table version 1.x
 Drop View if exists schedule_night_climat_zone_view;
 CREATE VIEW schedule_night_climat_zone_view AS
 select tnct.status as t_status, ncz.status as z_status, ncz.sync, ncz.zone_id, snct.start_time, enct.end_time, ncz.min_temperature, ncz.max_temperature
@@ -87,7 +87,7 @@ join schedule_night_climate_time enct on ncz.schedule_night_climate_id = enct.id
 join schedule_night_climate_time tnct on ncz.schedule_night_climate_id = tnct.id;
 
 
---Messages_in View for Graps
+-- Messages_in View for Graps
 Drop View if exists messages_in_view_24h;
 CREATE VIEW messages_in_view_24h AS
 select node_id, child_id, datetime, payload
@@ -95,7 +95,7 @@ from messages_in
 where datetime > DATE_SUB( NOW(), INTERVAL 24 HOUR);
 
 
---Zone Logs views
+-- Zone Logs views
 Drop View if exists zone_log_view;
 CREATE VIEW zone_log_view AS
 select zone_logs.id, zone_logs.sync, zone_logs.zone_id, ztype.type,

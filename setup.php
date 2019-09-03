@@ -41,7 +41,7 @@ if ($version[0] > 7){
 //*********************************************************
 $hostname = 'localhost';
 $dbname   = 'pihome';
-$dbusername = 'pihome';
+$dbusername = 'pihomedbadmin';
 $dbpassword = 'pihome2018';
 $connect_error = 'Sorry We are Experiencing MySQL Database Connection Problem...';
 
