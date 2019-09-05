@@ -306,7 +306,6 @@ $lang['services'] = "Servicos";
 $lang['system'] = "Sistemas";
 $lang['more_language'] = "Mais Linguagens...";
 
-$lang['node_alerts_text'] = "Node Alerts Settings: These settings will help to identify if there is probelm with ";
 $lang['email'] = "E-Mail";
 $lang['email_enable'] = "Enable E-Mail";
 $lang['email_settings'] = "E-Mail Settings";
@@ -316,4 +315,11 @@ $lang['email_username'] = "Username";
 $lang['email_password'] = "Password";
 $lang['email_from_address'] = "From e-mail";
 $lang['email_to_address'] = "To e-mail";
+
+$lang['node_alerts_edit'] = "Editar configurações de alerta do nó";
+$lang['node_alerts_edit_info'] = "Falha no tempo limite do nó Zona na temperatura / controlador. A falha será indicada na tela inicial. O monitoramento de falhas é desativado para o Nó se o Intervalo de Aviso estiver definido como 0.";
+$lang['notice_interval'] = "Intervalo de aviso";
+$lang['notice_interval_info'] = "Defina o intervalo de aviso em minutos.";
+$lang['node_id'] = "ID do nó";
+$lang['last_seen'] = "Visto pela última vez";
 ?>
