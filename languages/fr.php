@@ -323,7 +323,6 @@ $lang['services'] = "Services";
 $lang['system'] = "Systèmes";
 $lang['more_language'] = "Plus de langues...";
 
-$lang['node_alerts_text'] = "Node Alerts Settings: These settings will help to identify if there is probelm with ";
 $lang['email'] = "E-Mail";
 $lang['email_enable'] = "Enable E-Mail";
 $lang['email_settings'] = "E-Mail Settings";
@@ -334,4 +333,10 @@ $lang['email_password'] = "Password";
 $lang['email_from_address'] = "From e-mail";
 $lang['email_to_address'] = "To e-mail";
 
+$lang['node_alerts_edit'] = "Modifier les paramètres d'alerte de noeud";
+$lang['node_alerts_edit_info'] = "Échec de la temporisation du noeud Zone sur température / contrôleur. Le défaut sera indiqué sur l'écran d'accueil. La surveillance des échecs est désactivée pour le nœud si intervalle de préavis est défini sur 0.";
+$lang['notice_interval'] = "Intervalle de préavis";
+$lang['notice_interval_info'] = "Définir l'intervalle de préavis en minutes.";
+$lang['node_id'] = "ID de nœud";
+$lang['last_seen'] = "Dernière vue";
 ?>
