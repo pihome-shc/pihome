@@ -308,7 +308,6 @@ $lang['services'] = "Services";
 $lang['system'] = "Systems";
 $lang['more_language'] = "More Languages...";
 
-$lang['node_alerts_text'] = "Node Alerts Settings: These settings will help to identify if there is probelm with any Node, This is fail safe. ";
 $lang['email'] = "E-Mail";
 $lang['email_enable'] = "Enable E-Mail";
 $lang['email_settings'] = "E-Mail Settings";
@@ -320,10 +319,11 @@ $lang['email_from_address'] = "From e-mail";
 $lang['email_to_address'] = "To e-mail";
 
 $lang['node_alerts_edit'] = "Edit Node Alert Settings";
-$lang['node_alerts_edit_info'] = "Fail the Zone on Temperature/Controller node timeout. Fault will be indicated on home screen. Fail monitoring is disabled for the Node if Notify Interval is set to 0.";
+$lang['node_alerts_edit_info'] = "Fail the Zone on Temperature/Controller node timeout. Fault will be indicated on home screen. Fail monitoring is disabled for the Node if Notice Interval is set to 0.";
 $lang['notice_interval'] = "Notice Interval";
-$lang['notice_interval_info'] = "Set Notice Interval in minuts. ";
-
+$lang['notice_interval_info'] = "Set Notice Interval in minutes.";
+$lang['node_id'] = "Node ID";
+$lang['last_seen'] = "Last Seen";
 
 
 ?>

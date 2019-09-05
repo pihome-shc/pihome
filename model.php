@@ -750,10 +750,11 @@ $query = "SELECT * FROM nodes where node_id != 0 AND status = 'Active' ORDER BY 
 $results = $conn->query($query);
 echo '<table>
     <tr>
-        <th class="col-xs-1">Node ID</th>
-        <th class="col-xs-4">Name</th>
-        <th class="col-xs-5">Last Seen</th>
-        <th class="pull-right text">Notice Interval</th>
+        <th class="col-xs-1">'.$lang['node_id'].'</th>
+        <th class="col-xs-4">'.$lang['name'].'</th>
+        <th class="col-xs-5">'.$lang['notice_interval'].'
+	<span class="fa fa-info-circle fa-lg text-info" data-container="body" data-toggle="popover" data-placement="left" data-content="'.$lang['notice_interval_info'].'"</span>
+	</th>
     </tr>';
 
 while ($row = mysqli_fetch_assoc($results)) {
@@ -762,7 +763,7 @@ while ($row = mysqli_fetch_assoc($results)) {
             <td>'.$row['node_id'].'</td>
             <td>'.$row['name'].'</td>
             <td>'.$row['last_seen'].'</td>
-            <td><input id="'.$row["node_id"].'" type="value" class="form-control pull-right" style="border: none" name="notice_interval" value="'.$row["notice_interval"].'" placeholder="Notice Interval" required/></td>
+            <td><input id="'.$row["node_id"].'" type="value" class="form-control pull-right" style="border: none" name="notice_interval" value="'.$row["notice_interval"].'" placeholder="Notice Interval" required></td>
         </tr>';
 
 }
@@ -1091,3 +1092,10 @@ echo '</div></div>
     </div>
 </div>';
 ?>
+
+<script>
+$(document).ready(function(){
+  $('[data-toggle="popover"]').popover();
+});
+</script>
+
