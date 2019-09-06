@@ -742,10 +742,10 @@ echo '
         <div class="modal-content">
             <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title">'.$lang['node_alerts'].'</h5>
+                <h5 class="modal-title">'.$lang['node_alerts_edit'].'</h5>
             </div>
             <div class="modal-body">
-<p class="text-muted"> '.$lang['node_alerts_text'].' </p>';
+<p class="text-muted"> '.$lang['node_alerts_edit_info'].' </p>';
 $query = "SELECT * FROM nodes where node_id != 0 AND status = 'Active' ORDER BY node_id asc";
 $results = $conn->query($query);
 echo '<table>
