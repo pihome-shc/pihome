@@ -119,7 +119,7 @@ $lang['boost_console_id'] = "Boost Console ID";
 $lang['boost_console_id_info'] = "If you have Boost Console installed you can select from list.";
 $lang['boost_button_child_id'] = "Boost Button";
 $lang['boost_button_child_id_info'] = "Select which button on Boost Console can triger this Boost";
-
+$lang['boost_temp'] = "Boost Temp";
 
 $lang['zone'] = "Zone";
 $lang['zone_add'] = "Add Zone";

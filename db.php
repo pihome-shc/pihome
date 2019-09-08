@@ -212,7 +212,37 @@ if($what=="boost"){
             return;
         }
 	}
+        if($opp=="update"){
+                $sel_query = "SELECT * FROM boost ORDER BY id asc";
+                $results = $conn->query($sel_query);
+                while ($row = mysqli_fetch_assoc($results)) {
+                        $id = $row['id'];
+                        $input1 = 'minute'.$id;
+                        $input2 = 'temperature'.$id;
+                        $input3= 'boost_button_id'.$id;
+                        $input4 = 'boost_button_child_id'.$id;
+                        $minute = $_GET[$input1];
+                        $temperature = $_GET[$input2];
+                        $boost_button_id = $_GET[$input3];
+                        $boost_button_child_id = $_GET[$input4];
+                        $query = "UPDATE boost SET minute = '".$minute."', temperature = '".$temperature."', boost_button_id = '".$boost_button_id."', boost_button_child_id = '".$boost_but$
+                        $update_error=0;
+                        if(!$conn->query($query)){
+                                $update_error=1;
+                        }
+                }
+                if($update_error==0){
+                        header('Content-type: application/json');
+                        echo json_encode(array('Success'=>'Success','Query'=>$query));
+                        return;
+                }else{
+                        header('Content-type: application/json');
+                        echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+                        return;
+                }
+        }
 }
+
 //Away 
 if($what=="away"){
 	if($opp=="active"){
