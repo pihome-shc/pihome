@@ -353,25 +353,41 @@ echo '
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
                 <h5 class="modal-title">'.$lang['boost_settings'].'</h5>
             </div>
             <div class="modal-body">
-<p class="text-muted"> '.$lang['boost_settings_text'].'</p>';
-$query = "SELECT * FROM boost_view ORDER BY index_id ASC, `MINUTE` asc;";
+<p class="text-muted"> '.$lang['boost_settings_text'].' </p>';
+$query = "SELECT boost.id, boost.status, boost.sync, boost.zone_id, zone.name, boost.temperature, boost.minute, boost.boost_button_id, boost.boost_button_child_id FROM boost JOIN zone on boost.zone_id = zone.id ORDER BY boost.zone_id;";
 $results = $conn->query($query);
-echo '	<div class=\"list-group\">';
+echo '<table class="table table-bordered">
+    <tr>
+        <th class="col-xs-4"><small>'.$lang['zone'].'</small></th>
+        <th class="col-xs-2"><small>'.$lang['boost_time'].'</small></th>
+        <th class="col-xs-2"><small>'.$lang['boost_temp'].'</small></th>
+        <th class="col-xs-2"><small>'.$lang['boost_console_id'].'</small></th>
+        <th class="col-xs-1"><small>'.$lang['boost_button_child_id'].'</small></th>
+        <th class="col-xs-1"></th>
+    </tr>';
+
 while ($row = mysqli_fetch_assoc($results)) {
-	echo '<div class="list-group-item"><i class="fa fa-rocket fa-fw blueinfo"></i> '.$row['name'].'
-	<span class="pull-right text-muted small"><em>'.$row['minute'].' minute '.number_format(DispTemp($conn,$row['temperature']),0).'&deg; </em> 
-	<a href="javascript:delete_boost('.$row["id"].');"><button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></button> </a></span>
-	</div>'; 
+    echo '
+        <tr>
+            <th scope="row"><small>'.$row['name'].'</small></th>
+            <td><input id="minute'.$row["id"].'" type="text" class="pull-left text" style="border: none" name="minute" size="3" value="'.$row["minute"].'" placeholder="Minutes" required></td>
+            <td><input id="temperature'.$row["id"].'" type="text" class="pull-left text" style="border: none" name="temperature" size="3" value="'.$row["temperature"].'" placeholder="Temperature" required></td>
+            <td><input id="boost_button_id'.$row["id"].'" type="text" class="pull-left text" style="border: none" name="button_id"  size="3" value="'.$row["boost_button_id"].'" placeholder="Button ID" required></td>
+            <td><input id="boost_button_child_id'.$row["id"].'" type="text" class="pull-left text" style="border: none" name="button_child_id" size="3" value="'.$row["boost_button_child_id"].'" placeholder="Child ID" required></td>
+            <td><a href="javascript:delete_boost('.$row["id"].');"><button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></button> </a></td>
+        </tr>';
+
 }
-echo '</div></div>
+
+echo '</table></div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
-				<button class="btn btn-default login btn-sm" data-href="#" data-toggle="modal" data-target="#add_boost">'.$lang['add_boost'].'</button>
-				
+                <input type="button" name="submit" value="Save" class="btn btn-default login btn-sm" onclick="update_boost()">
+                <button class="btn btn-default login btn-sm" data-href="#" data-toggle="modal" data-target="#add_boost">'.$lang['add_boost'].'</button>
             </div>
         </div>
     </div>
