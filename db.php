@@ -180,14 +180,14 @@ if($what=="boost"){
 		$query = "DELETE FROM boost WHERE id = '".$wid."';"; 
 		$conn->query($query);
 		if($conn->query($query)){
-            header('Content-type: application/json');
-            echo json_encode(array('Success'=>'Success','Query'=>$query));
-            return;
-        }else{
-            header('Content-type: application/json');
-            echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
-            return;
-        }
+            		header('Content-type: application/json');
+            		echo json_encode(array('Success'=>'Success','Query'=>$query));
+            		return;
+        	}else{
+            		header('Content-type: application/json');
+            		echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+            		return;
+        	}
 	}
 	if($opp=="add"){
 		$zone_id = $_GET['zone_id'];
@@ -203,14 +203,14 @@ if($what=="boost"){
 		//Add record to Boost table
 		$query = "INSERT INTO boost (status, zone_id, temperature, minute, boost_button_id, boost_button_child_id) VALUES ('0', '{$zone_id}', '{$boost_temperature}', '{$boost_time}', '{$boost_console_id}', '{$boost_button_child_id}')";
 		if($conn->query($query)){
-            header('Content-type: application/json');
-            echo json_encode(array('Success'=>'Success','Query'=>$query));
-            return;
-        }else{
-            header('Content-type: application/json');
-            echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
-            return;
-        }
+            		header('Content-type: application/json');
+            		echo json_encode(array('Success'=>'Success','Query'=>$query));
+            		return;
+        	}else{
+            		header('Content-type: application/json');
+            		echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+            		return;
+        	}
 	}
         if($opp=="update"){
                 $sel_query = "SELECT * FROM boost ORDER BY id asc";
@@ -225,7 +225,7 @@ if($what=="boost"){
                         $temperature = $_GET[$input2];
                         $boost_button_id = $_GET[$input3];
                         $boost_button_child_id = $_GET[$input4];
-                        $query = "UPDATE boost SET minute = '".$minute."', temperature = '".$temperature."', boost_button_id = '".$boost_button_id."', boost_button_child_id = '".$boost_but$
+                        $query = "UPDATE boost SET minute = '".$minute."', temperature = '".$temperature."', boost_button_id = '".$boost_button_id."', boost_button_child_id = '".$boost_button_child_id."' WHERE id='".$row['id']."' LIMIT 1;";
                         $update_error=0;
                         if(!$conn->query($query)){
                                 $update_error=1;
