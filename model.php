@@ -388,7 +388,7 @@ echo '</table></div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
                 <input type="button" name="submit" value="Save" class="btn btn-default login btn-sm" onclick="update_boost()">
-                <button class="btn btn-default login btn-sm" data-href="#" data-toggle="modal" data-target="#add_boost">'.$lang['add_boost'].'</button>
+                <button type="button" class="btn btn-default login btn-sm" data-href="#" data-toggle="modal" data-target="#add_boost">'.$lang['add_boost'].'</button>
             </div>
         </div>
     </div>
