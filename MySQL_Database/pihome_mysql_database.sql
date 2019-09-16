@@ -298,11 +298,11 @@ REPLACE INTO `messages_out` (`id`, `sync`, `purge`, `node_id`, `child_id`, `sub_
 DROP TABLE IF EXISTS `mqtt`;
 CREATE TABLE `mqtt` (
 	`id` INT(11) NOT NULL AUTO_INCREMENT,
-	`name` VARCHAR(50) COLLATE utf16_bin NOT NULL,
+	`name` VARCHAR(50) COLLATE utf16_bin NOT NULL DEFAULT '',
 	`ip` VARCHAR(39) COLLATE utf16_bin NOT NULL DEFAULT '127.0.0.1',
 	`port` INT(11) NOT NULL DEFAULT '1883',
-	`username` VARCHAR(50) COLLATE utf16_bin NOT NULL,
-	`password` VARCHAR(50) COLLATE utf16_bin NOT NULL,
+	`username` VARCHAR(50) COLLATE utf16_bin NOT NULL DEFAULT '',
+	`password` VARCHAR(50) COLLATE utf16_bin NOT NULL DEFAULT '',
 	`enabled` TINYINT(4) NOT NULL DEFAULT '1',
 	`type` INT(11) NOT NULL DEFAULT '0',
 	PRIMARY KEY (`id`)
