@@ -320,14 +320,21 @@ while ($row = mysqli_fetch_assoc($results)) {
 	if ($zone_status=='1') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Start Cause: ".$start_cause." - Target C:\033[41m".$target_c."\033[0m Zone C:\033[31m".$zone_c."\033[0m \n";}
 	if ($zone_status=='0') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Stop Cause: ".$stop_cause." - Target C:\033[41m".$target_c."\033[0m Zone C:\033[31m".$zone_c."\033[0m \n";}
 
+	/***************************************************************************************
+	Zone Valve Wired to Raspberry Pi GPIO Section: Zone Vole Connected Raspberry Pi GPIO.
+	****************************************************************************************/
 	if (!empty($zone_gpio_pin)){
-		/***************************************************************************************
-		Zone Vole Wired to Raspberry Pi GPIO Section: Zone Vole Connected Raspberry Pi GPIO.
-		****************************************************************************************/
 		$relay_status = ($zone_status == '1') ? $relay_on : $relay_off;
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: GIOP Relay Status: \033[41m".$relay_status. "\033[0m (0=On, 1=Off) \n";
 		exec("/usr/local/bin/gpio write ".$zone_gpio_pin." ".$relay_status );
 		exec("/usr/local/bin/gpio mode ".$zone_gpio_pin." out");
+	}
+	
+	/***************************************************************************************
+	Zone Valve Wired over I2C Interface Make sure you have i2c Interface enabled 
+	****************************************************************************************/
+	if ((!empty($zone_gpio_pin)) OR ($zone_gpio_pin!=0)){
+		exec("python /var/www/cron/i2c/i2c_relay.py 50 ".$boiler_goip_pin." ".$zone_status);
 	}
 
 	/***************************************************************************************
@@ -373,8 +380,17 @@ if (in_array("1", $boiler)) {
 	/***************************************************************************************
 	Boiler Wired to Raspberry Pi GPIO Section: Make sure you have WiringPi installed.
 	****************************************************************************************/
-	exec("/usr/local/bin/gpio write ".$boiler_goip_pin ." ".$relay_on );
-	exec("/usr/local/bin/gpio mode ".$boiler_goip_pin ." out");
+	if (!empty($boiler_goip_pin)){
+		exec("/usr/local/bin/gpio write ".$boiler_goip_pin ." ".$relay_on );
+		exec("/usr/local/bin/gpio mode ".$boiler_goip_pin ." out");
+	}
+	
+	/***************************************************************************************
+	Boiler Wired over I2C Interface Make sure you have i2c Interface enabled 
+	****************************************************************************************/
+	if ((!empty($boiler_goip_pin)) OR ($boiler_goip_pin!=0)){
+		exec("python /var/www/cron/i2c/i2c_relay.py 50 ".$boiler_goip_pin." 1"); 
+	}
 
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Node ID: \033[41m".$boiler_node_id."\033[0m Child ID: \033[41m".$boiler_node_child_id."\033[0m \n";
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler GIOP: \033[41m".$boiler_goip_pin. "\033[0m Status: \033[41m".$relay_on."\033[0m (0=On, 1=Off) \n";
@@ -415,11 +431,22 @@ if (in_array("1", $boiler)) {
 	/***************************************************************************************
 	Boiler Wired to Raspberry Pi GPIO Section: Make sure you have WiringPi installed.
 	****************************************************************************************/
-	exec("/usr/local/bin/gpio write ".$boiler_goip_pin ." ".$relay_off );
-	exec("/usr/local/bin/gpio mode ".$boiler_goip_pin ." out");
+	if ((!empty($boiler_goip_pin)) OR ($boiler_goip_pin!=0)){
+		exec("/usr/local/bin/gpio write ".$boiler_goip_pin ." ".$relay_off );
+		exec("/usr/local/bin/gpio mode ".$boiler_goip_pin ." out");
+	}
 
+	/***************************************************************************************
+	Boiler Wired over I2C Interface Make sure you have i2c Interface enabled 
+	****************************************************************************************/
+	if ((!empty($boiler_goip_pin)) OR ($boiler_goip_pin!=0)){
+		exec("python /var/www/cron/i2c/i2c_relay.py 50 ".$boiler_goip_pin." 0"); 
+	}
+	
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Node ID: \033[41m".$boiler_node_id."\033[0m Child ID: \033[41m".$boiler_node_child_id."\033[0m \n";
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler GIOP: \033[41m".$boiler_goip_pin. "\033[0m Status: \033[41m".$relay_off."\033[0m (0=On, 1=Off) \n";
+	if ((!empty($boiler_goip_pin)) OR ($boiler_goip_pin!=0)){
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler GIOP: \033[41m".$boiler_goip_pin. "\033[0m Status: \033[41m".$relay_off."\033[0m (0=On, 1=Off) \n";
+	}
 	if ($boiler_fire_status != $new_boiler_status){
 		//Update last record with boiler stop date and time in boiler log table.
 		$query = "UPDATE boiler_logs SET stop_datetime = '{$date_time}', stop_cause = '{$stop_cause}' ORDER BY id DESC LIMIT 1";
