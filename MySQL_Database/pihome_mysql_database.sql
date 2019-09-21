@@ -33,13 +33,13 @@
 DROP TABLE IF EXISTS `away`;
 CREATE TABLE IF NOT EXISTS `away` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `status` tinyint(4) DEFAULT NULL,
-  `start_datetime` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `start_datetime` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `end_datetime` timestamp NULL DEFAULT NULL,
-  `away_button_id` int(11) DEFAULT '40',
-  `away_button_child_id` int(11) DEFAULT '4',
+  `away_button_id` int(11) DEFAULT 40,
+  `away_button_child_id` int(11) DEFAULT 4,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
@@ -53,16 +53,16 @@ REPLACE INTO `away` (`id`, `sync`, `purge`, `status`, `start_datetime`, `end_dat
 DROP TABLE IF EXISTS `boiler`;
 CREATE TABLE IF NOT EXISTS `boiler` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
-  `status` tinyint(4) DEFAULT '0',
-  `fired_status` tinyint(4) DEFAULT '0',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
+  `status` tinyint(4) DEFAULT 0,
+  `fired_status` tinyint(4) DEFAULT 0,
   `name` char(50) CHARACTER SET utf16 COLLATE utf16_bin DEFAULT 'Gas Boiler',
   `node_id` int(11) DEFAULT NULL,
-  `node_child_id` int(11) DEFAULT '1',
-  `hysteresis_time` tinyint(4) DEFAULT '3',
-  `max_operation_time` tinyint(4) DEFAULT '60',
-  `datetime` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `node_child_id` int(11) DEFAULT 1,
+  `hysteresis_time` tinyint(4) DEFAULT 3,
+  `max_operation_time` tinyint(4) DEFAULT 60,
+  `datetime` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `gpio_pin` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_boiler_zone` (`node_id`),
@@ -79,8 +79,8 @@ REPLACE INTO `boiler` (`id`, `sync`, `purge`, `status`, `fired_status`, `name`, 
 DROP TABLE IF EXISTS `boiler_logs`;
 CREATE TABLE IF NOT EXISTS `boiler_logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `start_datetime` timestamp NULL DEFAULT NULL,
   `start_cause` char(50) COLLATE utf16_bin DEFAULT NULL,
   `stop_datetime` timestamp NULL DEFAULT NULL,
@@ -97,13 +97,13 @@ CREATE TABLE IF NOT EXISTS `boiler_logs` (
 DROP TABLE IF EXISTS `boost`;
 CREATE TABLE IF NOT EXISTS `boost` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
-  `status` tinyint(4) DEFAULT '0',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
+  `status` tinyint(4) DEFAULT 0,
   `zone_id` int(11) DEFAULT NULL,
-  `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `temperature` tinyint(4) DEFAULT NULL,
-  `minute` tinyint(4) DEFAULT '30',
+  `minute` tinyint(4) DEFAULT 30,
   `boost_button_id` int(11) DEFAULT NULL,
   `boost_button_child_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -148,8 +148,8 @@ REPLACE INTO `crontab` (`id`, `status`, `min`, `hour`, `day`, `month`, `weekday`
 DROP TABLE IF EXISTS `email`;
 CREATE TABLE IF NOT EXISTS `email` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `smtp` char(50) COLLATE utf16_bin DEFAULT NULL,
   `username` char(50) COLLATE utf16_bin DEFAULT NULL,
   `password` char(50) COLLATE utf16_bin DEFAULT NULL,
@@ -167,10 +167,10 @@ CREATE TABLE IF NOT EXISTS `email` (
 DROP TABLE IF EXISTS `frost_protection`;
 CREATE TABLE IF NOT EXISTS `frost_protection` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
-  `datetime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `temperature` float NOT NULL DEFAULT '5',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
+  `datetime` timestamp NULL DEFAULT current_timestamp(),
+  `temperature` float NOT NULL DEFAULT 5,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
@@ -184,17 +184,17 @@ REPLACE INTO `frost_protection` (`id`, `sync`, `purge`, `datetime`, `temperature
 DROP TABLE IF EXISTS `gateway`;
 CREATE TABLE IF NOT EXISTS `gateway` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `status` tinyint(4) NOT NULL DEFAULT '0',
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `status` tinyint(4) NOT NULL DEFAULT 0,
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `type` char(50) COLLATE utf16_bin NOT NULL DEFAULT 'serial' COMMENT 'serial or wifi',
   `location` char(50) COLLATE utf16_bin NOT NULL DEFAULT '/dev/ttyAMA0' COMMENT 'ip address or serial port location i.e. /dev/ttyAMA0',
   `port` char(50) COLLATE utf16_bin NOT NULL DEFAULT '115200' COMMENT 'port number 5003 or baud rate115200 for serial gateway',
   `timout` char(50) COLLATE utf16_bin NOT NULL DEFAULT '3',
   `pid` char(50) COLLATE utf16_bin DEFAULT NULL,
   `pid_running_since` char(50) COLLATE utf16_bin DEFAULT NULL,
-  `reboot` tinyint(4) DEFAULT '0',
-  `find_gw` tinyint(4) DEFAULT '0',
+  `reboot` tinyint(4) DEFAULT 0,
+  `find_gw` tinyint(4) DEFAULT 0,
   `version` char(50) COLLATE utf16_bin DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
@@ -209,14 +209,14 @@ REPLACE INTO `gateway` (`id`, `status`, `sync`, `purge`, `type`, `location`, `po
 DROP TABLE IF EXISTS `gateway_logs`;
 CREATE TABLE IF NOT EXISTS `gateway_logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `type` char(50) COLLATE utf16_bin DEFAULT 'wifi' COMMENT 'serial or wifi',
   `location` char(50) COLLATE utf16_bin DEFAULT '192.168.99.3' COMMENT 'ip address or serial port location i.e. /dev/ttyAMA0',
   `port` char(50) COLLATE utf16_bin DEFAULT '5003' COMMENT 'port number or baud rate for serial gateway',
   `pid` char(50) COLLATE utf16_bin DEFAULT NULL,
   `pid_start_time` char(50) COLLATE utf16_bin DEFAULT NULL,
-  `pid_datetime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `pid_datetime` timestamp NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
@@ -228,8 +228,8 @@ CREATE TABLE IF NOT EXISTS `gateway_logs` (
 DROP TABLE IF EXISTS `holidays`;
 CREATE TABLE IF NOT EXISTS `holidays` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `status` tinyint(4) DEFAULT NULL,
   `start_date_time` datetime DEFAULT NULL,
   `end_date_time` datetime DEFAULT NULL,
@@ -244,13 +244,13 @@ CREATE TABLE IF NOT EXISTS `holidays` (
 DROP TABLE IF EXISTS `messages_in`;
 CREATE TABLE IF NOT EXISTS `messages_in` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `node_id` char(15) COLLATE utf16_bin DEFAULT NULL,
   `child_id` tinyint(4) DEFAULT NULL,
   `sub_type` int(11) DEFAULT NULL,
   `payload` decimal(10,2) DEFAULT NULL,
-  `datetime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `datetime` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
@@ -265,16 +265,16 @@ REPLACE INTO `messages_in` (`id`, `sync`, `purge`, `node_id`, `child_id`, `sub_t
 DROP TABLE IF EXISTS `messages_out`;
 CREATE TABLE IF NOT EXISTS `messages_out` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `node_id` char(50) COLLATE utf32_bin NOT NULL COMMENT 'Node ID',
   `child_id` int(11) NOT NULL COMMENT 'Child Sensor',
   `sub_type` int(11) NOT NULL COMMENT 'Command Type',
   `ack` int(11) NOT NULL COMMENT 'Ack Req/Resp',
   `type` int(11) NOT NULL COMMENT 'Type',
   `payload` varchar(100) CHARACTER SET utf8 NOT NULL COMMENT 'Payload',
-  `sent` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Sent Status 0 No - 1 Yes',
-  `datetime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Current datetime',
+  `sent` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'Sent Status 0 No - 1 Yes',
+  `datetime` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT 'Current datetime',
   `zone_id` int(11) NOT NULL COMMENT 'Zone ID related to this entery',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf32 COLLATE=utf32_bin;
@@ -297,11 +297,11 @@ REPLACE INTO `messages_out` (`id`, `sync`, `purge`, `node_id`, `child_id`, `sub_
 DROP TABLE IF EXISTS `mqtt`;
 CREATE TABLE `mqtt` (
 	`id` INT(11) NOT NULL AUTO_INCREMENT,
-	`name` VARCHAR(50) COLLATE utf16_bin NOT NULL DEFAULT '',
-	`ip` VARCHAR(39) COLLATE utf16_bin NOT NULL DEFAULT '127.0.0.1',
+	`name` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'utf16_bin',
+	`ip` VARCHAR(39) NOT NULL DEFAULT '127.0.0.1' COLLATE 'utf16_bin',
 	`port` INT(11) NOT NULL DEFAULT '1883',
-	`username` VARCHAR(50) COLLATE utf16_bin NOT NULL DEFAULT '',
-	`password` VARCHAR(50) COLLATE utf16_bin NOT NULL DEFAULT '',
+	`username` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'utf16_bin',
+	`password` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'utf16_bin',
 	`enabled` TINYINT(4) NOT NULL DEFAULT '1',
 	`type` INT(11) NOT NULL DEFAULT '0',
 	PRIMARY KEY (`id`)
@@ -319,8 +319,8 @@ REPLACE INTO `mqtt` (`id`, `name`, `ip`, `port`, `username`, `password`, `enable
 DROP TABLE IF EXISTS `nodes`;
 CREATE TABLE IF NOT EXISTS `nodes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `node_id` char(50) COLLATE utf16_bin NOT NULL,
   `child_id_1` int(11) DEFAULT NULL,
   `child_id_2` int(11) DEFAULT NULL,
@@ -331,10 +331,10 @@ CREATE TABLE IF NOT EXISTS `nodes` (
   `child_id_7` int(11) DEFAULT NULL,
   `child_id_8` int(11) DEFAULT NULL,
   `name` char(50) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
-  `last_seen` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `notice_interval` int(11) NOT NULL DEFAULT '30',
+  `last_seen` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
+  `notice_interval` int(11) NOT NULL DEFAULT 30,
   `min_voltage` decimal(10,2) DEFAULT NULL,
-  `status` CHAR(50) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT 'Active',
+  `status` CHAR(50) NULL DEFAULT 'Active' COLLATE 'utf8_bin',
   `ms_version` char(50) COLLATE utf16_bin DEFAULT NULL,
   `sketch_version` char(50) COLLATE utf16_bin DEFAULT NULL,
   `repeater` tinyint(4) DEFAULT NULL COMMENT 'Repeater Feature Enabled=1 or Disable=0',
@@ -358,12 +358,12 @@ REPLACE INTO `nodes` (`id`, `sync`, `purge`, `node_id`, `child_id_1`, `child_id_
 DROP TABLE IF EXISTS `nodes_battery`;
 CREATE TABLE IF NOT EXISTS `nodes_battery` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `node_id` int(11) DEFAULT NULL,
   `bat_voltage` decimal(10,2) DEFAULT NULL,
   `bat_level` decimal(10,2) DEFAULT NULL,
-  `update` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `update` timestamp NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
@@ -375,9 +375,9 @@ CREATE TABLE IF NOT EXISTS `nodes_battery` (
 DROP TABLE IF EXISTS `notice`;
 CREATE TABLE IF NOT EXISTS `notice` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0',
-  `datetime` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0,
+  `datetime` timestamp NULL DEFAULT current_timestamp(),
   `message` varchar(200) COLLATE utf16_bin DEFAULT NULL,
   `status` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -391,12 +391,12 @@ CREATE TABLE IF NOT EXISTS `notice` (
 DROP TABLE IF EXISTS `override`;
 CREATE TABLE IF NOT EXISTS `override` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
-  `status` tinyint(4) DEFAULT '0',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
+  `status` tinyint(4) DEFAULT 0,
   `zone_id` int(11) DEFAULT NULL,
-  `time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `temperature` tinyint(4) DEFAULT '22',
+  `time` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `temperature` tinyint(4) DEFAULT 22,
   PRIMARY KEY (`id`),
   KEY `FK_override_zone` (`zone_id`),
   CONSTRAINT `FK_override_zone` FOREIGN KEY (`zone_id`) REFERENCES `zone` (`id`)
@@ -414,7 +414,7 @@ REPLACE INTO `override` (`id`, `sync`, `purge`, `status`, `zone_id`, `time`, `te
 DROP TABLE IF EXISTS `piconnect`;
 CREATE TABLE IF NOT EXISTS `piconnect` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `status` int(11) NOT NULL DEFAULT '0',
+  `status` int(11) NOT NULL DEFAULT 0,
   `protocol` varchar(50) COLLATE utf16_bin DEFAULT NULL,
   `url` varchar(50) COLLATE utf16_bin DEFAULT NULL,
   `script` char(50) COLLATE utf16_bin DEFAULT NULL,
@@ -432,12 +432,12 @@ REPLACE INTO `piconnect` (`id`, `status`, `protocol`, `url`, `script`, `api_key`
 DROP TABLE IF EXISTS `schedule_daily_time`;
 CREATE TABLE IF NOT EXISTS `schedule_daily_time` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `status` tinyint(4) DEFAULT NULL,
   `start` time DEFAULT NULL,
   `end` time DEFAULT NULL,
-  `WeekDays` smallint(6) NOT NULL DEFAULT '127',
+  `WeekDays` smallint(6) NOT NULL DEFAULT 127,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
@@ -449,14 +449,14 @@ CREATE TABLE IF NOT EXISTS `schedule_daily_time` (
 DROP TABLE IF EXISTS `schedule_daily_time_zone`;
 CREATE TABLE IF NOT EXISTS `schedule_daily_time_zone` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `status` tinyint(4) DEFAULT NULL,
   `schedule_daily_time_id` int(11) DEFAULT NULL,
   `zone_id` int(11) DEFAULT NULL,
-  `temperature` float NOT NULL DEFAULT '0',
+  `temperature` float NOT NULL DEFAULT 0,
   `holidays_id` int(11) DEFAULT NULL,
-  `coop` tinyint(4) NOT NULL DEFAULT '0',
+  `coop` tinyint(4) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `FK_schedule_daily_time_zone_schedule_daily_time` (`schedule_daily_time_id`),
   KEY `FK_schedule_daily_time_zone_zone` (`zone_id`),
@@ -472,8 +472,8 @@ CREATE TABLE IF NOT EXISTS `schedule_daily_time_zone` (
 DROP TABLE IF EXISTS `schedule_night_climate_time`;
 CREATE TABLE IF NOT EXISTS `schedule_night_climate_time` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `status` tinyint(4) DEFAULT NULL,
   `start_time` time DEFAULT '21:00:00',
   `end_time` time DEFAULT '06:00:00',
@@ -490,13 +490,13 @@ REPLACE INTO `schedule_night_climate_time` (`id`, `sync`, `purge`, `status`, `st
 DROP TABLE IF EXISTS `schedule_night_climat_zone`;
 CREATE TABLE IF NOT EXISTS `schedule_night_climat_zone` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `status` tinyint(4) DEFAULT NULL,
   `zone_id` int(11) DEFAULT NULL,
   `schedule_night_climate_id` int(11) DEFAULT NULL,
-  `min_temperature` float NOT NULL DEFAULT '18',
-  `max_temperature` float NOT NULL DEFAULT '21',
+  `min_temperature` float NOT NULL DEFAULT 18,
+  `max_temperature` float NOT NULL DEFAULT 21,
   PRIMARY KEY (`id`),
   KEY `FK_schedule_zone_night_climat_zone` (`zone_id`),
   KEY `FK_schedule_zone_night_climat_schedule_night_climate` (`schedule_night_climate_id`),
@@ -516,8 +516,8 @@ REPLACE INTO `schedule_night_climat_zone` (`id`, `sync`, `purge`, `status`, `zon
 DROP TABLE IF EXISTS `system`;
 CREATE TABLE IF NOT EXISTS `system` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `name` varchar(50) COLLATE utf16_bin DEFAULT NULL,
   `version` varchar(50) CHARACTER SET latin1 DEFAULT NULL,
   `build` varchar(50) COLLATE utf16_bin DEFAULT NULL,
@@ -532,16 +532,16 @@ CREATE TABLE IF NOT EXISTS `system` (
   `backup_email` char(100) COLLATE utf16_bin DEFAULT NULL,
   `ping_home` bit(1) DEFAULT b'1',
   `timezone` varchar(50) COLLATE utf16_bin DEFAULT 'Europe/Dublin',
-  `shutdown` tinyint(4) DEFAULT '0',
-  `reboot` tinyint(4) DEFAULT '0',
-  `c_f` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0=C, 1=F',
+  `shutdown` tinyint(4) DEFAULT 0,
+  `reboot` tinyint(4) DEFAULT 0,
+  `c_f` tinyint(4) NOT NULL DEFAULT 0 COMMENT '0=C, 1=F',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
 -- Dumping data for table pihome.system: ~0 rows (approximately)
 /*!40000 ALTER TABLE `system` DISABLE KEYS */;
 REPLACE INTO `system` (`id`, `sync`, `purge`, `name`, `version`, `build`, `update_location`, `update_file`, `update_alias`, `country`, `language`, `city`, `zip`, `openweather_api`, `backup_email`, `ping_home`, `timezone`, `shutdown`, `reboot`, `c_f`) VALUES
-	(2, 1, 0, 'PiHome - Smart Heating Control', '1.66', '180919', 'http://www.pihome.eu/updates/', 'current-release-versions.php', 'pihome', 'IE', 'en', 'Portlaoise', NULL, '', '', b'1', 'Europe/Dublin', 0, 0, 0);
+	(2, 1, 0, 'PiHome - Smart Heating Control', '1.64', '230819', 'http://www.pihome.eu/updates/', 'current-release-versions.php', 'pihome', 'IE', 'en', 'Portlaoise', NULL, '', '', b'1', 'Europe/Dublin', 0, 0, 0);
 /*!40000 ALTER TABLE `system` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.user
@@ -553,7 +553,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `username` varchar(25) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `cpdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `cpdate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `account_date` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `backup` tinyint(4) DEFAULT NULL,
   `users` tinyint(4) DEFAULT NULL,
@@ -575,8 +575,8 @@ CREATE TABLE IF NOT EXISTS `userhistory` (
   `username` varchar(50) DEFAULT NULL,
   `password` varchar(50) DEFAULT NULL,
   `date` datetime DEFAULT NULL,
-  `audit` tinytext,
-  `ipaddress` tinytext,
+  `audit` tinytext DEFAULT NULL,
+  `ipaddress` tinytext DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=144 DEFAULT CHARSET=latin1;
 
@@ -590,7 +590,7 @@ REPLACE INTO `userhistory` (`id`, `username`, `password`, `date`, `audit`, `ipad
 DROP TABLE IF EXISTS `weather`;
 CREATE TABLE IF NOT EXISTS `weather` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
   `location` varchar(50) COLLATE utf8_bin DEFAULT NULL,
   `c` tinyint(4) DEFAULT NULL,
   `wind_speed` varchar(50) COLLATE utf8_bin DEFAULT NULL,
@@ -599,7 +599,7 @@ CREATE TABLE IF NOT EXISTS `weather` (
   `sunrise` varchar(50) COLLATE utf8_bin DEFAULT NULL,
   `sunset` varchar(50) COLLATE utf8_bin DEFAULT NULL,
   `img` varchar(50) COLLATE utf8_bin DEFAULT NULL,
-  `last_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Last weather update',
+  `last_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT 'Last weather update',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
@@ -613,8 +613,8 @@ REPLACE INTO `weather` (`id`, `sync`, `location`, `c`, `wind_speed`, `title`, `d
 DROP TABLE IF EXISTS `zone`;
 CREATE TABLE IF NOT EXISTS `zone` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `status` tinyint(4) DEFAULT NULL,
   `index_id` tinyint(4) DEFAULT NULL,
   `name` char(50) COLLATE utf8_bin DEFAULT NULL,
@@ -624,7 +624,7 @@ CREATE TABLE IF NOT EXISTS `zone` (
   `max_c` tinyint(4) DEFAULT NULL,
   `max_operation_time` tinyint(4) DEFAULT NULL,
   `hysteresis_time` tinyint(4) DEFAULT NULL,
-  `sp_deadband` float NOT NULL DEFAULT '0.5',
+  `sp_deadband` float NOT NULL DEFAULT 0.5,
   `sensor_id` int(11) DEFAULT NULL,
   `sensor_child_id` int(11) DEFAULT NULL,
   `controler_id` int(11) DEFAULT NULL,
@@ -652,8 +652,8 @@ REPLACE INTO `zone` (`id`, `sync`, `purge`, `status`, `index_id`, `name`, `type`
 DROP TABLE IF EXISTS `zone_logs`;
 CREATE TABLE IF NOT EXISTS `zone_logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sync` tinyint(4) NOT NULL DEFAULT '0',
-  `purge` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Mark For Deletion',
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
   `zone_id` int(11) DEFAULT NULL,
   `boiler_log_id` int(11) DEFAULT NULL,
   `status` int(11) DEFAULT NULL,
