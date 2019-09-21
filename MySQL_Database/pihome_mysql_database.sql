@@ -297,12 +297,12 @@ REPLACE INTO `messages_out` (`id`, `sync`, `purge`, `node_id`, `child_id`, `sub_
 DROP TABLE IF EXISTS `mqtt`;
 CREATE TABLE `mqtt` (
 	`id` INT(11) NOT NULL AUTO_INCREMENT,
-	`name` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'utf16_bin',
-	`ip` VARCHAR(39) NOT NULL DEFAULT '127.0.0.1' COLLATE 'utf16_bin',
-	`port` INT(11) NOT NULL DEFAULT '1883',
-	`username` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'utf16_bin',
-	`password` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'utf16_bin',
-	`enabled` TINYINT(4) NOT NULL DEFAULT '1',
+  	`name` varchar(50) COLLATE utf16_bin NOT NULL DEFAULT '',
+  	`ip` varchar(39) COLLATE utf16_bin NOT NULL DEFAULT '127.0.0.1',
+  	`port` int(11) NOT NULL DEFAULT 1883,
+  	`username` varchar(50) COLLATE utf16_bin NOT NULL DEFAULT '',
+  	`password` varchar(50) COLLATE utf16_bin NOT NULL DEFAULT '',
+  	`enabled` tinyint(4) NOT NULL DEFAULT 1,
 	`type` INT(11) NOT NULL DEFAULT '0',
 	PRIMARY KEY (`id`)
 )
@@ -334,7 +334,7 @@ CREATE TABLE IF NOT EXISTS `nodes` (
   `last_seen` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
   `notice_interval` int(11) NOT NULL DEFAULT 30,
   `min_voltage` decimal(10,2) DEFAULT NULL,
-  `status` CHAR(50) NULL DEFAULT 'Active' COLLATE 'utf8_bin',
+  `status` char(50) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT 'Active',
   `ms_version` char(50) COLLATE utf16_bin DEFAULT NULL,
   `sketch_version` char(50) COLLATE utf16_bin DEFAULT NULL,
   `repeater` tinyint(4) DEFAULT NULL COMMENT 'Repeater Feature Enabled=1 or Disable=0',
@@ -620,7 +620,7 @@ CREATE TABLE IF NOT EXISTS `zone` (
   `name` char(50) COLLATE utf8_bin DEFAULT NULL,
   `type` char(50) COLLATE utf8_bin DEFAULT NULL,
   `model` char(50) COLLATE utf8_bin DEFAULT NULL,
-  `graph_it` tinyint(1) NOT NULL DEFAULT '1',
+  `graph_it` tinyint(1) NOT NULL DEFAULT 1,
   `max_c` tinyint(4) DEFAULT NULL,
   `max_operation_time` tinyint(4) DEFAULT NULL,
   `hysteresis_time` tinyint(4) DEFAULT NULL,
