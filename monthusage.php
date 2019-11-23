@@ -25,7 +25,7 @@ $query="select date(start_datetime) as month,
 sum(TIMESTAMPDIFF(MINUTE, start_datetime, expected_end_date_time))/60 as total_minuts,
 sum(TIMESTAMPDIFF(MINUTE, start_datetime, stop_datetime))/60 as on_minuts, 
 (sum(TIMESTAMPDIFF(MINUTE, start_datetime, expected_end_date_time)) - sum(TIMESTAMPDIFF(MINUTE, start_datetime, stop_datetime)))/60 as save_minuts
-from boiler_logs WHERE start_datetime >= NOW() - INTERVAL 400 DAY GROUP BY month(start_datetime) order by month asc";
+from boiler_logs WHERE start_datetime >= NOW() - INTERVAL 400 DAY GROUP BY YEAR(start_datetime), MONTH(start_datetime) order by month asc";
 $result = $conn->query($query);
 
 //create array of pairs of x and y values
