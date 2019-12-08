@@ -119,15 +119,56 @@ $(document).ready(function () {
 </script>	
 
 <script type="text/javascript">
-var hot_water = <?php echo json_encode($hot_water); ?>;
-//var immersion_room = <?php echo json_encode($immersion_room); ?>;
-//var dataset_c = [{label: "Hot Water ", data: hot_water, color: "#0077FF"}, {label: "Immersion Room ", data: immersion_room, color: "#DE000F"} ];
-var dataset_c = [{label: "<?php echo $lang['hot_water']; ?> ", data: hot_water, color: "#0077FF"}];
+// distinct color implementation for plot lines 
+function rainbow(numOfSteps, step) {
+    var r, g, b;
+    var h = step / numOfSteps;
+    var i = ~~(h * 6);
+    var f = h * 6 - i;
+    var q = 1 - f;
+    switch(i % 6){
+        case 0: r = 1; g = f; b = 0; break;
+        case 1: r = q; g = 1; b = 0; break;
+        case 2: r = 0; g = 1; b = f; break;
+        case 3: r = 0; g = q; b = 1; break;
+        case 4: r = f; g = 0; b = 1; break;
+        case 5: r = 1; g = 0; b = q; break;
+    }
+    var c = "#" + ("00" + (~ ~(r * 255)).toString(16)).slice(-2) + ("00" + (~ ~(g * 255)).toString(16)).slice(-2) + ("00" + (~ ~(b * 255)).toString(16)).slice(-2);
+    return (c);
+}
+
+// create wdataset based on all available zones
+var wdataset = [
+<?php
+    $queryw ="select * from zone_view where `type` = 'Water' order BY index_id asc;";
+    $resultw = $conn->query($queryw);
+    $counter = 0;
+    $count = mysqli_num_rows($resultw) + 1;
+    while ($row = mysqli_fetch_assoc($resultw)) {
+        // grab the zone names to be displayed in the plot legend
+        $zone_name=$row['name'];
+        $zone_sensor_id=$row['sensors_id'];
+		$zone_sensor_child_id=$row['sensors_child_id'];
+        
+        $query="select * from messages_in_view_24h where node_id = '{$zone_sensor_id}' AND child_id = '{$zone_sensor_child_id}';";
+        $result = $conn->query($query);
+        // create array of pairs of x and y values for every zone
+        $zone_temp = array();
+        while ($rowb = mysqli_fetch_assoc($result)) { 
+            $zone_temp[] = array(strtotime($rowb['datetime']) * 1000, $rowb['payload']);
+        }
+        // create wdataset entry using distinct color based on zone index(to have the same color everytime chart is opened)
+        echo "{label: \"".$zone_name."\", data: ".json_encode($zone_temp).", color: rainbow(".$count.",".++$counter.") }, \n";
+    }
+    // add outside weather temperature
+    echo "{label: \"".$lang['graph_outsie']."\", data: ".json_encode($weather_c).", color: rainbow(".$count.",".++$counter.") }, \n";
+?> ];
 
 //background-color for boiler on time 
-var markings_chwater = [
+var wmarkings = [
 <?php
-$query="select start_datetime, stop_datetime from zone_log_view where (start_datetime > DATE_SUB( NOW(), INTERVAL 24 HOUR)) AND type = 'Water' AND status= '1';";
+$query="select start_datetime, stop_datetime from zone_log_view where (start_datetime > DATE_SUB( NOW(), INTERVAL 24 HOUR)) AND type='Water' AND status= '1';";
 $results = $conn->query($query);
 $count=mysqli_num_rows($results); 
 while ($row = mysqli_fetch_assoc($results)) {
@@ -138,18 +179,18 @@ if (is_null($row['stop_datetime'])) {
 } else {$boiler_stop = strtotime($row['stop_datetime']) * 1000;}
 	echo "{ xaxis: { from: ".$boiler_start.", to: ".$boiler_stop." }, color: \"#ffe9dc\" },  \n" ;
 } ?> ];
-
+ 
 var options_two = {
     xaxis: { mode: "time", timeformat: "%H:%M"},
     series: { lines: { show: true, lineWidth: 1, fill: false}, curvedLines: { apply: true,  active: true,  monotonicFit: true } },
-    grid: { hoverable: true, borderWidth: 1,  backgroundColor: { colors: ["#ffffff", "#fdf7f4"] }, borderColor: "#ff8839", markings: markings_chwater,},
+    grid: { hoverable: true, borderWidth: 1,  backgroundColor: { colors: ["#ffffff", "#fdf9f9"] }, borderColor: "#ff8839", markings: wmarkings,},
     legend: { noColumns: 3, labelBoxBorderColor: "#ffff", position: "nw" }
 };
-$(document).ready(function () {
-	$.plot($("#hot_water"), dataset_c, options_two);
-	$("#hot_water").UseTooltip();
-});
 
+$(document).ready(function () {
+	$.plot($("#hot_water"), wdataset, options_two);
+    $("#hot_water").UseTooltip();
+});
 </script>	
 
 <script type="text/javascript">
