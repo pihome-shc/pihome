@@ -26,7 +26,7 @@ Drop View if exists schedule_daily_time_zone_view;
 CREATE VIEW schedule_daily_time_zone_view AS
 select ss.id as time_id, ss.status as time_status, sstart.start, send.end, sWeekDays.WeekDays,
 sdtz.sync as tz_sync, sdtz.id as tz_id, sdtz.status as tz_status,
-sdtz.zone_id, zone.index_id, zone.name as zone_name, zt.`type`, temperature, holidays_id , coop
+sdtz.zone_id, zone.index_id, zone.name as zone_name, zt.`type`, temperature, holidays_id , coop, ss.nickname as schedule_nickname
 from schedule_daily_time_zone sdtz
 join schedule_daily_time ss on sdtz.schedule_daily_time_id = ss.id
 join schedule_daily_time sstart on sdtz.schedule_daily_time_id = sstart.id
