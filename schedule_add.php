@@ -60,7 +60,8 @@ if (isset($_POST['submit'])) {
 		  
 	$start_time = $_POST['start_time'];
 	$end_time = $_POST['end_time'];
-	$query = "INSERT INTO schedule_daily_time(sync, status, start, end, WeekDays) VALUES ('0', '{$sc_en}', '{$start_time}','{$end_time}','{$mask}')";
+	$nickname = $_POST['nickname'];
+	$query = "INSERT INTO schedule_daily_time(sync, status, start, end, WeekDays, nickname) VALUES ('0', '{$sc_en}', '{$start_time}','{$end_time}','{$mask}', '{$nickname}')";
 	$result = $conn->query($query);
 	$schedule_daily_time_id = mysqli_insert_id($conn);
 	
@@ -136,6 +137,13 @@ if (isset($_POST['submit'])) {
     		<input id="checkbox7" class="styled" type="checkbox" name="Saturday_en" value="1" <?php $check = (($time_row['WeekDays'] & 64) > 0) ? 'checked' : ''; echo $check; ?>>
     		<label for="checkbox7"> <?php echo $lang['sat']; ?></label></div></div>
 			</div>
+
+                    <div class="form-group" class="control-label">
+                        <label><?php echo $lang['nickname']; ?></label>
+                        <input class="form-control input-sm" type="text" id="nickname" name="nickname" value="<?php if(isset($_POST['nickname'])) { echo $_POST['nickname']; } ?>" placeholder="Nickname">
+                        <div class="help-block with-errors">
+                        </div>
+                    </div>
 
 				<div class="form-group" class="control-label"><label><?php echo $lang['start_time']; ?></label>
 				<input class="form-control input-sm" type="time" id="start_time" name="start_time" value="<?php if(isset($_POST['start_time'])) { echo $_POST['start_time']; } ?>" placeholder="Start Time" required>

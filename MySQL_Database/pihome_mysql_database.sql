@@ -438,6 +438,7 @@ CREATE TABLE IF NOT EXISTS `schedule_daily_time` (
   `start` time DEFAULT NULL,
   `end` time DEFAULT NULL,
   `WeekDays` smallint(6) NOT NULL DEFAULT 127,
+  `nickname` varchar(200) COLLATE utf16_bin DEFAULT NULL
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 

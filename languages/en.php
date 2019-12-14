@@ -27,6 +27,7 @@ $lang['yes'] = "Yes";
 $lang['save'] = "Save";
 $lang['min_temperature'] = "Minimum Temperature";
 $lang['max_temperature'] = "Maximum Temperature";
+$lang['nickname'] = "Nickname";
 
 $lang['days'] = "Days";
 $lang['hours'] = "Hours";
