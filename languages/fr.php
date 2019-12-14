@@ -45,7 +45,7 @@ $lang['yes'] = "Oui";
 $lang['save'] = "Enregistrer";
 $lang['min_temperature'] = "Température minimale";
 $lang['max_temperature'] = "Température maximale";
-$lang['nickname'] = "Nickname";
+$lang['sch_name'] = "Schedule Name";
 
 $lang['days'] = "Jours";
 $lang['hours'] = "Heures";
