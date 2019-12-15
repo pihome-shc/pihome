@@ -86,7 +86,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	<div class="chat-body clearfix">
 	<div class="header text-info">&nbsp;&nbsp; <span class="label label-info">' . $row['sch_name'] . '</span><br>&nbsp;&nbsp; '. $row['start'] . ' - ' . $row['end'] . ' &nbsp;&nbsp;
     
-	<small class="pull-right pull-right-days">
+	<small class="pull-right pull-right-days pull-right-sch-list">
 	&nbsp;&nbsp;&nbsp;&nbsp;S&nbsp;&nbsp;&nbsp;M&nbsp;&nbsp;&nbsp;T&nbsp;&nbsp;W&nbsp;&nbsp;&nbsp;T&nbsp;&nbsp;&nbsp;F&nbsp;&nbsp;&nbsp;S<br>
 	&nbsp;&nbsp;&nbsp;
 	<i class="ionicons ' . $Sunday_status_icon . ' fa-lg ' . $Sunday_status_color . '"></i>
