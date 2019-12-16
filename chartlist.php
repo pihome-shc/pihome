@@ -100,7 +100,7 @@ while ($row = mysqli_fetch_assoc($result)) {
    $weather_c[] = array(strtotime($row['datetime']) * 1000, $row['payload']);
 }
 
-
+/*
 //hot water temperature
 $query="select * from messages_in_view_24h where node_id= 30";
 $result = $conn->query($query);
@@ -109,6 +109,8 @@ $hot_water = array();
 while ($row = mysqli_fetch_assoc($result)) { 
    $hot_water[] = array(strtotime($row['datetime']) * 1000, $row['payload']);
 }
+
+*/
 
 /*
 //No Temperature Sensors installed, if you have Temperature Sensors with ID 25 put it in Immersion Room and un-comment. 

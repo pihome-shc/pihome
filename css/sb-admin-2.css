@@ -423,6 +423,7 @@ line-height:36px;
 text-align:center;
 background:#000;
 background-color: transparent;
+/*margin-top:5px;*/
 }
 
 .circle_list
@@ -978,3 +979,11 @@ h3 small {font-family: "HelveticaNeue-Light",Helvetica,Arial,sans-serif;}
 	padding: 5px;
 }
 
+.chat li.left .chat-body{
+padding-top: 0px;
+}
+
+.pull-right-sch-list {
+    float: right !important;
+    margin-top: -15px;
+}

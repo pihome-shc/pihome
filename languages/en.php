@@ -27,6 +27,7 @@ $lang['yes'] = "Yes";
 $lang['save'] = "Save";
 $lang['min_temperature'] = "Minimum Temperature";
 $lang['max_temperature'] = "Maximum Temperature";
+$lang['sch_name'] = "Schedule Name";
 
 $lang['days'] = "Days";
 $lang['hours'] = "Hours";
@@ -169,6 +170,20 @@ $lang['zone_settings_text'] = "Hysteresis (Minimum delay between power off and o
 $lang['zone_sp_deadband'] = "Temperature Setpoint Deadband";
 $lang['zone_sp_deadband_help'] = "Deadband below setpoint temperature.";
 $lang['zone_sp_deadband_error'] = "Deadband below setpoint temperature used for starting the zone, zone starts below setpoint-deadband, set to zero if you want to start below setpoint temperature without deadband.";
+$lang['zone_enable_info'] = "Enable this zone if you want this zone to be controlled";
+$lang['zone_index_number_info'] = "In the List of zone where you want to place this zone on home screen";
+$lang['zone_name_info'] = "Zone display name";
+$lang['zone_type_info'] = "Zone type i.e. Heating or Hot Water";
+$lang['zone_max_temperature_info'] = "Maximum temperature this zone can reach before zone heating wills shut-off for safty";
+$lang['zone_max_operation_time_info'] = "Maximum operation time in minutes at any continues time";
+$lang['zone_hysteresis_info'] = "Minimim delay between zone off and on ";
+$lang['zone_sp_deadband_info'] = "Check link for <a href=\"https://en.wikipedia.org/wiki/Deadband\">Deadband</a>";
+$lang['zone_sensor_id_info'] = "Pre-discovered sensor";
+$lang['zone_controler_id_info'] = "Wireless zone controller number ";
+$lang['zone_controler_child_id_info'] = "Wireless zone controller relay number where zone is connected";
+$lang['zone_gpio_pin_info'] = "In case zone valve is controlled by RPI GPIO these are WiringPi GPIO number";
+$lang['zone_boost_info'] = "Boost console if you have any";
+$lang['zone_boost_button_info'] = "Boost button number if you have any";
 
 $lang['schedule'] = "Schedule";
 $lang['schedule_add'] = "Add Schedule";
