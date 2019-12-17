@@ -61,7 +61,7 @@ if (isset($_POST['submit'])) {
 	$start_time = $_POST['start_time'];
 	$end_time = $_POST['end_time'];
 	$sch_name = $_POST['sch_name'];
-	$query = "INSERT INTO schedule_daily_time(sync, status, start, end, WeekDays, sch_name) VALUES ('0', '{$sc_en}', '{$start_time}','{$end_time}','{$mask}', '{$sch_name}')";
+	$query = "UPDATE schedule_daily_time SET sync = '0',  status = '{$sc_en}', start = '{$start_time}', end = '{$end_time}', WeekDays = '{$mask}', sch_name='{$sch_name}' WHERE id = '{$time_id}' LIMIT 1";
 	$result = $conn->query($query);
 	$schedule_daily_time_id = mysqli_insert_id($conn);
 	
