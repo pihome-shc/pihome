@@ -561,15 +561,37 @@ if($what=="setup_email"){
 	$e_from_address = $_GET['e_from_address'];
 	$e_to_address = $_GET['e_to_address'];
 	if ($status=='true'){$status = '1';} else {$status = '0';}
-	$query = "UPDATE email SET smtp = '".$e_smtp."', username = '".$e_username."', password = '".$e_password."', `from` = '".$e_from_address."', `to` = '".$e_to_address."', status = '".$status."' where ID = 1;";
-	if($conn->query($query)){
-		header('Content-type: application/json');
-		echo json_encode(array('Success'=>'Success','Query'=>$query));
-		return;
-	}else{
-		header('Content-type: application/json');
-		echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
-		return;
+	
+	//search for exiting record
+	$query = "SELECT * FROM email LIMIT 1;";
+	$result = $conn->query($query);
+	if (mysqli_num_rows($result)==0){
+		//Inset New Record
+		$query = "INSERT INTO email (`sync`, `purge`, smtp, username, password, `from`, `to`, status) VALUES (0, 0, '".$e_smtp."', '".$e_username."', '".$e_password."', '".$e_from_address."', '".$e_to_address."', '".$status."');";
+		if($conn->query($query)){
+			header('Content-type: application/json');
+			echo json_encode(array('Success'=>'Success','Query'=>$query));
+			return;
+		}else{
+			header('Content-type: application/json');
+			echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+			return;
+		}
+	} else {
+		//Update Exiting Record
+		$row = mysqli_fetch_assoc($result);
+		$e_id= $row['id'];
+		$query = "inset email SET smtp = '".$e_smtp."', username = '".$e_username."', password = '".$e_password."', `from` = '".$e_from_address."', `to` = '".$e_to_address."', status = '".$status."' where ID = '".$e_id."';";
+		if($conn->query($query)){
+			header('Content-type: application/json');
+			echo json_encode(array('Success'=>'Success','Query'=>$query));
+			return;
+		}else{
+			header('Content-type: application/json');
+			echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+			return;
+		}
+	
 	}
 }
 
