@@ -64,11 +64,14 @@ if (isset($_POST['submit'])) {
           $mask =  $mask | (1 << 5); }
         $bit = isset($_POST['Saturday_en']) ? $_POST['Saturday_en'] : "0";
         if ($bit) {
-          $mask =  $mask | (1 << 6); }
+          $mask =  $mask | (1 << 6);
+        }
+
+	$sch_name = $_POST['sch_name'];
 	$start_time = $_POST['start_time'];
 	$end_time = $_POST['end_time'];
 
-	$query = "UPDATE schedule_daily_time SET sync = '0',  status = '{$sc_en}', start = '{$start_time}', end = '{$end_time}', WeekDays = '{$mask}' WHERE id = '{$time_id}' LIMIT 1";
+	$query = "UPDATE schedule_daily_time SET sync = '0',  status = '{$sc_en}', start = '{$start_time}', end = '{$end_time}', WeekDays = '{$mask}', sch_name='{$sch_name}' WHERE id = '{$time_id}' LIMIT 1";
 	$result = $conn->query($query);
 	$schedule_daily_time_id = mysqli_insert_id($conn);
 	if ($result) {
@@ -148,6 +151,13 @@ $time_row = mysqli_fetch_assoc($results);
     <label for="checkbox7"> <?php echo $lang['sat']; ?></label></div></div>
 	</div>
 
+    <div class="form-group" class="control-label">
+        <label><?php echo $lang['sch_name']; ?></label>
+        <input class="form-control input-sm" type="text" id="sch_name" name="sch_name" value="<?php echo $time_row["sch_name"];?>" placeholder="Schedule Name">
+        <div class="help-block with-errors">
+        </div>
+    </div>
+
 	<div class="form-group" class="control-label"><label><?php echo $lang['start_time']; ?></label>
 	<input class="form-control input-sm" type="time" id="start_time" name="start_time" value="<?php echo $time_row["start"];?>" placeholder="Start Time" required>
     <div class="help-block with-errors"></div></div>
@@ -223,3 +233,4 @@ ShowWeather($conn);
         </div>
         <!-- /#page-wrapper -->
 <?php include("footer.php"); ?>
+

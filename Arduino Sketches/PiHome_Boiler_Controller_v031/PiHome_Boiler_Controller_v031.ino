@@ -9,7 +9,7 @@
 // *****************************************************************
 // *              Boiler Controller Relay Sketch                   *
 // *            Version 0.31 Build Date 09/01/2019                 *
-// *            Last Modification Date 10/07/2019                  *
+// *            Last Modification Date 17/06/2019                  *
 // *                                          Have Fun - PiHome.eu *
 // *****************************************************************
 
@@ -68,10 +68,10 @@
 #define MY_RF24_DATARATE RF24_250KBPS
 
 //Enable Signing <Make Sure you Change Password>
-//#define MY_SIGNING_SIMPLE_PASSWD "pihome"
+//#define MY_SIGNING_SIMPLE_PASSWD "pihome2019"
 
 //Enable Encryption This uses less memory, and hides the actual data. <Make Sure you Change Password>
-//#define MY_ENCRYPTION_SIMPLE_PASSWD "pihome"
+//#define MY_ENCRYPTION_SIMPLE_PASSWD "pihome2019"
 
 // Enable repeater functionality for this node
 //#define MY_REPEATER_FEATURE
@@ -174,5 +174,8 @@ void receive(const MyMessage &message)
 			digitalWrite(message.sensor-1+RELAY_1, RELAY_OFF);
 			oldStatus = RELAY_status;
 		}
+		
+		// Store state in eeprom - we dont need to save relay state as controller take care of this, 
+		// saveState(message.sensor, message.getBool());
 	}
 }

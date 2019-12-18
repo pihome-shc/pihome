@@ -150,18 +150,18 @@ $new_index_id = $found_product['index_id']+1;
 ?>
 <div class="checkbox checkbox-default checkbox-circle">
 <input id="checkbox0" class="styled" type="checkbox" name="zone_status" value="1">
-<label for="checkbox0"> <?php echo $lang['zone_enable']; ?> </label>
+<label for="checkbox0"> <?php echo $lang['zone_enable']; ?> </label> <small class="text-muted"><?php echo $lang['zone_enable_info'];?></small>
 <div class="help-block with-errors"></div></div>
 
-<div class="form-group" class="control-label"><label><?php echo $lang['zone_index_number']; ?></label>
+<div class="form-group" class="control-label"><label><?php echo $lang['zone_index_number']; ?>  </label> <small class="text-muted"><?php echo $lang['zone_index_number_info'];?></small>
 <input class="form-control" placeholder="<?php echo $lang['zone_index_number']; ?>r" value="<?php if(isset($_POST['index_id'])) { echo $_POST['index_id']; }else {echo $new_index_id; }  ?>" id="index_id" name="index_id" data-error="<?php echo $lang['zone_index_number_help']; ?>" autocomplete="off" required>
 <div class="help-block with-errors"></div></div>
 
-<div class="form-group" class="control-label"><label><?php echo $lang['zone_name']; ?></label>
+<div class="form-group" class="control-label"><label><?php echo $lang['zone_name']; ?></label> <small class="text-muted"><?php echo $lang['zone_name_info'];?></small>
 <input class="form-control" placeholder="Zone Name" value="<?php if(isset($_POST['name'])) { echo $_POST['name']; } ?>" id="name" name="name" data-error="<?php echo $lang['zone_name_help']; ?>" autocomplete="off" required>
 <div class="help-block with-errors"></div></div>
 
-<div class="form-group" class="control-label"><label><?php echo $lang['zone_type']; ?></label>
+<div class="form-group" class="control-label"><label><?php echo $lang['zone_type']; ?></label> <small class="text-muted"><?php echo $lang['zone_type_info'];?></small>
 <select id="type" name="type" class="form-control select2" autocomplete="off" required>
 <?php if(isset($_POST['type'])) { echo '<option selected >'.$_POST['type'].'</option>'; } ?>
 <option><?php echo $lang['zone_type_heating']; ?></option>
@@ -169,23 +169,23 @@ $new_index_id = $found_product['index_id']+1;
 </select>				
 <div class="help-block with-errors"></div></div>
 
-<div class="form-group" class="control-label"><label><?php echo $lang['max_temperature']; ?></label>
+<div class="form-group" class="control-label"><label><?php echo $lang['max_temperature']; ?></label> <small class="text-muted"><?php echo $lang['zone_max_temperature_info'];?></small>
 <input class="form-control" placeholder="<?php echo $lang['zone_max_temperature_help']; ?>" value="<?php if(isset($_POST['max_c'])) { echo $_POST['max_c']; } else {echo '25';}  ?>" id="max_c" name="max_c" data-error="<?php echo $lang['zone_max_temperature_error']; ?>"  autocomplete="off" required>
 <div class="help-block with-errors"></div></div>
 				
-<div class="form-group" class="control-label"><label><?php echo $lang['zone_max_operation_time']; ?></label>
+<div class="form-group" class="control-label"><label><?php echo $lang['zone_max_operation_time']; ?></label> <small class="text-muted"><?php echo $lang['zone_max_operation_time_info'];?></small>
 <input class="form-control" placeholder="<?php echo $lang['zone_max_operation_time_help']; ?>" value="<?php if(isset($_POST['max_operation_time'])) { echo $_POST['max_operation_time']; } else {echo '60';}  ?>" id="max_operation_time" name="max_operation_time" data-error="<?php echo $lang['zone_max_operation_time_error']; ?>"  autocomplete="off" required>
 <div class="help-block with-errors"></div></div>				
 
-<div class="form-group" class="control-label"><label><?php echo $lang['hysteresis_time']; ?></label>
+<div class="form-group" class="control-label"><label><?php echo $lang['hysteresis_time']; ?></label> <small class="text-muted"><?php echo $lang['zone_hysteresis_info'];?></small>
 <input class="form-control" placeholder="<?php echo $lang['zone_hysteresis_time_help']; ?>" value="<?php if(isset($_POST['hysteresis_time'])) { echo $_POST['hysteresis_time']; } else {echo '3';} ?>" id="hysteresis_time" name="hysteresis_time" data-error="<?php echo $lang['zone_hysteresis_time_error']; ?>"  autocomplete="off" required>
 <div class="help-block with-errors"></div></div>	
 
-<div class="form-group" class="control-label"><label><?php echo $lang['zone_sp_deadband']; ?></label>
+<div class="form-group" class="control-label"><label><?php echo $lang['zone_sp_deadband']; ?></label> <small class="text-muted"><?php echo $lang['zone_sp_deadband_info'];?></small>
 <input class="form-control" placeholder="<?php echo $lang['zone_sp_deadband_help']; ?>" value="<?php if(isset($_POST['sp_deadband'])) { echo $_POST['sp_deadband']; } else {echo '0.5';} ?>" id="sp_deadband" name="sp_deadband" data-error="<?php echo $lang['zone_sp_deadband_error'] ; ?>"  autocomplete="off" required>
 <div class="help-block with-errors"></div></div>	
 
-<div class="form-group" class="control-label"><label><?php echo $lang['temp_sensor_id']; ?></label>
+<div class="form-group" class="control-label"><label><?php echo $lang['temp_sensor_id']; ?></label> <small class="text-muted"><?php echo $lang['zone_sensor_id_info'];?></small>
 <select id="sensor_id" name="sensor_id" class="form-control select2" data-error="<?php echo $lang['zone_temp_sensor_id_error']; ?>" autocomplete="off" required>
 <?php if(isset($_POST['node_id'])) { echo '<option selected >'.$_POST['node_id'].'</option>'; } ?>
 <?php  $query = "SELECT node_id, child_id_1 FROM nodes where name = 'Temperature Sensor'";
@@ -199,7 +199,7 @@ echo "<option>$node_id</option>";} ?>
 
 <input type="hidden" name="sensor_child_id" value="0">			
  
-<div class="form-group" class="control-label"><label><?php echo $lang['zone_controller_id']; ?></label>
+<div class="form-group" class="control-label"><label><?php echo $lang['zone_controller_id']; ?></label> <small class="text-muted"><?php echo $lang['zone_controler_id_info'];?></small>
 <select id="controler_id" name="controler_id" class="form-control select2" data-error="<?php echo $lang['zone_controller_id_error']; ?>" autocomplete="off" required>
 <?php if(isset($_POST['controler_id'])) { echo '<option selected >'.$_POST['controler_id'].'</option>'; } ?>
 <?php  $query = "SELECT node_id FROM nodes where name = 'Zone Controller Relay'";
@@ -212,7 +212,7 @@ while ($datarw=mysqli_fetch_array($result)) {
 </select>				
 <div class="help-block with-errors"></div></div>
 
-<div class="form-group" class="control-label"><label><?php echo $lang['zone_controller_child_id']; ?></label>
+<div class="form-group" class="control-label"><label><?php echo $lang['zone_controller_child_id']; ?></label> <small class="text-muted"><?php echo $lang['zone_controler_child_id_info'];?></small>
 <select id="controler_child_id" name="controler_child_id" class="form-control select2"  data-error="<?php echo $lang['zone_controller_child_id_error']; ?>" autocomplete="off" required>
 <?php if(isset($_POST['controler_child_id'])) { echo '<option selected >'.$_POST['controler_child_id'].'</option>'; } ?>
 <option value="0">N/A</option>
@@ -227,7 +227,7 @@ while ($datarw=mysqli_fetch_array($result)) {
 </select>				
 <div class="help-block with-errors"></div></div>
 
-<div class="form-group" class="control-label"><label><?php echo $lang['zone_relay_gpio']; ?></label>
+<div class="form-group" class="control-label"><label><?php echo $lang['zone_relay_gpio']; ?></label> <small class="text-muted"><?php echo $lang['zone_gpio_pin_info'];?></small>
 <select id="zone_gpio" name="zone_gpio" class="form-control select2" data-error="<?php echo $lang['zone_gpio_pin_error']; ?>" autocomplete="off" required>
 <?php if(isset($_POST['zone_gpio'])) { echo '<option selected >'.$_POST['zone_gpio'].'</option>'; } else { echo '<option selected value="0">N/A</option>';}?>
 <option>1</option>
@@ -249,7 +249,7 @@ while ($datarw=mysqli_fetch_array($result)) {
 </select>				
 <div class="help-block with-errors"></div></div>
 
-<div class="form-group" class="control-label"><label><?php echo $lang['zone_boost_button_id']; ?></label>
+<div class="form-group" class="control-label"><label><?php echo $lang['zone_boost_button_id']; ?></label> <small class="text-muted"><?php echo $lang['zone_boost_info'];?></small>
 <select id="boost_button_id" name="boost_button_id" class="form-control select2" data-error="<?php echo $lang['zone_boost_id_error']; ?>" autocomplete="off" >
 <?php if(isset($_POST['boost_button_id'])) { echo '<option selected >'.$_POST['boost_button_id'].'</option>'; } else { echo '<option selected value="0">N/A</option>';}?>
 <?php  $query = "SELECT node_id FROM nodes where name = 'Button Console'";
@@ -260,7 +260,7 @@ echo "<option>$node_id</option>";} ?>
 </select>				
 <div class="help-block with-errors"></div></div>
 
-<div class="form-group" class="control-label"><label><?php echo $lang['zone_boost_button_child_id']; ?></label>
+<div class="form-group" class="control-label"><label><?php echo $lang['zone_boost_button_child_id']; ?></label> <small class="text-muted"><?php echo $lang['zone_boost_button_info'];?></small>
 <select id="boost_button_child_id" name="boost_button_child_id" class="form-control select2" data-error="<?php echo $lang['zone_boost_child_id_error']; ?>" autocomplete="off" required>
 <?php if(isset($_POST['boost_button_child_id'])) { echo '<option selected >'.$_POST['boost_button_child_id'].'</option>'; }else { echo '<option selected value="0">N/A</option>';} ?>
 <option>1</option>
@@ -274,7 +274,7 @@ echo "<option>$node_id</option>";} ?>
 </select>				
 <div class="help-block with-errors"></div></div>
 
-<div class="form-group" class="control-label"><label><?php echo $lang['boiler']; ?></label>
+<div class="form-group" class="control-label"><label><?php echo $lang['boiler']; ?></label> 
 <select id="boiler_id" name="boiler_id" class="form-control select2" data-error="Boiler ID can not be empty!" autocomplete="off" required>
 <?php if(isset($_POST['boiler_id'])) { echo '<option selected >'.$_POST['boiler_id'].'</option>'; } ?>
 <?php  $query = "SELECT id, node_id, name FROM boiler;";
