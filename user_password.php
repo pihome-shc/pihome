@@ -51,8 +51,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 						header("Refresh: 3; url=settings.php");
 					} else {$error = "<p>Password chaneg failed.</p> <p>".mysqli_error($conn)."</p>";}
 		} 
-
-		}
+	}
 $query = "SELECT * FROM user WHERE id = {$id}";
 $results = $conn->query($query);	
 $row = mysqli_fetch_assoc($results);
@@ -95,14 +94,8 @@ $row = mysqli_fetch_assoc($results);
 						<div class="panel-footer">
 
 <?php 
-$query="select * from weather";
-$result = $conn->query($query);
-$weather = mysqli_fetch_array($result);
+ShowWeather($conn);
 ?>
-Outside: <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
-<span><img border="0" width="24" src="images/<?php echo $weather['img'];?>.png" title="<?php echo $weather['title'];?> - 
-<?php echo $weather['description'];?>"></span> <span><?php echo $weather['title'];?> - 
-<?php echo $weather['description'];?></span>
                         </div>
                     </div>
                 </div>

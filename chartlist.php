@@ -20,7 +20,7 @@
 */
 
 $graphs_page = '1';
-echo "<h4>PiHome Temperature Graps</h4></p>Temperature Graps for last 12 hours for all Zone. </p>";
+echo "<h4>".$lang['graph_temperature']."</h4></p>".$lang['graph_24h']."</p>";
 /*
 //query to get system table
 $query = "SELECT * FROM location where zone IS NOT NULL AND zone != '' ORDER BY index_id asc";
@@ -70,7 +70,7 @@ while ($row = mysqli_fetch_assoc($resulta)) {
 	//echo "</pre>";
 }
 
-*/
+
 
 $query="select * from messages_in_view_24h where node_id= 21";
 $result = $conn->query($query);
@@ -89,7 +89,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 }
 
 
-
+*/
 
 //weather temperature
 $query="select * from messages_in_view_24h where node_id= 1";
@@ -100,6 +100,7 @@ while ($row = mysqli_fetch_assoc($result)) {
    $weather_c[] = array(strtotime($row['datetime']) * 1000, $row['payload']);
 }
 
+/*
 //hot water temperature
 $query="select * from messages_in_view_24h where node_id= 30";
 $result = $conn->query($query);
@@ -108,6 +109,8 @@ $hot_water = array();
 while ($row = mysqli_fetch_assoc($result)) { 
    $hot_water[] = array(strtotime($row['datetime']) * 1000, $row['payload']);
 }
+
+*/
 
 /*
 //No Temperature Sensors installed, if you have Temperature Sensors with ID 25 put it in Immersion Room and un-comment. 

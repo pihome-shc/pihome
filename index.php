@@ -33,17 +33,21 @@ if (logged_in()) {
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
 
+//$lang = settings($conn, 'language');
+//setcookie("PiHomeLanguage", $lang, time()+(3600*24*90));
+//require_once (__DIR__.'/languages/'.$_COOKIE['PiHomeLanguage'].'.php');
+
  // start process if data is passed from url  http://192.168.99.9/index.php?user=username&pass=password
     if(isset($_GET['user']) && isset($_GET['pass'])) {
 		$username = $_GET['user'];
 		$password = $_GET['pass'];
 		// perform validations on the form data
 		if( (((!isset($_GET['user'])) || (empty($_GET['user']))) && (((!isset($_GET['pass'])) || (empty($_GET['pass'])))) )){
-			$error_message = "Username and Password is empty.";
+			$error_message = $lang['user_pass_empty'];
 		} elseif ((!isset($_GET['user'])) || (empty($_GET['user']))) {
-			$error_message = "Username is empty.";
+			$error_message = $lang['user_empty'];
 		} elseif((!isset($_GET['pass'])) || (empty($_GET['pass']))) {
-			$error_message = "Password is empty.";
+			$error_message = $lang['pass_empty'];
 		}
 
 		$username = mysqli_real_escape_string($conn, $_POST['user']);
@@ -76,11 +80,11 @@ require_once(__DIR__.'/st_inc/functions.php');
 
 	if (isset($_POST['submit'])) {
 		if( (((!isset($_POST['username'])) || (empty($_POST['username']))) && (((!isset($_POST['password'])) || (empty($_POST['password'])))) )){
-			$error_message = "Username and Password is empty.";
+			$error_message = $lang['user_pass_empty'];
 		} elseif ((!isset($_POST['username'])) || (empty($_POST['username']))) {
-			$error_message = "Username is empty.";
+			$error_message = $lang['user_empty'];
 		} elseif((!isset($_POST['password'])) || (empty($_POST['password']))) {
-			$error_message = "Password is empty.";
+			$error_message = $lang['pass_empty'];
 		} 
 
 		$username = mysqli_real_escape_string($conn, $_POST['username']);
@@ -130,14 +134,13 @@ require_once(__DIR__.'/st_inc/functions.php');
 				$query = "INSERT INTO userhistory(username, password, date, audit, ipaddress) VALUES ('{$username}', '{$password}', '{$lastlogin}', 'Failed', '{$ip}')";
 				$result = $conn->query($query);
 				// username/password was not found in the database
-				$message = "Username/Password".$password." combination incorrect. Please make sure your caps lock key is off and try again.";
+				$message = $lang['user_pass_error'];
 			}
 		} 
 	} else { // Form has not been submitted.
 		if (isset($_GET['logout']) && $_GET['logout'] == 1) {
-			$message = "You are now logged out.";
+			$message = $lang['user_logout'];
 		} 
-		
 	}
 ?>
 <!DOCTYPE html>
@@ -217,7 +220,7 @@ html {
             <div class="col-md-4 col-md-offset-4">
                 <div class="login-panel panel panel-primary">
                     <div class="panel-heading">
-                      Please Sign In
+                      <?php echo $lang['sign_in']; ?>
                     </div>
                     <div class="panel-body">
 					<div class="row">
@@ -226,23 +229,24 @@ html {
 <?php  if(isset($error_message)) { echo "<div class=\"alert alert-success alert-dismissable\"> <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button>" . $error_message . "</div>" ;}  ?>
 <?php  if(isset($message)) { echo "<div class=\"alert alert-danger alert-dismissable\"> <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button>" . $message . "</div>" ;}  ?>
 <br>
-
                             <fieldset>
                                 <div class="form-group">
-
 								<input class="form-control" placeholder="User Name" name="username" type="input" autofocus>
 								</div>
-
                                 <div class="form-group">
-                                    <input class="form-control" placeholder="Password" name="password" type="password" value="">
+                                <input class="form-control" placeholder="Password" name="password" type="password" value="">
                                 </div>
-
-                                <!-- Change this to a button or input when using this as a form -->
-								<input type="submit" name="submit" value="Login" class="btn btn-block btn-default btn-block login"/>
-
+								<input type="submit" name="submit" value="<?php echo $lang['login']; ?>" class="btn btn-block btn-default btn-block login"/>
                             </fieldset>
                         </form>
 <br>
+								<h3 class="text-right">
+								<small>
+								<a class="text-info" style="text-decoration: none;" href="languages.php?lang=en" title="English">English</a> - 
+								<a class="text-info" style="text-decoration: none;" href="languages.php?lang=pt" title="Portuguese">Portuguese</a> - 
+								<a class="text-info" style="text-decoration: none; padding-right:10px;" href="languages.php?lang=fr" title="French">French</a>
+								</small>
+								</h3>
                     </div></div>	
 <!--<div class="panel-footer">	</div> -->
                  </div>
@@ -250,12 +254,13 @@ html {
     </div>
 	<div class="col-md-8 col-md-offset-2">
 	<div class="login-panel-foother">
-	<h6><?php echo settings($conn, 'name').' '.settings($conn, 'version')."&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;Build ".settings($conn, 'build'); ?>&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;Powered By: Raspberry Pi</h6>
+	<h6><?php echo settings($conn, 'name').' '.settings($conn, 'version')."&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;".$lang['build']." ".settings($conn, 'build'); ?>&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;<?php echo $lang['powerd_by_rpi']; ?></h6>
 	<br><br>
-	<h6><a style="color: #707070;" href="https://en.wikipedia.org/wiki/Sudan_(rhinoceros)" target="_blank" >Dedicated to Sudan (Rhinoceros) 1973 - 2018</a></h6>
+	<h6><a style="color: #707070;" href="https://en.wikipedia.org/wiki/Dolphin" target="_blank" ><?php echo $lang['dedicated_to']; ?>: Dolphin</a></h6>
 	</div>
 	</div>
 </div>
+
 
     <!-- jQuery -->
     <script src="js/jquery.js"></script>

@@ -26,14 +26,14 @@ require_once(__DIR__.'/st_inc/functions.php');
 ?>
                     <div class="panel panel-primary">
                         <div class="panel-heading">
-                            <i class="fa fa-refresh fa-fw"></i>  Override   
+                            <i class="fa fa-refresh fa-fw"></i>  <?php echo $lang['override']; ?>   
 						<div class="pull-right"> <div class="btn-group"><?php echo date("H:i"); ?></div> </div>
                         </div>
                         <!-- /.panel-heading -->
 <div class="panel-body">
 <ul class="chat">
 <?php 
-$query = "SELECT override.id, override.status, override.zone_id, zone.index_id,  override.time, override.temperature FROM override join zone on override.zone_id = zone.id order by zone.index_id";
+$query = "SELECT override.id, override.status, override.zone_id, zone.index_id,  override.time, override.temperature FROM override join zone on override.zone_id = zone.id WHERE override.`purge` = '0' order by zone.index_id;";
 $results = $conn->query($query);
 while ($row = mysqli_fetch_assoc($results)) {
 	//query to search location device_id		
@@ -69,14 +69,8 @@ while ($row = mysqli_fetch_assoc($results)) {
                         <!-- /.panel-body -->
 						<div class="panel-footer">
 <?php 
-$query="select * from weather";
-$result = $conn->query($query);
-$weather = mysqli_fetch_array($result);
+ShowWeather($conn);
 ?>
-Outside: <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
-<span><img border="0" width="24" src="images/<?php echo $weather['img'];?>.png" title="<?php echo $weather['title'];?> - 
-<?php echo $weather['description'];?>"></span> <span><?php echo $weather['title'];?> - 
-<?php echo $weather['description'];?></span>
                         </div>
                     </div>
 <?php if(isset($conn)) { $conn->close();} ?>

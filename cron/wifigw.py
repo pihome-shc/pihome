@@ -23,7 +23,7 @@ print "********************************************************"
 print "* MySensors Wifi/Ethernet Gateway Communication Script *"
 print "* to communicate with MySensors Nodes, for more info   *"
 print "* please check MySensors API. Build Date: 18/09/2017   *"
-print "*      Version 0.07 - Last Modified 04/10/2018         *"
+print "*      Version 0.08 - Last Modified 20/07/2019         *"
 print "*                                 Have Fun - PiHome.eu *"
 print "********************************************************"
 print " " + bc.ENDC
@@ -154,7 +154,7 @@ while 1:
 			cur = con.cursor()
 			
 			# ..::Step One::..
-			# First time MySensors Node Comes online: Add Node to The Nodes Table.
+			# First time Temperature Sensors Node Comes online: Add Node to The Nodes Table.
 			if (node_id != 0 and child_sensor_id == 255 and message_type == 0 and sub_type == 17):
 			#if (child_sensor_id != 255 and message_type == 0):
 				cur.execute('SELECT COUNT(*) FROM `nodes` where node_id = (%s)', (node_id, )) 
@@ -162,11 +162,30 @@ while 1:
 				row = int(row[0])
 				if (row == 0):
 					print "1: Adding Node ID:",node_id, "MySensors Version:", payload, "\n\n"
-					cur.execute('INSERT INTO nodes(node_id, ms_version) VALUES(%s, %s)', (node_id, payload))
+					cur.execute('INSERT INTO nodes(node_id, status, ms_version) VALUES(%s, %s, %s)', (node_id, 'Active', payload))
 					con.commit()
 				else: 
-					print "1: Node ID:",node_id," Already Exist In Node Table \n\n"
+					print "1: Node ID:",node_id," Already Exist In Node Table, Updating MS Version \n\n"
+					cur.execute('UPDATE nodes SET ms_version = %s where node_id = %s', (payload, node_id))
 					
+					con.commit()
+	
+			# ..::Step One B::..
+			# First time Node Comes online with Repeater Feature Enabled: Add Node to The Nodes Table.
+			if (node_id != 0 and child_sensor_id == 255 and message_type == 0 and sub_type == 18):
+			#if (child_sensor_id != 255 and message_type == 0):
+				cur.execute('SELECT COUNT(*) FROM `nodes` where node_id = (%s)', (node_id, )) 
+				row = cur.fetchone()  
+				row = int(row[0])
+				if (row == 0):
+					print "1-B: Adding Node ID:",node_id, "MySensors Version:", payload, "\n\n"
+					cur.execute('INSERT INTO nodes(node_id, repeater, ms_version) VALUES(%s, %s, %s)', (node_id, '1', payload))
+					con.commit()
+				else: 
+					print "1-B: Node ID:",node_id," Already Exist In Node Table, Updating MS Version \n\n"
+					cur.execute('UPDATE nodes SET ms_version = %s where node_id = %s', (payload, node_id))
+					con.commit()
+
 			# ..::Step Two ::..
 			# Add Nodes Name i.e. Relay, Temperature Sensor etc. to Nodes Table.
 			if (child_sensor_id == 255 and message_type == 3 and sub_type == 11):
@@ -225,7 +244,7 @@ while 1:
 			# print "2 insert: ", node_id, " , ", child_sensor_id, "payload", payload
 				print "8. Adding Database Record: Node ID:",node_id," Child Sensor ID:", child_sensor_id, " PayLoad:", payload, "\n"
 				xboost = "UPDATE boost SET status=%s WHERE boost_button_id=%s AND boost_button_child_id = %s"
-				cur.execute(xboost, (payload, node_id,child_sensor_id,))
+				cur.execute(xboost, (payload, node_id, child_sensor_id,))
 				con.commit()
 				cur.execute('UPDATE `nodes` SET `last_seen`=now(), `sync`=0 WHERE node_id = %s', [node_id])
 				con.commit()
@@ -236,7 +255,7 @@ while 1:
 			# print "2 insert: ", node_id, " , ", child_sensor_id, "payload", payload
 				print "9. Adding Database Record: Node ID:", node_id, " Child Sensor ID:", child_sensor_id, " PayLoad:", payload, "\n"
 				xaway = "UPDATE away SET status=%s WHERE away_button_id=%s AND away_button_child_id = %s"
-				cur.execute(xaway, (payload, node_id,child_sensor_id,))
+				cur.execute(xaway, (payload, node_id, child_sensor_id,))
 				con.commit()
 				cur.execute('UPDATE `nodes` SET `last_seen`=now(), `sync`=0  WHERE node_id = %s', [node_id])
 				con.commit()
@@ -248,7 +267,26 @@ while 1:
 			if (node_id == 0 and child_sensor_id == 255 and message_type == 0 and sub_type == 18):
 				print "10: PiHome MySensors Gateway Version :", payload, "\n\n"
 				cur.execute('UPDATE gateway SET version = %s', [payload])
-				con.commit()	
+				con.commit()
+				
+			# ..::Step Eleven::.. 40;0;3;0;1;02:27 
+			# When client is requesting time
+			if (node_id != 0 and child_sensor_id == 255 and message_type == 3 and sub_type == 1):
+				print "11: Node ID: ",node_id," Requested Time \n"
+				#nowtime = time.ctime()
+				nowtime = time.strftime('%H:%M')
+				ntime = "UPDATE messages_out SET payload=%s, sent=%s WHERE node_id=%s AND child_id = %s"
+				cur.execute(ntime, (nowtime, '0', node_id, child_sensor_id,))
+				con.commit()
+			
+			# ..::Step Twelve::.. 40;0;3;0;1;02:27 
+			# When client is requesting text
+			if (node_id != 0 and message_type == 2 and sub_type == 47):
+				print "12: Node ID: ",node_id,"Child ID: ", child_sensor_id," Requesting Text \n"
+				nowtime = time.strftime('%H:%M')
+				ntime = "UPDATE messages_out SET payload=%s, sent=%s WHERE node_id=%s AND child_id = %s"
+				#cur.execute(ntime, (nowtime, '0', node_id, child_sensor_id,))
+				#con.commit()
 
 		except mdb.Error, e:
 				print "Error %d: %s" % (e.args[0], e.args[1])
@@ -256,4 +294,4 @@ while 1:
 		finally:
 			if con:
 				con.close()
-	time.sleep(1)
+	time.sleep(0.1)

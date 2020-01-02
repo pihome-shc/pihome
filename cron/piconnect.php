@@ -12,8 +12,8 @@ echo " \033[0m \n";
 echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
 echo "*************************************************************\n";
-echo "*   PiConnect Script Version 0.2 Build Date 16/04/2018      *\n";
-echo "*   Update on 21/09/2018                                    *\n";
+echo "*   PiConnect Script Version 0.32 Build Date 21/01/2019     *\n";
+echo "*   Update on 02/02/2019                                    *\n";
 echo "*                                      Have Fun - PiHome.eu *\n";
 echo "*************************************************************\n";
 echo " \033[0m \n";
@@ -226,12 +226,14 @@ if ($status == "1"){
 					$update_alias=rawurlencode($row['update_alias']);
 					$country=rawurlencode($row['country']);
 					$city=rawurlencode($row['city']);
+					$zip=rawurlencode($row['zip']);
 					$openweather_api=rawurlencode($row['openweather_api']);
 					$backup_email=rawurlencode($row['backup_email']);
 					$ping_home=$row['ping_home'];
 					$timezone=rawurlencode($row['timezone']);
 					$shutdown=$row['shutdown'];
 					$reboot=$row['reboot'];
+					$c_f=$row['c_f'];
 					//echo row data to console 
 					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Data to sync with PiConnect: \n";
 					echo "\033[1;33m Data Comm:\033[0m            \033[1;32m".$data."\033[0m \n";
@@ -245,16 +247,17 @@ if ($status == "1"){
 					echo "\033[1;33m Update Alias:\033[0m         \033[1;32m".$row['update_alias']."\033[0m \n";
 					echo "\033[1;33m Country:\033[0m              \033[1;32m".$row['country']."\033[0m \n";
 					echo "\033[1;33m City:\033[0m                 \033[1;32m".$row['city']."\033[0m \n";
+					echo "\033[1;33m Zip Code:\033[0m             \033[1;32m".$row['zip']."\033[0m \n";
 					echo "\033[1;33m OpenWeather API:\033[0m      \033[1;32m".$row['openweather_api']."\033[0m \n";
 					echo "\033[1;33m Backup Email:\033[0m         \033[1;32m".$row['backup_email']."\033[0m \n";
 					echo "\033[1;33m Ping Home:\033[0m            \033[1;32m".$row['ping_home']."\033[0m \n";
 					echo "\033[1;33m Timezone:\033[0m             \033[1;32m".$row['timezone']."\033[0m \n";
 					echo "\033[1;33m Shutdown Status:\033[0m      \033[1;32m".$row['shutdown']."\033[0m \n";
-					echo "\033[1;33m Reboot Status:\033[0m        \033[1;32m".$row['reboot']."\033[0m \n";
+					echo "\033[1;33m Unit:\033[0m                 \033[1;32m".$row['c_f']."\033[0m \n";
 					//call out to PiConnect with data 
-					$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=system&id=${id}&purge=${purge}&name=${name}&version=${version}&build=${build}&update_location=${update_location}&update_file=${update_file}&update_alias=${update_alias}&country=${country}&city=${city}&openweather_api=${openweather_api}&backup_email=${backup_email}&ping_home=${ping_home}&timezone=${timezone}&shutdown=${shutdown}&reboot=${reboot}";
+					$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=system&id=${id}&purge=${purge}&name=${name}&version=${version}&build=${build}&update_location=${update_location}&update_file=${update_file}&update_alias=${update_alias}&country=${country}&city=${city}&zip=${zip}&openweather_api=${openweather_api}&backup_email=${backup_email}&ping_home=${ping_home}&timezone=${timezone}&shutdown=${shutdown}&reboot=${reboot}&unit=${c_f}";
 					$result = url_get_contents($url);
-					//echo $url."\n";
+					echo $url."\n";
 					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Result from PiConnect: \033[1;32m".$result."\033[0m \n";
 					if ($result == 'Success'){
 						$query = "UPDATE system SET sync = '1' WHERE id ='{$id}' LIMIT 1;";
@@ -810,18 +813,20 @@ if ($status == "1"){
 			//Zone sync end here 
 			/*****************************************************************************************************************************************************/
 			//start syncing Zone Logs table with PiConnect. 
+			//get zone log records with sync status 0
 			$query = "SELECT * FROM zone_logs where sync = 0 order by id asc;";
-			$results = $conn->query($query);
-			$row = mysqli_fetch_array($results);
+			$zlresults = $conn->query($query);
+			$row = mysqli_fetch_array($zlresults);
 			$boiler_log_id = $row['boiler_log_id'];
 			//check if boiler log is synced
 			//$query = "SELECT * FROM boiler_logs where sync = 0 AND id = '{$boiler_log_id}' AND stop_datetime IS NOT NULL order by id asc;";
-			$query = "SELECT * FROM boiler_logs where sync = 1 AND id = '{$boiler_log_id}';";
+			$query = "SELECT * FROM boiler_logs where id = '{$boiler_log_id}';";
 			$result = $conn->query($query);
-			if (mysqli_num_rows($results) != 0){
+			
+			if (mysqli_num_rows($zlresults) != 0){
 				echo $line;
-				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Logs Data to Sync with PiConnect: \033[32m". mysqli_num_rows($results)."\033[0m\n"; 
-				while ($row = mysqli_fetch_assoc($results)) {
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Logs Data to Sync with PiConnect: \033[32m". mysqli_num_rows($zlresults)."\033[0m\n"; 
+				while ($row = mysqli_fetch_assoc($zlresults)) {
 					$data='push';
 					$id=$row['id'];
 					$purge=$row['purge'];
@@ -870,6 +875,7 @@ if ($status == "1"){
 					$status=$row['status'];
 					$start=rawurlencode($row['start']);
 					$end=rawurlencode($row['end']);
+					$WeekDays=$row['WeekDays'];
 					//echo row data to console 
 					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Data to Sync with PiConnect: \n";
 					echo "\033[1;33m Data Comm:\033[0m            \033[1;32m".$data."\033[0m \n";
@@ -878,8 +884,9 @@ if ($status == "1"){
 					echo "\033[1;33m Status:\033[0m               \033[1;32m".$status."\033[0m \n";
 					echo "\033[1;33m Start Time:\033[0m           \033[1;32m".$row['start']."\033[0m \n";
 					echo "\033[1;33m End Time:\033[0m             \033[1;32m".$row['end']."\033[0m \n";
+					echo "\033[1;33m Weekdays :\033[0m            \033[1;32m".$row['WeekDays']."\033[0m \n"; 
 					//call out to PiConnect with data 
-					$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=schedule_daily_time&id=${id}&purge=${purge}&status=${status}&start=${start}&end=${end}";
+					$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=schedule_daily_time&id=${id}&purge=${purge}&status=${status}&start=${start}&end=${end}&WeekDays=${WeekDays}";
 					$result = url_get_contents($url);
 					//echo $url."\n";
 					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Result from PiConnect: \033[1;32m".$result."\033[0m \n";
@@ -916,12 +923,14 @@ if ($status == "1"){
 						$status = $value["status"];
 						$start = $value["start"];
 						$end = $value["end"];
+						$WeekDays = $value["WeekDays"];
 						echo "\033[1;33m Data Comm:\033[0m            \033[1;32m".$data."\033[0m \n";
 						echo "\033[1;33m Table ID:\033[0m             \033[1;32m".$id."\033[0m \n";
 						echo "\033[1;33m Purge:\033[0m                \033[1;32m".$purge."\033[0m \n";
 						echo "\033[1;33m Status:\033[0m               \033[1;32m".$status."\033[0m \n";
 						echo "\033[1;33m Start Time:\033[0m           \033[1;32m".$start."\033[0m \n";
 						echo "\033[1;33m End Time:\033[0m             \033[1;32m".$end."\033[0m \n";
+						echo "\033[1;33m Weekdays :\033[0m            \033[1;32m".$WeekDays."\033[0m \n"; 
 						if ($purge == '1' && $id != '0'){
 							$query = "DELETE FROM schedule_daily_time_zone WHERE schedule_daily_time_id = '{$id}';";
 							$conn->query($query);
@@ -929,12 +938,12 @@ if ($status == "1"){
 							$conn->query($query);
 							echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Schedul Time Sync Purged in Local Database \n";
 						}elseif($purge == '0' && $id != '0'){
-							$query = "UPDATE schedule_daily_time SET sync = '1',  status = '{$status}', start = '{$start}', end = '{$end}' WHERE id ='{$id}' LIMIT 1;";
+							$query = "UPDATE schedule_daily_time SET sync = '1',  status = '{$status}', start = '{$start}', end = '{$end}', WeekDays = '{$WeekDays}' WHERE id ='{$id}' LIMIT 1;";
 							$conn->query($query);
 							echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Schedul Time Sync Updated in Local Database \n";
 						}elseif ($purge == '1' && $id == '0'){
 							// Add schedule_daily_time record and set to sync 0
-							$query = "INSERT INTO schedule_daily_time (status, start, end) VALUES ('{$status}', '{$start}', '{$end}');";
+							$query = "INSERT INTO schedule_daily_time (status, start, end, WeekDays) VALUES ('{$status}', '{$start}', '{$end}', '{$WeekDays}');";
 							$result = $conn->query($query);
 						}
 						echo $line;
@@ -1040,15 +1049,17 @@ if ($status == "1"){
 						$status = $value["status"];
 						$start = $value["start"];
 						$end = $value["end"];
+						$WeekDays = $value["WeekDays"];
 						echo "\033[1;33m Data Comm:\033[0m            \033[1;32m".$data."\033[0m \n";
 						echo "\033[1;33m Table ID:\033[0m             \033[1;32m".$id."\033[0m \n";
 						echo "\033[1;33m Purge:\033[0m                \033[1;32m".$purge."\033[0m \n";
 						echo "\033[1;33m Status:\033[0m               \033[1;32m".$status."\033[0m \n";
 						echo "\033[1;33m Start Time:\033[0m           \033[1;32m".$start."\033[0m \n";
 						echo "\033[1;33m End Time:\033[0m             \033[1;32m".$end."\033[0m \n";
+						echo "\033[1;33m WeekDays:\033[0m             \033[1;32m".$WeekDays."\033[0m \n";
 						if ($id == '0' && $purge == '1' && $sync == '0' ){
 							// Add schedule_daily_time record and set to sync 0
-							$query = "INSERT INTO schedule_daily_time (sync, `purge`, status, start, end) VALUES ('0', '0', '{$status}', '{$start}', '{$end}');";
+							$query = "INSERT INTO schedule_daily_time (sync, `purge`, status, start, end, WeekDays) VALUES ('0', '0', '{$status}', '{$start}', '{$end}', '{$WeekDays}');";
 							$result = $conn->query($query);
 							echo mysqli_error($conn)."\n";
 							$schedule_daily_time_id = mysqli_insert_id($conn);
@@ -1515,8 +1526,43 @@ if ($status == "1"){
 //Display Message PiConnect is disabled 
 }else {
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiConnect is \033[41m Disabled !!!\033[0m You to Enable PiConnect from Settings.\n";
+	echo $line;
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Delete all Records Marked for Purge to do Keep Everyting Clean.\n";
+	//Delete Boost Records
+	$query = "DELETE FROM boost WHERE `purge`= '1' LIMIT 1;";
+	$conn->query($query);
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boost Record Purged in Local Database \n";
+	//Delete Override records
+	$query = "DELETE FROM override WHERE `purge`= '1'  LIMIT 1;";
+	$conn->query($query);
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Override Record Purged in Local Database \n";
+	//Delete Daily Time records
+	$query = "DELETE FROM schedule_daily_time_zone WHERE `purge`= '1';";
+	$conn->query($query);
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Schedule Time Record Purged in Local Database \n";
+	//Delete Night Climat records
+	$query = "DELETE FROM schedule_night_climat_zone WHERE `purge`= '1';";
+	$conn->query($query);
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Schedule Night Cliate Zone Record Purged in Local Database \n";
+	//Delete All Zone Logs records
+	$query = "DELETE FROM zone_logs WHERE `purge`= '1';";
+	$conn->query($query);
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Logs Record Purged in Local Database \n";
+	//Delete Zone record
+	$query = "DELETE FROM zone WHERE `purge`= '1' LIMIT 1;";
+	$conn->query($query);
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Record Purged in Local Database \n";
+	//Delete Schedul daily time zone 
+	$query = "DELETE FROM schedule_daily_time_zone WHERE `purge`= '1';";
+	$conn->query($query);
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Schedul Time Zone Purged in Local Database \n";
+	//Delete schedule dialy time 
+	$query = "DELETE FROM schedule_daily_time WHERE `purge`= '1';";
+	$conn->query($query);
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Schedul Time Purged in Local Database \n";
+	echo $line;
 }
 echo "\n"; 
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiConnect Script Ended \n"; 
-echo "\033[32m**************************************************************\033[0m  \n";
+echo "\033[32m******************************************************************\033[0m  \n";
 if(isset($conn)) { $conn->close();}

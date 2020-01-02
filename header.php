@@ -57,14 +57,18 @@ require_once(__DIR__.'/st_inc/functions.php');
     <!-- Custom CSS -->
     <link href="css/sb-admin-2.css" rel="stylesheet">
 
-    <!--Bootstrap datepicker css -->
-	<link href="css/plugins/datepicker3.css" rel="stylesheet">
+	<!-- Datetimepicker CSS -->
+	<link href="css/plugins/datepicker/bootstrap-datetimepicker.css" rel="stylesheet">
+	
 	
 	<!-- Custom Fonts awesome-->
     <link href="fonts/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
  
 	<!-- Custom Fonts ionicons-->
 	<link rel="stylesheet" type="text/css" media="screen" href="fonts/ionicons-2.0.1/css/ionicons.min.css">
+
+	<!-- bootstrap-slider
+    <link href="css/plugins/slider/bootstrap-slider.min.css" rel="stylesheet">-->
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -101,12 +105,12 @@ require_once(__DIR__.'/st_inc/functions.php');
     <div id="wrapper">
         <!-- Navigation -->
         <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
-		<a class="navbar-brand" href="home.php"><img src="images/navi-logo.png" width="32"></a>
+		<a class="navbar-brand" href="home.php"><img src="images/dolphin.png" width="32"></a>
             <!-- /.navbar-header -->
             <ul class="nav navbar-top-links navbar-right">
-                <li class="dropdown">
+               <li class="dropdown">
                     <a href="index.php">
-                        <i class="fa fa-home fa-fw"></i>
+                        <i class="fa fa-home fa-lg"></i>
                     </a>
                 </li>
 				<?php // Alert icon need some thinking: May be table with list of alerts and one cron job to check if any thing not communicating. 
@@ -119,34 +123,44 @@ require_once(__DIR__.'/st_inc/functions.php');
 				?>
                 <li class="dropdown">
                     <a class="dropdown-toggle" href="schedule.php">
-                        <i class="fa fa-clock-o fa-fw"></i>  
+                        <i class="fa fa-clock-o fa-lg"></i>  
                     </a>
                 </li>
                 <li class="dropdown">
                     <a class="dropdown-toggle" href="chart.php">
-                        <i class="fa fa-bar-chart fa-fw"></i>  
+                        <i class="fa fa-bar-chart fa-lg"></i>  
                     </a>
                 </li>		
 
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="modal" href="#weather" data-backdrop="static" data-keyboard="false">
-                        <i class="fa fa-sun-o fa-fw"></i>  
+                        <i class="fa fa-sun-o fa-lg"></i>  
                     </a>
                 </li>
-                <li class="dropdown">
-                    <a class="dropdown-toggle" href="settings.php">
-                        <i class="fa fa-cog fa-fw"></i>  
-                    </a>
-                </li>			
-
+				
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                        <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                        <i class="fa fa-cog fa-lg"></i>  <i class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">
-                        <li><a href="selfpwd.php"><i class="fa fa-user fa-key fa-fw"></i> Change Password</a></li>
+                        <li><a href="languages.php?lang=en"><i class="fa fa-language fa-fw"></i> <?php echo $lang['lang_en']; ?> </a></li>
+                        <li><a href="languages.php?lang=pt"><i class="fa fa-language fa-fw"></i> <?php echo $lang['lang_pt']; ?></a></li>
+						<li><a href="languages.php?lang=fr"><i class="fa fa-language fa-fw"></i> <?php echo $lang['lang_fr']; ?></a></li>
+						<li><a href="http://www.pihome.eu/" target="_blank"><i class="fa fa-language fa-fw"></i> <?php echo $lang['more_language']; ?></a></li>
+						<li class="divider"></li>
+						<li><a href="settings.php"><i class="fa fa-cog"></i> <?php echo $lang['settings']; ?></a></li>
+                    </ul>
+                    <!-- /.dropdown-user -->
+                </li>
+				
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-user fa-lg fa-fw"></i><i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li><a href="selfpwd.php"><i class="fa fa-user fa-key"></i> <?php echo $lang['user_change_password']; ?> </a></li>
                         <li class="divider"></li>
-                        <li><a href="logout.php"><i class="fa fa-sign-out fa-fw"></i> Logout</a></li>
+                        <li><a href="logout.php"><i class="fa fa-sign-out"></i> <?php echo $lang['user_logout']; ?></a></li>
                     </ul>
                     <!-- /.dropdown-user -->
                 </li>
@@ -157,6 +171,17 @@ require_once(__DIR__.'/st_inc/functions.php');
 $query="select * from weather;";
 $result=$conn->query($query);
 $weather = mysqli_fetch_array($result);
+$c_f = settings($conn, 'c_f');
+if($c_f==1 || $c_f=='1')
+{
+    $TUnit='F';
+    $WUnit='mph';
+}
+else
+{
+    $TUnit='C';
+    $WUnit='km/s';
+}
 ?>
 
 <div class="modal fade" id="weather" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
@@ -164,7 +189,7 @@ $weather = mysqli_fetch_array($result);
         <div class="modal-content">
             <div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title"><i class="fa fa-sun-o fa-fw"></i> <?php echo $weather['location'] ;?> Weather</h5>
+                <h5 class="modal-title"><i class="fa fa-sun-o fa-fw"></i> <?php echo $weather['location'] ;?> <?php echo $lang['weather']; ?></h5>
             </div>
             <div class="modal-body">
 			<div class="row"> 
@@ -174,19 +199,20 @@ $weather = mysqli_fetch_array($result);
 <?php echo $weather['description'];?></span></h5>
 				</div>
             <div class="col-xs-7 col-sm-6 col-md-6 wdata">
-                Sunrise: <?php echo date('H:i', $weather['sunrise']);?> <br>
-                Sunset: <?php echo date('H:i', $weather['sunset']);?> <br>
-                Wind: <?php echo $weather['wind_speed'];?> km/s
+                <?php echo $lang['sunrise']; ?>: <?php echo date('H:i', $weather['sunrise']);?> <br>
+                <?php echo $lang['sunset']; ?>: <?php echo date('H:i', $weather['sunset']);?> <br>
+                <?php echo $lang['wind']; ?>: <?php echo $weather['wind_speed'] . '&nbsp;' . $WUnit;?>
 			<?php //date_sun_info( int $weather['sunrise'], float $weather['lat'] , float $weather['lon']) ;?>
 			</div>     
             <div class="col-xs-5 col-sm-6 col-md-6">
-                <span class="pull-right degrees"><?php echo $weather['c'] ;?>&deg;C</span>
+                <span class="pull-right degrees"><?php echo DispTemp($conn,$weather['c']) . '&deg;&nbsp;' . $TUnit;?></span>
             </div> 
         </div> 
 		<br>
 			<div class="row"> 
 			<div class="col-lg-12">
-			<h4 class="text-center">Six Days Weather</h4>
+			<?php if(filesize('weather_6days.json')>0) { ?>
+			<h4 class="text-center"><?php echo $lang['weather_six_day']; ?></h4>
 	<div class="list-group">
 <?php
 $weather_api = file_get_contents('weather_6days.json');
@@ -198,8 +224,9 @@ echo '<a href="weather.php" class="list-group-item"><img border="0" width="28" h
 }
 ?>
 </div>
-<a href="weather.php" button type="button" class="btn btn-default login btn-sm btn-edit">3 Hour Forcast</a>
-<button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
+<?php } //end of filesize if ?>  
+<a href="weather.php" button type="button" class="btn btn-default login btn-sm btn-edit"><?php echo $lang['weather_3_hour']; ?></a>
+<button type="button" class="btn btn-default btn-sm" data-dismiss="modal"><?php echo $lang['close']; ?></button>
         </div></div>
 </div>
         </div>

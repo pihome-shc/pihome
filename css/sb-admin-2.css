@@ -4,6 +4,48 @@
  * For details, see http://www.apache.org/licenses/LICENSE-2.0.
  */
 
+/*
+CSS ID - HTML element, "#", ID
+    IDs have to be unique on the page, they only specify one element
+
+    CSS:
+        p#exampleID1 { background-color: white; }
+        p#exampleID2 { text-transform: uppercase; }
+
+    HTML:
+        <p id="ExampleID1">This paragraph has an ID name of
+         "exampleID1" and has a white CSS defined background</p>
+        <p id="ExampleID2">This paragraph has an ID name of
+         "exampleID2" and has had its text transformed to uppercase letters. </p>
+
+
+CSS Class - HTML element, "." , ID
+    Classes can apply to many elements on the same page.
+
+    CSS:
+        p{ color: red; font-size: 20px; }
+        p.test1{ color: blue; }
+        p.test2{ font-size: 12px; }
+
+    HTML Code:
+        <html>
+        <body>
+        <p>This is a normal paragraph.</p>
+        <p class="test1">This is a paragraph that uses the p.test1 CSS code!</p>
+        <p class="test2">This is a paragraph that uses the p.test2 CSS code!</p>
+
+    Remember, CSS code in classes will override the general CSS code for that element. p.test1 overrides p!
+
+
+Shorthand properties:
+    w x y z     top right bottom left
+    x y z       top right/left bottom
+    x y         top/bottom right/left
+    x           all four
+
+
+*/
+
 body {
     background-color: #f8f8f8;
 }
@@ -366,29 +408,31 @@ table.dataTable thead .sorting:after {
  font-size:40%
  }
 
-.mainbtn {;margin-bottom:5px;}
- 
- 
- 
+.mainbtn {
+    margin: 3px 2px 2px;
+    float:left;
+}
+
 .circle
 {
-width:36px;
-height:36px;
+width:40px;
+height:40px;
 border-radius:50%;
 font-size:13px;
-line-height:31px;
+line-height:36px;
 text-align:center;
 background:#000;
 background-color: transparent;
+/*margin-top:5px;*/
 }
 
 .circle_list
 {
-width:26px;
-height:26px;
+width:32px;
+height:32px;
 border-radius:50%;
 font-size:11px;
-line-height:23px;
+line-height:32px;
 text-align:center;
 background:#000;
 background-color: transparent;
@@ -398,7 +442,7 @@ border: 2px solid #5292f7;
 color:#5292f7;
 }
 .bluesch {
-border: 2px solid #5292f7;
+border: 1px solid #5292f7;
 color:#5292f7;
 background-color: #eef4ff;
 }
@@ -408,10 +452,35 @@ border: 1px solid #ff8839;
 color:#ff8839;
 }
 .orangesch{
-border: 2px solid #ff8839;
+border: 1.6px solid #ff8839;
 color:#ff8839;
 }
 
+.week_day {
+	font-size:12px;
+	margin-right: 5px;
+}
+
+.week_day_today {
+	color: #fff;
+	background-color: #ff8839;
+	border: 3px solid #ffede2;
+	width: 40px;
+	height: 40px;
+	margin-top: -2px;
+	cursor: pointer;
+	
+}
+.week_day:hover{
+	color: #fff;
+	background-color: #ff8839;
+	border: 3px solid #ffede2;
+	width: 40px;
+	height: 40px;
+	margin-top: -2px;
+	margin-right: 1px;
+	cursor: pointer;
+}
 .redsch_list {
 border: 1px solid #dc0000;
 color:#dc0000;
@@ -419,7 +488,7 @@ background-color: #ffe9e9;
 }
 
 .redsch {
-border: 2px solid #dc0000;
+border: 1px solid #dc0000;
 color:#dc0000;
 background-color: #ffe9e9;
 }
@@ -488,21 +557,30 @@ font-family: "HelveticaNeue-Light", 'Roboto', 'Source Sans Pro',  Helvetica, Ari
 text-align:left;
 margin-top: 0px;
 }
+h3.status{
+    height:12px;
+    width:100%;
+    display:inline-block;
+    padding: 0px 1px 2px;
+}
+.statuscircle {
+    float:left;
+}
 .statusdegree {
-margin-left: -5px;
+    margin-left:2px;
+    float:left;
+}
+.statuszoon{
+    text-align: right;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    float:right;
 }
 
 .schdegree{
 margin-left: 2px;
 }
 
-.zoonstatus{
-text-align: right;
-margin-left: 28px;
-margin-top: 0px;
-margin-bottom: 0px;
-
-}
 
 .override{
 margin-top: 10px;
@@ -517,7 +595,7 @@ margin-top: 10px;
 */
 
 .checkbox {
-  padding-left: 20px; }
+  padding-left: 30px; }
   .checkbox label {
     display: inline-block;
     vertical-align: middle;
@@ -750,7 +828,6 @@ body{font-family:"HelveticaNeue-Light",Helvetica,Arial,sans-serif; font-size:14p
 .navbar-default{background-color:#ff8839;border-color:#ff8839}
 .nav>li>a:hover,.nav>li>a:focus{text-decoration:none;background-color:#ffede2;color:#ff8839;}
 .modal-header{min-height:16.43px;padding:10px;border-bottom:1px solid #e5e5e5; background-color:#ff8839;border-top-left-radius:0px;border-top-right-radius:0px}
-.zone-status {font-size: 8px}
 .login {background-color:#ffede2}
 h3 small {font-family: "HelveticaNeue-Light",Helvetica,Arial,sans-serif;}
 .alert-danger{color:#a40300;background-color:#f2dede;border-color:#eaaab4}
@@ -819,11 +896,18 @@ h3 small {font-family: "HelveticaNeue-Light",Helvetica,Arial,sans-serif;}
 	
 }
 
+.sch_button {
+	margin-left: 35px;
+    padding-top: 0px;
+}
+.col-xs-1 {
+    width: 14.28%;
+}
 .navbar-brand {
     float: left;
     height: 20px;
     padding: 10px 10px;
-	padding-right: 60px;
+	padding-right: 20px;
     font-size: 18px;
     line-height: 20px;
 }
@@ -831,4 +915,75 @@ h3 small {font-family: "HelveticaNeue-Light",Helvetica,Arial,sans-serif;}
 .navbar-right {
     float: right !important;
     margin-right: -15px;
+}
+
+.panel-body {
+    padding: 6px;
+}
+
+#page-wrapper {
+    padding: 0 10px;
+}
+
+
+/* Slider CSS code */
+
+.slidecontainer {
+  width: 100%;
+  padding: 10px 10px;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 5px;
+  background: #fdc4a2;
+  outline: none;
+  opacity: 0.8;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background: #ff8839;
+  cursor: pointer;
+  border-width:5px;
+  border-color:#fde3d2;
+}
+
+.slider::-moz-range-thumb {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background: #ff8839;
+  cursor: pointer;
+  border-width:5px;
+  border-color:#fde3d2;
+}
+
+.navbar {
+    min-height: 50px;
+}
+.navbar-right {
+	margin: auto;
+	padding: 5px;
+}
+
+.chat li.left .chat-body{
+padding-top: 0px;
+}
+
+.pull-right-sch-list {
+    float: right !important;
+    margin-top: -15px;
 }

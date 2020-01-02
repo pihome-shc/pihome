@@ -31,7 +31,7 @@ require_once(__DIR__.'/st_inc/functions.php');
                 <div class="col-lg-12">
 				                    <div class="panel panel-primary">
                         <div class="panel-heading">
-                            <i class="fa fa-bar-chart fa-fw"></i> Graphs   
+                            <i class="fa fa-bar-chart fa-fw"></i> <?php echo $lang['graph']; ?>   
 						<div class="pull-right"> <div class="btn-group"><?php echo date("H:i"); ?></div> </div>
                         </div>
                         <!-- /.panel-heading -->
@@ -52,14 +52,8 @@ require_once(__DIR__.'/st_inc/functions.php');
                        <!-- /.panel-body -->
 						<div class="panel-footer">
 <?php 
-$query="select * from weather";
-$result = $conn->query($query);
-$weather = mysqli_fetch_array($result);
+ShowWeather($conn);
 ?>
-<?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
-<span><img border="0" width="24" src="images/<?php echo $weather['img'];?>.png" title="<?php echo $weather['title'];?> - 
-<?php echo $weather['description'];?>"></span> <span><?php echo $weather['title'];?> - 
-<?php echo $weather['description'];?></span>
                         </div>
                     </div>
                 </div>

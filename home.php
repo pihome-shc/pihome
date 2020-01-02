@@ -30,7 +30,7 @@ require_once(__DIR__.'/st_inc/functions.php');
             <div class="row">
                 <div class="col-lg-12">
                    	<div id="homelist" >
-				   <div class="text-center"><br><br><p>Please wait while system grab latest information from database...</p>
+				   <div class="text-center"><br><br><p><?php echo $lang['please_wait_text']; ?></p>
 				   <br><br><img src="images/loader.gif">
 				   <br><br><br><br>
 				   </div>
@@ -41,11 +41,12 @@ require_once(__DIR__.'/st_inc/functions.php');
 			<!-- /.row -->
 	<div class="col-md-8 col-md-offset-2">
 	<div class="login-panel-foother">
-	<h6><a style="color: #707070;" href="https://en.wikipedia.org/wiki/Sudan_(rhinoceros)" target="_blank" >Dedicated to Sudan (Rhinoceros) 1973 - 2018</a></h6>
+	<h6><?php echo settings($conn, 'name').' '.settings($conn, 'version')."&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;".$lang['build']." ".settings($conn, 'build'); ?>&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;<?php echo $lang['powerd_by_rpi']; ?></h6>
+	<br><br>
+	<h6><a style="color: #707070;" href="https://en.wikipedia.org/wiki/Dolphin" target="_blank" ><?php echo $lang['dedicated_to']; ?>: Dolphin</a></h6>
 	</div>
 	</div>
-	
-            
-        </div>
+
+       </div>
         <!-- /#page-wrapper -->
 		<?php include("footer.php"); ?>

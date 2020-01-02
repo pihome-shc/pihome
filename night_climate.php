@@ -29,19 +29,27 @@ if (isset($_POST['submit'])) {
 	$end_time = $_POST['end_time'];
 	$query = "UPDATE schedule_night_climate_time SET sync = '0', status = '{$sc_en}', start_time = '{$start_time}', end_time = '{$end_time}' where id = 1;";
 	$timeresults = $conn->query($query);
-	if ($timeresults) {$message_success = "Night Climate Time Changed Successfully!!!";} else {$error = "<p>Night Climate Changes Failed with error </p>"; $error .= "<p>".mysqli_error($conn). "</p>";}
+	if ($timeresults) {
+        $message_success = "<p>".$lang['night_climate_time_success']."</p>";
+    	header("Refresh: 3; url=home.php");
+    } else {
+        $error = "<p>".$lang['night_climate_error']."</p><p>".mysqli_error($conn). "</p>";        
+    }
 	
 	foreach($_POST['id'] as $id){
 		$id = $_POST['id'][$id];
 		$status = isset($_POST['status'][$id]) ? $_POST['status'][$id] : "0";
 		//$status = $_POST['status'][$id];
-		$min = $_POST['min'][$id];
-		$max = $_POST['max'][$id];
-		$query = "UPDATE schedule_night_climat_zone SET sync = '0', status='$status', min_temperature='$min', max_temperature='$max' WHERE id='$id'";
+		$min =TempToDB($conn,$_POST['min'][$id]);
+		$max =TempToDB($conn,$_POST['max'][$id]);
+		$query = "UPDATE schedule_night_climat_zone SET sync = '0', status='$status', min_temperature='" . number_format($min,1) . "', max_temperature='" . number_format($max,1) . "' WHERE id='$id'";
 		$zoneresults = $conn->query($query);
+		 if ($zoneresults) {
+            $message_success .= "<p>".$lang['night_climate_temp_success']."</p>";
+        } else {
+            $error .= "<p>".$lang['night_climate_error']."</p><p>".mysqli_error($conn). "</p>";        
+        }
 	}
-	$message_success = "Night Climate Schedule Modified Successfully!!!";
-	header("Refresh: 3; url=home.php");
 } ?>
 <?php include("header.php");  ?>
 <?php include_once("notice.php"); ?>
@@ -51,7 +59,7 @@ if (isset($_POST['submit'])) {
                 <div class="col-lg-12">
                    <div class="panel panel-primary">
                         <div class="panel-heading">
-                            <i class="fa fa-bed fa-1x"></i> Night Climate
+                            <i class="fa fa-bed fa-1x"></i> <?php echo $lang['night_climate']; ?>
 						<div class="pull-right"> <div class="btn-group"><?php echo date("H:i"); ?></div> </div>
                         </div>
                         <!-- /.panel-heading -->
@@ -64,14 +72,14 @@ if (isset($_POST['submit'])) {
 ?>
 				<div class="checkbox checkbox-default checkbox-circle">
                 <input id="checkbox0" class="styled" type="checkbox" name="sc_en" value="1" <?php $check = ($snct['status'] == 1) ? 'checked' : ''; echo $check; ?>>
-                <label for="checkbox0"> Enable Night Climate </label>
+                <label for="checkbox0"> <?php echo $lang['night_climate_enable']; ?> </label>
                 <div class="help-block with-errors"></div></div>
 
-				<div class="form-group" class="control-label"><label>Start Time</label>
+				<div class="form-group" class="control-label"><label><?php echo $lang['start_time']; ?></label>
 				<input class="form-control input-sm" type="time" id="start_time" name="start_time" value="<?php if(isset($_POST['start_time'])) { echo $_POST['start_time']; }else{echo $snct['start_time'];} ?>" required>
                 <div class="help-block with-errors"></div></div>
 				
-				<div class="form-group" class="control-label"><label>End Time</label>
+				<div class="form-group" class="control-label"><label><?php echo $lang['end_time']; ?></label>
 				<input class="form-control input-sm" type="time" id="end_time" name="end_time" value="<?php if(isset($_POST['end_time'])) { echo $_POST['end_time']; }else{echo $snct['end_time'];} ?>" required>
                 <div class="help-block with-errors"></div></div>				
 <?php
@@ -95,47 +103,57 @@ where zone.status = 1 order by zone.index_id;";
 					}else{
 					echo '<div id="'.$sncz["id"].'" style="display:none !important;"><div class="form-group" class="control-label">';}
 				?>
-				<label>Minimum Temperature</label>
+				<label><?php echo $lang['min_temperature']; ?></label>
 				<select class="form-control input-sm" type="number" id="<?php echo $sncz["id"];?>" name="min[<?php echo $sncz["id"];?>]" placeholder="Zone Temperature" >
-				<option selected ><?php echo $sncz["min_temperature"];?></option>
-				<option>18</option>
-				<option>19</option>
-				<option>20</option>
-				<option>21</option>
-				<option>22</option>
-				<option>23</option>
+				<?php 
+    $c_f = settings($conn, 'c_f');
+    if($c_f==1 || $c_f=='1') {
+        for($t=64;$t<=74;$t++)
+        {
+            echo '<option value="' . $t . '" ' . (DispTemp($conn, $sncz['min_temperature'])==$t ? 'selected' : '') . '>' . $t . '</option>';
+        }
+    }
+    else {
+        for($t=18;$t<=23;$t++)
+        {
+            echo '<option value="' . $t . '" ' . ($sncz['min_temperature']==$t ? 'selected' : '') . '>' . $t . '</option>';
+        }
+    }
+?>	
 				</select>
                 <div class="help-block with-errors"></div>
 				
-				<label>Maximum Temperature</label>
+				<label><?php echo $lang['max_temperature']; ?></label>
 				<select class="form-control input-sm" type="number" id="<?php echo $sncz["id"];?>" name="max[<?php echo $sncz["id"];?>]" placeholder="Zone Temperature" >
-				<option selected ><?php echo $sncz["max_temperature"];?></option>
-				<option>18</option>
-				<option>19</option>
-				<option>20</option>
-				<option>21</option>
-				<option>22</option>
-				<option>23</option>
+<?php 
+    $c_f = settings($conn, 'c_f');
+    if($c_f==1 || $c_f=='1') {
+        for($t=64;$t<=74;$t++)
+        {
+            echo '<option value="' . $t . '" ' . (DispTemp($conn, $sncz['max_temperature'])==$t ? 'selected' : '') . '>' . $t . '</option>';
+        }
+    }
+    else {
+        for($t=18;$t<=23;$t++)
+        {
+            echo '<option value="' . $t . '" ' . ($sncz['max_temperature']==$t ? 'selected' : '') . '>' . $t . '</option>';
+        }
+    }
+?>	
 				</select>
                 <div class="help-block with-errors"></div>
 				
 				</div></div>
 				<?php }?>			
-                <input type="submit" name="submit" value="Submit" class="btn btn-default btn-sm">
-				<a href="home.php"><button type="button" class="btn btn-primary btn-sm">Cancel</button></a>
+                <input type="submit" name="submit" value="<?php echo $lang['submit']; ?>" class="btn btn-default btn-sm">
+				<a href="home.php"><button type="button" class="btn btn-primary btn-sm"><?php echo $lang['cancel']; ?></button></a>
 				</form>
                         </div>
                         <!-- /.panel-body -->
 						<div class="panel-footer">
 <?php 
-$query="select * from weather";
-$result = $conn->query($query);
-$weather = mysqli_fetch_array($result);
+ShowWeather($conn);
 ?>
-Outside: <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
-<span><img border="0" width="24" src="images/<?php echo $weather['img'];?>.png" title="<?php echo $weather['title'];?> - 
-<?php echo $weather['description'];?>"></span> <span><?php echo $weather['title'];?> - 
-<?php echo $weather['description'];?></span>
                             <div class="pull-right">
                                 <div class="btn-group">
                                 </div>

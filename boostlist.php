@@ -26,14 +26,14 @@ require_once(__DIR__.'/st_inc/functions.php');
 ?>
                     <div class="panel panel-primary">
                         <div class="panel-heading">
-                            <i class="fa fa-rocket fa-fw"></i>  Boost    
+                            <i class="fa fa-rocket fa-fw"></i>  <?php echo $lang['boost']; ?>    
 						<div class="pull-right"> <div class="btn-group"><?php echo date("H:i"); ?></div> </div>
                         </div>
                         <!-- /.panel-heading -->
 <div class="panel-body">
 <ul class="chat"> 
 <?php 
-$query = "SELECT boost.id, boost.status, boost.zone_id, zone.index_id, boost.time, boost.temperature, boost.minute FROM boost join zone on boost.zone_id = zone.id order by zone.index_id";
+$query = "SELECT boost.id, boost.status, boost.zone_id, zone.index_id, boost.time, boost.temperature, boost.minute FROM boost join zone on boost.zone_id = zone.id WHERE boost.`purge` = '0' order by zone.index_id, boost.temperature;";
 $results = $conn->query($query);
 while ($row = mysqli_fetch_assoc($results)) {
 	//query to search location device_id		
@@ -46,10 +46,10 @@ while ($row = mysqli_fetch_assoc($results)) {
 	if ($zone_status != 0) {
 		echo '
 		<li class="left clearfix animated fadeIn">
-		<a href="javascript:active_boost('.$row["zone_id"].');">
+		<a href="javascript:active_boost('.$row["id"].');">
 		<span class="chat-img pull-left override">';
 		if($row["status"]=="0"){ $shactive="bluesch"; $status="Off"; }else{ $shactive="redsch"; $status="On"; }
-		echo '<div class="circle '. $shactive.'"><p class="schdegree">'.$row["temperature"].'&deg;</p></div>
+		echo '<div class="circle '. $shactive.'"><p class="schdegree">'.number_format(DispTemp($conn,$row["temperature"]),0).'&deg;</p></div>
 		</span></a>
 		<div class="chat-body clearfix">
 		<div class="header">';
@@ -63,6 +63,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 		<span class="pull-right text-muted small"><em> <img src="images/'.$pi_image.'" border="0"></em></span>
 		<br>';
 		if($row["status"]=="1"){echo '&nbsp;&nbsp;'.date("Y-m-d H:i", $boost_time).'';}
+		else{echo '&nbsp;&nbsp;'. number_format(($row['minute']),0).' minutes';}
 		echo '';
 		echo '</div></div></li>';				
 	}	
@@ -73,15 +74,8 @@ while ($row = mysqli_fetch_assoc($results)) {
                         <!-- /.panel-body -->
 						<div class="panel-footer">
 <?php
-$query="select * from weather";
-$result = $conn->query($query);
-$weather = mysqli_fetch_array($result);
+ShowWeather($conn);
 ?>
-
-Outside: <?php //$weather = getWeather(); ?><?php echo $weather['c'] ;?>&deg;C
-<span><img border="0" width="24" src="images/<?php echo $weather['img'];?>.png" title="<?php echo $weather['title'];?> - 
-<?php echo $weather['description'];?>"></span> <span><?php echo $weather['title'];?> - 
-<?php echo $weather['description'];?></span>
                         </div>
                     </div>
 <?php if(isset($conn)) { $conn->close();} ?>

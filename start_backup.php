@@ -67,7 +67,6 @@ $file_to_attach = $zipfname;
 $email->AddAttachment($file_to_attach);
 return $email->Send();
 
-
 if(!$mail->send()) {
    echo ' Message could not be sent Mailer Error: ' . $mail->ErrorInfo;
 } else {

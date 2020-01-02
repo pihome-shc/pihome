@@ -12,20 +12,18 @@ echo " \033[0m \n";
 echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
 echo "***************************************************************\n";
-echo "*   PiHome Datase Script Version 0.4 Build Date 31/01/2018    *\n";
-echo "*   Last Modified on 13/05/2018                               *\n";
+echo "*   PiHome Datase Script Version 0.41 Build Date 31/01/2018   *\n";
+echo "*   Last Modified on 20/06/2018                               *\n";
 echo "*                                      Have Fun - PiHome.eu   *\n";
 echo "***************************************************************\n";
 echo "\033[0m";
-echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiHome Install Script Started \n"; 
-echo "---------------------------------------------------------------------------------------- \n";
+echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiHome Database Install Script Started \n"; 
+$line = "--------------------------------------------------------------- \n";
 
 //Set php script execution time in seconds
 ini_set('max_execution_time', 400); 
 $date_time = date('Y-m-d H:i:s');
-//Temporary File to save exiting CronJobs
-$cronfile = '/tmp/crontab.txt';
-
+echo $line;
 //Check php version before doing anything else 
 $version = explode('.', PHP_VERSION);
 if ($version[0] > 7){
@@ -45,26 +43,48 @@ $dbusername = 'pihomedbadmin';
 $dbpassword = 'pihome2018';
 $connect_error = 'Sorry We are Experiencing MySQL Database Connection Problem...';
 
+echo "\033[32mMake Sure you have correct MySQL/MariaDB credentials as following \033[0m\n";
+echo "Hostname:     ".$hostname."\n";
+echo "User Name:    ".$dbname."\n";
+echo "Password:     ".$dbpassword."\n";
+echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Are you sure you want to do this?  Type 'yes' to continue? \n Exiting Database will be Deleted. \n";
+echo $line;
+/*
+$handle = fopen ("php://stdin","r");
+$response  = fgets($handle);
+if(trim($response ) != 'yes'){
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - ABORTING!!! : Run script again and Type yes to continue\n";
+    exit;
+}
+fclose($handle);
+
+*/
+
 //Test Connection to MySQL Server with Given Username & Password 
+echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Testing Connection to MySQL/MariaDB Server. \n";
 $conn = new mysqli($hostname, $dbusername, $dbpassword);
 if ($conn->connect_error){
 	die('Database Connecction Failed with Error: '.$conn->connect_error);
+}else {
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Database Server Connection Successfull \n";
 }
 
+echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Checking if Database Already Exits \n";
 $db_selected = mysqli_select_db($conn, $dbname);
 if (!$db_selected) {
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase \033[41m".$dbname."\033[0m Does not Exist \n"; 
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - DataBase \033[41m".$dbname."\033[0m Does not Exist \n"; 
 	$query = "CREATE DATABASE {$dbname};";
 	$result = $conn->query($query);
 	if ($result) {
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase \033[41m".$dbname."\033[0m Created Successfully!!! \n"; 
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - DataBase \033[41m".$dbname."\033[0m Created Successfully!!! \n"; 
 	}else {
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Error Creating Database \n"; 
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - DataBase Error Creating Database \n"; 
 		mysqli_error($conn). "\n";
 	}
 }else {
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase \033[41m".$dbname."\033[0m Already Exist. \n";
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Create Dump File for Exiting Database. \n";
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - DataBase \033[41m".$dbname."\033[0m Already Exist. \n";
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Creating Dump File for Exiting Database. \n";
+	
 	//dump all mysql database and save as sql file
 	$dumpfname = $dbname . "_" . date("Y-m-d_H-i-s").".sql";
 	$command = "mysqldump --ignore-table=$dbname.backup --add-drop-table --host=$hostname --user=$dbusername ";
@@ -75,18 +95,31 @@ if (!$db_selected) {
 		system($command);
 		// compress sql file and unlink (delete) sql file after creating zip file. 
 		$zipfname = $dbname . "_" . date("Y-m-d_H-i-s").".zip";
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Compressing Dump File \033[41m".$dumpfname."\033[0m \n";
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Compressing Database Dump File \033[41m".$dumpfname."\033[0m \n";
 		$zip = new ZipArchive();
 		if($zip->open($zipfname,ZIPARCHIVE::CREATE)){
 			$zip->addFile($dumpfname,$dumpfname);
 			$zip->close();
 			unlink($dumpfname);
-			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Compressed Dump File \033[41m".$zipfname."\033[0m \n";
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Compressed Database Dump File \033[41m".$zipfname."\033[0m \n";
+		}
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Deleting Exiting Database \n"; 
+		$query = "DROP DATABASE IF EXISTS {$dbname};";
+		$conn->query($query);
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Creating Database \n"; 
+		$query = "CREATE DATABASE {$dbname};";
+		$result = $conn->query($query);
+		if ($result) {
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - DataBase \033[41m".$dbname."\033[0m Created Successfully!!! \n"; 
+		}else {
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - DataBase Error Creating Database \n"; 
+			mysqli_error($conn). "\n";
 		}
 }
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Importing SQL File to Database \n";
+
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Importing SQL File to Database, This could take few minuts.  \n";
 	// Name of the file
-	$filename = __DIR__.'/MySQL_Database/pihome_mysql_database.sql';
+	$filename = __DIR__.'/pihome_mysql_database.sql';
 	// Select database
 	mysqli_select_db($conn, $dbname) or die('Error Selecting MySQL Database: ' . mysqli_error($conn));
 	// Temporary variable, used to store current query
@@ -109,8 +142,9 @@ if (!$db_selected) {
 				$templine = '';
 			}
 	}
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase File \033[41m".$filename."\033[0m Imported Successfully \n";
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Creating Table View \n";
+	
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - DataBase File \033[41m".$filename."\033[0m Imported Successfully \n";
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Creating Table View \n";
 
 	//Drop Table View If Exist
 	$query = "Drop View if exists schedule_daily_time_zone_view;";
@@ -119,34 +153,33 @@ if (!$db_selected) {
 	
 	//Create Table View
 	$query = "CREATE VIEW schedule_daily_time_zone_view AS 
-	select ss.id as time_id, ss.status as time_status, sstart.start, send.end, 
+	select ss.id as time_id, ss.status as time_status, sstart.start, send.end, sWeekDays.WeekDays,
 	sdtz.sync as tz_sync, sdtz.id as tz_id, sdtz.status as tz_status,
-	sdtz.zone_id, zone.index_id, zone.name as zone_name, temperature
+	sdtz.zone_id, zone.index_id, zone.name as zone_name, zt.`type`, temperature
 	from schedule_daily_time_zone sdtz
 	join schedule_daily_time ss on sdtz.schedule_daily_time_id = ss.id
 	join schedule_daily_time sstart on sdtz.schedule_daily_time_id = sstart.id
 	join schedule_daily_time send on sdtz.schedule_daily_time_id = send.id
+	join schedule_daily_time sWeekDays on sdtz.schedule_daily_time_id = sWeekDays.id
 	join zone on sdtz.zone_id = zone.id
+	join zone zt on sdtz.zone_id = zt.id
 	where sdtz.`purge` = '0' order by zone.index_id;";
 	$result = $conn->query($query);
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m schedule_daily_time_zone_view \033[0m Created \n"; }
-
 	
 	//Drop Table View If Exist
 	$query = "Drop View if exists zone_view;";
 	$result = $conn->query($query);
-	
+
 	//Create Table View
 	$query = "CREATE VIEW zone_view AS
 	select zone.status, zone.sync, zone.id, zone.index_id, zone.name, zone.type, zone.max_c, zone.max_operation_time, zone.hysteresis_time, 
-	sid.node_id as sensors_id, zone.sensor_child_id, 
+	zone.sp_deadband, sid.node_id as sensors_id, zone.sensor_child_id, 
 	cid.node_id as controler_id, zone.controler_child_id, zone.gpio_pin,
-	bid.node_id as boiler_id, 
 	lasts.last_seen, msv.ms_version, skv.sketch_version
 	from zone
 	join nodes sid on zone.sensor_id = sid.id
 	join nodes cid on zone.controler_id = cid.id
-	join nodes bid on zone.boiler_id = bid.id
 	join nodes lasts on zone.sensor_id = lasts.id
 	join nodes msv on zone.sensor_id = msv.id
 	join nodes skv on zone.sensor_id = skv.id 
@@ -154,7 +187,6 @@ if (!$db_selected) {
 	$result = $conn->query($query);
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m zone_view \033[0m Created \n"; }
 
-	
 	//Drop Table View If Exist
 	$query = "Drop View if exists boiler_view;";
 	$result = $conn->query($query);
@@ -168,7 +200,6 @@ if (!$db_selected) {
 	$result = $conn->query($query);
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m boiler_view \033[0m Created \n"; }
 
-
 	//Drop Table View If Exist
 	$query = "Drop View if exists boost_view;";
 	$result = $conn->query($query);
@@ -181,7 +212,6 @@ if (!$db_selected) {
 	join zone zone_idx on boost.zone_id = zone_idx.id;";
 	$result = $conn->query($query);
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m boost_view \033[0m Created \n"; }
-	
 
 	//Drop Table View If Exist
 	$query = "Drop View if exists override_view;";
@@ -210,7 +240,6 @@ if (!$db_selected) {
 	join schedule_night_climate_time tnct on ncz.schedule_night_climate_id = tnct.id;";
 	$result = $conn->query($query);
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m schedule_night_climat_zone_view \033[0m Created \n"; }
-	
 
 	//Drop Table View If Exist
 	$query = "Drop View if exists messages_in_view_24h;";
@@ -224,7 +253,6 @@ if (!$db_selected) {
 	$result = $conn->query($query);
 	if ($result) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View \033[41m messages_in_view_24h \033[0m Created \n"; }
 	
-
 	//Drop Table View If Exist
 	$query = "Drop View if exists zone_log_view;";
 	$result = $conn->query($query);
