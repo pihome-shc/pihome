@@ -34,7 +34,6 @@ logger=logging.getLogger(__name__)
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
 
-import py_access
 print bc.dtm + time.ctime() + bc.ENDC + ' - DS18B20 Temperature Sensors Script Started'
 print "-" * 68
 
