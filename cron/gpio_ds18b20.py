@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import time, os, fnmatch, MySQLdb as mdb, logging
+import time, os, fnmatch, MySQLdb as mdb, logging, py_access
 from decimal import Decimal
 class bc:
 	hed = '\033[0;36;40m'
