@@ -35,14 +35,7 @@ if ($version[0] > 7){
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - php version \033[41m".phpversion()."\033[0m looks OK \n";
 }
 
-/*********************************************************
- * Modify Following variable according to your settings  *
- *********************************************************/
-$hostname = 'localhost';
-$dbname   = 'pihome';
-$dbusername = 'root';
-$dbpassword = 'passw0rd';
-$connect_error = 'Sorry We are Experiencing MySQL Database Connection Problem...';
+require_once(__DIR__.'/../st_inc/_config.inc.php');
 
 echo "\033[32mMake Sure you have correct MySQL/MariaDB credentials as following \033[0m\n";
 echo "Hostname:     ".$hostname."\n";
