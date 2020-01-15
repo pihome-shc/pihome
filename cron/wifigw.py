@@ -27,18 +27,12 @@ print "*      Version 0.08 - Last Modified 20/07/2019         *"
 print "*                                 Have Fun - PiHome.eu *"
 print "********************************************************"
 print " " + bc.ENDC
-import sys, telnetlib, MySQLdb as mdb, time
+import sys, telnetlib, MySQLdb as mdb, time, py_access
 # ref: https://forum.mysensors.org/topic/7818/newline-of-debug-output/2
 # stty -F /dev/ttyUSB0 115200
 # cat /dev/ttyUSB0
 
-#PiHome Database Settings Variables 
-dbhost = 'localhost'
-dbuser = 'root'
-dbpass = 'passw0rd'
-dbname = 'pihome'
-
-con = mdb.connect(dbhost, dbuser, dbpass, dbname)
+con = py_access.get_connection()
 cur = con.cursor()
 cur.execute('SELECT * FROM gateway where status = 1 order by id asc limit 1')
 row = cur.fetchone();
