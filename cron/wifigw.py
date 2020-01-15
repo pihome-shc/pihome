@@ -52,7 +52,7 @@ tn = telnetlib.Telnet(gatewayip, gatewayport, timeout) # Connect mysensors gatew
 #tn = telnetlib.Telnet(mysgw, mysport, timeout) # Connect mysensors gateway 
 while 1:
 	try:
-		con = mdb.connect(dbhost, dbuser, dbpass, dbname) # MySQL Database Connection Settings
+		con = py_access.get_connection() # MySQL Database Connection Settings
 		cur = con.cursor() # Cursor object to Current Connection
 		cur.execute('SELECT COUNT(*) FROM `messages_out` where sent = 0') # MySQL query statement
 		count = cur.fetchone() # Grab all messages from database for Outgoing. 
@@ -110,7 +110,7 @@ while 1:
 	except EOFError as e:
 		try:
 			print "Connection Lost to Smart Home Gateway with Error: %s" % e
-			con = mdb.connect(dbhost, dbuser, dbpass, dbname)
+			con = py_access.get_connection()
 			cur = con.cursor()
 			#e = "Connection Lost to Smart Home Gateway" + e 
 			cur.execute("INSERT INTO notice(message) VALUES(%s)", (e))
@@ -144,7 +144,7 @@ while 1:
 		payload = statement[5]
 		print "Pay Load:                ", payload
 		try:
-			con = mdb.connect(dbhost, dbuser, dbpass, dbname)
+			con = py_access.get_connection()
 			cur = con.cursor()
 			
 			# ..::Step One::..
