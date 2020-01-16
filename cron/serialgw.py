@@ -29,19 +29,13 @@ print "********************************************************"
 print " "
 print " " + bc.ENDC
 
-import MySQLdb as mdb, sys, serial, time
+import MySQLdb as mdb, sys, serial, time, py_access
 
 # ref: https://forum.mysensors.org/topic/7818/newline-of-debug-output/2
 # stty -F /dev/ttyUSB0 115200
 # cat /dev/ttyUSB0
 
-#PiHome Database Settings Variables 
-dbhost = 'localhost'
-dbuser = 'root'
-dbpass = 'passw0rd'
-dbname = 'pihome'
-
-con = mdb.connect(dbhost, dbuser, dbpass, dbname)
+con = py_access.get_connection()
 cur = con.cursor()
 cur.execute('SELECT * FROM gateway where status = 1 order by id asc limit 1')
 row = cur.fetchone();
@@ -59,7 +53,7 @@ in_str = ser.readline()
 print in_str
 while 1:
 	try:
-		con = mdb.connect(dbhost, dbuser, dbpass, dbname)# MySQL Database Connection Settings
+		con = py_access.get_connection()# MySQL Database Connection Settings
 		cur = con.cursor() # Cursor object to Current Connection
 		cur.execute('SELECT COUNT(*) FROM `messages_out` where sent = 0') # MySQL query statement
 		count = cur.fetchone() # Grab all messages from database for Outgoing. 
@@ -133,7 +127,7 @@ while 1:
 		payload = statement[5]
 		print "Pay Load:                    ",payload
 		try:
-			con = mdb.connect(dbhost, dbuser, dbpass, dbname)
+			con = py_access.get_connection()
 			cur = con.cursor()
 			
 			# ..::Step One::..
