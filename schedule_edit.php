@@ -208,8 +208,9 @@ if($row['tz_status'] == 1){
     <div class="help-block with-errors"></div></div>
     
 	<div class="slidecontainer">
-		<h4><?php echo $lang['temperature']; ?>: <span id="val<?php echo $row["zone_id"];?>" style="display: inline-flex !important; font-size:18px !important;"><output name="show_temp_val" id="temp<?php echo $row["zone_id"];?>" style="padding-top:0px !important; font-size:18px !important;"><?php echo $row["temperature"];?></output>&deg;</span></h4><br>
-		<input type="range" min="<?php echo $min; ?>" max="<?php echo $max; ?>" step="0.5" value="<?php echo $row["temperature"];?>" class="slider" id="bb<?php echo $row["zone_id"];?>" name="temp[<?php echo $row["zone_id"];?>]" oninput="document.getElementById('temp<?php echo $row["zone_id"];?>').innerText = parseFloat(this.value);temp<?php echo $row["zone_id"];?>=parseFloat(this.value)">
+		<h4><?php echo $lang['temperature']; ?>: <span id="val<?php echo $row["zone_id"];?>" style="display: inline-flex !important; font-size:18px !important;"><output name="show_temp_val" id="temp<?php echo $row["tz_id"];?>" style="padding-top:0px !important; font-size:18px !important;"><?php echo DispTemp($conn, $row['temperature']) ?></output></span>&deg;</h4><br>
+		<input type="range" min="<?php echo $min; ?>" max="<?php echo $max; ?>" step="0.5" value="<?php echo DispTemp($conn, $row['temperature']) ?>" class="slider" id="bb<?php echo $row["tz_id"];?>" name="temp[<?php echo $row["tz_id"];?>]" oninput="document.getElementById('temp<?php echo $row["tz_id"];?>').innerText = parseFloat(this.value);temp<?php echo $row["tz_id"];?>=parseFloat(this.value)">
+		
 	</div>
     </div></div>
 
