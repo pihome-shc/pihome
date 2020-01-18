@@ -36,7 +36,11 @@ if ($version[0] > 7){
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PHP Version \033[41m".phpversion()."\033[0m Looks OK \n";
 }
 
-require_once(__DIR__.'st_inc/connection.php');
+$settings = parse_ini_file(__DIR__.'/../db_config.ini');
+foreach ($settings as $key => $setting) {
+    // Notice the double $$, this tells php to create a variable with the same name as key
+    $$key = $setting;
+}
 
 $db_selected = mysqli_select_db($conn, $dbname);
 if (!$db_selected) {
