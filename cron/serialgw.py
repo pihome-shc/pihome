@@ -29,13 +29,25 @@ print "********************************************************"
 print " "
 print " " + bc.ENDC
 
-import MySQLdb as mdb, sys, serial, time, py_access
+import MySQLdb as mdb, sys, serial, time
+try:
+    from configparser import ConfigParser
+except ImportError:
+    from ConfigParser import ConfigParser
 
 # ref: https://forum.mysensors.org/topic/7818/newline-of-debug-output/2
 # stty -F /dev/ttyUSB0 115200
 # cat /dev/ttyUSB0
 
-con = py_access.get_connection()
+# Initialise the database access varables
+config = ConfigParser()
+config.read('../db_config.ini')
+dbhost = config.get('db', 'hostname')
+dbuser = config.get('db', 'dbusername')
+dbpass = config.get('db', 'dbpassword')
+dbname = config.get('db', 'dbname')
+
+con = mdb.connect(dbhost, dbuser, dbpass, dbname)
 cur = con.cursor()
 cur.execute('SELECT * FROM gateway where status = 1 order by id asc limit 1')
 row = cur.fetchone();
@@ -53,7 +65,7 @@ in_str = ser.readline()
 print in_str
 while 1:
 	try:
-		con = py_access.get_connection()# MySQL Database Connection Settings
+		con = mdb.connect(dbhost, dbuser, dbpass, dbname)# MySQL Database Connection Settings
 		cur = con.cursor() # Cursor object to Current Connection
 		cur.execute('SELECT COUNT(*) FROM `messages_out` where sent = 0') # MySQL query statement
 		count = cur.fetchone() # Grab all messages from database for Outgoing. 
@@ -127,7 +139,7 @@ while 1:
 		payload = statement[5]
 		print "Pay Load:                    ",payload
 		try:
-			con = py_access.get_connection()
+			con = mdb.connect(dbhost, dbuser, dbpass, dbname)
 			cur = con.cursor()
 			
 			# ..::Step One::..

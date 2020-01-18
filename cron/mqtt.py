@@ -1,9 +1,13 @@
 #!/usr/bin/python
 import sys
-import time, os, fnmatch, MySQLdb as mdb, logging, py_access
+import time, os, fnmatch, MySQLdb as mdb, logging
 import paho.mqtt.client as mqtt
 import json
 from decimal import Decimal
+try:
+    from configparser import ConfigParser
+except ImportError:
+    from ConfigParser import ConfigParser
 class bc:
 	hed = '\033[0;36;40m'
 	dtm = '\033[0;36;40m'
@@ -33,6 +37,14 @@ print " " + bc.ENDC
 logging.basicConfig(filename='/var/www/cron/logs/MQTT_error.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(name)s %(message)s')
 logger=logging.getLogger(__name__)
 
+# Initialise the database access varables
+config = ConfigParser()
+config.read('../db_config.ini')
+dbhost = config.get('db', 'hostname')
+dbuser = config.get('db', 'dbusername')
+dbpass = config.get('db', 'dbpassword')
+dbname = config.get('db', 'dbname')
+
 print bc.dtm + time.ctime() + bc.ENDC + ' - MQTT Temperature Sensors Script Started'
 print "-" * 68
 
@@ -58,7 +70,7 @@ clients=[]
 #Function for Storing DS18B20 Temperature Readings into MySQL
 def insertDB(IDs, temperature):
 	try:
-		con = py_access.get_connection()
+		con = mdb.connect(dbhost, dbuser, dbpass, dbname)
 		cur = con.cursor()
 		for i in range(0,len(temperature)):
 			#Check if Sensors Already Exit in Nodes Table, if no then add Sensors into Nodes Table otherwise just update Temperature Readings. 
