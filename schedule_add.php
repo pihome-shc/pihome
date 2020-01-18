@@ -191,8 +191,8 @@ while ($row = mysqli_fetch_assoc($results)) {
     <div class="help-block with-errors"></div></div>
     
 	<div class="slidecontainer">
-		<h4><?php echo $lang['temperature']; ?>: <span id="val<?php echo $row["id"];?>"></span>&deg;</h4><br>
-		<input type="range" min="<?php echo $min; ?>" max="<?php echo $max; ?>" step="0.5" value="15.0" class="slider" id="bb<?php echo $row["id"];?>" name="temp[<?php echo $row["id"];?>]">
+		<h4><?php echo $lang['temperature']; ?>: <span id="val<?php echo $row["id"];?>"style="display: inline-flex !important; font-size:18px !important;"><output name="show_temp_val" id="temp<?php echo $row["id"];?>" style="padding-top:0px !important; font-size:18px !important;">15.0</output></span>&deg;</h4><br>
+		<input type="range" min="<?php echo $min; ?>" max="<?php echo $max; ?>" step="0.5" value="15.0" class="slider" id="bb<?php echo $row["id"];?>" name="temp[<?php echo $row["id"];?>]" oninput="document.getElementById('temp<?php echo $row["id"];?>').innerText = parseFloat(this.value);temp<?php echo $row["id"];?>=parseFloat(this.value)">
 	</div>
 	</div>
 <?php }?>
