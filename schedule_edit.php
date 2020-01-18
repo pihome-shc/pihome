@@ -206,7 +206,14 @@ if($row['tz_status'] == 1){
     <label for="coop<?php echo $row["tz_id"];?>">Coop Start</label> <i class="glyphicon glyphicon-leaf green"></i>
 	<i class="fa fa-info-circle fa-lg text-info" data-container="body" data-toggle="popover" data-placement="right" data-content="<?php echo $lang['schedule_coop_help']; ?>"></i>
     <div class="help-block with-errors"></div></div>
-    
+     		<script src="js/jquery.js"></script>
+    		<script src="js/bootstrap.min.js"></script>
+	<script>
+// popover Initialization
+$(function () {
+$('[data-toggle="popover"]').popover()
+})
+</script>
 	<div class="slidecontainer">
 		<h4><?php echo $lang['temperature']; ?>: <span id="val<?php echo $row["zone_id"];?>" style="display: inline-flex !important; font-size:18px !important;"><output name="show_temp_val" id="temp<?php echo $row["tz_id"];?>" style="padding-top:0px !important; font-size:18px !important;"><?php echo DispTemp($conn, $row['temperature']) ?></output></span>&deg;</h4><br>
 		<input type="range" min="<?php echo $min; ?>" max="<?php echo $max; ?>" step="0.5" value="<?php echo DispTemp($conn, $row['temperature']) ?>" class="slider" id="bb<?php echo $row["tz_id"];?>" name="temp[<?php echo $row["tz_id"];?>]" oninput="document.getElementById('temp<?php echo $row["tz_id"];?>').innerText = parseFloat(this.value);temp<?php echo $row["tz_id"];?>=parseFloat(this.value)">
