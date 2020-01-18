@@ -20,7 +20,7 @@ echo "\033[0m";
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiHome Database Update Script Started \n"; 
 $line = "--------------------------------------------------------------- \n";
 
-require_once(__DIR__.'../../st_inc/dbStruct.php');
+require_once(__DIR__.'../st_inc/dbStruct.php');
 //Set php script execution time in seconds
 ini_set('max_execution_time', 400); 
 $date_time = date('Y-m-d H:i:s');
