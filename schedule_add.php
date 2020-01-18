@@ -189,7 +189,14 @@ while ($row = mysqli_fetch_assoc($results)) {
 	<i class="glyphicon glyphicon-leaf green"></i> 
 	<i class="fa fa-info-circle fa-lg text-info" data-container="body" data-toggle="popover" data-placement="right" data-content="<?php echo $lang['schedule_coop_help']; ?>"></i>
     <div class="help-block with-errors"></div></div>
-    
+        		<script src="js/jquery.js"></script>
+    		<script src="js/bootstrap.min.js"></script>
+	<script>
+// popover Initialization
+$(function () {
+$('[data-toggle="popover"]').popover()
+})
+</script>
 	<div class="slidecontainer">
 		<h4><?php echo $lang['temperature']; ?>: <span id="val<?php echo $row["id"];?>"style="display: inline-flex !important; font-size:18px !important;"><output name="show_temp_val" id="temp<?php echo $row["id"];?>" style="padding-top:0px !important; font-size:18px !important;">15.0</output></span>&deg;</h4><br>
 		<input type="range" min="<?php echo $min; ?>" max="<?php echo $max; ?>" step="0.5" value="15.0" class="slider" id="bb<?php echo $row["id"];?>" name="temp[<?php echo $row["id"];?>]" oninput="document.getElementById('temp<?php echo $row["id"];?>').innerText = parseFloat(this.value);temp<?php echo $row["id"];?>=parseFloat(this.value)">
