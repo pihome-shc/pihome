@@ -103,16 +103,78 @@
 #define RF24_DATARATE 	   RF24_250KBPS
 
 #define MY_GATEWAY_ESP8266
+#include <ESP8266WiFi.h>          //https://github.com/esp8266/Arduino
 
-#define MY_ESP8266_SSID "my_wifi_id"
-#define MY_ESP8266_PASSWORD "my_wifi_password"
+//needed for library
+#include <DNSServer.h>
+#include <ESP8266WebServer.h>
+#include <WiFiManager.h>          //https://github.com/kentaylor/WiFiManager
+#include <DoubleResetDetector.h>  //https://github.com/datacute/DoubleResetDetector
+
+// Number of seconds after reset during which a 
+// subseqent reset will be considered a double reset.
+#define DRD_TIMEOUT 10
+
+// RTC Memory Address for the DoubleResetDetector to use
+#define DRD_ADDRESS 0
+
+DoubleResetDetector drd(DRD_TIMEOUT, DRD_ADDRESS);
+// Indicates whether ESP has WiFi credentials saved from previous session, or double reset detected
+bool initialConfig = false;
+
+void setup() {
+     Serial.begin(115200);
+  Serial.println("\n Starting");
+  WiFi.printDiag(Serial); //Remove this line if you do not want to see WiFi password printed
+  if (WiFi.SSID()==""){
+    Serial.println("We haven't got any access point credentials, so get them now");   
+    initialConfig = true;
+  }
+  if (drd.detectDoubleReset()) {
+    Serial.println("Double Reset Detected");
+    initialConfig = true;
+  }
+  if (initialConfig) {
+    Serial.println("Starting configuration portal.");
+    //Local intialization. Once its business is done, there is no need to keep it around
+    WiFiManager wifiManager;
+
+    //sets timeout in seconds until configuration portal gets turned off.
+    //If not specified device will remain in configuration mode until
+    //switched off via webserver or device is restarted.
+    //wifiManager.setConfigPortalTimeout(600);
+
+    //it starts an access point 
+    //and goes into a blocking loop awaiting configuration
+    if (!wifiManager.startConfigPortal()) {
+      Serial.println("Not connected to WiFi but continuing anyway.");
+    } else {
+      //if you get here you have connected to the WiFi
+      Serial.println("connected...yeey :)");
+    }
+    ESP.reset(); // This is a bit crude. For some unknown reason webserver can only be started once per boot up 
+    // so resetting the device allows to go back into config mode again when it reboots.
+    delay(5000);
+  }
+	
+  WiFi.mode(WIFI_STA); // Force to station mode because if device was switched off while in access point mode it will start up next time in access point mode.
+  unsigned long startedAt = millis();
+  Serial.print("After waiting ");
+  int connRes = WiFi.waitForConnectResult();
+  float waited = (millis()- startedAt);
+  Serial.print(waited/1000);
+  Serial.print(" secs in setup() connection result is ");
+  Serial.println(connRes);
+  if (WiFi.status()!=WL_CONNECTED){
+    Serial.println("failed to connect, finishing setup anyway");
+  } else{
+    Serial.print("local ip: ");
+    Serial.println(WiFi.localIP());
+  }
+}
 
 // Enable UDP communication
 //#define MY_USE_UDP // If using UDP you need to set MY_CONTROLLER_IP_ADDRESS below
-
-// Set the hostname for the WiFi Client. This is the hostname
-// it will pass to the DHCP server if not static.
-#define MY_ESP8266_HOSTNAME "PiHome_Gateway"
 
 // Enable MY_IP_ADDRESS here if you want a static ip address (no DHCP)
 //#define MY_IP_ADDRESS 192,168,99,4
@@ -155,13 +217,8 @@
 #include <WiFiUdp.h>
 #endif
 
-#include <ESP8266WiFi.h>
-
 #include <MySensors.h>
 
-void setup()
-{
-}
 
 void presentation()
 {
@@ -171,5 +228,10 @@ void presentation()
 
 void loop()
 {
+  // Call the double reset detector loop method every so often,
+  // so that it can recognise when the timeout expires.
+  // You can also call drd.stop() when you wish to no longer
+  // consider the next reset as a double reset.
+	drd.loop();
 	// Send locally attached sensors data here
 }

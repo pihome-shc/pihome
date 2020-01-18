@@ -28,17 +28,12 @@ print "********************************************************"
 print " "
 print " " + bc.ENDC
 
-import MySQLdb as mdb, datetime, sys, smtplib, string
+import MySQLdb as mdb, datetime, sys, smtplib, string, py_access
 
-#PiHome Database Settings Variables
-dbhost = 'localhost'
-dbuser = 'root'
-dbpass = 'passw0rd'
-dbname = 'pihome'
 
 # Create the container (outer) email message.
 try:
-        con = mdb.connect(dbhost, dbuser, dbpass, dbname)
+        con = py_access.get_connection()
         cursorselect = con.cursor()
         query = ("SELECT * FROM email;")
         cursorselect.execute(query)

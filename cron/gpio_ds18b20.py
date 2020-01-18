@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import time, os, fnmatch, MySQLdb as mdb, logging
+import time, os, fnmatch, MySQLdb as mdb, logging, py_access
 from decimal import Decimal
 class bc:
 	hed = '\033[0;36;40m'
@@ -34,19 +34,13 @@ logger=logging.getLogger(__name__)
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
 
-#Database Settings Variables 
-dbhost = 'localhost'
-dbuser = 'root'
-dbpass = 'passw0rd'
-dbname = 'pihome'
-
 print bc.dtm + time.ctime() + bc.ENDC + ' - DS18B20 Temperature Sensors Script Started'
 print "-" * 68
 
 #Function for Storing DS18B20 Temperature Readings into MySQL
 def insertDB(IDs, temperature):
 	try:
-		con = mdb.connect(dbhost, dbuser, dbpass, dbname);
+		con = py_access.get_connection();
 		cur = con.cursor()
 		for i in range(0,len(temperature)):
 			#Check if Sensors Already Exit in Nodes Table, if no then add Sensors into Nodes Table otherwise just update Temperature Readings. 

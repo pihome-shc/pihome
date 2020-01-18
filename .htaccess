@@ -1,0 +1,34 @@
+# compress text, html, javascript, css, xml:
+AddOutputFilterByType DEFLATE text/plain
+AddOutputFilterByType DEFLATE text/html
+AddOutputFilterByType DEFLATE text/xml
+AddOutputFilterByType DEFLATE text/css
+AddOutputFilterByType DEFLATE application/xml
+AddOutputFilterByType DEFLATE application/xhtml+xml
+AddOutputFilterByType DEFLATE application/rss+xml
+AddOutputFilterByType DEFLATE application/javascript
+AddOutputFilterByType DEFLATE application/x-javascript
+
+##Add caching
+# year
+<FilesMatch "\.(ico|pdf|flv|jpg|jpeg|png|gif|swf|mp3|mp4)$">
+Header set Cache-Control "public"
+Header set Expires "Thu, 15 Apr 2050 20:00:00 GMT"
+Header unset Last-Modified
+</FilesMatch>
+#sensitive files - 1 second
+<FilesMatch "\.(html|htm|xml|txt|xsl)$">
+Header set Cache-Control "max-age=1, must-revalidate"
+</FilesMatch>
+#css/js
+<FilesMatch "\.(js|css)$">
+SetOutputFilter DEFLATE
+Header set Expires "Thu, 15 Apr 2050 20:00:00 GMT"
+</FilesMatch>
+
+# DirectoryIndex: sets the file that Apache will serve if a directory is requested.
+DirectoryIndex index.html index.php /index.php
+
+# AddEncoding allows you to have certain browsers uncompress information on the fly. Note: Not all browsers support this.
+AddEncoding x-compress .Z
+AddEncoding x-gzip .gz .tgz
