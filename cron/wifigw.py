@@ -28,18 +28,15 @@ print "*                                 Have Fun - PiHome.eu *"
 print "********************************************************"
 print " " + bc.ENDC
 import sys, telnetlib, MySQLdb as mdb, time
-try:
-    from configparser import ConfigParser
-except ImportError:
-    from ConfigParser import ConfigParser
+import ConfigParser
 
 # ref: https://forum.mysensors.org/topic/7818/newline-of-debug-output/2
 # stty -F /dev/ttyUSB0 115200
 # cat /dev/ttyUSB0
 
 # Initialise the database access varables
-config = ConfigParser()
-config.read('../db_config.ini')
+config = ConfigParser.ConfigParser()
+config.read('../st_inc/db_config.ini')
 dbhost = config.get('db', 'hostname')
 dbuser = config.get('db', 'dbusername')
 dbpass = config.get('db', 'dbpassword')
