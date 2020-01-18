@@ -442,8 +442,8 @@ border: 2px solid #5292f7;
 color:#5292f7;
 }
 .bluesch {
-border: 1px solid #5292f7;
-color:#5292f7;
+border: 1px solid #ff0000;
+color:#ff0000;
 background-color: #eef4ff;
 }
 
@@ -452,8 +452,8 @@ border: 1px solid #ff8839;
 color:#ff8839;
 }
 .orangesch{
-border: 1.6px solid #ff8839;
-color:#ff8839;
+border: 1.6px solid #2cc353;
+color:#2cc353;
 }
 
 .week_day {
@@ -533,11 +533,11 @@ color:#31708F;
 }
 
 .orangefa{
-color: #ff8839;
+color: #2cc353;
 }
 
 .bluefa {
-color: #428BCA;
+color: #ff0000;
 
 }
 
