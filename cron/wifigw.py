@@ -27,12 +27,25 @@ print "*      Version 0.08 - Last Modified 20/07/2019         *"
 print "*                                 Have Fun - PiHome.eu *"
 print "********************************************************"
 print " " + bc.ENDC
-import sys, telnetlib, MySQLdb as mdb, time, py_access
+import sys, telnetlib, MySQLdb as mdb, time
+try:
+    from configparser import ConfigParser
+except ImportError:
+    from ConfigParser import ConfigParser
+
 # ref: https://forum.mysensors.org/topic/7818/newline-of-debug-output/2
 # stty -F /dev/ttyUSB0 115200
 # cat /dev/ttyUSB0
 
-con = py_access.get_connection()
+# Initialise the database access varables
+config = ConfigParser()
+config.read('../db_config.ini')
+dbhost = config.get('db', 'hostname')
+dbuser = config.get('db', 'dbusername')
+dbpass = config.get('db', 'dbpassword')
+dbname = config.get('db', 'dbname')
+
+con = mdb.connect(dbhost, dbuser, dbpass, dbname)
 cur = con.cursor()
 cur.execute('SELECT * FROM gateway where status = 1 order by id asc limit 1')
 row = cur.fetchone();
@@ -52,7 +65,7 @@ tn = telnetlib.Telnet(gatewayip, gatewayport, timeout) # Connect mysensors gatew
 #tn = telnetlib.Telnet(mysgw, mysport, timeout) # Connect mysensors gateway 
 while 1:
 	try:
-		con = py_access.get_connection() # MySQL Database Connection Settings
+		con = mdb.connect(dbhost, dbuser, dbpass, dbname) # MySQL Database Connection Settings
 		cur = con.cursor() # Cursor object to Current Connection
 		cur.execute('SELECT COUNT(*) FROM `messages_out` where sent = 0') # MySQL query statement
 		count = cur.fetchone() # Grab all messages from database for Outgoing. 
@@ -110,7 +123,7 @@ while 1:
 	except EOFError as e:
 		try:
 			print "Connection Lost to Smart Home Gateway with Error: %s" % e
-			con = py_access.get_connection()
+			con = mdb.connect(dbhost, dbuser, dbpass, dbname)
 			cur = con.cursor()
 			#e = "Connection Lost to Smart Home Gateway" + e 
 			cur.execute("INSERT INTO notice(message) VALUES(%s)", (e))
@@ -144,7 +157,7 @@ while 1:
 		payload = statement[5]
 		print "Pay Load:                ", payload
 		try:
-			con = py_access.get_connection()
+			con = mdb.connect(dbhost, dbuser, dbpass, dbname)
 			cur = con.cursor()
 			
 			# ..::Step One::..
