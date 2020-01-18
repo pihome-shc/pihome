@@ -28,12 +28,23 @@ print "********************************************************"
 print " "
 print " " + bc.ENDC
 
-import MySQLdb as mdb, datetime, sys, smtplib, string, py_access
+import MySQLdb as mdb, datetime, sys, smtplib, string
+try:
+    from configparser import ConfigParser
+except ImportError:
+    from ConfigParser import ConfigParser
 
+# Initialise the database access varables
+config = ConfigParser()
+config.read('../db_config.ini')
+dbhost = config.get('db', 'hostname')
+dbuser = config.get('db', 'dbusername')
+dbpass = config.get('db', 'dbpassword')
+dbname = config.get('db', 'dbname')
 
 # Create the container (outer) email message.
 try:
-        con = py_access.get_connection()
+        con = mdb.connect(dbhost, dbuser, dbpass, dbname)
         cursorselect = con.cursor()
         query = ("SELECT * FROM email;")
         cursorselect.execute(query)
