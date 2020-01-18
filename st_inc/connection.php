@@ -1,5 +1,5 @@
 <?php 
-$settings = parse_ini_file(__DIR__.'/../db_config.ini');
+$settings = parse_ini_file(__DIR__.'/db_config.ini');
 foreach ($settings as $key => $setting) {
     // Notice the double $$, this tells php to create a variable with the same name as key
     $$key = $setting;

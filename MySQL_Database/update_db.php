@@ -20,7 +20,7 @@ echo "\033[0m";
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiHome Database Update Script Started \n"; 
 $line = "--------------------------------------------------------------- \n";
 
-require_once(__DIR__.'../../st_inc/dbStruct.php');
+require_once(__DIR__.'../st_inc/dbStruct.php');
 //Set php script execution time in seconds
 ini_set('max_execution_time', 400); 
 $date_time = date('Y-m-d H:i:s');
@@ -35,7 +35,7 @@ if ($version[0] > 7){
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - php version \033[41m".phpversion()."\033[0m looks OK \n";
 }
 
-$settings = parse_ini_file(__DIR__.'/../db_config.ini');
+$settings = parse_ini_file(__DIR__.'/../st_inc/db_config.ini');
 foreach ($settings as $key => $setting) {
     // Notice the double $$, this tells php to create a variable with the same name as key
     $$key = $setting;

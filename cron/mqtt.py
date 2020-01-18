@@ -4,10 +4,7 @@ import time, os, fnmatch, MySQLdb as mdb, logging
 import paho.mqtt.client as mqtt
 import json
 from decimal import Decimal
-try:
-    from configparser import ConfigParser
-except ImportError:
-    from ConfigParser import ConfigParser
+import ConfigParser
 class bc:
 	hed = '\033[0;36;40m'
 	dtm = '\033[0;36;40m'
@@ -38,8 +35,8 @@ logging.basicConfig(filename='/var/www/cron/logs/MQTT_error.log', level=logging.
 logger=logging.getLogger(__name__)
 
 # Initialise the database access varables
-config = ConfigParser()
-config.read('../db_config.ini')
+config = ConfigParser.ConfigParser()
+config.read('../st_inc/db_config.ini')
 dbhost = config.get('db', 'hostname')
 dbuser = config.get('db', 'dbusername')
 dbpass = config.get('db', 'dbpassword')
