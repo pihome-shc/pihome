@@ -34,7 +34,7 @@ if ($version[0] > 7){
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - php version \033[41m".phpversion()."\033[0m looks OK \n";
 }
 
-$settings = parse_ini_file(__DIR__.'/../db_config.ini');
+$settings = parse_ini_file(__DIR__.'/../st_inc/db_config.ini');
 foreach ($settings as $key => $setting) {
     // Notice the double $$, this tells php to create a variable with the same name as key
     $$key = $setting;
