@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import socket, re, time, MySQLdb as mdb
 from ping import *
+import ConfigParser
 class bc:
 	hed = '\033[0;36;40m'
 	dtm = '\033[0;36;40m'
@@ -35,11 +36,13 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.connect(('google.com', 0))
 ip = s.getsockname()[0]
 
-#PiHome Database Settings Variables 
-dbhost = 'localhost'
-dbuser = 'root'
-dbpass = 'passw0rd'
-dbname = 'pihome'
+# Initialise the database access varables
+config = ConfigParser.ConfigParser()
+config.read('/var/www/st_inc/db_config.ini')
+dbhost = config.get('db', 'hostname')
+dbuser = config.get('db', 'dbusername')
+dbpass = config.get('db', 'dbpassword')
+dbname = config.get('db', 'dbname')
 
 #Port Number defined for MySensors Gateway
 port = 5003
