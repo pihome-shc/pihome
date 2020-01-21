@@ -38,7 +38,7 @@ import ConfigParser
 
 # Initialise the database access varables
 config = ConfigParser.ConfigParser()
-config.read('../st_inc/db_config.ini')
+config.read('/var/www/st_inc/db_config.ini')
 dbhost = config.get('db', 'hostname')
 dbuser = config.get('db', 'dbusername')
 dbpass = config.get('db', 'dbpassword')
