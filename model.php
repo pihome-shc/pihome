@@ -526,7 +526,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 }
 echo '</div></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
             </div>
         </div>
     </div>
@@ -561,7 +561,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 }
 echo '</div></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
             </div>
         </div>
     </div>
@@ -587,7 +587,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 		<i class=\"glyphicon glyphicon-th-large orange\"></i> ".$row['name']."
 		<span class=\"pull-right \"><em>&nbsp;&nbsp;<small> ".$lang['max']." ".$row['max_c']."&deg; </em> - ".$lang['sensor'].": ".$row['sensors_id']." - ".$lang['ctr'].": ".$row['controler_id']."-".$row['controler_child_id']."</small></span> 
 		<br><span class=\"pull-right \"><small>
-		<a href=\"zone_edit.php?id=".$row['id']."\" class=\"btn btn-default btn-xs login\"><span class=\"ionicons ion-edit\"></span></a>&nbsp;&nbsp;
+		<a href=\"zone_add.php?id=".$row['id']."\" class=\"btn btn-default btn-xs login\"><span class=\"ionicons ion-edit\"></span></a>&nbsp;&nbsp;
 		<a href=\"javascript:delete_zone(".$row['id'].");\"><button class=\"btn btn-danger btn-xs\"><span class=\"glyphicon glyphicon-trash\"></span></button></a>
 		</small></span>
 		<br>
@@ -597,7 +597,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 		<i class=\"glyphicon glyphicon-th-large orange\"></i> ".$row['name']."
 		<span class=\"pull-right \"><em>&nbsp;&nbsp;<small> ".$lang['max']." ".$row['max_c']."&deg; </em> - ".$lang['sensor'].": ".$row['sensors_id']." - GPIO: ".$row['gpio_pin']."</small></span>
 		<br><span class=\"pull-right \"><small>
-		<a href=\"zone_edit.php?id=".$row['id']."\" class=\"btn btn-default btn-xs login\"><span class=\"ionicons ion-edit\"></span></a>&nbsp;&nbsp;
+		<a href=\"zone_add.php?id=".$row['id']."\" class=\"btn btn-default btn-xs login\"><span class=\"ionicons ion-edit\"></span></a>&nbsp;&nbsp;
 		<a href=\"javascript:delete_zone(".$row['id'].");\"><button class=\"btn btn-danger btn-xs\"><span class=\"glyphicon glyphicon-trash\"></span></button></a>
 		</small></span>
 		<br>
@@ -606,8 +606,9 @@ while ($row = mysqli_fetch_assoc($results)) {
 }
 echo '
 </div></div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
+			<div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
+                <a class="btn btn-default login btn-sm" href="zone_add.php">'.$lang['zone_add'].'</a>
             </div>
         </div>
     </div>
@@ -818,7 +819,7 @@ while ($file_handle && !feof($file_handle)) {
 fclose($file_handle);
 echo ' </div></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
             </div>
         </div>
     </div>
@@ -852,7 +853,7 @@ echo '
 				</div>				
            </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
             </div>
         </div>
     </div>
@@ -891,7 +892,7 @@ $versionList = explode("\n", $getVersions);
 }	
 echo '</div></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
             </div>
         </div>
     </div>
@@ -1000,7 +1001,7 @@ echo '
 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
             </div>
         </div>
     </div>
@@ -1039,7 +1040,7 @@ echo '
 				</div>
            </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
             </div>
         </div>
     </div>
@@ -1071,7 +1072,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 }
 echo '</div></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default login btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
             </div>
         </div>
     </div>
@@ -1103,7 +1104,7 @@ echo "
 ";
 echo '</div></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
             </div>
         </div>
     </div>

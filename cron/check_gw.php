@@ -49,25 +49,29 @@ if ($gw_reboot == '1') {
 
 //if find_gw set to 1 then start the search script and set find_gw to 0
 if ($find_gw == '1') {
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Checking Python Script Status to Find Smart Home Gateway \n";
-	exec("ps ax | grep find_mygw.py", $fgw_pids); 
-	$gw_script_txt = 'python /var/www/cron/find_mygw/find_mygw.py';
-	$fgw_position = searchArray($gw_script_txt, $fgw_pids);
-	if($fgw_position===false) {
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Search for Smart Home Gateway \033[41mNot Running\033[0m \n";
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Starting Search for Smart Home Gateway \n";
-		exec("python /var/www/cron/find_mygw/find_mygw.py </dev/null >/dev/null 2>&1 & ");
-		exec("ps aux | grep '$gw_script_txt' | grep -v grep | awk '{ print $2 }' | head -1", $out);
-		echo "\033[36m".date('Y-m-d H:i:s')."\033[0m - Search Script Started on PID: \033[41m".$out[0]."\033[0m \n";
-		echo $line;
-	} else {
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Search for Smart Home Gateway \033[42mRunning\033[0m \n";
-		exec("ps aux | grep '$gw_script_txt' | grep -v grep | awk '{ print $2 }' | head -1", $out);
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Search Script PID is: \033[42m" . $out[0]."\033[0m \n";
-		$pid_details = exec("ps -p '$out[0]' -o lstart=");
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Search Script Running Since: ".$pid_details."\n";
-		echo $line;
+	if ($gw_type != 'serial') {
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Checking Python Script Status to Find Smart Home Gateway \n";
+		exec("ps ax | grep find_mygw.py", $fgw_pids); 
+		$gw_script_txt = 'python /var/www/cron/find_mygw/find_mygw.py';
+		$fgw_position = searchArray($gw_script_txt, $fgw_pids);
+		if($fgw_position===false) {
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Search for Smart Home Gateway \033[41mNot Running\033[0m \n";
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Starting Search for Smart Home Gateway \n";
+			exec("python /var/www/cron/find_mygw/find_mygw.py </dev/null >/dev/null 2>&1 & ");
+			exec("ps aux | grep '$gw_script_txt' | grep -v grep | awk '{ print $2 }' | head -1", $out);
+			echo "\033[36m".date('Y-m-d H:i:s')."\033[0m - Search Script Started on PID: \033[41m".$out[0]."\033[0m \n";
+			echo $line;
+		} else {
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Search for Smart Home Gateway \033[42mRunning\033[0m \n";
+			exec("ps aux | grep '$gw_script_txt' | grep -v grep | awk '{ print $2 }' | head -1", $out);
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Search Script PID is: \033[42m" . $out[0]."\033[0m \n";
+			$pid_details = exec("ps -p '$out[0]' -o lstart=");
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Search Script Running Since: ".$pid_details."\n";
+			echo $line;
+		}
 	}
+	$query = "UPDATE gateway SET find_gw = '0' LIMIT 1;";
+	$conn->query($query);
 }
 //Check Gateway Logs for last 10 minuts and start search for gateway connected failed. 
 $queryg = "select count(*) as cnt from gateway_logs where pid_datetime >= DATE_SUB(NOW(), INTERVAL 10 MINUTE);";
@@ -150,7 +154,6 @@ if ($gw_type == 'wifi'){
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Python Gateway Script for Serial Gateway is \033[42mRunning\033[0m \n";
 		exec("ps aux | grep '$gw_script_txt' | grep -v grep | awk '{ print $2 }' | head -1", $out);
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - The PID is: \033[42m" . $out[0]."\033[0m \n";
-		echo $pids[$position]."\n" ;
 		$pid_details = exec("ps -p '$out[0]' -o lstart=");
 		$query = "UPDATE gateway SET pid = '{$out[0]}', pid_running_since = '{$pid_details}' LIMIT 1";
 		$conn->query($query);
