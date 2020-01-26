@@ -245,7 +245,7 @@ $new_index_id = $found_product['index_id']+1;
 <div class="form-group" class="control-label"><label><?php echo $lang['temp_sensor_id']; ?></label> <small class="text-muted"><?php echo $lang['zone_sensor_id_info'];?></small>
 <select id="sensor_id" name="sensor_id" class="form-control select2" data-error="<?php echo $lang['zone_temp_sensor_id_error']; ?>" autocomplete="off" required>
 <?php if(isset($rownode['node_id'])) { echo '<option selected >'.$rownode['node_id'].'</option>'; } ?>
-<?php  $query = "SELECT node_id, child_id_1 FROM nodes where name = 'Temperature Sensor'";
+<?php  $query = "SELECT node_id FROM nodes where name = 'Temperature Sensor'";
 $result = $conn->query($query);
 echo "<option></option>";
 while ($datarw=mysqli_fetch_array($result)) {
@@ -254,7 +254,18 @@ echo "<option>$node_id</option>";} ?>
 </select>				
 <div class="help-block with-errors"></div></div>
 
-<input type="hidden" name="sensor_child_id" value="0">			
+<!-- Temperature Sensor Child ID -->
+<div class="form-group" class="control-label"><label><?php echo $lang['temp_sensor_child_id']; ?></label> <small class="text-muted"><?php echo $lang['zone_sensor_id_info'];?></small>
+<select id="sensor_child_id" name="sensor_child_id" class="form-control select2" data-error="<?php echo $lang['zone_temp_sensor_id_error']; ?>" autocomplete="off" required>
+<?php if(isset($rownode['node_id'])) { echo '<option selected >'.$rownode['child_id_1'].'</option>'; } ?>
+<?php  $query = "SELECT child_id_1 FROM nodes where node_id = '$node_id'";
+$result = $conn->query($query);
+echo "<option></option>";
+while ($datarw=mysqli_fetch_array($result)) {
+$sensor_child_id=$datarw["child_id_1"];
+echo "<option>$sensor_child_id</option>";} ?>
+</select>
+<div class="help-block with-errors"></div></div>
 
 <!-- Zone Controller ID -->
 <div class="form-group" class="control-label"><label><?php echo $lang['zone_controller_id']; ?></label> <small class="text-muted"><?php echo $lang['zone_controler_id_info'];?></small>

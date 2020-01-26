@@ -145,6 +145,7 @@ $lang['zone_type_heating'] = "Aquecimento";
 $lang['zone_type_water'] = "Agua";
 $lang['hysteresis_time'] = "Tempo de histerese";
 $lang['temp_sensor_id'] = "ID do Sensor de Temperatura";
+$lang['temp_sensor_child_id'] = "Sensor de temperatura ID infantil";
 $lang['zone_controller_id'] = "ID do Controlador de Zona";
 $lang['zone_controller_child_id'] = "ID do Relay do controlador de Zona Secundario";
 $lang['zone_relay_gpio'] = "GPIO Pin do Relay de Zona";
