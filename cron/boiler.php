@@ -333,8 +333,10 @@ while ($row = mysqli_fetch_assoc($results)) {
 	/***************************************************************************************
 	Zone Valve Wired over I2C Interface Make sure you have i2c Interface enabled 
 	****************************************************************************************/
-/*	if ((!empty($zone_gpio_pin)) OR ($zone_gpio_pin!=0)){
-		exec("python /var/www/cron/i2c/i2c_relay.py 50 ".$boiler_goip_pin." ".$zone_status);
+/*	if ((!empty($zone_controler_child_id)) OR ($zone_controler_child_id!=0)){
+		//exec("python /var/www/cron/i2c/i2c_relay.py 50 ".$zone_gpio_pin." ".$zone_status);
+		exec("python /var/www/cron/i2c/i2c_relay.py ".$zone_controler_id." ".$zone_controler_child_id." ".$zone_status);
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Relay Broad: ".$zone_controler_id. " Relay No: ".$zone_controler_child_id." Status: ".$zone_status." \n";
 	}
 */
 	/***************************************************************************************
