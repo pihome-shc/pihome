@@ -164,6 +164,7 @@ $lang['zone_type_heating'] = "Chauffage";
 $lang['zone_type_water'] = "Eau";
 $lang['hysteresis_time'] = "Durée d'hystérésis";
 $lang['temp_sensor_id'] = "Identifiant de capteur de température";
+$lang['temp_sensor_child_id'] = "ID d'enfant de capteur de température";
 $lang['zone_controller_id'] = "Identifiant de contrôleur de zone";
 $lang['zone_controller_child_id'] = "Identifiant fils du du contrôleur du relais de zone";
 $lang['zone_relay_gpio'] = "Connecteur GPIO du relais de zone";
