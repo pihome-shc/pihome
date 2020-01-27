@@ -321,7 +321,7 @@ CREATE TABLE IF NOT EXISTS `nodes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `sync` tinyint(4) NOT NULL DEFAULT 0,
   `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
-  `type` CHAR(50) NOT NULL DEFAULT 'MySnRF' COLLATE 'utf16_bin',
+  `type` CHAR(50) NOT NULL DEFAULT 'MySnRF' COLLATE 'utf8_bin',
   `node_id` char(50) COLLATE utf16_bin NOT NULL,
   `child_id_1` int(11) DEFAULT NULL,
   `child_id_2` int(11) DEFAULT NULL,
