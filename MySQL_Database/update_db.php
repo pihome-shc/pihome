@@ -13,14 +13,14 @@ echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
 echo "***************************************************************\n";
 echo "*   PiHome Datase Script Version 0.01 Build Date 15/09/2019   *\n";
-echo "*   Last Modified on 16/09/2019                               *\n";
+echo "*   Last Modified on 27/01/2020                               *\n";
 echo "*                                      Have Fun - PiHome.eu   *\n";
 echo "***************************************************************\n";
 echo "\033[0m";
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiHome Database Update Script Started \n"; 
 $line = "--------------------------------------------------------------- \n";
 
-require_once(__DIR__.'../st_inc/dbStruct.php');
+require_once(__DIR__.'/../st_inc/dbStruct.php');
 //Set php script execution time in seconds
 ini_set('max_execution_time', 400); 
 $date_time = date('Y-m-d H:i:s');
@@ -151,15 +151,20 @@ if ($db_selected) {
 					$templine = '';
 				}
 		}
-                $query = "UPDATE system SET version = '{$ver}', build = '{$build}' LIMIT 1;";
-                $conn->query($query);
+                //$query = "UPDATE system SET version = '{$ver}', build = '{$build}' LIMIT 1;";
+                //$conn->query($query);
 
                 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Database Updates Applied \n";
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Update Version: ".$ver."\n";
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Update Build: ".$build."\n";
+		//echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Update Version: \033[41m".$ver."\033[0m \n";
+		//echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Update Build: \033[41m".$build."\033[0m \n";
 	} else {
                 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - NO Database Updates Found \n";
 	}
+	$query = "UPDATE system SET version = '{$ver}', build = '{$build}' LIMIT 1;";
+	$conn->query($query);
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Update Version: \033[41m".$ver."\033[0m \n";
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Update Build: \033[41m".$build."\033[0m \n";
+		
 } else {
         	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Database ".$dbname." Not Found \n";
 	}
