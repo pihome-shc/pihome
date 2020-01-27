@@ -14,7 +14,7 @@ echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
 echo "************************************************************\n";
 echo "* Weather Update Script Version 0.11 Build Date 31/01/2018 *\n";
-echo "* Update on 22/01/2019                                     *\n";
+echo "* Update on 27/01/2020                                     *\n";
 echo "*                                     Have Fun - PiHome.eu *\n";
 echo "************************************************************\n";
 echo " \033[0m \n";
@@ -118,9 +118,9 @@ if ($row['openweather_api'] != NULL){
 		//6 days weather forecast data 
 		//$weather_sixdays_api = "http://api.openweathermap.org/data/2.5/forecast/daily?q=".$city.",".$country."&appid=".$appid;
 		if($city != NULL)
-			$weather_sixdays_api = "http://api.openweathermap.org/data/2.5/forecast/daily?q=".$city.",".$country."&" . $units . "&cnt=7&lang=en&appid=".$appid;
+			$weather_sixdays_api = "http://api.openweathermap.org/data/2.5/forecast?q=".$city.",".$country."&" . $units . "&cnt=7&lang=en&appid=".$appid;
 		else
-			$weather_sixdays_api = "http://api.openweathermap.org/data/2.5/forecast/daily?zip=".$zip.",".$country."&" . $units . "&cnt=7&lang=en&appid=".$appid;
+			$weather_sixdays_api = "http://api.openweathermap.org/data/2.5/forecast?zip=".$zip.",".$country."&" . $units . "&cnt=7&lang=en&appid=".$appid;
 		$json = file_get_contents($weather_sixdays_api);
 		file_put_contents('/var/www/weather_6days.json', $json);
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Weather Data Downloaded \n"; 
