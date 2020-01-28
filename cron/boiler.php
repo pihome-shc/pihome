@@ -410,10 +410,10 @@ if (in_array("1", $boiler)) {
 
 		//echo all zone and status
 		for ($row = 0; $row < 3; $row++){
-			echo "Zone ID: ".$zone_log[$row]["zone_id"]." Status: ".$zone_log[$row]["status"]."\n";
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone ID: ".$zone_log[$row]["zone_id"]." Status: ".$zone_log[$row]["status"]."\n";
 			$zlquery = "INSERT INTO zone_logs(zone_id, boiler_log_id, status) VALUES ('{$zone_log[$row]["zone_id"]}', '{$boiler_log_id}', '{$zone_log[$row]["status"]}');";
 			$zlresults = $conn->query($zlquery);
-			if ($zlresults) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Log table updated successfully. \n";} else {echo "zone log update failed... ".mysql_error(). " \n";}
+			if ($zlresults) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Log table updated successfully. \n";} else {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone log update failed... ".mysql_error(). " \n";}
 			}
 		if ($result) {
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Log table added Successfully. \n";
