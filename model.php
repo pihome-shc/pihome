@@ -795,7 +795,8 @@ echo '</table></div>
     </div>
 </div>';
 
-//cronetab model	
+
+//cronetab model
 echo '
 <div class="modal fade" id="cron_jobs" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -805,18 +806,80 @@ echo '
                 <h5 class="modal-title">'.$lang['cron_jobs'].'</h5>
             </div>
             <div class="modal-body">
-<p class="text-muted"> '.$lang['cron_jobs_text'].' </p>';
+<p class="text-muted">'.$lang['cron_jobs_text'].'</p>';
 echo '	<div class=\"list-group\">';
-//exec ("crontab -l >/var/www/cronjob.txt"); this didnt work need to investigate 
-$file_handle = fopen("/var/www/cronjob.txt", "r");
-while ($file_handle && !feof($file_handle)) {
-	$line = fgets($file_handle);
-	echo "<a href=\"#\" class=\"list-group-item\">
-    <i class=\"ionicons ion-ios-timer-outline red\"></i> ".$line."
-    <span class=\"pull-right text-muted small\"><em></em></span>
-    </a>";
-}
-fclose($file_handle);
+    $SArr=[['name'=>'Boiler','interval'=>'60','service'=>'/var/www/cron/boiler.php'],
+           ['name'=>'DB Cleanup','interval'=>'86400','service'=>'/var/www/cron/db_cleanup.php'],
+           ['name'=>'Check Gateway','interval'=>'60','service'=>'/var/www/cron/check_gw.php'],
+           ['name'=>'Weather Update','interval'=>'1800','service'=>'/var/www/cron/weather_update.php'],
+		   ['name'=>'System Temperature','interval'=>'300','service'=>'/var/www/cron/system_c.php'],
+           ['name'=>'Reboot WiFi','interval'=>'120','service'=>'/var/www/cron/reboot_wifi.sh'],
+           ['name'=>'PI Connect','interval'=>'60','service'=>'/var/www/cron/piconnect.php']];
+    foreach($SArr as $SArrKey=>$SArrVal) {
+		// Get last cron job entry from syslogs
+		$rval=my_exec("grep -h \"".$SArrVal['service']."\" /var/log/syslog | tail -n 1");
+		// If no log entry found in syslogs and no error, check in log rotating file syslog.1
+		if($rval['stdout']=='' && $rval['stderr']==''){
+			$rval=my_exec("grep -h \"".$SArrVal['service']."\" /var/log/syslog.1 | tail -n 1");
+		}
+		$logDateLabel='';
+		$errLabel='';
+		$errMsg='';
+		$statusIcon='ion-alert-circled red';
+		// Check for possible issues reading logs
+        if($rval['stdout']=='') {
+            $errLabel='Error: ' . $rval['stderr'];
+			if($rval['stderr']=='') {
+				$errLabel='Error: No log entries.';
+				$errMsg='Logs don\'t contain any entries for CRON job ( ' . $SArrVal['service'].' ). Make sure you have executed ( sudo php /var/www/setup.php ) or CRON jobs are set to be logged in /var/logs/syslog.';
+			} elseif (strstr($rval['stderr'],'Permission denied')) {
+				$errLabel='Error: Permission denied.';
+				$errMsg = $rval['stderr'].'. This function requires read access to syslogs. Please set permission to read for others for syslog and syslog.1 files, e.g.: sudo chmod 644 /var/log/syslog';
+			} else {
+				$errLabel='Error.';
+				$errMsg = $rval['stderr'];
+			}
+        } else { // Log entry found
+			// Split log entry to array
+            $rval=explode(" ",$rval['stdout']);
+			
+			// Get correct year of log entry
+			if ($rval[0]=='Dec' && date('M')=='Jan'){
+				$logYear=date('Y')-1;
+			}else{
+				$logYear=date('Y');
+			}
+			
+			// Log DateTime
+			$logDateLabel= $rval[1]." ".$rval[0]." ".$rval[2];
+			$logDateObj = DateTime::createFromFormat('YMdH:i:s', $logYear.$rval[0].$rval[1].$rval[2]);
+			$logDate = $logDateObj->format("Y/m/d H:i:s");
+			
+			// Current DateTime
+			$currDateObj = new DateTime();
+			$currDate = $currDateObj->format("Y/m/d H:i:s");
+			$currDateObj->sub(new DateInterval('PT'.$SArrVal['interval'].'S')); // Subtract cron job interval for comparison
+			
+			// Check if Log entry is older that current date minus interval
+			if ($logDateObj>=$currDateObj) {
+				$statusIcon='ion-checkmark-circled green';
+			} else {
+				$errLabel='Error: Delay in run time.';
+				$errMsg=$SArrVal['name'].' cron job last ran on '.$logDate.', current datetime '.$currDate.', duration between is more than expected interval of '.$SArrVal['interval'].' seconds.';
+			}
+        }
+		
+		echo "<a href=\"#\" class=\"list-group-item\">
+			<i class=\"ionicons ".$statusIcon."\"></i>  ".$SArrVal['name']."<span class=\"pull-right text-muted small\"><em>Interval in seconds: ".$SArrVal['interval']."</em></span>
+			<span class=\"center-block text-muted small\"><em>  Last run time: ".$logDateLabel."</em>
+			<div class=\"pull-right text-muted small\"><em>".$errLabel."</em></div>";
+		if($errLabel!=''){ // If error exist, display icon for popup notification.
+			echo "
+			<span class=\"pull-right fa fa-info-circle fa-lg text-info\" data-container=\"body\" data-toggle=\"popover\" data-placement=\"left\" data-content=\"".$errMsg."\"</span>";
+		}
+		echo "</span>
+			</a>";
+    }
 echo ' </div></div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
