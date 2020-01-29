@@ -795,7 +795,6 @@ echo '</table></div>
     </div>
 </div>';
 
-
 //cronetab model
 echo '
 <div class="modal fade" id="cron_jobs" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
