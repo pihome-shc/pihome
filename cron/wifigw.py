@@ -166,7 +166,7 @@ while 1:
 				row = int(row[0])
 				if (row == 0):
 					print "1: Adding Node ID:",node_id, "MySensors Version:", payload, "\n\n"
-					cur.execute('INSERT INTO nodes(node_id, status, ms_version) VALUES(%s, %s, %s)', (node_id, 'Active', payload))
+					cur.execute('INSERT INTO nodes(type, node_id, status, ms_version) VALUES(%s, %s, %s, %s)', ('MySnRF', node_id, 'Active', payload))
 					con.commit()
 				else: 
 					print "1: Node ID:",node_id," Already Exist In Node Table, Updating MS Version \n\n"
@@ -183,7 +183,7 @@ while 1:
 				row = int(row[0])
 				if (row == 0):
 					print "1-B: Adding Node ID:",node_id, "MySensors Version:", payload, "\n\n"
-					cur.execute('INSERT INTO nodes(node_id, repeater, ms_version) VALUES(%s, %s, %s)', (node_id, '1', payload))
+					cur.execute('INSERT INTO nodes(type, node_id, repeater, ms_version) VALUES(%s, %s, %s, %s)', ('MySnRF', node_id, '1', payload))
 					con.commit()
 				else: 
 					print "1-B: Node ID:",node_id," Already Exist In Node Table, Updating MS Version \n\n"

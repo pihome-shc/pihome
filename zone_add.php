@@ -71,7 +71,7 @@ if (isset($_POST['submit'])) {
 	}
 	
     //Add or Edit Zone record to Zone Table 
-		$query = "INSERT INTO zone (id, status, index_id, name, type, max_c, max_operation_time, hysteresis_time, sp_deadband, sensor_id, sensor_child_id, controler_id, controler_child_id, boiler_id, gpio_pin) VALUES ('{$id}', '{$zone_status}', '{$index_id}', '{$name}', '{$type}', '{$max_c}', '{$max_operation_time}', '{$hysteresis_time}', '{$sp_deadband}', '{$sensor_id}', '{$sensor_child_id}', '{$controler_id}', '{$controler_child_id}', '{$boiler_id}', '{$gpio_pin}') ON DUPLICATE KEY UPDATE status=VALUES(status), index_id=VALUES(index_id), name=VALUES(name), type=VALUES(type), max_c=VALUES(max_c), max_operation_time=VALUES(max_operation_time), hysteresis_time=VALUES(hysteresis_time), sp_deadband=VALUES(sp_deadband), sensor_id=VALUES(sensor_id), sensor_child_id=VALUES(sensor_child_id), controler_id=VALUES(controler_id), controler_child_id=VALUES(controler_child_id), boiler_id=VALUES(boiler_id), gpio_pin=VALUES(gpio_pin);";
+		$query = "INSERT INTO zone (id, status, index_id, name, type, max_c, max_operation_time, hysteresis_time, sp_deadband, sensor_id, sensor_child_id, controler_id, controler_child_id, boiler_id) VALUES ('{$id}', '{$zone_status}', '{$index_id}', '{$name}', '{$type}', '{$max_c}', '{$max_operation_time}', '{$hysteresis_time}', '{$sp_deadband}', '{$sensor_id}', '{$sensor_child_id}', '{$controler_id}', '{$controler_child_id}', '{$boiler_id}') ON DUPLICATE KEY UPDATE status=VALUES(status), index_id=VALUES(index_id), name=VALUES(name), type=VALUES(type), max_c=VALUES(max_c), max_operation_time=VALUES(max_operation_time), hysteresis_time=VALUES(hysteresis_time), sp_deadband=VALUES(sp_deadband), sensor_id=VALUES(sensor_id), sensor_child_id=VALUES(sensor_child_id), controler_id=VALUES(controler_id), controler_child_id=VALUES(controler_child_id), boiler_id=VALUES(boiler_id);";
 		$result = $conn->query($query);
 		$zone_id = mysqli_insert_id($conn);
 		if ($result) {
@@ -81,12 +81,14 @@ if (isset($_POST['submit'])) {
 		}
 
 	//Add Zone to message out table at same time to send out instructions to controller for each zone.
-	$query = "INSERT INTO messages_out (node_id, child_id, sub_type, ack, type, payload, sent, zone_id) VALUES ('{$controler}','{$controler_child_id}', '1', '1', '2', '0', '0', '{$zone_id}');";
-	$result = $conn->query($query);
-	if ($result) {
-		$message_success .= "<p>".$lang['zone_controler_success']."</p>";
-	} else {
-		$error .= "<p>".$lang['zone_controler_fail']."</p> <p>" .mysqli_error($conn). "</p>";
+	if ($node_id !=0 OR $node_id !='0'){
+		$query = "INSERT INTO messages_out (node_id, child_id, sub_type, ack, type, payload, sent, zone_id) VALUES ('{$controler}','{$controler_child_id}', '1', '1', '2', '0', '0', '{$zone_id}');";
+		$result = $conn->query($query);
+		if ($result) {
+			$message_success .= "<p>".$lang['zone_controler_success']."</p>";
+		} else {
+			$error .= "<p>".$lang['zone_controler_fail']."</p> <p>" .mysqli_error($conn). "</p>";
+		}
 	}
 	
 	//If boost button console isnt installed and editing existing zone, then no need to add this to message_out
@@ -265,13 +267,13 @@ while ($datarw=mysqli_fetch_array($result)) {
 $sensor_child_id=$datarw["child_id_1"];
 echo "<option>$sensor_child_id</option>";} ?>
 </select>
-<div class="help-block with-errors"></div></div>
+<div class="help-block with-errors"></div></div>		
 
 <!-- Zone Controller ID -->
 <div class="form-group" class="control-label"><label><?php echo $lang['zone_controller_id']; ?></label> <small class="text-muted"><?php echo $lang['zone_controler_id_info'];?></small>
 <select id="controler_id" name="controler_id" class="form-control select2" data-error="<?php echo $lang['zone_controller_id_error']; ?>" autocomplete="off" required>
 <?php if(isset($rowcont['node_id'])) { echo '<option selected >'.$rowcont['node_id'].'</option>'; } ?>
-<?php  $query = "SELECT node_id FROM nodes where name = 'Zone Controller Relay'";
+<?php  $query = "SELECT node_id FROM nodes where name = 'Boiler Relay' OR name = 'Boiler Controller';";
 $result = $conn->query($query);
 echo "<option></option>";
 while ($datarw=mysqli_fetch_array($result)) {
@@ -290,33 +292,16 @@ while ($datarw=mysqli_fetch_array($result)) {
 <option>2</option>
 <option>3</option>
 <option>4</option>
-<option>5</option>
-<option>6</option>
-<option>7</option>
-<option>8</option>
-</select>				
-<div class="help-block with-errors"></div></div>
-
-<!-- Zone Controller GPIO Pin -->
-<div class="form-group" class="control-label"><label><?php echo $lang['zone_relay_gpio']; ?></label> <small class="text-muted"><?php echo $lang['zone_gpio_pin_info'];?></small>
-<select id="zone_gpio" name="zone_gpio" class="form-control select2" data-error="<?php echo $lang['zone_gpio_pin_error']; ?>" autocomplete="off" required>
-<?php if(isset($row['gpio_pin'])) { echo '<option selected >'.$row['gpio_pin'].'</option>'; } else { echo '<option selected value="0">N/A</option>';}?>
-<option>1</option>
-<option>2</option>
-<option>3</option>
-<option>4</option>
-<option>5</option>
-<option>6</option>
-<option>7</option>
-<option>21</option>
-<option>22</option>
-<option>23</option>
-<option>24</option>
-<option>25</option>
-<option>26</option>
-<option>27</option>
-<option>28</option>
-<option>29</option>
+<?php 
+	//get list of other types of controllers from nodes table to display 
+	$query = "SELECT * FROM nodes where (name = 'Boiler Relay' OR name = 'Boiler Controller') AND type !='MySnRF';";
+	$result = $conn->query($query);
+	if ($result){
+		while ($nrow=mysqli_fetch_array($result)) {
+			echo '<option value="'.$nrow['child_id_1'].'">'.$nrow['child_id_1'].' - GPIO</option>';
+		}
+	}
+?>
 </select>				
 <div class="help-block with-errors"></div></div>
 

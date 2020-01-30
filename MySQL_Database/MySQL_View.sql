@@ -41,10 +41,11 @@ Drop View if exists zone_view;
 CREATE VIEW zone_view AS
 select zone.status, zone.sync, zone.id, zone.index_id, zone.name, zone.type, zone.graph_it, zone.max_c, zone.max_operation_time, zone.hysteresis_time,
 zone.sp_deadband, sid.node_id as sensors_id, zone.sensor_child_id,
-cid.node_id as controler_id, zone.controler_child_id, zone.gpio_pin,
+ctype.`type` AS controller_type, cid.node_id as controler_id, zone.controler_child_id,
 lasts.last_seen, msv.ms_version, skv.sketch_version
 from zone
 join nodes sid on zone.sensor_id = sid.id
+join nodes ctype on zone.controler_id = ctype.id
 join nodes cid on zone.controler_id = cid.id
 join nodes lasts on zone.sensor_id = lasts.id
 join nodes msv on zone.sensor_id = msv.id
@@ -54,9 +55,10 @@ where zone.`purge` = '0';
 -- Boiler View
 Drop View if exists boiler_view;
 CREATE VIEW boiler_view AS
-select boiler.status, boiler.sync, boiler.`purge`, boiler.fired_status, boiler.name, nodes.node_id, boiler.node_child_id, boiler.hysteresis_time, boiler.max_operation_time, boiler.gpio_pin
+select boiler.status, boiler.sync, boiler.`purge`, boiler.fired_status, boiler.name, ctype.`type` AS controller_type, nodes.node_id, boiler.node_child_id, boiler.hysteresis_time, boiler.max_operation_time
 from boiler
 join nodes on boiler.node_id = nodes.id
+join nodes ctype on boiler.node_id = ctype.id
 where boiler.`purge` = '0';
 
 

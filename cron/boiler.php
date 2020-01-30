@@ -37,11 +37,11 @@ $result = $conn->query($query);
 $row = mysqli_fetch_array($result);
 $boiler_status = $row['status'];
 $boiler_fire_status = $row['fired_status'];
+$boiler_controller_type = $row['controller_type'];
 $boiler_node_id = $row['node_id'];
 $boiler_node_child_id = $row['node_child_id'];
 $boiler_hysteresis_time = $row['hysteresis_time'];
 $boiler_max_operation_time = $row['max_operation_time'];
-$boiler_goip_pin = $row['gpio_pin'];
 
 //Get data from nodes table
 $query = "SELECT * FROM nodes WHERE node_id ='$boiler_node_id' AND status IS NOT NULL LIMIT 1;";
@@ -100,9 +100,9 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$zone_sp_deadband=$row['sp_deadband'];
 	$zone_sensor_id=$row['sensors_id'];
 	$zone_sensor_child_id=$row['sensor_child_id'];
+	$zone_controller_type=$row['controller_type'];
 	$zone_controler_id=$row['controler_id'];
 	$zone_controler_child_id=$row['controler_child_id'];
-	$zone_gpio_pin=$row['gpio_pin'];
 
 	//query to get temperature from messages_in_view_24h table view
 	$query = "SELECT * FROM messages_in_view_24h WHERE node_id = '{$zone_sensor_id}' AND child_id = {$zone_sensor_child_id} ORDER BY datetime desc LIMIT 1;";
@@ -323,28 +323,30 @@ while ($row = mysqli_fetch_assoc($results)) {
 	/***************************************************************************************
 	Zone Valve Wired to Raspberry Pi GPIO Section: Zone Vole Connected Raspberry Pi GPIO.
 	****************************************************************************************/
-	if (!empty($zone_gpio_pin)){
+	if ($zone_controller_type == 'GPIO'){
 		$relay_status = ($zone_status == '1') ? $relay_on : $relay_off;
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: GIOP Relay Status: \033[41m".$relay_status. "\033[0m (0=On, 1=Off) \n";
-		exec("/usr/local/bin/gpio write ".$zone_gpio_pin." ".$relay_status );
-		exec("/usr/local/bin/gpio mode ".$zone_gpio_pin." out");
+		exec("/usr/local/bin/gpio write ".$zone_controler_child_id." ".$relay_status );
+		exec("/usr/local/bin/gpio mode ".$zone_controler_child_id." out");
 	}
 	
 	/***************************************************************************************
 	Zone Valve Wired over I2C Interface Make sure you have i2c Interface enabled 
 	****************************************************************************************/
-/*	if ((!empty($zone_controler_child_id)) OR ($zone_controler_child_id!=0)){
+	if ($zone_controller_type == 'I2C'){
 		//exec("python /var/www/cron/i2c/i2c_relay.py 50 ".$zone_gpio_pin." ".$zone_status);
 		exec("python /var/www/cron/i2c/i2c_relay.py ".$zone_controler_id." ".$zone_controler_child_id." ".$zone_status);
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Relay Broad: ".$zone_controler_id. " Relay No: ".$zone_controler_child_id." Status: ".$zone_status." \n";
 	}
-*/
+
 	/***************************************************************************************
 	Zone Vole Wireless Section: MySensors Wireless Relay module for your Zone vole control.
 	****************************************************************************************/
-	//update messages_out table with sent status to 0 and payload to as zone status.
-	$query = "UPDATE messages_out SET sent = '0', payload = '{$zone_status}' WHERE node_id ='$zone_controler_id' AND child_id = '$zone_controler_child_id' LIMIT 1;";
-	$conn->query($query);
+	if ($zone_controller_type == 'MySnRF'){
+		//update messages_out table with sent status to 0 and payload to as zone status.
+		$query = "UPDATE messages_out SET sent = '0', payload = '{$zone_status}' WHERE node_id ='$zone_controler_id' AND child_id = '$zone_controler_child_id' LIMIT 1;";
+		$conn->query($query);
+	}
 
 	//all zone status to boiler array and increment array index
 	$boiler[$boiler_index] = $zone_status;
@@ -353,7 +355,6 @@ while ($row = mysqli_fetch_assoc($results)) {
 	//all zone ids and status to multidimensional Array. and increment array index.
 	$zone_log[$zone_index] = (array('zone_id' =>$zone_id, 'status'=>$zone_status));
 	$zone_index = $zone_index+1;
-
 	echo "---------------------------------------------------------------------------------------- \n";
 } //end of while loop
 
@@ -363,11 +364,12 @@ while ($row = mysqli_fetch_assoc($results)) {
 if (isset($boiler_stop_datetime)) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Switched Off At: ".$boiler_stop_datetime. "\n";}
 if (isset($expected_end_date_time)){echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Expected End Time: ".$expected_end_date_time. "\n"; }
 
-//Boiler On section
+/******************************
+      Boiler On section
+/******************************/
 //Search inside array if any value is set to 1 then we need to update db with boiler status
 if (in_array("1", $boiler)) {
 	$new_boiler_status='1';
-
 	//update boiler fired status to 1
 	$query = "UPDATE boiler SET sync = '0', fired_status = '{$new_boiler_status}' WHERE id ='1' LIMIT 1";
 	$conn->query($query);
@@ -376,27 +378,30 @@ if (in_array("1", $boiler)) {
 	GAS Boiler Wirelss Section:	MySensors Wireless Relay module for your GAS Boiler control
 	****************************************************************************************/
 	//update messages_out table with sent status to 0 and payload to as boiler status.
-	$query = "UPDATE messages_out SET sent = '0', payload = '{$new_boiler_status}' WHERE node_id ='{$boiler_node_id}' AND child_id = '{$boiler_node_child_id}' LIMIT 1;";
-	$conn->query($query);
+	if ($boiler_controller_type == 'MySnRF'){
+		$query = "UPDATE messages_out SET sent = '0', payload = '{$new_boiler_status}' WHERE node_id ='{$boiler_node_id}' AND child_id = '{$boiler_node_child_id}' LIMIT 1;";
+		$conn->query($query);
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Node ID: \033[41m".$boiler_node_id."\033[0m Child ID: \033[41m".$boiler_node_child_id."\033[0m \n";
+	}
 
 	/***************************************************************************************
 	Boiler Wired to Raspberry Pi GPIO Section: Make sure you have WiringPi installed.
 	****************************************************************************************/
-	if (!empty($boiler_goip_pin)){
-		exec("/usr/local/bin/gpio write ".$boiler_goip_pin ." ".$relay_on );
-		exec("/usr/local/bin/gpio mode ".$boiler_goip_pin ." out");
+	if ($boiler_controller_type == 'GPIO'){
+		exec("/usr/local/bin/gpio write ".$boiler_node_child_id ." ".$relay_on );
+		exec("/usr/local/bin/gpio mode ".$boiler_node_child_id ." out");
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler GIOP: \033[41m".$boiler_node_child_id. "\033[0m Status: \033[41m".$relay_on."\033[0m (0=On, 1=Off) \n";
 	}
 	
 	/***************************************************************************************
 	Boiler Wired over I2C Interface Make sure you have i2c Interface enabled 
 	****************************************************************************************/
-/*	if ((!empty($boiler_goip_pin)) OR ($boiler_goip_pin!=0)){
-		exec("python /var/www/cron/i2c/i2c_relay.py 50 ".$boiler_goip_pin." 1"); 
+	if ($boiler_controller_type == 'I2C'){
+		exec("python /var/www/cron/i2c/i2c_relay.py" .$boiler_node_id." ".$boiler_node_child_id." 1"); 
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler I2C Rrelay Board: \033[41m".$boiler_node_id."\033[0m Relay ID: \033[41m".$boiler_node_child_id."\033[0m \n";
 	}
-*/
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Node ID: \033[41m".$boiler_node_id."\033[0m Child ID: \033[41m".$boiler_node_child_id."\033[0m \n";
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler GIOP: \033[41m".$boiler_goip_pin. "\033[0m Status: \033[41m".$relay_on."\033[0m (0=On, 1=Off) \n";
 
+	//Update Boiler Status 
 	if ($boiler_fire_status != $new_boiler_status){
 		//insert date and time into boiler log table so we can record boiler start date and time.
 		$bsquery = "INSERT INTO boiler_logs(start_datetime, start_cause, expected_end_date_time) VALUES ('{$date_time}', '{$start_cause}', '{$expected_end_date_time}');";
@@ -405,10 +410,10 @@ if (in_array("1", $boiler)) {
 
 		//echo all zone and status
 		for ($row = 0; $row < 3; $row++){
-			echo "Zone ID: ".$zone_log[$row]["zone_id"]." Status: ".$zone_log[$row]["status"]."\n";
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone ID: ".$zone_log[$row]["zone_id"]." Status: ".$zone_log[$row]["status"]."\n";
 			$zlquery = "INSERT INTO zone_logs(zone_id, boiler_log_id, status) VALUES ('{$zone_log[$row]["zone_id"]}', '{$boiler_log_id}', '{$zone_log[$row]["status"]}');";
 			$zlresults = $conn->query($zlquery);
-			if ($zlresults) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Log table updated successfully. \n";} else {echo "zone log update failed... ".mysql_error(). " \n";}
+			if ($zlresults) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Log table updated successfully. \n";} else {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone log update failed... ".mysql_error(). " \n";}
 			}
 		if ($result) {
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Log table added Successfully. \n";
@@ -416,7 +421,10 @@ if (in_array("1", $boiler)) {
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Log table addition failed. \n";
 		}
 	}
-//Boiler Off section
+
+/******************************
+      Boiler Off section
+/******************************/
 }else{
 	$new_boiler_status='0';
 	//update boiler fired status to 0
@@ -426,31 +434,32 @@ if (in_array("1", $boiler)) {
 	/***************************************************************************************
 	GAS Boiler Wirelss Section:	MySensors Wireless Relay module for your GAS Boiler control
 	****************************************************************************************/
-	//update messages_out table with sent status to 0 and payload to as boiler status.
-	$query = "UPDATE messages_out SET sent = '0', payload = '{$new_boiler_status}' WHERE node_id ='{$boiler_node_id}' AND child_id = '{$boiler_node_child_id}' LIMIT 1;";
-	$conn->query($query);
+	if ($boiler_controller_type == 'MySnRF'){
+		//update messages_out table with sent status to 0 and payload to as boiler status.
+		$query = "UPDATE messages_out SET sent = '0', payload = '{$new_boiler_status}' WHERE node_id ='{$boiler_node_id}' AND child_id = '{$boiler_node_child_id}' LIMIT 1;";
+		$conn->query($query);
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Node ID: \033[41m".$boiler_node_id."\033[0m Child ID: \033[41m".$boiler_node_child_id."\033[0m \n";
+	}
 
 	/***************************************************************************************
 	Boiler Wired to Raspberry Pi GPIO Section: Make sure you have WiringPi installed.
 	****************************************************************************************/
-	if ((!empty($boiler_goip_pin)) OR ($boiler_goip_pin!=0)){
-		exec("/usr/local/bin/gpio write ".$boiler_goip_pin ." ".$relay_off );
-		exec("/usr/local/bin/gpio mode ".$boiler_goip_pin ." out");
+	if ($boiler_controller_type == 'GPIO'){
+		exec("/usr/local/bin/gpio write ".$boiler_node_child_id ." ".$relay_off );
+		exec("/usr/local/bin/gpio mode ".$boiler_node_child_id ." out");
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler GIOP: \033[41m".$boiler_node_child_id. "\033[0m Status: \033[41m".$relay_off."\033[0m (0=On, 1=Off) \n";
 	}
 
 	/***************************************************************************************
 	Boiler Wired over I2C Interface Make sure you have i2c Interface enabled 
 	****************************************************************************************/
-/*	if ((!empty($boiler_goip_pin)) OR ($boiler_goip_pin!=0)){
-		exec("python /var/www/cron/i2c/i2c_relay.py 50 ".$boiler_goip_pin." 0"); 
+	if ($boiler_controller_type == 'I2C'){
+		exec("python /var/www/cron/i2c/i2c_relay.py" .$boiler_node_id." ".$boiler_node_child_id." 0");
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler I2C Rrelay Board: \033[41m".$boiler_node_id."\033[0m Relay ID: \033[41m".$boiler_node_child_id."\033[0m \n";
 	}
-*/	
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Node ID: \033[41m".$boiler_node_id."\033[0m Child ID: \033[41m".$boiler_node_child_id."\033[0m \n";
-	if ((!empty($boiler_goip_pin)) OR ($boiler_goip_pin!=0)){
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler GIOP: \033[41m".$boiler_goip_pin. "\033[0m Status: \033[41m".$relay_off."\033[0m (0=On, 1=Off) \n";
-	}
+
+	//Update last record with boiler stop date and time in boiler log table.
 	if ($boiler_fire_status != $new_boiler_status){
-		//Update last record with boiler stop date and time in boiler log table.
 		$query = "UPDATE boiler_logs SET stop_datetime = '{$date_time}', stop_cause = '{$stop_cause}' ORDER BY id DESC LIMIT 1";
 		$result = $conn->query($query);
 		if ($result) {
