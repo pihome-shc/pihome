@@ -247,7 +247,7 @@ echo '
     <div class="help-block with-errors"></div></div>';
 	
 	echo '
-	<div class="form-group" class="control-label"><label>'.$lang['boiler_node_child_id'].'</label>
+	<div class="form-group" class="control-label"><label>'.$lang['boiler_node_child_id'].'</label> <small class="text-muted">'.$lang['boiler_relay_gpio_text'].'</small>
 	<select class="form-control input-sm" type="text" id="node_child_id" name="node_child_id">
 	<option selected>'.$brow['node_child_id'].'</option>
 	<option value="0">0</option>
@@ -262,29 +262,6 @@ echo '
 	</select>
     <div class="help-block with-errors"></div></div>
 	
-	<div class="form-group" class="control-label"><label>'.$lang['boiler_relay_gpio'].'</label> <small class="text-muted">'.$lang['boiler_relay_gpio_text'].'</small>
-	<select id="gpio_pin" name="gpio_pin" class="form-control select2" autocomplete="off" required>
-	<option value="'.$brow['gpio_pin'].'" selected>'.($brow['gpio_pin']=='0' ? 'N/A' : $brow['gpio_pin']).'</option>
-	<option value="0">N/A</option>
-	<option value="1">1</option>
-	<option value="2">2</option>
-	<option value="3">3</option>
-	<option value="4">4</option>
-	<option value="5">5</option>
-	<option value="6">6</option>
-	<option value="7">7</option>
-	<option value="21">21</option>
-	<option value="22">22</option>
-	<option value="23">23</option>
-	<option value="24">24</option>
-	<option value="25">25</option>
-	<option value="26">26</option>
-	<option value="27">27</option>
-	<option value="28">28</option>
-	<option value="29">29</option>
-	</select>				
-	<div class="help-block with-errors"></div></div>
-
 	<div class="form-group" class="control-label"><label>'.$lang['boiler_hysteresis_time'].'</label> <small class="text-muted">'.$lang['boiler_hysteresis_time_info'].'</small>
 	<select class="form-control input-sm" type="text" id="hysteresis_time" name="hysteresis_time">
 	<option selected>'.$brow['hysteresis_time'].'</option>
