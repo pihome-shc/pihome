@@ -350,7 +350,6 @@ if($what=="boiler_settings"){
 	$node_child_id = $_GET['node_child_id'];
 	$hysteresis_time = $_GET['hysteresis_time'];
 	$max_operation_time = $_GET['max_operation_time'];
-	$gpio_pin = $_GET['gpio_pin'];
 	$notice_interval = $_GET['notice_interval'];
 	if ($status=='true'){$status = '1';} else {$status = '0';}
 	
