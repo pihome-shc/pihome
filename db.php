@@ -242,7 +242,40 @@ if($what=="boost"){
                 }
         }
 }
-
+//Nodes
+if($what=="node"){
+	if($opp=="delete"){
+		//Now delete from Nodes
+		$query = "DELETE FROM nodes WHERE id = '".$wid."';"; 
+		$conn->query($query);
+		if($conn->query($query)){
+            		header('Content-type: application/json');
+            		echo json_encode(array('Success'=>'Success','Query'=>$query));
+            		return;
+        	}else{
+            		header('Content-type: application/json');
+            		echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+            		return;
+        	}
+	}
+	if($opp=="add"){
+		$node_type = $_GET['node_type'];
+		$node_id = $_GET['node_id'];
+		$node_child_id = $_GET['nodes_child_id'];
+		$node_name = $_GET['node_name'];
+		//Add record to Nodes table
+		$query = "INSERT INTO nodes (`sync`, `purge`, `type`, node_id, child_id_1, `name`, `status`) VALUES ('0', '0', '{$node_type}', '{$node_id}', '{$node_child_id}', '{$node_name}', 'Active')";
+		if($conn->query($query)){
+            		header('Content-type: application/json');
+            		echo json_encode(array('Success'=>'Success','Query'=>$query));
+            		return;
+        	}else{
+            		header('Content-type: application/json');
+            		echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+            		return;
+        	}
+	}
+}
 //Away 
 if($what=="away"){
 	if($opp=="active"){

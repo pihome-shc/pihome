@@ -532,6 +532,96 @@ echo '</div></div>
     </div>
 </div>';
 
+
+//nodes model
+echo '
+<div class="modal fade" id="nodes" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                <h5 class="modal-title">'.$lang['node_settings'].'</h5>
+            </div>
+            <div class="modal-body">
+<p class="text-muted"> '.$lang['node_settings_text'].' </p>';
+
+$query = "SELECT * FROM nodes where type !='MySnRF';";
+$results = $conn->query($query);
+echo '<table class="table table-bordered">
+    <tr>
+        <th class="col-xs-2"><small>'.$lang['type'].'</small></th>
+        <th class="col-xs-2"><small>'.$lang['node_id'].'</small></th>
+        <th class="col-xs-2"><small>'.$lang['child'].'</small></th>
+        <th class="col-xs-4"><small>'.$lang['name'].'</small></th>
+        <th class="col-xs-1"></th>
+    </tr>';
+while ($row = mysqli_fetch_assoc($results)) {
+    echo '
+        <tr>
+            <td>'.$row["type"].'</td>
+            <td>'.$row["node_id"].'</td>
+            <td>'.$row["child_id_1"].'</td>
+            <td>'.$row["name"].'</td>
+			<td><a href="javascript:delete_node('.$row["id"].');"><button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></button> </a></td>
+        </tr>';
+}
+echo '</table></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
+                <button type="button" class="btn btn-default login btn-sm" data-href="#" data-toggle="modal" data-target="#add_node">'.$lang['node_add'].'</button>
+            </div>
+        </div>
+    </div>
+</div>';
+
+
+//Add Node
+echo '
+<div class="modal fade" id="add_node" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                <h5 class="modal-title">'.$lang['node_add'].'</h5>
+            </div>
+            <div class="modal-body">';
+echo '<p class="text-muted">'.$lang['node_add_info_text'].'</p>
+	
+	<form data-toggle="validator" role="form" method="post" action="settings.php" id="form-join">
+
+	<div class="form-group" class="control-label"><label>'.$lang['node_type'].'</label> <small class="text-muted">'.$lang['node_type_info'].'</small>
+
+	<select class="form-control input-sm" type="text" id="node_type" name="node_type">
+	<option value="GPIO">GPIO</option>
+	<option value="I2C">I2C</option>
+	</select>
+    <div class="help-block with-errors"></div></div>
+
+
+	<div class="form-group" class="control-label"><label>'.$lang['node_id'].'</label> <small class="text-muted">'.$lang['node_id_info'].'</small>
+	<input class="form-control input-sm" type="text" id="node_id" name="node_id" value="" placeholder="'.$lang['node_id'].'">
+	<div class="help-block with-errors"></div></div>
+		
+	<div class="form-group" class="control-label"><label>'.$lang['node_child_id'].'</label> <small class="text-muted">'.$lang['node_child_id_info'].'</small>
+	<input class="form-control input-sm" type="text" id="nodes_child_id" name="nodes_child_id" value="" placeholder="'.$lang['node_child_id'].'">
+	<div class="help-block with-errors"></div></div>
+
+	<div class="form-group" class="control-label"><label>'.$lang['node_name'].'</label> <small class="text-muted">'.$lang['node_name_info'].'</small>
+	<select class="form-control input-sm" type="text" id="node_name" name="node_name">
+	<option value="Zone Controller">Zone Controller</option>
+	<option value="Boiler Controller">Boiler Controller</option>
+	</select>
+    <div class="help-block with-errors"></div></div>
+</div>
+            <div class="modal-footer">
+				<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
+				<input type="button" name="submit" value="Save" class="btn btn-default login btn-sm" onclick="add_node()">
+				
+            </div>
+        </div>
+    </div>
+</div>';
+
 //Sensor location model
 echo '
 <div class="modal fade" id="temperature_sensor" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

@@ -342,5 +342,17 @@ $lang['notice_interval_info'] = "Set Notice Interval in minutes.";
 $lang['node_id'] = "Node ID";
 $lang['last_seen'] = "Last Seen";
 
+$lang['node_setting'] = "Node Setting";
+$lang['node_settings_text'] = "You can Add GPIO, I2C relay board as Node, Wireless Nodes are automatically discovered. ";
+$lang['node_add'] = "Add Node";
+$lang['node_add_info_text'] = "You can Add GPIO, I2C relay board as Node, Wireless Nodes are automatically discovered.";
+$lang['node_type'] = "Node Type";
+$lang['node_type_info'] = "Node you want to make avaialble for Zone and Boiler controller";
+$lang['node_name'] = "Node Name";
+$lang['node_child_id'] = "Node Child ID";
+$lang['node_child_id_info'] = "I2C relay number or WirringPi GPIO number";
+$lang['node_id_info'] = "I2C board ID or 0 if you want to use Raspberry Pi GPIO";
+$lang['node_name_info'] = "Node name represent function of the Node you are adding";
+
 
 ?>
