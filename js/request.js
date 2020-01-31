@@ -154,7 +154,6 @@ var idata="w=boiler_settings&o=update&status="+document.getElementById("checkbox
     idata+="&name="+document.getElementById("name").value;
 	idata+="&node_id="+document.getElementById("node_id").value;
 	idata+="&node_child_id="+document.getElementById("node_child_id").value;
-	idata+="&gpio_pin="+document.getElementById("gpio_pin").value;
 	idata+="&hysteresis_time="+document.getElementById("hysteresis_time").value;
 	idata+="&max_operation_time="+document.getElementById("max_operation_time").value;
 	idata+="&notice_interval="+document.getElementById("notice_interval").value;
