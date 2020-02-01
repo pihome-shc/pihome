@@ -386,7 +386,7 @@ function GetModal_System($conn)
     //System temperature
     echo '<div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-            <h5 class="modal-title" id="ajaxModalLabel">Sensors</h5>
+            <h5 class="modal-title" id="ajaxModalLabel">CPU Temperature</h5>
         </div>
         <div class="modal-body" id="ajaxModalBody">
     <p class="text-muted"> Last 5 CPU in-built temperature sensor reading. </p>';
