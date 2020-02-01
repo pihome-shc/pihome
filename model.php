@@ -883,10 +883,10 @@ echo '	<div class=\"list-group\">';
            ['name'=>'PI Connect','interval'=>'60','service'=>'/var/www/cron/piconnect.php']];
     foreach($SArr as $SArrKey=>$SArrVal) {
 		// Get last cron job entry from syslogs
-		$rval=my_exec("grep -h \"".$SArrVal['service']."\" /var/log/syslog | tail -n 1");
+		$rval=my_exec("grep -a \"".$SArrVal['service']."\" /var/log/syslog | tail -n 1");
 		// If no log entry found in syslogs and no error, check in log rotating file syslog.1
 		if($rval['stdout']=='' && $rval['stderr']==''){
-			$rval=my_exec("grep -h \"".$SArrVal['service']."\" /var/log/syslog.1 | tail -n 1");
+			$rval=my_exec("grep -a \"".$SArrVal['service']."\" /var/log/syslog.1 | tail -n 1");
 		}
 		$logDateLabel='';
 		$errLabel='';
@@ -917,8 +917,13 @@ echo '	<div class=\"list-group\">';
 			}
 			
 			// Log DateTime
-			$logDateLabel= $rval[1]." ".$rval[0]." ".$rval[2];
-			$logDateObj = DateTime::createFromFormat('YMdH:i:s', $logYear.$rval[0].$rval[1].$rval[2]);
+                        if($rval[1]=='') {
+                                $logDateLabel= $rval[2]." ".$rval[0]." ".$rval[3];
+                                $logDateObj = DateTime::createFromFormat('YMdH:i:s', $logYear.$rval[0].$rval[2].$rval[3]);
+                        } else {
+                                $logDateLabel= $rval[1]." ".$rval[0]." ".$rval[2];
+                                $logDateObj = DateTime::createFromFormat('YMdH:i:s', $logYear.$rval[0].$rval[1].$rval[2]);
+                        }
 			$logDate = $logDateObj->format("Y/m/d H:i:s");
 			
 			// Current DateTime
