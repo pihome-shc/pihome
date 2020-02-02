@@ -336,7 +336,7 @@ echo '
             <div class="modal-body">
 <p class="text-muted"> '.$lang['boost_settings_text'].' </p>';
 $query = "SELECT boost.id, boost.status, boost.sync, boost.zone_id, zone_idx.index_id, zone.name, boost.temperature, boost.minute, boost.boost_button_id, boost.boost_button_child_id ";
-$query = $query."FROM boost JOIN zone ON boost.zone_id = zone.id JOIN zone zone_idx ON boost.zone_id = zone_idx.id ORDER BY zone.index_id ASC, boost.minute ASC;";
+$query = $query."FROM boost JOIN zone ON boost.zone_id = zone.id JOIN zone zone_idx ON boost.zone_id = zone_idx.id WHERE boost.`purge`= '0' ORDER BY zone.index_id ASC, boost.minute ASC;";
 $results = $conn->query($query);
 echo '<table class="table table-bordered">
     <tr>
