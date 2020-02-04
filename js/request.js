@@ -241,7 +241,7 @@ var idata="w=boost&o=update";
 //Add Node
 function add_node(){
 var idata="w=node&o=add&node_type="+document.getElementById("node_type").value;
-	idata+="&node_id="+document.getElementById("node_id").value;
+	idata+="&add_node_id="+document.getElementById("add_node_id").value;
 	idata+="&nodes_child_id="+document.getElementById("nodes_child_id").value;
 	idata+="&node_name="+document.getElementById("node_name").value;
     idata+="&wid=0";
