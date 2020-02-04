@@ -260,7 +260,7 @@ if($what=="node"){
 	}
 	if($opp=="add"){
 		$node_type = $_GET['node_type'];
-		$node_id = $_GET['node_id'];
+		$node_id = $_GET['add_node_id'];
 		$node_child_id = $_GET['nodes_child_id'];
 		$node_name = $_GET['node_name'];
 		//Add record to Nodes table

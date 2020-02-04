@@ -576,7 +576,7 @@ echo '<p class="text-muted">'.$lang['node_add_info_text'].'</p>
 
 
 	<div class="form-group" class="control-label"><label>'.$lang['node_id'].'</label> <small class="text-muted">'.$lang['node_id_info'].'</small>
-	<input class="form-control input-sm" type="text" id="node_id" name="node_id" value="" placeholder="'.$lang['node_id'].'">
+	<input class="form-control input-sm" type="text" id="add_node_id" name="add_node_id" value="" placeholder="'.$lang['node_id'].'">
 	<div class="help-block with-errors"></div></div>
 		
 	<div class="form-group" class="control-label"><label>'.$lang['node_child_id'].'</label> <small class="text-muted">'.$lang['node_child_id_info'].'</small>
@@ -731,7 +731,7 @@ echo '
 	<div class="help-block with-errors"></div></div>
 
 	<div class="form-group" class="control-label"><label>'.$lang['smart_home_gateway_version'].' </label>
-	<input class="form-control input-sm" type="text" id="gw_timout" name="gw_timout" value="'.$grow['version'].'" disabled>
+	<input class="form-control input-sm" type="text" id="gw_version" name="gw_version" value="'.$grow['version'].'" disabled>
 	<div class="help-block with-errors"></div></div>
 	
 <br><h4 class="info"><i class="fa fa-heartbeat red"></i> '.$lang['smart_home_gateway_scr_info'].'</h4>
