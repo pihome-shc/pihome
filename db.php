@@ -245,6 +245,17 @@ if($what=="boost"){
 //Nodes
 if($what=="node"){
 	if($opp=="delete"){
+                //Get id from nodes table
+                $query = "SELECT * FROM nodes WHERE id = '".$wid."' LIMIT 1";
+                $results = $conn->query($query);
+                $row = mysqli_fetch_assoc($results);
+                if($row['name'] == 'Boiler Controller') {
+                        $query = "UPDATE boiler SET node_id = NULL WHERE node_id = '".$wid."' LIMIT 1";
+                        $conn->query($query);
+                } elseif($row['name'] == 'Zone Controller') {
+                        $query = "UPDATE zone SET controler_id = NULL WHERE  controler_id = '".$wid."' LIMIT 1";
+                        $conn->query($query);
+                }
 		//Now delete from Nodes
 		$query = "DELETE FROM nodes WHERE id = '".$wid."';"; 
 		$conn->query($query);

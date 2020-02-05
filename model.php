@@ -229,7 +229,7 @@ echo '
 	$query = "SELECT * FROM nodes WHERE id ='".$brow['node_id']."' Limit 1;";
 	$result = $conn->query($query);
 	$row = mysqli_fetch_assoc($result);
-	$node_id=$row['node_id'];
+	$node_id=$row['id'];
 	$notice_interval=$row['notice_interval'];
 	
 	echo '<option value="'.$node_id.'" selected>'.($node_id=='0' ? 'N/A' : $node_id).'</option>';
