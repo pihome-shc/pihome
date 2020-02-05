@@ -649,7 +649,7 @@ $query = "select * from zone_view order by index_id asc";
 $results = $conn->query($query);
 echo '	<div class=\"list-group\">';
 while ($row = mysqli_fetch_assoc($results)) {
-	if ($row['gpio_pin'] == 0){
+	if ($row['controller_type'] != "GPIO"){
 		echo "<div class=\"list-group-item\">
 		<i class=\"glyphicon glyphicon-th-large orange\"></i> ".$row['name']."
 		<span class=\"pull-right \"><em>&nbsp;&nbsp;<small> ".$lang['max']." ".$row['max_c']."&deg; </em> - ".$lang['sensor'].": ".$row['sensors_id']." - ".$lang['ctr'].": ".$row['controler_id']."-".$row['controler_child_id']."</small></span> 
@@ -662,7 +662,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	} else {
 		echo "<div class=\"list-group-item\">
 		<i class=\"glyphicon glyphicon-th-large orange\"></i> ".$row['name']."
-		<span class=\"pull-right \"><em>&nbsp;&nbsp;<small> ".$lang['max']." ".$row['max_c']."&deg; </em> - ".$lang['sensor'].": ".$row['sensors_id']." - GPIO: ".$row['gpio_pin']."</small></span>
+		<span class=\"pull-right \"><em>&nbsp;&nbsp;<small> ".$lang['max']." ".$row['max_c']."&deg; </em> - ".$lang['sensor'].": ".$row['sensors_id']." - GPIO: ".$row['controler_child_id']."</small></span>
 		<br><span class=\"pull-right \"><small>
 		<a href=\"zone_add.php?id=".$row['id']."\" class=\"btn btn-default btn-xs login\"><span class=\"ionicons ion-edit\"></span></a>&nbsp;&nbsp;
 		<a href=\"javascript:delete_zone(".$row['id'].");\"><button class=\"btn btn-danger btn-xs\"><span class=\"glyphicon glyphicon-trash\"></span></button></a>
