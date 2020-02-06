@@ -533,13 +533,34 @@ echo '<table class="table table-bordered">
         <th class="col-xs-1"></th>
     </tr>';
 while ($row = mysqli_fetch_assoc($results)) {
+    if($row["name"]=="Boiler Controller") {
+        $query = "SELECT * FROM boiler where node_id = {$row['id']} LIMIT 1;";
+        $b_results = $conn->query($query);
+        $rowcount=mysqli_num_rows($b_results);
+        if($rowcount > 0) {
+                $content_msg="You are about to DELETE an ACTIVE Boiler Controller";
+        } else {
+                $content_msg="You are about to DELETE a NONE active Boiler Controller";
+        }
+
+    } else {
+        $query = "SELECT * FROM zone where controler_id = {$row['id']} LIMIT 1;";
+        $z_results = $conn->query($query);
+        $rowcount=mysqli_num_rows($z_results);
+        if($rowcount > 0) {
+                $z_row = mysqli_fetch_assoc($z_results);
+                $content_msg="You are about to DELETE Zone Controller for ".$z_row["name"]." Zone";
+        } else {
+                $content_msg="You are about to DELETE a NONE active Zone Controller";
+        }
+    }
     echo '
         <tr>
             <td>'.$row["type"].'</td>
             <td>'.$row["node_id"].'</td>
             <td>'.$row["child_id_1"].'</td>
             <td>'.$row["name"].'</td>
-			<td><a href="javascript:delete_node('.$row["id"].');"><button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></button> </a></td>
+			<td><a href="javascript:delete_node('.$row["id"].');"><button class="btn btn-danger btn-xs" data-toggle="confirmation" data-title="ARE YOU SURE?" data-content="'.$content_msg.'"><span class="glyphicon glyphicon-trash"></span></button> </a></td>
         </tr>';
 }
 echo '</table></div>
