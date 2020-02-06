@@ -48,7 +48,10 @@
 
 	<!-- bootstrap slider -->
 	<script src="js/plugins/slider/bootstrap-slider.min.js"></script>
-	
+
+        <!-- bootstrap confirmation -->
+        <script src="js/plugins/confirmation/bootstrap-confirmation.min.js"></script>
+
 <script>	
 $(document).ready(function() {
 //delete record 
