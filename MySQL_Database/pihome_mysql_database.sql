@@ -321,7 +321,7 @@ CREATE TABLE IF NOT EXISTS `nodes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `sync` tinyint(4) NOT NULL DEFAULT 0,
   `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
-  `type` CHAR(50) NOT NULL DEFAULT 'MySnRF' COLLATE 'utf8_bin',
+  `type` char(50) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT 'MySnRF',
   `node_id` char(50) COLLATE utf16_bin NOT NULL,
   `child_id_1` int(11) DEFAULT NULL,
   `child_id_2` int(11) DEFAULT NULL,
@@ -543,7 +543,7 @@ CREATE TABLE IF NOT EXISTS `system` (
 -- Dumping data for table pihome.system: ~0 rows (approximately)
 /*!40000 ALTER TABLE `system` DISABLE KEYS */;
 REPLACE INTO `system` (`id`, `sync`, `purge`, `name`, `version`, `build`, `update_location`, `update_file`, `update_alias`, `country`, `language`, `city`, `zip`, `openweather_api`, `backup_email`, `ping_home`, `timezone`, `shutdown`, `reboot`, `c_f`) VALUES
-	(2, 1, 0, 'PiHome - Smart Heating Control', '1.72', '300120', 'http://www.pihome.eu/updates/', 'current-release-versions.php', 'pihome', 'IE', 'en', 'Portlaoise', NULL, '', '', b'1', 'Europe/Dublin', 0, 0, 0);
+	(2, 1, 0, 'PiHome - Smart Heating Control', '1.72', '070220', 'http://www.pihome.eu/updates/', 'current-release-versions.php', 'pihome', 'IE', 'en', 'Portlaoise', NULL, '', '', b'1', 'Europe/Dublin', 0, 0, 0);
 /*!40000 ALTER TABLE `system` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.user
