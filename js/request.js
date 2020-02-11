@@ -315,6 +315,25 @@ function db_backup() {
     //window.location="settings.php?status=reboot";  
 }
 
+//update backup email adress 
+function backup_email_update(){
+var idata="w=backup_email_update&o=update&backup_email="+document.getElementById("backup_email").value;
+    idata+="&wid=0";
+    $.get('db.php',idata)
+    .done(function(odata){
+        if(odata.Success)
+            reload_page();
+        else
+            console.log(odata.Message);
+    })
+    .fail(function( jqXHR, textStatus, errorThrown ){
+        if(jqXHR==401 || jqXHR==403) return;
+        console.log("setup_email: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
+    })
+    .always(function() {
+    });
+}
+
 //Restart MySensors Gateway
 function resetgw(wid){
 	var quest = "?w=resetgw&o=0&wid=" + wid + "&frost_temp=0";

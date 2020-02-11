@@ -1065,12 +1065,17 @@ echo '
             </div>
             <div class="modal-body">
 			<p class="text-muted"> '.$lang['pihome_backup_text'].' </p>
-			<i class="fa fa-clone fa-1x blue"></i> '.$lang['pihome_backup'].'
-			';
+			<form data-toggle="validator" role="form" method="post" action="#" id="form-join">
+			<div class="form-group" class="control-label"><label>E-Mail Address</label> <small class="text-muted">'.$lang['pihome_backup_email_info'].'</small>
+			<input class="form-control input-sm" type="text" id="backup_email" name="backup_email" value="'.settings($conn, backup_email).'" placeholder="Email Address to Receive your Backup file">
+			<div class="help-block with-errors"></div>
+			</div>
+			</form>';
 echo '     </div>
             <div class="modal-footer">
 			<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
-			<a href="javascript:db_backup()" class="btn btn-default login btn-sm">'.$lang['start'].'</a>
+			<a href="javascript:backup_email_update()" class="btn btn-default login btn-sm">'.$lang['save'].'</a>
+			<a href="javascript:db_backup()" class="btn btn-default login btn-sm">'.$lang['backup_start'].'</a>
             </div>
         </div>
     </div>

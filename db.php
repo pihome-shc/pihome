@@ -510,8 +510,23 @@ if($what=="setup_piconnect"){
 
 //Database Backup
 if($what=="db_backup"){
-	 shell_exec("php start_backup.php"); 
+	shell_exec("nohup php start_backup.php >/dev/null 2>&1"); 
 	$info_message = "Data Base Backup Request Started, This process may take some time complete..." ;
+}
+
+//Setup Backup e-mail
+if($what=="backup_email_update"){
+	$backup_email = $_GET['backup_email'];
+	$query = "UPDATE system SET backup_email = '".$backup_email."';";
+	if($conn->query($query)){
+		header('Content-type: application/json');
+		echo json_encode(array('Success'=>'Success','Query'=>$query));
+		return;
+	}else{
+		header('Content-type: application/json');
+		echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+		return;
+	}
 }
 
 //Reboot System
