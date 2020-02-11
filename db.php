@@ -624,7 +624,7 @@ if($what=="setup_email"){
 		//Update Exiting Record
 		$row = mysqli_fetch_assoc($result);
 		$e_id= $row['id'];
-		$query = "inset email SET smtp = '".$e_smtp."', username = '".$e_username."', password = '".$e_password."', `from` = '".$e_from_address."', `to` = '".$e_to_address."', status = '".$status."' where ID = '".$e_id."';";
+		$query = "Update email SET smtp = '".$e_smtp."', username = '".$e_username."', password = '".$e_password."', `from` = '".$e_from_address."', `to` = '".$e_to_address."', status = '".$status."' where ID = '".$e_id."';";
 		if($conn->query($query)){
 			header('Content-type: application/json');
 			echo json_encode(array('Success'=>'Success','Query'=>$query));
