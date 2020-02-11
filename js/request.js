@@ -353,7 +353,7 @@ var idata="w=setup_gateway&o=update&status="+document.getElementById("checkbox1"
 
 //update email 
 function setup_email(){
-var idata="w=setup_email&o=update&status="+document.getElementById("checkbox2").checked;
+var idata="w=setup_email&o=update&status="+document.getElementById("checkbox3").checked;
     idata+="&e_smtp="+document.getElementById("e_smtp").value;
 	idata+="&e_username="+document.getElementById("e_username").value;
 	idata+="&e_password="+document.getElementById("e_password").value;

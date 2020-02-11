@@ -803,9 +803,9 @@ echo '
 	<div class="form-group" class="control-label">
 	<div class="checkbox checkbox-default checkbox-circle">';
 	if ($erow['status'] == '1'){
-		echo '<input id="checkbox2" class="styled" type="checkbox" value="1" name="status" checked>';
+		echo '<input id="checkbox3" class="styled" type="checkbox" value="1" name="status" checked>';
 	}else {
-		echo '<input id="checkbox2" class="styled" type="checkbox" value="1" name="status">';
+		echo '<input id="checkbox3" class="styled" type="checkbox" value="1" name="status">';
 	}
 echo ' 
 
