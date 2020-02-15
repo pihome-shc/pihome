@@ -247,11 +247,11 @@ $new_index_id = $found_product['index_id']+1;
 <div class="form-group" class="control-label"><label><?php echo $lang['temp_sensor_id']; ?></label> <small class="text-muted"><?php echo $lang['zone_sensor_id_info'];?></small>
 <select id="sensor_id" onchange=ChangeChildList(this.options[this.selectedIndex].value) name="sensor_id" class="form-control select2" data-error="<?php echo $lang['zone_temp_sensor_id_error']; ?>" autocomplete="off" required>
 <?php if(isset($rownode['node_id'])) { echo '<option selected >'.$rownode['node_id'].'</option>'; } ?>
-<?php  $query = "SELECT node_id, child_id_1 FROM nodes where name = 'Temperature Sensor'";
+<?php  $query = "SELECT node_id, child_id_1 FROM nodes where name = 'Temperature Sensor' ORDER BY node_id ASC;";
 $result = $conn->query($query);
 echo "<option></option>";
 while ($datarw=mysqli_fetch_array($result)) {
-echo "<option value=".$datarw['child_id_1'].">".$datarw['node_id']."</option>"; } ?>
+echo "<option value=".$datarw['node_id'].">".$datarw['node_id']."</option>"; } ?>
 </select>				
 <div class="help-block with-errors"></div></div>
 
@@ -289,7 +289,7 @@ for ($x = 0; $x <= $rownode['child_id_1']; $x++) {
 <div class="form-group" class="control-label"><label><?php echo $lang['zone_controller_id']; ?></label> <small class="text-muted"><?php echo $lang['zone_controler_id_info'];?></small>
 <select id="controler_id" name="controler_id" class="form-control select2" data-error="<?php echo $lang['zone_controller_id_error']; ?>" autocomplete="off" required>
 <?php if(isset($rowcont['node_id'])) { echo '<option selected >'.$rowcont['node_id'].'</option>'; } ?>
-<?php  $query = "SELECT node_id FROM nodes where name = 'Boiler Relay' OR name = 'Boiler Controller';";
+<?php  $query = "SELECT node_id FROM nodes where name = 'Zone Controller Relay' OR name = 'Zone Controller';";
 $result = $conn->query($query);
 echo "<option></option>";
 while ($datarw=mysqli_fetch_array($result)) {
