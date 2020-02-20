@@ -148,7 +148,8 @@ echo '
 				<select class="form-control input-sm" type="text" id="new_lang" name="new_lang">
 				<option value="en" ' . ($language=='en' ? 'selected' : '') . '>'.$lang['lang_en'].'</option>
 				<option value="pt" ' . ($language=='pt' ? 'selected' : '') . '>'.$lang['lang_pt'].'</option>
-				<option value="pt" ' . ($language=='fr' ? 'selected' : '') . '>'.$lang['lang_fr'].'</option>
+				<option value="fr" ' . ($language=='fr' ? 'selected' : '') . '>'.$lang['lang_fr'].'</option>
+				<option value="ro" ' . ($language=='ro' ? 'selected' : '') . '>'.$lang['lang_ro'].'</option>
 				</select>
                 <div class="help-block with-errors"></div></div>
             </div>
@@ -270,6 +271,9 @@ echo '
 	<option value="6">6</option>
 	<option value="7">7</option>
 	<option value="8">8</option>
+	<option value="9">9</option>
+	<option value="10">10</option>
+	<option value="15">15</option>
 	</select>
     <div class="help-block with-errors"></div></div>
 
@@ -291,6 +295,7 @@ echo '
 	<option value="100">100</option>
 	<option value="110">110</option>
 	<option value="120">120</option>
+	<option value="180">180</option>
 	</select>
     <div class="help-block with-errors"></div></div>
 
