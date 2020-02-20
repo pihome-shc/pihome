@@ -452,8 +452,9 @@ while ($row = mysqli_fetch_assoc($results)) {
 				$end_time = strtotime($srow['end']);
 				if ($time >$start_time && $time <$end_time){$shactive="redsch_list";}
 				//this line to pass unique argument  "?w=schedule_list&o=active&wid=" href="javascript:delete_schedule('.$srow["id"].');"
-				echo ' <a href="javascript:schedule_zone('.$srow['tz_id'].');" class="list-group-item">
+				echo '<a href="javascript:schedule_zone('.$srow['tz_id'].');" class="list-group-item">
 				<div class="circle_list '. $shactive.'"> <p class="schdegree">'.number_format(DispTemp($conn,$srow['temperature']),0).'&deg;</p></div>
+				<span class="label label-info">' . $srow['sch_name'] . '</span>
 				<span class="pull-right text-muted sch_list"><em>'. $srow['start'].' - ' .$srow['end'].'</em></span></a>';
 			}
 		}

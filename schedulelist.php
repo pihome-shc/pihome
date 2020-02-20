@@ -133,7 +133,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	echo '
 <small class="pull-right"><br>
 <a href="javascript:delete_schedule(' . $row["time_id"] . ');"><button class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash"></span></button> </a> &nbsp;&nbsp;
-<a href="schedule_edit.php?id=' . $row["time_id"] . '" class="btn btn-default btn-sm login"><span class="ionicons ion-edit"></span></a>
+<a href="schedule_add.php?id=' . $row["time_id"] . '" class="btn btn-default btn-sm login"><span class="ionicons ion-edit"></span></a>
 </small>
 </div>
  </div>
