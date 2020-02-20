@@ -152,11 +152,10 @@ function update_lang(){
 function boiler_settings(){
 var idata="w=boiler_settings&o=update&status="+document.getElementById("checkbox2").checked;
     idata+="&name="+document.getElementById("name").value;
-	idata+="&node_id="+document.getElementById("node_id").value;
+	idata+="&node_id="+document.getElementById("selected_node_id").value;
 	idata+="&node_child_id="+document.getElementById("node_child_id").value;
 	idata+="&hysteresis_time="+document.getElementById("hysteresis_time").value;
 	idata+="&max_operation_time="+document.getElementById("max_operation_time").value;
-	idata+="&notice_interval="+document.getElementById("notice_interval").value;
     idata+="&wid=0";
     $.get('db.php',idata)
     .done(function(odata){
@@ -242,8 +241,9 @@ var idata="w=boost&o=update";
 function add_node(){
 var idata="w=node&o=add&node_type="+document.getElementById("node_type").value;
 	idata+="&add_node_id="+document.getElementById("add_node_id").value;
-	idata+="&nodes_child_id="+document.getElementById("nodes_child_id").value;
-	idata+="&node_name="+document.getElementById("node_name").value;
+	idata+="&nodes_max_child_id="+document.getElementById("nodes_max_child_id").value;
+	idata+="&node_name="+document.getElementById("node_type").value+" Controller";
+        idata+="&notice_interval=0";
     idata+="&wid=0";
     $.get('db.php',idata)
     .done(function(odata){
