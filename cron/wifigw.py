@@ -193,7 +193,6 @@ try:
 				# ..::Step Two ::..
 				# Add Nodes Name i.e. Relay, Temperature Sensor etc. to Nodes Table.
 				if (child_sensor_id == 255 and message_type == 3 and sub_type == 11):
-					payload = payload[:-1] # remove \n from payload otherwise you will endup two lines sensors name in database. 
 					if dbgLevel >= 2 and dbgMsgIn == 1:
 						print "2: Update Node Record for Node ID:", node_id, " Sensor Type:", payload, "\n\n"
 					cur.execute('UPDATE nodes SET name = %s where node_id = %s', (payload, node_id))
@@ -202,7 +201,6 @@ try:
 				# ..::Step Three ::..
 				# Add Nodes Sketch Version to Nodes Table.  
 				if (node_id != 0 and child_sensor_id == 255 and message_type == 3 and sub_type == 12):
-					payload = payload[:-1] # remove \n from payload otherwise you will endup two lines sensors name in database. 
 					if dbgLevel >= 2 and dbgMsgIn == 1:
 						print "3: Update Node ID: ", node_id, " Node Sketch Version: ", payload, "\n\n"
 					cur.execute('UPDATE nodes SET sketch_version = %s where node_id = %s', (payload, node_id))
