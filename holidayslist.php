@@ -67,7 +67,7 @@ while ($hol_row = mysqli_fetch_assoc($hol_results)) {
 
 					 <a style="color: #333; cursor: pointer; text-decoration: none;" data-toggle="collapse" data-parent="#accordion" href="#collapse'.$hol_row['id'].'">
 
-	<a href="schedule_add.php?id='.$hol_row["id"].'" style="color: #777; cursor: pointer;" ><small class="pull-right text-muted">
+	<a href="schedule_add.php?hol_id='.$hol_row["id"].'" style="color: #777; cursor: pointer;" ><small class="pull-right text-muted">
 	'.$lang['schedule_add'].' <i class="fa fa-chevron-right fa-fw"></i></a>
 	</small>
 
@@ -79,12 +79,12 @@ while ($hol_row = mysqli_fetch_assoc($hol_results)) {
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	<a href="javascript:delete_holidays('.$hol_row["id"].');"><button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></button> </a>
 	<a href="holidays_edit.php?id='.$hol_row["id"].'" class="btn btn-default btn-xs login"><span class="ionicons ion-edit"></span></a>
-        <a href="schedule_add.php?id='.$hol_row["id"].'" class="btn btn-default btn-xs login"><span class="fa fa-clock-o fa-lg fa-fw"></span></a>
+        <a href="schedule_add.php?hol_id='.$hol_row["id"].'" class="btn btn-default btn-xs login"><span class="fa fa-clock-o fa-lg fa-fw"></span></a>
     </div></li>';
 //following variable set to 0 on start for array index. 
 $sch_time_index = '0';
 //$query = "SELECT time_id, time_status, `start`, `end`, tz_id, tz_status, zone_id, index_id, zone_name, temperature, max(temperature) as max_c FROM schedule_daily_time_zone_view group by time_id ORDER BY start asc";
-$query = "SELECT time_id, time_status, `start`, `end`, WeekDays,tz_id, tz_status, zone_id, index_id, zone_name, temperature, FORMAT(max(temperature),2) as max_c FROM schedule_daily_time_zone_view WHERE holidays_id = {$hol_row["id"]} group by time_id ORDER BY start asc";
+$query = "SELECT time_id, time_status, `start`, `end`, WeekDays,tz_id, tz_status, zone_id, index_id, zone_name, temperature, FORMAT(max(temperature),2) as max_c, sch_name FROM schedule_daily_time_zone_view WHERE holidays_id = {$hol_row["id"]} group by time_id ORDER BY start, sch_name asc";
 $results = $conn->query($query);
 if ($rowcount=mysqli_num_rows($results) > 0) {
 while ($row = mysqli_fetch_assoc($results)) {
@@ -112,7 +112,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	
 	<a style="color: #333; cursor: pointer; text-decoration: none;" data-toggle="collapse" data-parent="#accordion" href="#collapse'.$row['tz_id'].'">
 	<div class="chat-body clearfix">
-	<div class="header text-info">&nbsp;&nbsp;'. $row['start'].' - ' .$row['end'].' &nbsp;&nbsp; 
+	<div class="header text-info">&nbsp;&nbsp; <span class="label label-info">' . $row['sch_name'] . '</span><br>&nbsp;&nbsp; '. $row['start'] . ' - ' . $row['end'] . ' &nbsp;&nbsp;
 
 	<small class="pull-right pull-right-days">
 	&nbsp;&nbsp;&nbsp;&nbsp;S&nbsp;&nbsp;&nbsp;M&nbsp;&nbsp;&nbsp;T&nbsp;&nbsp;W&nbsp;&nbsp;&nbsp;T&nbsp;&nbsp;&nbsp;F&nbsp;&nbsp;&nbsp;S<br>
@@ -147,7 +147,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 echo '
 <div class="list-group-item">
 <a href="javascript:delete_schedule('.$row["time_id"].');"><button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></button> </a>	
-<a href="schedule_edit.php?id='.$row["time_id"].'&hol_id='.$hol_row["id"].'" class="btn btn-default btn-xs login"><span class="ionicons ion-edit"></span></a>
+<a href="schedule_add.php?id='.$row["time_id"].'&hol_id='.$hol_row["id"].'" class="btn btn-default btn-xs login"><span class="ionicons ion-edit"></span></a>
 
 </div>
 </div>
