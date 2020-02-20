@@ -209,7 +209,7 @@ echo '<p class="text-muted">'.$lang['boiler_info_text'].'</p>';
 
 echo '
 	<form data-toggle="validator" role="form" method="post" action="settings.php" id="form-join">
-	
+
 	<div class="form-group" class="control-label">
 	<div class="checkbox checkbox-default checkbox-circle">';
 	if ($brow['status'] == '1'){
@@ -218,47 +218,43 @@ echo '
 		echo '<input id="checkbox2" class="styled" type="checkbox" value="1" name="status" Disabled>';
 	}
 	echo '<label for="checkbox2"> '.$lang['boiler_enable'].'</label></div></div>
-	
+
 	<div class="form-group" class="control-label"><label>'.$lang['boiler_name'].'</label>
 	<input class="form-control input-sm" type="text" id="name" name="name" value="'.$brow['name'].'" placeholder="Boiler Name to Display on Screen ">
 	<div class="help-block with-errors"></div></div>
 
 	<div class="form-group" class="control-label"><label>'.$lang['boiler_node_id'].'</label> <small class="text-muted">'.$lang['boiler_node_id_info'].'</small>
-	<select class="form-control input-sm" type="text" id="node_id" name="node_id">';
+	<select class="form-control input-sm" type="text" id="node_id" name="node_id" onchange=BoilerChildList(this.options[this.selectedIndex].value)>';
 	//get current node_id from nodes table 
 	$query = "SELECT * FROM nodes WHERE id ='".$brow['node_id']."' Limit 1;";
 	$result = $conn->query($query);
 	$row = mysqli_fetch_assoc($result);
-	$node_id=$row['id'];
-	$notice_interval=$row['notice_interval'];
-	
-	echo '<option value="'.$node_id.'" selected>'.($node_id=='0' ? 'N/A' : $node_id).'</option>';
-	
+	$node_id=$row['node_id'];
+        $node_type=$row['type'];
+	$max_child_id=$row['max_child_id'];
+
+	echo '<option value="'.$node_id.'" selected>'.$node_type.' - '.$node_id.'</option>';
+	echo "<option></option>";
 	//get list from nodes table to display 
-	$query = "SELECT * FROM nodes where name = 'Boiler Relay' OR name = 'Boiler Controller' AND node_id!=0;";
+	$query = "SELECT * FROM nodes where name = 'Boiler Relay' OR name = 'Boiler Controller' OR name = 'GPIO Controller' OR name = 'I2C Controller';";
 	$result = $conn->query($query);
 	if ($result){
 		while ($nrow=mysqli_fetch_array($result)) {
-			echo '<option value="'.$nrow['node_id'].'">'.$nrow['node_id'].'</option>';
+			echo '<option value="'.$nrow['max_child_id'].'">'.$nrow['type'].' - '.$nrow['node_id'].'</option>';
 		}
 	}
-	echo '<option value="0">N/A</option>
-	</select>
+	echo '</select>
     <div class="help-block with-errors"></div></div>';
-	
+
 	echo '
+	<input class="form-control input-sm" type="hidden" id="selected_node_id" name="selected_node_id" value="'.$node_id.'"/>
 	<div class="form-group" class="control-label"><label>'.$lang['boiler_node_child_id'].'</label> <small class="text-muted">'.$lang['boiler_relay_gpio_text'].'</small>
 	<select class="form-control input-sm" type="text" id="node_child_id" name="node_child_id">
-	<option selected>'.$brow['node_child_id'].'</option>
-	<option value="0">0</option>
-	<option value="1">1</option>
-	<option value="2">2</option>
-	<option value="3">3</option>
-	<option value="4">4</option>
-	<option value="5">5</option>
-	<option value="6">6</option>
-	<option value="7">7</option>
-	<option value="8">8</option>
+	<option selected>'.$brow['node_child_id'].'</option>';
+	for ($x = 1; $x <=  $max_child_id; $x++) {
+        	echo '<option value="'.$x.'">'.$x.'</option>';
+	}
+	echo '
 	</select>
     <div class="help-block with-errors"></div></div>
 	
@@ -297,21 +293,7 @@ echo '
 	<option value="120">120</option>
 	</select>
     <div class="help-block with-errors"></div></div>
-	
-	<div class="form-group" class="control-label"><label>'.$lang['notice_interval'].'</label> <small class="text-muted">'.$lang['notice_interval_info'].'</small>
-	<select class="form-control input-sm" type="text" id="notice_interval" name="notice_interval">
-	<option selected>'.$notice_interval.'</option>
-	<option value="0">0</option>
-	<option value="5">5</option>
-	<option value="7">7</option>
-	<option value="9">9</option>
-	<option value="11">11</option>
-	<option value="13">13</option>
-	<option value="15">15</option>
-	<option value="17">17</option>
-	<option value="19">19</option>
-	</select>
-    <div class="help-block with-errors"></div></div>
+
 	';
 
 	echo '</div>
@@ -517,30 +499,30 @@ echo '
         <div class="modal-content">
             <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title">'.$lang['node_settings'].'</h5>
+                <h5 class="modal-title">'.$lang['node_setting'].'</h5>
             </div>
             <div class="modal-body">
 <p class="text-muted"> '.$lang['node_settings_text'].' </p>';
 
-$query = "SELECT * FROM nodes where type !='MySnRF';";
+$query = "SELECT * FROM nodes where type !='MySensor';";
 $results = $conn->query($query);
 echo '<table class="table table-bordered">
     <tr>
         <th class="col-xs-2"><small>'.$lang['type'].'</small></th>
         <th class="col-xs-2"><small>'.$lang['node_id'].'</small></th>
-        <th class="col-xs-2"><small>'.$lang['child'].'</small></th>
+        <th class="col-xs-2"><small>'.$lang['max_child'].'</small></th>
         <th class="col-xs-4"><small>'.$lang['name'].'</small></th>
         <th class="col-xs-1"></th>
     </tr>';
 while ($row = mysqli_fetch_assoc($results)) {
-    if($row["name"]=="Boiler Controller") {
+    if($row["name"]=="Boiler Controller" or $row["name"]=="GPIO Controller" or $row["name"]=="I2C Controller") {
         $query = "SELECT * FROM boiler where node_id = {$row['id']} LIMIT 1;";
         $b_results = $conn->query($query);
         $rowcount=mysqli_num_rows($b_results);
         if($rowcount > 0) {
-                $content_msg="You are about to DELETE an ACTIVE Boiler Controller";
+                $content_msg="You are about to DELETE an ACTIVE Controller";
         } else {
-                $content_msg="You are about to DELETE a NONE active Boiler Controller";
+                $content_msg="You are about to DELETE a NONE active Controller";
         }
 
     } else {
@@ -549,16 +531,16 @@ while ($row = mysqli_fetch_assoc($results)) {
         $rowcount=mysqli_num_rows($z_results);
         if($rowcount > 0) {
                 $z_row = mysqli_fetch_assoc($z_results);
-                $content_msg="You are about to DELETE Zone Controller for ".$z_row["name"]." Zone";
+                $content_msg="You are about to DELETE an ACTIVE Controller for ".$z_row["name"]." Zone";
         } else {
-                $content_msg="You are about to DELETE a NONE active Zone Controller";
+                $content_msg="You are about to DELETE a NONE active Controller";
         }
     }
     echo '
         <tr>
             <td>'.$row["type"].'</td>
             <td>'.$row["node_id"].'</td>
-            <td>'.$row["child_id_1"].'</td>
+            <td>'.$row["max_child_id"].'</td>
             <td>'.$row["name"].'</td>
 			<td><a href="javascript:delete_node('.$row["id"].');"><button class="btn btn-danger btn-xs" data-toggle="confirmation" data-title="ARE YOU SURE?" data-content="'.$content_msg.'"><span class="glyphicon glyphicon-trash"></span></button> </a></td>
         </tr>';
@@ -601,15 +583,9 @@ echo '<p class="text-muted">'.$lang['node_add_info_text'].'</p>
 	<div class="help-block with-errors"></div></div>
 		
 	<div class="form-group" class="control-label"><label>'.$lang['node_child_id'].'</label> <small class="text-muted">'.$lang['node_child_id_info'].'</small>
-	<input class="form-control input-sm" type="text" id="nodes_child_id" name="nodes_child_id" value="" placeholder="'.$lang['node_child_id'].'">
+	<input class="form-control input-sm" type="text" id="nodes_max_child_id" name="nodes_max_child_id" value="" placeholder="'.$lang['node_max_child_id'].'">
 	<div class="help-block with-errors"></div></div>
 
-	<div class="form-group" class="control-label"><label>'.$lang['node_name'].'</label> <small class="text-muted">'.$lang['node_name_info'].'</small>
-	<select class="form-control input-sm" type="text" id="node_name" name="node_name">
-	<option value="Zone Controller">Zone Controller</option>
-	<option value="Boiler Controller">Boiler Controller</option>
-	</select>
-    <div class="help-block with-errors"></div></div>
 </div>
             <div class="modal-footer">
 				<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
@@ -670,27 +646,15 @@ $query = "select * from zone_view order by index_id asc";
 $results = $conn->query($query);
 echo '	<div class=\"list-group\">';
 while ($row = mysqli_fetch_assoc($results)) {
-	if ($row['controller_type'] != "GPIO"){
-		echo "<div class=\"list-group-item\">
-		<i class=\"glyphicon glyphicon-th-large orange\"></i> ".$row['name']."
-		<span class=\"pull-right \"><em>&nbsp;&nbsp;<small> ".$lang['max']." ".$row['max_c']."&deg; </em> - ".$lang['sensor'].": ".$row['sensors_id']." - ".$lang['ctr'].": ".$row['controler_id']."-".$row['controler_child_id']."</small></span> 
-		<br><span class=\"pull-right \"><small>
-		<a href=\"zone_add.php?id=".$row['id']."\" class=\"btn btn-default btn-xs login\"><span class=\"ionicons ion-edit\"></span></a>&nbsp;&nbsp;
-		<a href=\"javascript:delete_zone(".$row['id'].");\"><button class=\"btn btn-danger btn-xs\"><span class=\"glyphicon glyphicon-trash\"></span></button></a>
-		</small></span>
-		<br>
-		</div>";
-	} else {
-		echo "<div class=\"list-group-item\">
-		<i class=\"glyphicon glyphicon-th-large orange\"></i> ".$row['name']."
-		<span class=\"pull-right \"><em>&nbsp;&nbsp;<small> ".$lang['max']." ".$row['max_c']."&deg; </em> - ".$lang['sensor'].": ".$row['sensors_id']." - GPIO: ".$row['controler_child_id']."</small></span>
-		<br><span class=\"pull-right \"><small>
-		<a href=\"zone_add.php?id=".$row['id']."\" class=\"btn btn-default btn-xs login\"><span class=\"ionicons ion-edit\"></span></a>&nbsp;&nbsp;
-		<a href=\"javascript:delete_zone(".$row['id'].");\"><button class=\"btn btn-danger btn-xs\"><span class=\"glyphicon glyphicon-trash\"></span></button></a>
-		</small></span>
-		<br>
-		</div>";
-	}
+	echo "<div class=\"list-group-item\">
+	<i class=\"glyphicon glyphicon-th-large orange\"></i> ".$row['name']."
+	<span class=\"pull-right \"><em>&nbsp;&nbsp;<small> ".$lang['max']." ".$row['max_c']."&deg; </em> - ".$lang['sensor'].": ".$row['sensors_id']." - ".$row['controller_type'].": ".$row['controler_id']."-".$row['controler_child_id']."</small></span> 
+	<br><span class=\"pull-right \"><small>
+	<a href=\"zone_add.php?id=".$row['id']."\" class=\"btn btn-default btn-xs login\"><span class=\"ionicons ion-edit\"></span></a>&nbsp;&nbsp;
+	<a href=\"javascript:delete_zone(".$row['id'].");\"><button class=\"btn btn-danger btn-xs\"><span class=\"glyphicon glyphicon-trash\"></span></button></a>
+	</small></span>
+	<br>
+	</div>";
 }
 echo '
 </div></div>
@@ -852,12 +816,13 @@ echo '
             </div>
             <div class="modal-body">
 <p class="text-muted"> '.$lang['node_alerts_edit_info'].' </p>';
-$query = "SELECT * FROM nodes where node_id != 0 AND status = 'Active' ORDER BY node_id asc";
+$query = "SELECT * FROM nodes where status = 'Active' ORDER BY node_id asc";
 $results = $conn->query($query);
 echo '<table>
     <tr>
         <th class="col-xs-1">'.$lang['node_id'].'</th>
-        <th class="col-xs-4">'.$lang['name'].'</th>
+        <th class="col-xs-3">'.$lang['name'].'</th>
+        <th class="col-xs-4">'.$lang['last_seen'].'</th>
         <th class="col-xs-5">'.$lang['notice_interval'].'
 	<span class="fa fa-info-circle fa-lg text-info" data-container="body" data-toggle="popover" data-placement="left" data-content="'.$lang['notice_interval_info'].'"</span>
 	</th>
@@ -1275,5 +1240,33 @@ echo '</div></div>
 $(document).ready(function(){
   $('[data-toggle="popover"]').popover();
 });
+
+$('[data-toggle=confirmation]').confirmation({
+  rootSelector: '[data-toggle=confirmation]',
+  container: 'body'
+});
 </script>
+
+<script language="javascript" type="text/javascript">
+function BoilerChildList(value)
+{
+ var valuetext = value;
+ var e = document.getElementById("node_id");
+ var selected_sensor_id = e.options[e.selectedIndex].text;
+ var selected_sensor_id = selected_sensor_id.split(" - ");
+ document.getElementById("selected_node_id").value = selected_sensor_id[1];
+
+ var opt = document.getElementById("node_child_id").getElementsByTagName("option");
+ for(j=opt.length-1;j>=0;j--)
+  {
+  document.getElementById("node_child_id").options.remove(j);
+  }
+ for(j=1;j<=valuetext;j++)
+  {
+  var optn = document.createElement("OPTION");
+  optn.text = j;
+  optn.value = j;
+  document.getElementById("node_child_id").options.add(optn);
+  }}
+ </script>
 

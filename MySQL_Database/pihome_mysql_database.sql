@@ -63,7 +63,6 @@ CREATE TABLE IF NOT EXISTS `boiler` (
   `hysteresis_time` tinyint(4) DEFAULT 3,
   `max_operation_time` tinyint(4) DEFAULT 60,
   `datetime` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `gpio_pin` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_boiler_zone` (`node_id`),
   CONSTRAINT `FK_boiler_zone` FOREIGN KEY (`node_id`) REFERENCES `nodes` (`id`)
@@ -71,8 +70,8 @@ CREATE TABLE IF NOT EXISTS `boiler` (
 
 -- Dumping data for table pihome.boiler: ~0 rows (approximately)
 /*!40000 ALTER TABLE `boiler` DISABLE KEYS */;
-REPLACE INTO `boiler` (`id`, `sync`, `purge`, `status`, `fired_status`, `name`, `node_id`, `node_child_id`, `hysteresis_time`, `max_operation_time`, `datetime`, `gpio_pin`) VALUES
-	(1, 0, 0, 1, 0, 'Gas Boiler', 5, 1, 3, 60, '2019-07-17 16:00:01', 24);
+REPLACE INTO `boiler` (`id`, `sync`, `purge`, `status`, `fired_status`, `name`, `node_id`, `node_child_id`, `hysteresis_time`, `max_operation_time`, `datetime`) VALUES
+	(1, 0, 0, 1, 0, 'Gas Boiler', 0, 4, 3, 60, '2019-07-17 16:00:01');
 /*!40000 ALTER TABLE `boiler` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.boiler_logs
@@ -202,7 +201,7 @@ CREATE TABLE IF NOT EXISTS `gateway` (
 -- Dumping data for table pihome.gateway: ~0 rows (approximately)
 /*!40000 ALTER TABLE `gateway` DISABLE KEYS */;
 REPLACE INTO `gateway` (`id`, `status`, `sync`, `purge`, `type`, `location`, `port`, `timout`, `pid`, `pid_running_since`, `reboot`, `find_gw`, `version`) VALUES
-	(1, 0, 0, 0, 'wifi', '192.168.99.3', '5003', '3', '3793', '', 0, 1, '2.3.1\n');
+	(1, 1, 0, 0, 'serial', '/dev/ttyAMA0', '115200', '3', '3793', '', 0, 1, '2.3.1\n');
 /*!40000 ALTER TABLE `gateway` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.gateway_logs
@@ -290,7 +289,8 @@ REPLACE INTO `messages_out` (`id`, `sync`, `purge`, `node_id`, `child_id`, `sub_
 	(23, 0, 0, '40', 3, 1, 0, 2, '0', 1, '2019-06-17 16:02:49', 35),
 	(24, 0, 0, '100', 1, 1, 1, 2, '0', 0, '2019-07-17 16:00:01', 0),
 	(25, 0, 0, '40', 255, 3, 0, 1, '00:16', 1, '2019-03-20 00:16:38', 0),
-	(26, 0, 0, '40', 1, 2, 0, 47, '18:08', 1, '2019-03-20 00:02:24', 0);
+        (26, 0, 0, '40', 1, 2, 0, 47, '18:08', 1, '2019-03-20 00:02:24', 0),
+        (27, 0, 0, '200', 2, 1, 1, 2, '0', 1, '2019-03-20 00:02:24', 34);
 /*!40000 ALTER TABLE `messages_out` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.mqtt
@@ -321,16 +321,9 @@ CREATE TABLE IF NOT EXISTS `nodes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `sync` tinyint(4) NOT NULL DEFAULT 0,
   `purge` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Mark For Deletion',
-  `type` char(50) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT 'MySnRF',
+  `type` CHAR(50) NOT NULL DEFAULT 'MySensor' COLLATE 'utf8_bin',
   `node_id` char(50) COLLATE utf16_bin NOT NULL,
-  `child_id_1` int(11) DEFAULT NULL,
-  `child_id_2` int(11) DEFAULT NULL,
-  `child_id_3` int(11) DEFAULT NULL,
-  `child_id_4` int(11) DEFAULT NULL,
-  `child_id_5` int(11) DEFAULT NULL,
-  `child_id_6` int(11) DEFAULT NULL,
-  `child_id_7` int(11) DEFAULT NULL,
-  `child_id_8` int(11) DEFAULT NULL,
+  `max_child_id` int(11) NOT NULL DEFAULT 0,
   `name` char(50) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   `last_seen` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
   `notice_interval` int(11) NOT NULL DEFAULT 30,
@@ -344,15 +337,15 @@ CREATE TABLE IF NOT EXISTS `nodes` (
 
 -- Dumping data for table pihome.nodes: ~7 rows (approximately)
 /*!40000 ALTER TABLE `nodes` DISABLE KEYS */;
-REPLACE INTO `nodes` (`id`, `sync`, `purge`, `node_id`, `child_id_1`, `child_id_2`, `child_id_3`, `child_id_4`, `child_id_5`, `child_id_6`, `child_id_7`, `child_id_8`, `name`, `last_seen`, `notice_interval`, `min_voltage`, `status`, `ms_version`, `sketch_version`, `repeater`) VALUES
-	(0, 1, 0, '0', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Zone Controller Relay', '2019-07-11 13:46:21', 0, NULL, NULL, NULL, NULL, NULL),
-	(1, 1, 0, '21', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Temperature Sensor', '2019-07-17 15:01:08', 60, NULL, 'Active', '2.3.1\n', '0.31', NULL),
-	(2, 1, 0, '20', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Temperature Sensor', '2019-07-17 14:47:08', 45, NULL, 'Active', '2.3.1\n', '0.31', NULL),
-	(4, 1, 0, '30', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Temperature Sensor', '2019-07-17 14:48:06', 45, NULL, 'Active', '2.3.1\n', '0.31', NULL),
-	(5, 1, 0, '100', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Boiler Relay', '2019-07-18 20:10:44', 45, NULL, 'Active', '2.3.1\n', '0.31', NULL),
-	(7, 1, 0, '101', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Zone Controller Relay', '2019-07-18 20:10:47', 45, NULL, 'Active', '2.1.1\n', '1.23', NULL),
-	(8, 1, 0, '40', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Button Console', '2019-07-12 00:29:15', 0, NULL, NULL, '2.1.1\n', '1.32', NULL),
-	(9, 1, 0, '0', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Boiler Relay', '2019-07-11 13:46:21', 0, NULL, NULL, NULL, NULL, NULL);
+REPLACE INTO `nodes` (`id`, `sync`, `purge`,  `type`, `node_id`, `max_child_id`, `name`, `last_seen`, `notice_interval`, `min_voltage`, `status`, `ms_version`, `sketch_version`, `repeater`) VALUES
+	(0, 1, 0,'GPIO', '0', 26, 'GPIO Controller', '2020-02-11 09:09:42', 0, NULL, 'Active', NULL, NULL, NULL),
+	(1, 1, 0,'MySensor', '21', 0, 'Temperature Sensor', '2019-07-17 15:01:08', 60, NULL, 'Active', '2.3.1\n', '0.31', NULL),
+	(2, 1, 0,'MySensor', '20', 0, 'Temperature Sensor', '2019-07-17 14:47:08', 45, NULL, 'Active', '2.3.1\n', '0.31', NULL),
+	(4, 1, 0,'MySensor', '30', 0, 'Temperature Sensor', '2019-07-17 14:48:06', 45, NULL, 'Active', '2.3.1\n', '0.31', NULL),
+	(5, 1, 0,'MySensor', '100', 1, 'Boiler Relay', '2019-07-18 20:10:44', 45, NULL, 'Active', '2.3.1\n', '0.31', NULL),
+	(7, 1, 0,'MySensor', '101', 3, 'Zone Controller Relay', '2019-07-18 20:10:47', 45, NULL, 'Active', '2.1.1\n', '1.23', NULL),
+	(8, 1, 0,'MySensor', '40', 1, 'Button Console', '2019-07-12 00:29:15', 0, NULL, NULL, '2.1.1\n', '1.32', NULL),
+        (9, 1, 0,'I2C', '200', 4, 'I2C Controller', '2019-07-12 00:29:15', 0, NULL, 'Active', NULL, NULL, NULL);
 /*!40000 ALTER TABLE `nodes` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.nodes_battery
@@ -543,7 +536,7 @@ CREATE TABLE IF NOT EXISTS `system` (
 -- Dumping data for table pihome.system: ~0 rows (approximately)
 /*!40000 ALTER TABLE `system` DISABLE KEYS */;
 REPLACE INTO `system` (`id`, `sync`, `purge`, `name`, `version`, `build`, `update_location`, `update_file`, `update_alias`, `country`, `language`, `city`, `zip`, `openweather_api`, `backup_email`, `ping_home`, `timezone`, `shutdown`, `reboot`, `c_f`) VALUES
-	(2, 1, 0, 'PiHome - Smart Heating Control', '1.72', '090220', 'http://www.pihome.eu/updates/', 'current-release-versions.php', 'pihome', 'IE', 'en', 'Portlaoise', NULL, '', '', b'1', 'Europe/Dublin', 0, 0, 0);
+	(2, 1, 0, 'PiHome - Smart Heating Control', '1.72', '300120', 'http://www.pihome.eu/updates/', 'current-release-versions.php', 'pihome', 'IE', 'en', 'Portlaoise', NULL, '', '', b'1', 'Europe/Dublin', 0, 0, 0);
 /*!40000 ALTER TABLE `system` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.user
@@ -632,7 +625,6 @@ CREATE TABLE IF NOT EXISTS `zone` (
   `controler_id` int(11) DEFAULT NULL,
   `controler_child_id` int(11) DEFAULT NULL,
   `boiler_id` int(11) DEFAULT NULL,
-  `gpio_pin` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_zone_nodes` (`sensor_id`),
   KEY `FK_zone_nodes_2` (`controler_id`),
@@ -644,10 +636,10 @@ CREATE TABLE IF NOT EXISTS `zone` (
 
 -- Dumping data for table pihome.zone: ~3 rows (approximately)
 /*!40000 ALTER TABLE `zone` DISABLE KEYS */;
-REPLACE INTO `zone` (`id`, `sync`, `purge`, `status`, `index_id`, `name`, `type`, `model`, `max_c`, `max_operation_time`, `hysteresis_time`, `sp_deadband`, `sensor_id`, `sensor_child_id`, `controler_id`, `controler_child_id`, `boiler_id`, `gpio_pin`) VALUES
-	(33, 1, 0, 1, 1, 'Ground Floor', 'Heating', 'DE000F', 25, 60, 3, 0.5, 1, 0, 7, 1, 1, 21),
-	(34, 1, 0, 1, 2, 'First Floor', 'Heating', '7D0096', 25, 60, 3, 0.5, 2, 0, 7, 2, 1, 22),
-	(35, 1, 0, 1, 5, 'Ch. Hot Water', 'Water', '009604', 70, 90, 3, 0.5, 4, 0, 7, 3, 1, 23);
+REPLACE INTO `zone` (`id`, `sync`, `purge`, `status`, `index_id`, `name`, `type`, `model`, `max_c`, `max_operation_time`, `hysteresis_time`, `sp_deadband`, `sensor_id`, `sensor_child_id`, `controler_id`, `controler_child_id`, `boiler_id`) VALUES
+	(33, 1, 0, 1, 1, 'Ground Floor', 'Heating', 'DE000F', 25, 60, 3, 0.5, 1, 0, 0, 17, 1),
+	(34, 1, 0, 1, 2, 'First Floor', 'Heating', '7D0096', 25, 60, 3, 0.5, 2, 0, 0, 27, 1),
+	(35, 1, 0, 1, 5, 'Ch. Hot Water', 'Water', '009604', 70, 90, 3, 0.5, 4, 0, 0, 22, 1);
 /*!40000 ALTER TABLE `zone` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.zone_logs
