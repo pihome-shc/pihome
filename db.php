@@ -272,10 +272,11 @@ if($what=="node"){
 	if($opp=="add"){
 		$node_type = $_GET['node_type'];
 		$node_id = $_GET['add_node_id'];
-		$node_child_id = $_GET['nodes_child_id'];
+		$node_child_id = $_GET['nodes_max_child_id'];
 		$node_name = $_GET['node_name'];
+                $notice_interval = $_GET['notice_interval'];
 		//Add record to Nodes table
-		$query = "INSERT INTO nodes (`sync`, `purge`, `type`, node_id, child_id_1, `name`, `status`) VALUES ('0', '0', '{$node_type}', '{$node_id}', '{$node_child_id}', '{$node_name}', 'Active')";
+		$query = "INSERT INTO nodes (`sync`, `purge`, `type`, node_id, max_child_id, `name`, `notice_interval`, `status`) VALUES ('0', '0', '{$node_type}', '{$node_id}', '{$node_child_id}', '{$node_name}', '{$notice_interval}', 'Active')";
 		if($conn->query($query)){
             		header('Content-type: application/json');
             		echo json_encode(array('Success'=>'Success','Query'=>$query));
@@ -361,7 +362,6 @@ if($what=="boiler_settings"){
 	$node_child_id = $_GET['node_child_id'];
 	$hysteresis_time = $_GET['hysteresis_time'];
 	$max_operation_time = $_GET['max_operation_time'];
-	$notice_interval = $_GET['notice_interval'];
 	if ($status=='true'){$status = '1';} else {$status = '0';}
 	
 	//Get id from nodes table
@@ -369,10 +369,6 @@ if($what=="boiler_settings"){
 	$results = $conn->query($query);
 	$row = mysqli_fetch_assoc($results);
 	
-	//Update Notice Interval for Boiler Node. 
-	$query = "UPDATE nodes SET notice_interval = '".$notice_interval."' WHERE `id`=".$row['id'].";";
-	$conn->query($query);
-		
 	//Check messages_out for Boiler Node ID
 	$query = "SELECT * FROM messages_out WHERE node_id='".$node_id."' LIMIT 1;";
 	$result = $conn->query($query);
@@ -383,7 +379,7 @@ if($what=="boiler_settings"){
 	}
 
 	//Update Boiler Setting 
-	$query = "UPDATE boiler SET status = '".$status."', name = '".$name."', node_id = '".$row['id']."', node_child_id = '".$node_child_id."', hysteresis_time = '".$hysteresis_time."', max_operation_time = '".$max_operation_time."', gpio_pin = '".$gpio_pin."' where ID = 1;";
+	$query = "UPDATE boiler SET status = '".$status."', name = '".$name."', node_id = '".$row['id']."', node_child_id = '".$node_child_id."', hysteresis_time = '".$hysteresis_time."', max_operation_time = '".$max_operation_time."' where ID = 1;";
 	if($conn->query($query)){
 		header('Content-type: application/json');
 		echo json_encode(array('Success'=>'Success','Query'=>$query));
@@ -680,7 +676,7 @@ if($what=="setup_graph"){
 
 //update Node Alerts Notice Interval
 if($what=="node_alerts"){
-        $sel_query = "SELECT * FROM nodes where node_id != 0 AND status = 'Active' ORDER BY node_id asc";
+        $sel_query = "SELECT * FROM nodes where status = 'Active' ORDER BY node_id asc";
         $results = $conn->query($sel_query);
         while ($row = mysqli_fetch_assoc($results)) {
                 $node_id = $row['node_id'];
