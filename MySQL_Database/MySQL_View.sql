@@ -55,7 +55,7 @@ where zone.`purge` = '0';
 -- Boiler View
 Drop View if exists boiler_view;
 CREATE VIEW boiler_view AS
-select boiler.status, boiler.sync, boiler.`purge`, boiler.fired_status, boiler.name, ctype.`type` AS controller_type, nodes.node_id, nodes.child_id_1 AS node_child_id, boiler.hysteresis_time, boiler.max_operation_time
+select boiler.status, boiler.sync, boiler.`purge`, boiler.fired_status, boiler.name, ctype.`type` AS controller_type, nodes.node_id, boiler.node_child_id, boiler.hysteresis_time, boiler.max_operation_time
 from boiler
 join nodes on boiler.node_id = nodes.id
 join nodes ctype on boiler.node_id = ctype.id
