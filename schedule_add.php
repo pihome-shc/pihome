@@ -86,10 +86,11 @@ if (isset($_POST['submit'])) {
 		if(isset($_GET['id'])) {
 			$tzid = $id;
 			$schedule_daily_time_id = $time_id;
+			$zoneid = $_POST['zoneid'][$id];
 		} else {
 			$tzid = 0;
+			$zoneid = $id;
 		}
-		$zoneid = $_POST['zoneid'][$id];
 		$status = isset($_POST['status'][$id]) ? $_POST['status'][$id] : "0";				  
 		$coop = isset($_POST['coop'][$id]) ? $_POST['coop'][$id] : "0";
 		$temp=TempToDB($conn,$_POST['temp'][$id]);
@@ -100,7 +101,8 @@ if (isset($_POST['submit'])) {
 		if ($zoneresults) {
 			#$message_success = "<p>".$lang['zone_record_success']."</p>";
 		} else {
-			$error = "<p>".$lang['zone_record_fail']." </p> <p>" .mysqli_error($conn). "</p>"."  schedule_daily_time_id: ".$schedule_daily_time_id."  id: ".$id."  tzid: ".$tzid."  zone id: ".$zoneid."  holid: ".$holidays_id;
+			#$error = "<p>".$lang['zone_record_fail']." </p> <p>" .mysqli_error($conn). "</p>"."  schedule_daily_time_id: ".$schedule_daily_time_id."  id: ".$id."  tzid: ".$tzid."  zone id: ".$zoneid."  holid: ".$holidays_id;
+			$error = "<p>".$lang['zone_record_fail']." </p> <p>" .mysqli_error($conn). "</p>";
 		}
 	}
 }
@@ -122,7 +124,7 @@ if (isset($_POST['submit'])) {
 	$query = "select * from schedule_daily_time_zone_view where time_id = {$time_id}";
 	$zoneresults = $conn->query($query);
 } else {
-	$query = "select * from schedule_daily_time_zone_view group by zone_name";
+	$query = "select id as tz_id, name as zone_name, type from zone where status = 1 AND `purge`= 0 order by index_id asc;";
 	$zoneresults = $conn->query($query);
 }
 ?>
@@ -204,17 +206,20 @@ while ($row = mysqli_fetch_assoc($zoneresults)) {
 	<hr>
 	<!-- Zone ID (tz_id) -->
 	<input type="hidden" name="id[<?php echo $row["tz_id"];?>]" value="<?php echo $row["tz_id"];?>">
-	<input type="hidden" name="zoneid[<?php echo $row["tz_id"];?>]" value="<?php echo $row["zone_id"];?>">
-
+	<?php if($time_id != 0){
+	echo '<input type="hidden" name="zoneid['.$row["tz_id"].']" value="'.$row["zone_id"].'">';
+	}?>
 	<!-- Zone Enable Checkbox -->
 	<div class="checkbox checkbox-default  checkbox-circle">
 	<input id="checkbox<?php echo $row["tz_id"];?>" class="styled" type="checkbox" name="status[<?php echo $row["tz_id"];?>]" value="1" <?php if($time_id != 0){ $check = ($row['tz_status'] == 1) ? 'checked' : ''; echo $check;} ?> onclick="$('#<?php echo $row["tz_id"];?>').toggle();">
     <label for="checkbox<?php echo $row["tz_id"];?>"><?php echo $row["zone_name"];?></label>
+	<?php echo $check;?>
     <div class="help-block with-errors"></div></div>
 
 	<!-- Group Zone Settings -->
 	<?php
 	if($row['tz_status'] == 1 AND $time_id != 0){
+	//if($time_id != 0){
 		echo '<div id="'.$row["tz_id"].'"><div class="form-group" class="control-label">';
 	}else{
 		echo '<div id="'.$row["tz_id"].'" style="display:none !important;"><div class="form-group" class="control-label">';
