@@ -77,7 +77,7 @@ def insertDB(IDs, temperature):
 			row = int(row[0])
 			if (row == 0):
 				print bc.dtm + time.ctime() + bc.ENDC + ' - New DS18B20 Sensors Discovered' + bc.grn, IDs[i], bc.ENDC 
-				cur.execute('INSERT INTO nodes (node_id, child_id_1, name, last_seen, ms_version) VALUES(%s,%s,%s,%s,%s)', (IDs[i], '-1', 'Temperature Sensor', time.strftime("%Y-%m-%d %H:%M:%S"), '0'))
+				cur.execute('INSERT INTO nodes (node_id, max_child_id, name, last_seen, ms_version) VALUES(%s,%s,%s,%s,%s)', (IDs[i], '-1', 'Temperature Sensor', time.strftime("%Y-%m-%d %H:%M:%S"), '0'))
 				con.commit()
 			#If DS18B20 Sensor record exist: Update Nodes Table with Last seen status. 
 			if (row == 1):

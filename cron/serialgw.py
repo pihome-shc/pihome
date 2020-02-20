@@ -162,7 +162,7 @@ try:
 					if (row == 0):
 						if dbgLevel >= 2 and dbgMsgIn == 1:
 							print "1: Adding Node ID:",node_id, "MySensors Version:", payload
-						cur.execute('INSERT INTO nodes(node_id, status, ms_version) VALUES(%s, %s, %s)', (node_id, 'Active', payload))
+						cur.execute('INSERT INTO nodes(type, node_id, status, ms_version) VALUES(%s, %s, %s, %s)', ('MySensor', node_id, 'Active', payload))
 						con.commit()
 					else:
 						if dbgLevel >= 2 and dbgMsgIn == 1:
@@ -180,7 +180,7 @@ try:
 					if (row == 0):
 						if dbgLevel >= 2 and dbgMsgIn == 1:
 							print "1-B: Adding Node ID:",node_id, "MySensors Version:", payload
-						cur.execute('INSERT INTO nodes(node_id, repeater, ms_version) VALUES(%s, %s, %s)', (node_id, '1', payload))
+						cur.execute('INSERT INTO nodes(type, node_id, repeater, ms_version) VALUES(%s, %s, %s, %s)', ('MySensor', node_id, '1', payload))
 						con.commit()
 					else:
 						if dbgLevel >= 2 and dbgMsgIn == 1:
@@ -207,10 +207,10 @@ try:
 				# ..::Step Four::..
 				# Add Node Child ID to Node Table
 				#25;0;0;0;6;
-				if (node_id != 0 and child_sensor_id != 255 and message_type == 0 and sub_type == 6):
+				if (node_id != 0 and child_sensor_id != 255 and message_type == 0 and (sub_type == 3 or sub_type == 6)):
 					if dbgLevel >= 2 and dbgMsgIn == 1:
-						print "4: Adding Node's Child ID for Node ID:", node_id, " Child Sensor ID:", child_sensor_id
-					cur.execute('UPDATE nodes SET child_id_1 = %s WHERE node_id = %s', (child_sensor_id, node_id))
+						print "4: Adding Node's Max Child ID for Node ID:", node_id, " Child Sensor ID:", child_sensor_id
+					cur.execute('UPDATE nodes SET max_child_id = %s WHERE node_id = %s', (child_sensor_id, node_id))
 					con.commit()
 
 				# ..::Step Five::..
