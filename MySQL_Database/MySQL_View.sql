@@ -41,7 +41,7 @@ Drop View if exists zone_view;
 CREATE VIEW zone_view AS
 select zone.status, zone.sync, zone.id, zone.index_id, zone.name, zone.type, zone.graph_it, zone.max_c, zone.max_operation_time, zone.hysteresis_time,
 zone.sp_deadband, sid.node_id as sensors_id, zone.sensor_child_id,
-ctype.`type` AS controller_type, cid.node_id as controler_id, cid.child_id_1 AS controler_child_id,
+ctype.`type` AS controller_type, cid.node_id as controler_id, zone.controler_child_id,
 lasts.last_seen, msv.ms_version, skv.sketch_version
 from zone
 join nodes sid on zone.sensor_id = sid.id
