@@ -244,7 +244,8 @@ html {
 								<small>
 								<a class="text-info" style="text-decoration: none;" href="languages.php?lang=en" title="English">English</a> - 
 								<a class="text-info" style="text-decoration: none;" href="languages.php?lang=pt" title="Portuguese">Portuguese</a> - 
-								<a class="text-info" style="text-decoration: none; padding-right:10px;" href="languages.php?lang=fr" title="French">French</a>
+								<a class="text-info" style="text-decoration: none;" href="languages.php?lang=fr" title="French">French</a> - 
+								<a class="text-info" style="text-decoration: none; padding-right:10px;" href="languages.php?lang=ro" title="Romanian">Romanian</a>	
 								</small>
 								</h3>
                     </div></div>	
