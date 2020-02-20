@@ -342,7 +342,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	/***************************************************************************************
 	Zone Vole Wireless Section: MySensors Wireless Relay module for your Zone vole control.
 	****************************************************************************************/
-	if ($zone_controller_type == 'MySnRF'){
+	if ($zone_controller_type == 'MySensor'){
 		//update messages_out table with sent status to 0 and payload to as zone status.
 		$query = "UPDATE messages_out SET sent = '0', payload = '{$zone_status}' WHERE node_id ='$zone_controler_id' AND child_id = '$zone_controler_child_id' LIMIT 1;";
 		$conn->query($query);
@@ -360,6 +360,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 
 //For debug info only
 //print_r ($zone_log);
+//count($zone_log)
 //print_r ($boiler);
 if (isset($boiler_stop_datetime)) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Switched Off At: ".$boiler_stop_datetime. "\n";}
 if (isset($expected_end_date_time)){echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Expected End Time: ".$expected_end_date_time. "\n"; }
@@ -378,7 +379,7 @@ if (in_array("1", $boiler)) {
 	GAS Boiler Wirelss Section:	MySensors Wireless Relay module for your GAS Boiler control
 	****************************************************************************************/
 	//update messages_out table with sent status to 0 and payload to as boiler status.
-	if ($boiler_controller_type == 'MySnRF'){
+	if ($boiler_controller_type == 'MySensor'){
 		$query = "UPDATE messages_out SET sent = '0', payload = '{$new_boiler_status}' WHERE node_id ='{$boiler_node_id}' AND child_id = '{$boiler_node_child_id}' LIMIT 1;";
 		$conn->query($query);
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Node ID: \033[41m".$boiler_node_id."\033[0m Child ID: \033[41m".$boiler_node_child_id."\033[0m \n";
@@ -409,7 +410,7 @@ if (in_array("1", $boiler)) {
 		$boiler_log_id = mysqli_insert_id($conn);
 
 		//echo all zone and status
-		for ($row = 0; $row < 3; $row++){
+		for ($row = 0; $row < count($zone_log); $row++){
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone ID: ".$zone_log[$row]["zone_id"]." Status: ".$zone_log[$row]["status"]."\n";
 			$zlquery = "INSERT INTO zone_logs(zone_id, boiler_log_id, status) VALUES ('{$zone_log[$row]["zone_id"]}', '{$boiler_log_id}', '{$zone_log[$row]["status"]}');";
 			$zlresults = $conn->query($zlquery);
@@ -434,7 +435,7 @@ if (in_array("1", $boiler)) {
 	/***************************************************************************************
 	GAS Boiler Wirelss Section:	MySensors Wireless Relay module for your GAS Boiler control
 	****************************************************************************************/
-	if ($boiler_controller_type == 'MySnRF'){
+	if ($boiler_controller_type == 'MySensor'){
 		//update messages_out table with sent status to 0 and payload to as boiler status.
 		$query = "UPDATE messages_out SET sent = '0', payload = '{$new_boiler_status}' WHERE node_id ='{$boiler_node_id}' AND child_id = '{$boiler_node_child_id}' LIMIT 1;";
 		$conn->query($query);

@@ -37,10 +37,10 @@ if (isset($_POST['submit'])) {
 	$max_operation_time = $_POST['max_operation_time'];
 	$hysteresis_time = $_POST['hysteresis_time'];
 	$sp_deadband = $_POST['sp_deadband'];
-	$sensor_id = $_POST['sensor_id'];
+	$sensor_id = $_POST['selected_sensor_id'];
 	$sensor_child_id = $_POST['sensor_child_id'];
-	$controler = $_POST['controler_id'];
-	$controler_id = $_POST['controler_id'];
+	$controler = $_POST['selected_controler_id'];
+	$controler_id = $_POST['selected_controler_id'];
 	$controler_child_id = $_POST['controler_child_id'];
 	$boost_button_id = $_POST['boost_button_id'];
 	$boost_button_child_id = $_POST['boost_button_child_id'];
@@ -245,20 +245,24 @@ $new_index_id = $found_product['index_id']+1;
 
 <!-- Temperature Sensor ID -->
 <div class="form-group" class="control-label"><label><?php echo $lang['temp_sensor_id']; ?></label> <small class="text-muted"><?php echo $lang['zone_sensor_id_info'];?></small>
-<select id="sensor_id" onchange=ChangeChildList(this.options[this.selectedIndex].value) name="sensor_id" class="form-control select2" data-error="<?php echo $lang['zone_temp_sensor_id_error']; ?>" autocomplete="off" required>
+<select id="sensor_id" onchange=SensorChildList(this.options[this.selectedIndex].value) name="sensor_id" class="form-control select2" data-error="<?php echo $lang['zone_temp_sensor_id_error']; ?>" autocomplete="off" required>
 <?php if(isset($rownode['node_id'])) { echo '<option selected >'.$rownode['node_id'].'</option>'; } ?>
-<?php  $query = "SELECT node_id, child_id_1 FROM nodes where name = 'Temperature Sensor' ORDER BY node_id ASC;";
+<?php  $query = "SELECT node_id, max_child_id FROM nodes where name = 'Temperature Sensor' ORDER BY node_id ASC;";
 $result = $conn->query($query);
 echo "<option></option>";
 while ($datarw=mysqli_fetch_array($result)) {
-echo "<option value=".$datarw['node_id'].">".$datarw['node_id']."</option>"; } ?>
+	echo "<option value=".$datarw['max_child_id'].">".$datarw['node_id']."</option>"; } ?>
 </select>				
 <div class="help-block with-errors"></div></div>
 
 <script language="javascript" type="text/javascript">
-function ChangeChildList(value)
+function SensorChildList(value)
 {
         var valuetext = value;
+	var e = document.getElementById("sensor_id");
+	var selected_sensor_id = e.options[e.selectedIndex].text;
+	document.getElementById("selected_sensor_id").value = selected_sensor_id;
+
         var opt = document.getElementById("sensor_child_id").getElementsByTagName("option");
         for(j=opt.length-1;j>=0;j--)
         {
@@ -270,15 +274,15 @@ function ChangeChildList(value)
                 optn.text = j;
                 optn.value = j;
                 document.getElementById("sensor_child_id").options.add(optn);
-        }
-}
+        }}
 </script>
+<input type="hidden" id="selected_sensor_id" name="selected_sensor_id" value="<?php echo $rownode['node_id']?>"/>
 
 <!-- Temperature Sensor Child ID -->
 <div class="form-group" class="control-label"><label><?php echo $lang['temp_sensor_child_id']; ?></label> <small class="text-muted"><?php echo $lang['zone_sensor_id_info'];?></small>
 <select id="sensor_child_id" name="sensor_child_id" class="form-control select2" data-error="<?php echo $lang['zone_temp_sensor_id_error']; ?>" autocomplete="off" required>
-<?php if(isset($rownode['child_id_1'])) { echo '<option selected >'.$rownode['child_id_1'].'</option>';
-for ($x = 0; $x <= $rownode['child_id_1']; $x++) {
+<?php if(isset($row['sensor_child_id'])) { echo '<option selected >'.$row['sensor_child_id'].'</option>';
+for ($x = 0; $x <= $rownode['max_child_id']; $x++) {
         echo "<option value=".$x.">".$x."</option>";
         }
 } ?>
@@ -287,37 +291,48 @@ for ($x = 0; $x <= $rownode['child_id_1']; $x++) {
 
 <!-- Zone Controller ID -->
 <div class="form-group" class="control-label"><label><?php echo $lang['zone_controller_id']; ?></label> <small class="text-muted"><?php echo $lang['zone_controler_id_info'];?></small>
-<select id="controler_id" name="controler_id" class="form-control select2" data-error="<?php echo $lang['zone_controller_id_error']; ?>" autocomplete="off" required>
-<?php if(isset($rowcont['node_id'])) { echo '<option selected >'.$rowcont['node_id'].'</option>'; } ?>
-<?php  $query = "SELECT node_id FROM nodes where name = 'Zone Controller Relay' OR name = 'Zone Controller';";
+<select id="controler_id" onchange=ControlerChildList(this.options[this.selectedIndex].value) name="controler_id" class="form-control select2" data-error="<?php echo $lang['zone_controller_id_error']; ?>" autocomplete="off" required>
+<?php if(isset($rowcont['node_id'])) { echo '<option selected >'.$rowcont['type'].' - '.$rowcont['node_id'].'</option>'; } ?>
+<?php  $query = "SELECT node_id, type, max_child_id FROM nodes where name = 'Zone Controller Relay' OR name = 'Zone Controller' OR name = 'GPIO Controller' OR name = 'I2C Controller' ORDER BY node_id ASC;";
 $result = $conn->query($query);
 echo "<option></option>";
 while ($datarw=mysqli_fetch_array($result)) {
-	$node_id=$datarw["node_id"];
-	echo "<option>$node_id</option>";
-} ?>
+	echo "<option value=".$datarw['max_child_id'].">".$datarw['type'].' - '.$datarw['node_id']."</option>"; } ?>
 </select>				
 <div class="help-block with-errors"></div></div>
+
+<script language="javascript" type="text/javascript">
+function ControlerChildList(value)
+{
+        var valuetext = value;
+        var e = document.getElementById("controler_id");
+        var selected_controler_id = e.options[e.selectedIndex].text;
+        var selected_controler_id = selected_controler_id.split(" - ");
+        document.getElementById("selected_controler_id").value = selected_controler_id[1];
+
+        var opt = document.getElementById("controler_child_id").getElementsByTagName("option");
+        for(j=opt.length-1;j>=1;j--)
+        {
+                document.getElementById("controler_child_id").options.remove(j);
+        }
+        for(j=1;j<=valuetext;j++)
+        {
+                var optn = document.createElement("OPTION");
+                optn.text = j;
+                optn.value = j;
+                document.getElementById("controler_child_id").options.add(optn);
+        }}
+</script>
+<input type="hidden" id="selected_controler_id" name="selected_controler_id" value="<?php echo $rowcont['node_id']?>"/>
 
 <!-- Zone Controller Child ID -->
 <div class="form-group" class="control-label"><label><?php echo $lang['zone_controller_child_id']; ?></label> <small class="text-muted"><?php echo $lang['zone_controler_child_id_info'];?></small>
 <select id="controler_child_id" name="controler_child_id" class="form-control select2"  data-error="<?php echo $lang['zone_controller_child_id_error']; ?>" autocomplete="off" required>
-<?php if(isset($row['controler_child_id'])) { echo '<option selected >'.$row['controler_child_id'].'</option>'; } ?>
-<option value="0">N/A</option>
-<option>1</option>
-<option>2</option>
-<option>3</option>
-<option>4</option>
-<?php 
-	//get list of other types of controllers from nodes table to display 
-	$query = "SELECT * FROM nodes where (name = 'Boiler Relay' OR name = 'Boiler Controller') AND type !='MySnRF';";
-	$result = $conn->query($query);
-	if ($result){
-		while ($nrow=mysqli_fetch_array($result)) {
-			echo '<option value="'.$nrow['child_id_1'].'">'.$nrow['child_id_1'].' - GPIO</option>';
-		}
-	}
-?>
+<?php if(isset($row['controler_child_id'])) { echo '<option selected >'.$row['controler_child_id'].'</option>';
+for ($x = 1; $x <= $rowcont['max_child_id']; $x++) {
+        echo "<option value=".$x.">".$x."</option>";
+        }
+} ?>
 </select>				
 <div class="help-block with-errors"></div></div>
 

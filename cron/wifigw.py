@@ -124,7 +124,6 @@ try:
 		if dbgLevel >= 2: # Debug print to screen
 			if time.strftime("%S",time.gmtime())== '00' and msgcount != 0:
 				print bc.hed + "\nMessages processed in last 60s:	",msgcount
-				print "Bytes in outgoing buffer:	",ser.in_waiting
 				print "Date & Time:                 	",time.ctime(),bc.ENDC
 				msgcount = 0 
 			if not sys.getsizeof(in_str) <= 22:
@@ -165,7 +164,7 @@ try:
 					if (row == 0):
 						if dbgLevel >= 2 and dbgMsgIn == 1:
 							print "1: Adding Node ID:",node_id, "MySensors Version:", payload, "\n\n"
-						cur.execute('INSERT INTO nodes(type, node_id, status, ms_version) VALUES(%s, %s, %s, %s)', ('MySnRF', node_id, 'Active', payload))
+						cur.execute('INSERT INTO nodes(type, node_id, status, ms_version) VALUES(%s, %s, %s, %s)', ('MySensor', node_id, 'Active', payload))
 						con.commit()
 					else: 
 						if dbgLevel >= 2 and dbgMsgIn == 1:
@@ -183,7 +182,7 @@ try:
 					if (row == 0):
 						if dbgLevel >= 2 and dbgMsgIn == 1:
 							print "1-B: Adding Node ID:",node_id, "MySensors Version:", payload, "\n\n"
-						cur.execute('INSERT INTO nodes(type, node_id, repeater, ms_version) VALUES(%s, %s, %s, %s)', ('MySnRF', node_id, '1', payload))
+						cur.execute('INSERT INTO nodes(type, node_id, repeater, ms_version) VALUES(%s, %s, %s, %s)', ('MySensor', node_id, '1', payload))
 						con.commit()
 					else: 
 						if dbgLevel >= 2 and dbgMsgIn == 1:
@@ -244,7 +243,7 @@ try:
 				# Example: 25;255;3;0;0;104
 				if (node_id != 0 and child_sensor_id == 255 and message_type == 3 and sub_type == 0):
 					if dbgLevel >= 2 and dbgMsgIn == 1:
-						print "7: Adding Battery Level & Voltage for Node ID:", node_id, "Battery Voltage:",b_volt,"Battery Level:",payload,"\n\n"
+						print "7: Adding Battery Level & Voltage for Node ID:", node_id, "Battery Level:",payload
 					##cur.execute('INSERT INTO nodes_battery(node_id, bat_voltage, bat_level) VALUES(%s,%s,%s)', (node_id, b_volt, payload)) ## This approach causes to crash this script, if variable b_volt is missing. As well battery voltage could be assigned to wrong node.
 					cur.execute('UPDATE nodes_battery SET bat_level = %s WHERE id=(SELECT nid from (SELECT MAX(id) as nid FROM nodes_battery WHERE node_id = %s ) as n)',(payload, node_id))
 					cur.execute('UPDATE nodes SET last_seen=now(), `sync`=0 WHERE node_id = %s', [node_id])
@@ -318,7 +317,6 @@ except EOFError as e:
 		print "Connection Lost to Smart Home Gateway with Error: %s" % e
 		con = mdb.connect(dbhost, dbuser, dbpass, dbname)
 		cur = con.cursor()
-		#e = "Connection Lost to Smart Home Gateway" + e 
 		cur.execute("INSERT INTO notice(message) VALUES(%s)", (e))
 		con.commit()
 		con.close()

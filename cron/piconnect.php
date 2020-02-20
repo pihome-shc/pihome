@@ -544,7 +544,7 @@ if ($status == "1"){
 					$id=$row['id'];
 					$purge=$row['purge'];
 					$node_id=$row['node_id'];
-					$child_id_1=$row['child_id_1'];
+					$max_child_id=$row['max_child_id'];
 					$name=rawurlencode($row['name']);
 					$last_seen=rawurlencode($row['last_seen']);
 					$status=$row['status'];
@@ -556,14 +556,14 @@ if ($status == "1"){
 					echo "\033[1;33m Table ID:\033[0m           \033[1;32m".$id."\033[0m \n";
 					echo "\033[1;33m Purge:\033[0m              \033[1;32m".$purge."\033[0m \n";
 					echo "\033[1;33m Node ID:\033[0m            \033[1;32m".$node_id."\033[0m \n";
-					echo "\033[1;33m Child ID:\033[0m           \033[1;32m".$child_id_1."\033[0m \n";
+					echo "\033[1;33m Child ID:\033[0m           \033[1;32m".$max_child_id."\033[0m \n";
 					echo "\033[1;33m Name:\033[0m               \033[1;32m".$row['name']."\033[0m \n";
 					echo "\033[1;33m Last Seen:\033[0m          \033[1;32m".$row['last_seen']."\033[0m \n";
 					echo "\033[1;33m Status:\033[0m             \033[1;32m".$row['status']."\033[0m \n";
 					echo "\033[1;33m MySensors version:\033[0m  \033[1;32m".$row['ms_version']."\033[0m \n";
 					echo "\033[1;33m Sketch version:\033[0m     \033[1;32m".$row['sketch_version']."\033[0m \n";
 					//call out to PiConnect with data 
-					$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=nodes&id=${id}&purge=${purge}&node_id=${node_id}&child_id_1=${child_id_1}&name=${name}&last_seen=${last_seen}&status=${status}&ms_version=${ms_version}&sketch_version=${sketch_version}";
+					$url=$api_url."?api=${pihome_api}&ip=${my_ip}&data=${data}&table=nodes&id=${id}&purge=${purge}&node_id=${node_id}&max_child_id=${max_child_id}&name=${name}&last_seen=${last_seen}&status=${status}&ms_version=${ms_version}&sketch_version=${sketch_version}";
 					$result = url_get_contents($url);
 					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Result from PiConnect: \033[1;32m".$result."\033[0m \n";
 					if ($result == 'Success'){
