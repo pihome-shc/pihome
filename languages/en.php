@@ -356,5 +356,10 @@ $lang['node_child_id_info'] = "Number of I2C Relays or 0 for GPIO Node";
 $lang['node_id_info'] = "I2C board ID or 0 if you want to use Raspberry Pi GPIO";
 $lang['node_name_info'] = "Node name represent function of the Node you are adding";
 
+$lang['time_zone'] = "Time Zone";
+$lang['time_zone_text'] = "It is very importat to select your correct time zone otherwise you will have problem with your schedules";
+
+$lang['time_zone'] = "Time Zone";
+$lang['time_zone_text'] = "It is very importat to select your correct time zone otherwise you will have problem with your schedules";
 
 ?>

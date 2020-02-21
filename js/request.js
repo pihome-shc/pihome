@@ -442,6 +442,26 @@ var idata="w=node_alerts&o=update";
     });
 }
 
+//update Time Zone
+function update_timezone(){
+    var idata="w=time_zone&o=update";
+    idata+="&time_zone_val="+$("#new_time_zone").val();
+    idata+="&wid=0";
+    $.get('db.php',idata)
+    .done(function(odata){
+        if(odata.Success)
+            reload_page();
+        else
+            console.log(odata.Message);
+    })
+    .fail(function( jqXHR, textStatus, errorThrown ){
+        if(jqXHR==401 || jqXHR==403) return;
+        console.log("update_lang: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
+    })
+    .always(function() {
+    });
+}
+
 //update PiConnect 
 function setup_piconnect(){
 var idata="w=setup_piconnect&o=update&status="+document.getElementById("checkbox0").checked;

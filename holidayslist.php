@@ -19,7 +19,7 @@
 *************************************************************************"
 */
 
-require_once(__DIR__.'/st_inc/session.php'); 
+require_once(__DIR__.'/st_inc/session.php');
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
@@ -34,7 +34,7 @@ require_once(__DIR__.'/st_inc/functions.php');
  
  <ul class="chat"> 
  				 <li class="left clearfix">
-                     <a href="holidays_add.php" style="color: #777; cursor: pointer;" ><span class="chat-img pull-left">
+                     <a href="holiday.php" style="color: #777; cursor: pointer;" ><span class="chat-img pull-left">
                         <div class="circle orangesch"> <i class="ionicons ion-plus"></i> </div>
                      </span>
                      <div class="chat-body clearfix">
@@ -78,7 +78,7 @@ while ($hol_row = mysqli_fetch_assoc($hol_results)) {
 
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	<a href="javascript:delete_holidays('.$hol_row["id"].');"><button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></button> </a>
-	<a href="holidays_edit.php?id='.$hol_row["id"].'" class="btn btn-default btn-xs login"><span class="ionicons ion-edit"></span></a>
+	<a href="holiday.php?id='.$hol_row["id"].'" class="btn btn-default btn-xs login"><span class="ionicons ion-edit"></span></a>
         <a href="schedule_add.php?hol_id='.$hol_row["id"].'" class="btn btn-default btn-xs login"><span class="fa fa-clock-o fa-lg fa-fw"></span></a>
     </div></li>';
 //following variable set to 0 on start for array index. 
