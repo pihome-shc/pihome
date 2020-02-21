@@ -80,14 +80,19 @@ if (isset($_POST['submit'])) {
 			$error = "<p>".$lang['zone_record_fail']." </p> <p>" .mysqli_error($conn). "</p>";
 		}
 
-	//Add Zone to message out table at same time to send out instructions to controller for each zone.
-	if ($node_id !=0 OR $node_id !='0'){
-		$query = "INSERT INTO messages_out (node_id, child_id, sub_type, ack, type, payload, sent, zone_id) VALUES ('{$controler}','{$controler_child_id}', '1', '1', '2', '0', '0', '{$zone_id}');";
-		$result = $conn->query($query);
-		if ($result) {
-			$message_success .= "<p>".$lang['zone_controler_success']."</p>";
-		} else {
-			$error .= "<p>".$lang['zone_controler_fail']."</p> <p>" .mysqli_error($conn). "</p>";
+	//check if Controller id already exist in message_out table
+	$query = "SELECT * FROM messages_out WHERE node_id = '{$controler}' AND child_id = '{$controler_child_id}' AND zone_id = '{$zone_id}' LIMIT 1;";
+	$result = $conn->query($query);
+	if ($result) {
+		//Add Zone to message out table at same time to send out instructions to controller for each zone.
+		if ($node_id !=0 OR $node_id !='0'){
+			$query = "INSERT INTO messages_out (node_id, child_id, sub_type, ack, type, payload, sent, zone_id) VALUES ('{$controler}','{$controler_child_id}', '1', '1', '2', '0', '0', '{$zone_id}');";
+			$result = $conn->query($query);
+			if ($result) {
+				$message_success .= "<p>".$lang['zone_controler_success']."</p>";
+			} else {
+				$error .= "<p>".$lang['zone_controler_fail']."</p> <p>" .mysqli_error($conn). "</p>";
+			}
 		}
 	}
 	
