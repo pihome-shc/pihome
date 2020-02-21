@@ -314,29 +314,53 @@ function ControlerChildList(value)
         var selected_controler_id = e.options[e.selectedIndex].text;
         var selected_controler_id = selected_controler_id.split(" - ");
         document.getElementById("selected_controler_id").value = selected_controler_id[1];
+        document.getElementById("selected_controler_type").value = selected_controler_id[0];
+	var gpio_pins = document.getElementById('gpio_pin_list').value
 
         var opt = document.getElementById("controler_child_id").getElementsByTagName("option");
-        for(j=opt.length-1;j>=1;j--)
+        for(j=opt.length-1;j>=0;j--)
         {
                 document.getElementById("controler_child_id").options.remove(j);
         }
-        for(j=1;j<=valuetext;j++)
-        {
-                var optn = document.createElement("OPTION");
-                optn.text = j;
-                optn.value = j;
-                document.getElementById("controler_child_id").options.add(optn);
-        }}
+	if(selected_controler_id.includes("GPIO")) {
+		var pins_arr = gpio_pins.split(',');
+                for(j=0;j<=pins_arr.length-1;j++)
+                {
+                        var optn = document.createElement("OPTION");
+                        optn.text = pins_arr[j];
+                        optn.value = pins_arr[j];
+                        document.getElementById("controler_child_id").options.add(optn);
+                }
+	} else {
+        	for(j=1;j<=valuetext;j++)
+        	{
+                	var optn = document.createElement("OPTION");
+                	optn.text = j;
+                	optn.value = j;
+                	document.getElementById("controler_child_id").options.add(optn);
+        	}
+	}
+}
 </script>
 <input type="hidden" id="selected_controler_id" name="selected_controler_id" value="<?php echo $rowcont['node_id']?>"/>
-
+<input type="hidden" id="selected_controler_type" name="selected_controler_type" value="<?php echo $rowcont['type']?>"/>
+<input type="hidden" id="gpio_pin_list" name="gpio_pin_list" value="<?php echo implode(",", array_filter(Get_GPIO_List()))?>"/>
 <!-- Zone Controller Child ID -->
 <div class="form-group" class="control-label"><label><?php echo $lang['zone_controller_child_id']; ?></label> <small class="text-muted"><?php echo $lang['zone_controler_child_id_info'];?></small>
 <select id="controler_child_id" name="controler_child_id" class="form-control select2"  data-error="<?php echo $lang['zone_controller_child_id_error']; ?>" autocomplete="off" required>
-<?php if(isset($row['controler_child_id'])) { echo '<option selected >'.$row['controler_child_id'].'</option>';
-for ($x = 1; $x <= $rowcont['max_child_id']; $x++) {
-        echo "<option value=".$x.">".$x."</option>";
-        }
+<?php if(isset($row['controler_child_id'])) {
+	echo '<option selected >'.$row['controler_child_id'].'</option>';
+	$pos=strpos($rowcont['type'], "GPIO");
+	if($pos !== false) {
+		$gpio_list=Get_GPIO_List();
+		for ($x = 0; $x <= count(array_filter($gpio_list)) - 1; $x++) {
+        		echo "<option value=".$gpio_list[$x].">".$gpio_list[$x]."</option>";
+        	}
+	} else {
+                for ($x = 1; $x <= $rowcont['max_child_id']; $x++) {
+                        echo "<option value=".$x.">".$x."</option>";
+                }
+	}
 } ?>
 </select>				
 <div class="help-block with-errors"></div></div>
