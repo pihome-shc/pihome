@@ -334,4 +334,23 @@ function Convert_CRLF($string, $line_break=PHP_EOL)
     return $string;
 }
 
+function Get_GPIO_List()
+{
+    $file = "/var/www/st_inc/gpio_pin_list";
+    if(file_exists($file))
+    {
+        // Open the file
+        $fp = @fopen($file, 'r');
+
+        // Add each line to an array
+        if ($fp) {
+            $arr = explode("\n", fread($fp, filesize($file)));
+        }
+            return $arr;
+        }else{
+            return 0;
+        }
+
+}
+
 ?>
