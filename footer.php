@@ -145,7 +145,7 @@ if (($_SERVER['SCRIPT_NAME'] == '/schedule_edit.php') OR ($_SERVER['SCRIPT_NAME'
 }
 ?>
 
-<?php if (($_SERVER['REQUEST_URI'] == '/holidays_add.php') OR ($_SERVER['SCRIPT_NAME'] == '/holidays_edit.php')){ ?>
+<?php if (($_SERVER['REQUEST_URI'] == '/holiday.php') OR ($_SERVER['SCRIPT_NAME'] == '/holiday.php')){ ?>
     $(".form_datetime").datetimepicker({
         //format: "dd MM yyyy - hh:ii",
 		format: "yyyy-mm-dd hh:ii",
@@ -158,7 +158,7 @@ if (($_SERVER['SCRIPT_NAME'] == '/schedule_edit.php') OR ($_SERVER['SCRIPT_NAME'
 </script>
 
 <script>
-<?php if (($_SERVER['SCRIPT_NAME'] == '/schedule_edit.php') OR ($_SERVER['SCRIPT_NAME'] == '/schedule_add.php') OR ($_SERVER['SCRIPT_NAME'] == '/schedule.php')){ ?>
+<?php if (($_SERVER['SCRIPT_NAME'] == '/schedule_add.php') OR ($_SERVER['SCRIPT_NAME'] == '/schedule.php')){ ?>
 	 // popover
 	$("[data-toggle=popover]")
 		.popover()
