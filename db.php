@@ -754,6 +754,24 @@ if($what=="mqtt"){
 	}
 }
 
+//update Time zone
+if($what=="time_zone"){
+	if($opp=="update"){
+		$time_zone_val = $_GET['time_zone_val'];
+		
+		$query = "UPDATE `system` SET `timezone`='" . $time_zone_val . "';";
+		exec("timedatectl set-timezone $time_zone_val");
+        if($conn->query($query)){
+            header('Content-type: application/json');
+            echo json_encode(array('Success'=>'Success','Query'=>$query));
+            return;
+        }else{
+            header('Content-type: application/json');
+            echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+            return;
+        }
+	}
+}
 
 
 
