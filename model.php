@@ -249,12 +249,22 @@ echo '
 
 	echo '
 	<input class="form-control input-sm" type="hidden" id="selected_node_id" name="selected_node_id" value="'.$node_id.'"/>
+        <input class="form-control input-sm" type="hidden" id="selected_node_type" name="selected_node_type" value="'.$node_type.'"/>
+        <input class="form-control input-sm" type="hidden" id="gpio_pin_list" name="gpio_pin_list" value="'.implode(",", array_filter(Get_GPIO_List())).'"/>
 	<div class="form-group" class="control-label"><label>'.$lang['boiler_node_child_id'].'</label> <small class="text-muted">'.$lang['boiler_relay_gpio_text'].'</small>
 	<select class="form-control input-sm" type="text" id="node_child_id" name="node_child_id">
 	<option selected>'.$brow['node_child_id'].'</option>';
-	for ($x = 1; $x <=  $max_child_id; $x++) {
-        	echo '<option value="'.$x.'">'.$x.'</option>';
-	}
+        $pos=strpos($node_type, "GPIO");
+        if($pos !== false) {
+                $gpio_list=Get_GPIO_List();
+                for ($x = 0; $x <= count(array_filter($gpio_list)) - 1; $x++) {
+                        echo "<option value=".$gpio_list[$x].">".$gpio_list[$x]."</option>";
+                }
+        } else {
+                for ($x = 1; $x <=  $max_child_id; $x++) {
+                        echo '<option value="'.$x.'">'.$x.'</option>';
+                }
+        }
 	echo '
 	</select>
     <div class="help-block with-errors"></div></div>
@@ -1405,21 +1415,36 @@ function BoilerChildList(value)
 {
  var valuetext = value;
  var e = document.getElementById("node_id");
- var selected_sensor_id = e.options[e.selectedIndex].text;
- var selected_sensor_id = selected_sensor_id.split(" - ");
- document.getElementById("selected_node_id").value = selected_sensor_id[1];
+ var selected_node_id = e.options[e.selectedIndex].text;
+ var selected_node_id = selected_node_id.split(" - ");
+ document.getElementById("selected_node_id").value = selected_node_id[1];
+ document.getElementById("selected_node_type").value = selected_node_id[0];
+ var gpio_pins = document.getElementById('gpio_pin_list').value
 
  var opt = document.getElementById("node_child_id").getElementsByTagName("option");
  for(j=opt.length-1;j>=0;j--)
-  {
-  document.getElementById("node_child_id").options.remove(j);
-  }
- for(j=1;j<=valuetext;j++)
-  {
-  var optn = document.createElement("OPTION");
-  optn.text = j;
-  optn.value = j;
-  document.getElementById("node_child_id").options.add(optn);
-  }}
+ {
+        document.getElementById("node_child_id").options.remove(j);
+ }
+ if(selected_node_id.includes("GPIO")) {
+        var pins_arr = gpio_pins.split(',');
+        for(j=0;j<=pins_arr.length-1;j++)
+        {
+                var optn = document.createElement("OPTION");
+                optn.text = pins_arr[j];
+                optn.value = pins_arr[j];
+                document.getElementById("node_child_id").options.add(optn);
+        }
+ } else {
+        for(j=1;j<=valuetext;j++)
+        {
+                var optn = document.createElement("OPTION");
+                optn.text = j;
+                optn.value = j;
+                document.getElementById("node_child_id").options.add(optn);
+        }
+ }
+}
+
  </script>
 
