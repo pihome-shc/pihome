@@ -11,6 +11,7 @@ $lang['powerd_by_rpi'] = "Powered By: Raspberry Pi";
 $lang['lang_en'] = "English";
 $lang['lang_pt'] = "Portuguese";
 $lang['lang_fr'] = "FranĆ§ais";
+$lang['lang_ro'] = "Română";
 $lang['lang_lv'] = "Latviešu";
 
 $lang['start_time'] = "Sākuma laiks";

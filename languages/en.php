@@ -10,6 +10,8 @@ $lang['powerd_by_rpi'] = "Powered By: Raspberry Pi";
 $lang['lang_en'] = "English";
 $lang['lang_pt'] = "Portuguese";
 $lang['lang_fr'] = "Français";
+$lang['lang_ro'] = "Română";
+$lang['lang_lv'] = "Latviešu";
 
 $lang['start_time'] = "Start Time";
 $lang['end_time'] = "End Time";

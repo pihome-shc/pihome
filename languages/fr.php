@@ -28,6 +28,8 @@ $lang['powerd_by_rpi'] = "Fonctionne avec le Raspberry Pi";
 $lang['lang_en'] = "English";
 $lang['lang_pt'] = "Portugues";
 $lang['lang_fr'] = "Français";
+$lang['lang_ro'] = "Română";
+$lang['lang_lv'] = "Latviešu";
 
 $lang['start_time'] = "Instant de début";
 $lang['end_time'] = "Instant de fin";

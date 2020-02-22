@@ -145,9 +145,10 @@ require_once(__DIR__.'/st_inc/functions.php');
                     <ul class="dropdown-menu dropdown-user">
                         <li><a href="languages.php?lang=en"><i class="fa fa-language fa-fw"></i> <?php echo $lang['lang_en']; ?> </a></li>
                         <li><a href="languages.php?lang=pt"><i class="fa fa-language fa-fw"></i> <?php echo $lang['lang_pt']; ?></a></li>
-			<li><a href="languages.php?lang=fr"><i class="fa fa-language fa-fw"></i> <?php echo $lang['lang_fr']; ?></a></li>
-			<li><a href="languages.php?lang=ro"><i class="fa fa-language fa-fw"></i> <?php echo $lang['lang_ro']; ?></a></li>			
-			    <li><a href="http://www.pihome.eu/" target="_blank"><i class="fa fa-language fa-fw"></i> <?php echo $lang['more_language']; ?></a></li>
+						<li><a href="languages.php?lang=fr"><i class="fa fa-language fa-fw"></i> <?php echo $lang['lang_fr']; ?></a></li>
+						<li><a href="languages.php?lang=ro"><i class="fa fa-language fa-fw"></i> <?php echo $lang['lang_ro']; ?></a></li>
+						<li><a href="languages.php?lang=lv"><i class="fa fa-language fa-fw"></i> <?php echo $lang['lang_lv']; ?></a></li>
+						<li><a href="http://www.pihome.eu/" target="_blank"><i class="fa fa-language fa-fw"></i> <?php echo $lang['more_language']; ?></a></li>
 						<li class="divider"></li>
 						<li><a href="settings.php"><i class="fa fa-cog"></i> <?php echo $lang['settings']; ?></a></li>
                     </ul>

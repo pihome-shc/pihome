@@ -13,7 +13,7 @@ echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
 echo "********************************************************\n";
 echo "*   Gateway Script Version 0.3 Build Date 22/01/2018   *\n";
-echo "*          Last Modification Date 29/06/2019           *\n";
+echo "*          Last Modification Date 22/02/2020           *\n";
 echo "*                                Have Fun - PiHome.eu  *\n";
 echo "********************************************************\n";
 echo " \033[0m \n";
@@ -24,6 +24,7 @@ require_once(__DIR__.'../../st_inc/functions.php');
 //Set php script execution time in seconds
 ini_set('max_execution_time', 60); 
 $date_time = date('Y-m-d H:i:s');
+$gw_script_txt = 'python /var/www/cron/gateway.py';
 $line = "--------------------------------------------------------------------------\n";
 
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Python Gateway Script Status Check Script Started \n"; 
@@ -40,7 +41,7 @@ $find_gw = $row['find_gw'];
 
 //if reboot set to 1 then kill gateway PID and set reboot status to 0
 if ($gw_reboot == '1') {
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Stoping Python Gateway Script \n"; 
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Stopping Python Gateway Script \n"; 
 	exec("kill -9 $gw_pid");
 	$query = "UPDATE gateway SET reboot = '0' LIMIT 1;";
 	$conn->query($query);
@@ -49,7 +50,7 @@ if ($gw_reboot == '1') {
 
 //if find_gw set to 1 then start the search script and set find_gw to 0
 if ($find_gw == '1') {
-	if ($gw_type != 'serial') {
+	if ($gw_type == 'wifi') {
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Checking Python Script Status to Find Smart Home Gateway \n";
 		exec("ps ax | grep find_mygw.py", $fgw_pids); 
 		$gw_script_txt = 'python /var/www/cron/find_mygw/find_mygw.py';
@@ -73,13 +74,17 @@ if ($find_gw == '1') {
 	$query = "UPDATE gateway SET find_gw = '0' LIMIT 1;";
 	$conn->query($query);
 }
-//Check Gateway Logs for last 10 minuts and start search for gateway connected failed. 
+
+//Check Gateway Logs for last 10 minutes and start search for gateway if connected failed. 
 $queryg = "select count(*) as cnt from gateway_logs where pid_datetime >= DATE_SUB(NOW(), INTERVAL 10 MINUTE);";
 $resultg = $conn->query($queryg);
 $gl_row = mysqli_fetch_array($resultg);
 $gl_cnt = $gl_row['cnt'];
-if ($gl_cnt > 9){
+if($gl_cnt > 0){
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Gateway Connection Lost in Last 10 minutes: ".$gl_cnt." \n";
+}
+if($gl_cnt > 9 && $gw_type == 'wifi') {
+	#echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Gateway Connection Lost in Last 10 minutes: ".$gl_cnt." \n";
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Checking Python Script Status to Find Smart Home Gateway \n";
 	//Check if Search Script already started 
 	exec("ps ax | grep find_mygw.py", $fgw_pids);
@@ -98,67 +103,54 @@ if ($gl_cnt > 9){
 	}
 }
 
-//Search for Wifi Gateway
-if ($gw_type == 'wifi'){
-	exec("ps ax | grep wifigw.py", $pids); 
-	//exec(" pgrep aux | grep serialgwv2.py", $pids); 
-	$gw_script_txt = 'python /var/www/cron/wifigw.py';
-	$position = searchArray($gw_script_txt, $pids);
-	if($position===false) {
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Python Script for WiFi Gateway \033[41mNot Running\033[0m \n";
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Starting Python Script for WiFi Gateway \n";
-		//exec("sh /var/www/cron/wifigw.sh");
-		exec("python /var/www/cron/wifigw.py </dev/null >/dev/null 2>&1 & ");
-		exec("ps aux | grep '$gw_script_txt' | grep -v grep | awk '{ print $2 }' | head -1", $out);
-		echo "\033[36m".date('Y-m-d H:i:s')."\033[0m - The PID is: \033[41m".$out[0]."\033[0m \n";
-		$pid_details = exec("ps -p '$out[0]' -o lstart=");
-		$query = "UPDATE gateway SET pid = '{$out[0]}', pid_running_since = '{$pid_details}' LIMIT 1";
-		$conn->query($query);
-		//echo mysqli_error($conn)."\n";
-		$query = "INSERT INTO gateway_logs (type, location, port, pid, pid_start_time) VALUES ( '{$gw_type}', '{$gw_location}', '{$gw_port}', '{$out[0]}', '{$pid_details}' )";
-		$conn->query($query);
-		//echo mysqli_error($conn)."\n";
-		echo $line;
-	} else {
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Python Script for WiFi Gateway is \033[42mRunning\033[0m \n";
-		exec("ps aux | grep '$gw_script_txt' | grep -v grep | awk '{ print $2 }' | head -1", $out);
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - The PID is: \033[42m" . $out[0]."\033[0m \n";
-		$pid_details = exec("ps -p '$out[0]' -o lstart=");
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Gateway Process Running Since: ".$pid_details."\n";
-		$query = "UPDATE gateway SET pid = '{$out[0]}', pid_running_since = '{$pid_details}' LIMIT 1";
-		$conn->query($query);
-		//echo mysqli_error($conn)."\n";
-		echo $line;
+// Checking if Gateway script is running
+exec("ps ax | grep '$gw_script_txt' | grep -v grep", $pids);
+$nopids = count($pids);
+if($nopids==0) { // Script not running
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Python Gateway Script for Serial Gateway \033[41mNot Running\033[0m \n";
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Starting Python Script for Serial Gateway \n";
+	exec("$gw_script_txt </dev/null >/dev/null 2>&1 & ");
+	exec("ps aux | grep '$gw_script_txt' | grep -v grep | awk '{ print $2 }' | head -1", $out);
+	echo "\033[36m".date('Y-m-d H:i:s')."\033[0m - The PID is: \033[41m".$out[0]."\033[0m \n";
+	$pid_details = exec("ps -p '$out[0]' -o lstart=");
+	$query = "UPDATE gateway SET pid = '{$out[0]}', pid_running_since = '{$pid_details}' LIMIT 1";
+	$conn->query($query);
+	echo mysqli_error($conn)."\n";
+	$query = "INSERT INTO gateway_logs (type, location, port, pid, pid_start_time) VALUES ( '{$gw_type}', '{$gw_location}', '{$gw_port}', '{$out[0]}', '{$pid_details}' )";
+	$conn->query($query);
+	echo mysqli_error($conn)."\n";
+	echo $line;
+} else {
+	if($nopids>1) { // Proceed if more than one gateway script running
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Multiple Gateway Scripts are Detected \033[41m$nopids\033[0m \n";
+		$regex = preg_quote($gw_script_txt, '/');
+		exec("ps -eo s,pid,cmd | grep 'T.*$regex' | grep -v grep | awk '{ print $2 }'", $tpids);
+		$notpids=count($tpids);
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Number of Terminated Script Killed \033[41m$notpids\033[0m \n";
+		foreach($tpids as $tpid){
+			exec("kill -9 $tpid 2> /dev/null"); // Kill all gateway script ghost processes (in stat "T"(Terminated)). Common occurrence after running script in terminal and terminating by Ctrl+z
+		}
+		if($nopids-$notpids>1 || $nopids-$notpids==0) { // Proceed if none or more than one script runs
+			if($nopids-$notpids>1) { // Proceed if more than one active gateway script 
+				exec("ps -eo s,pid,cmd | grep '$gw_script_txt' | grep -v grep | awk '{ print $2 }'", $tpids);
+				$notpids=$nopids-$notpids;
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Multiple Active Gateway Script are Running \033[41m$notpids\033[0m \n";
+				foreach($tpids as $tpid){
+					exec("kill -9 $tpid 2> /dev/null"); // Kill all gateway scripts
+				}
+			}
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - All Script Killed. Started New \n";
+			exec("$gw_script_txt </dev/null >/dev/null 2>&1 & ");
+			exec("ps aux | grep '$gw_script_txt' | grep -v grep | awk '{ print $2 }' | head -1", $out);
+		}
 	}
-} elseif ($gw_type == 'serial'){
-	exec("ps ax | grep serialgw.py", $pids); 
-	//exec(" pgrep aux | grep serialgwv2.py", $pids); 
-	$gw_script_txt = 'python /var/www/cron/serialgw.py';
-	$position = searchArray($gw_script_txt, $pids);
-	if($position===false) {
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Python Gateway Script for Serial Gateway \033[41mNot Running\033[0m \n";
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Starting Python Script for Serial Gateway \n";
-		//exec("sh /var/www/cron/serialgw.sh");
-		exec("python /var/www/cron/serialgw.py </dev/null >/dev/null 2>&1 & ");
-		exec("ps aux | grep '$gw_script_txt' | grep -v grep | awk '{ print $2 }' | head -1", $out);
-		echo "\033[36m".date('Y-m-d H:i:s')."\033[0m - The PID is: \033[41m".$out[0]."\033[0m \n";
-		$pid_details = exec("ps -p '$out[0]' -o lstart=");
-		$query = "UPDATE gateway SET pid = '{$out[0]}', pid_running_since = '{$pid_details}' LIMIT 1";
-		$conn->query($query);
-		echo mysqli_error($conn)."\n";
-		$query = "INSERT INTO gateway_logs (type, location, port, pid, pid_start_time) VALUES ( '{$gw_type}', '{$gw_location}', '{$gw_port}', '{$out[0]}', '{$pid_details}' )";
-		$conn->query($query);
-		echo mysqli_error($conn)."\n";
-		echo $line;
-	} else {
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Python Gateway Script for Serial Gateway is \033[42mRunning\033[0m \n";
-		exec("ps aux | grep '$gw_script_txt' | grep -v grep | awk '{ print $2 }' | head -1", $out);
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - The PID is: \033[42m" . $out[0]."\033[0m \n";
-		$pid_details = exec("ps -p '$out[0]' -o lstart=");
-		$query = "UPDATE gateway SET pid = '{$out[0]}', pid_running_since = '{$pid_details}' LIMIT 1";
-		$conn->query($query);
-		echo $line;
-	}
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Python Gateway Script for Serial Gateway is \033[42mRunning\033[0m \n";
+	exec("ps -eo s,pid,cmd | grep '$gw_script_txt' | grep -v grep | awk '{ print $2 }' | head -1", $out);
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - The PID is: \033[42m" . $out[0]."\033[0m \n";
+	$pid_details = exec("ps -p '$out[0]' -o lstart=");
+	$query = "UPDATE gateway SET pid = '{$out[0]}', pid_running_since = '{$pid_details}' LIMIT 1";
+	$conn->query($query);
+	echo $line;
 }
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Python Gateway Script Status Check Script Ended \n"; 
 echo "\033[32m***************************************************************************\033[0m";
