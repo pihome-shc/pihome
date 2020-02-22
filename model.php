@@ -586,9 +586,9 @@ echo '<p class="text-muted">'.$lang['node_add_info_text'].'</p>
 
 	<div class="form-group" class="control-label"><label>'.$lang['node_type'].'</label> <small class="text-muted">'.$lang['node_type_info'].'</small>
 
-	<select class="form-control input-sm" type="text" id="node_type" name="node_type">
+	<select class="form-control input-sm" type="text" id="node_type" onchange=show_hide_devices() name="node_type">
+	<option value="I2C" selected="selected">I2C</option>
 	<option value="GPIO">GPIO</option>
-	<option value="I2C">I2C</option>
 	</select>
     <div class="help-block with-errors"></div></div>
 
@@ -597,7 +597,7 @@ echo '<p class="text-muted">'.$lang['node_add_info_text'].'</p>
 	<input class="form-control input-sm" type="text" id="add_node_id" name="add_node_id" value="" placeholder="'.$lang['node_id'].'">
 	<div class="help-block with-errors"></div></div>
 		
-	<div class="form-group" class="control-label"><label>'.$lang['node_child_id'].'</label> <small class="text-muted">'.$lang['node_child_id_info'].'</small>
+	<div class="form-group" class="control-label" id="add_devices_label" style="display:block"><label>'.$lang['node_child_id'].'</label> <small class="text-muted">'.$lang['node_child_id_info'].'</small>
 	<input class="form-control input-sm" type="text" id="nodes_max_child_id" name="nodes_max_child_id" value="" placeholder="'.$lang['node_max_child_id'].'">
 	<div class="help-block with-errors"></div></div>
 
@@ -1445,6 +1445,17 @@ function BoilerChildList(value)
         }
  }
 }
-
+function show_hide_devices()
+{
+ var e = document.getElementById("node_type");
+ var selected_node_type = e.options[e.selectedIndex].text;
+ if(selected_node_type.includes("GPIO")) {
+        document.getElementById("nodes_max_child_id").style.visibility = 'hidden';;
+        document.getElementById("add_devices_label").style.visibility = 'hidden';;
+ } else {
+        document.getElementById("nodes_max_child_id").style.visibility = 'visible';;
+        document.getElementById("add_devices_label").style.visibility = 'visible';;
+ }
+}
  </script>
 
