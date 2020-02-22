@@ -132,7 +132,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	//delete and edit button for each schedule
 	echo '
 <small class="pull-right"><br>
-<a href="javascript:delete_schedule(' . $row["time_id"] . ');"><button class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash"></span></button> </a> &nbsp;&nbsp;
+<a href="javascript:delete_schedule(' . $row["time_id"] . ');"><button class="btn btn-danger btn-sm" data-toggle="confirmation" data-title="ARE YOU SURE?" data-content="You are about to DELETE this SCHEDULE"><span class="glyphicon glyphicon-trash"></span></button> </a> &nbsp;&nbsp;
 <a href="schedule_add.php?id=' . $row["time_id"] . '" class="btn btn-default btn-sm login"><span class="ionicons ion-edit"></span></a>
 </small>
 </div>
@@ -171,3 +171,9 @@ while ($row = mysqli_fetch_assoc($results)) {
 <?php if (isset($conn)) {
     $conn->close();
 } ?>
+<script>
+$('[data-toggle=confirmation]').confirmation({
+  rootSelector: '[data-toggle=confirmation]',
+  container: 'body'
+});
+</script>

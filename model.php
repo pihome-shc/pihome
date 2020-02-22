@@ -353,7 +353,7 @@ while ($row = mysqli_fetch_assoc($results)) {
             <td><input id="temperature'.$row["id"].'" type="text" class="pull-left text" style="border: none" name="temperature" size="3" value="'.$row["temperature"].'" placeholder="Temperature" required></td>
             <td><input id="boost_button_id'.$row["id"].'" type="text" class="pull-left text" style="border: none" name="button_id"  size="3" value="'.$row["boost_button_id"].'" placeholder="Button ID" required></td>
             <td><input id="boost_button_child_id'.$row["id"].'" type="text" class="pull-left text" style="border: none" name="button_child_id" size="3" value="'.$row["boost_button_child_id"].'" placeholder="Child ID" required></td>
-            <td><a href="javascript:delete_boost('.$row["id"].');"><button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></button> </a></td>
+            <td><a href="javascript:delete_boost('.$row["id"].');"><button class="btn btn-danger btn-xs" data-toggle="confirmation" data-title="ARE YOU SURE?" data-content="You are about to DELETE this BOOST Setting><span class="glyphicon glyphicon-trash"></span></button> </a></td>
         </tr>';
 
 }
@@ -661,12 +661,17 @@ $query = "select * from zone_view order by index_id asc";
 $results = $conn->query($query);
 echo '	<div class=\"list-group\">';
 while ($row = mysqli_fetch_assoc($results)) {
+        if($row['status'] == 1) {
+                $content_msg="You are about to DELETE an ACTIVE ZONE";
+        } else {
+                $content_msg="You are about to DELETE a NONE active ZONE";
+        }
 	echo "<div class=\"list-group-item\">
 	<i class=\"glyphicon glyphicon-th-large orange\"></i> ".$row['name']."
 	<span class=\"pull-right \"><em>&nbsp;&nbsp;<small> ".$lang['max']." ".$row['max_c']."&deg; </em> - ".$lang['sensor'].": ".$row['sensors_id']." - ".$row['controller_type'].": ".$row['controler_id']."-".$row['controler_child_id']."</small></span> 
 	<br><span class=\"pull-right \"><small>
 	<a href=\"zone_add.php?id=".$row['id']."\" class=\"btn btn-default btn-xs login\"><span class=\"ionicons ion-edit\"></span></a>&nbsp;&nbsp;
-	<a href=\"javascript:delete_zone(".$row['id'].");\"><button class=\"btn btn-danger btn-xs\"><span class=\"glyphicon glyphicon-trash\"></span></button></a>
+	<a href=\"javascript:delete_zone(".$row['id'].");\"><button class=\"btn btn-danger btn-xs\" data-toggle=\"confirmation\" data-title=\"ARE YOU SURE?\" data-content=\"$content_msg\"><span class=\"glyphicon glyphicon-trash\"></span></button></a>
 	</small></span>
 	<br>
 	</div>";
@@ -1351,10 +1356,15 @@ $results = $conn->query($query);
 while ($row = mysqli_fetch_assoc($results)) {
 	$full_name=$row['fullname'];
 	$username=$row['username'];
+        if($row['account_enable'] == 1) {
+                $content_msg="You are about to DELETE an ENABLED USER";
+        } else {
+                $content_msg="You are about to DELETE a CURRENTLY DISABLED USER";
+        }
 	echo "<div href=\"settings.php?uid=".$row['id']."\"  class=\"list-group-item\"> 
     <i class=\"ionicons ion-person blue\"></i> ".$username."
     <span class=\"pull-right text-muted small\"><em>
-	<a href=\"javascript:del_user(".$row["id"].");\"><button class=\"btn btn-danger btn-xs\"><span class=\"glyphicon glyphicon-trash\"></span></button> </a>
+	<a href=\"javascript:del_user(".$row["id"].");\"><button class=\"btn btn-danger btn-xs\" data-toggle=\"confirmation\" data-title=\"ARE YOU SURE?\" data-content=\"$content_msg\"><span class=\"glyphicon glyphicon-trash\"></span></button> </a>
 	<a href=\"user_password.php?uid=".$row["id"]."\"><button class=\"btn btn-primary btn-xs\"><span class=\"fa fa-user fa-key\"></span></button> </a>
 	</em></span></div>";
 }
