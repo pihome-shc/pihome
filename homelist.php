@@ -591,7 +591,7 @@ echo '						<a href="javascript:active_away();">
 							<h3 class="status"><small class="statuscircle" style="color:#048afd;"><i class="fa fa-circle fa-fw <?php echo $holidaystatus; ?>"></i></small>
 							</h3></button></a>
 
-							<a style="color: #777; cursor: pointer; text-decoration: none;" href="zone_add.php">
+							<a style="color: #777; cursor: pointer; text-decoration: none;" href="zone.php">
 							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn">
 							<h3 class="buttontop"><small><?php echo $lang['zone_add']; ?></small></h3>
 							<h3 class="degre" ><i class="fa fa-plus fa-1x"></i></h3>
