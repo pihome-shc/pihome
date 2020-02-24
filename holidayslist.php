@@ -77,7 +77,7 @@ while ($hol_row = mysqli_fetch_assoc($hol_results)) {
 
 
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<a href="javascript:delete_holidays('.$hol_row["id"].');"><button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></button> </a>
+	<a href="javascript:delete_holidays('.$hol_row["id"].');"><button class="btn btn-danger btn-xs" data-toggle="confirmation" data-title="ARE YOU SURE?" data-content="You are about to DELETE this SCHEDULE"><span class="glyphicon glyphicon-trash"></span></button> </a>
 	<a href="holiday.php?id='.$hol_row["id"].'" class="btn btn-default btn-xs login"><span class="ionicons ion-edit"></span></a>
         <a href="scheduling.php?hol_id='.$hol_row["id"].'" class="btn btn-default btn-xs login"><span class="fa fa-clock-o fa-lg fa-fw"></span></a>
     </div></li>';
@@ -146,7 +146,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 //delete and edit button for each schedule			
 echo '
 <div class="list-group-item">
-<a href="javascript:delete_schedule('.$row["time_id"].');"><button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></button> </a>	
+<a href="javascript:delete_schedule('.$row["time_id"].');"><button class="btn btn-danger btn-xs" data-toggle="confirmation" data-title="ARE YOU SURE?" data-content="You are about to DELETE this SCHEDULE"><span class="glyphicon glyphicon-trash"></span></button> </a>	
 <a href="scheduling.php?id='.$row["time_id"].'&hol_id='.$hol_row["id"].'" class="btn btn-default btn-xs login"><span class="ionicons ion-edit"></span></a>
 
 </div>
@@ -187,3 +187,9 @@ echo '<i class="ionicons ion-ios-clock-outline"></i> Holiday Schedule: '.seconds
                     </div>
                 </div>
 <?php if(isset($conn)) { $conn->close();} ?>
+<script>
+$('[data-toggle=confirmation]').confirmation({
+  rootSelector: '[data-toggle=confirmation]',
+  container: 'body'
+});
+</script>
