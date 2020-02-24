@@ -343,6 +343,7 @@ if($what=="lang"){
 	if($opp=="update"){
         $query = "UPDATE `system` SET `language`='" . $_GET['lang_val'] . "';";
         if($conn->query($query)){
+	    setcookie("PiHomeLanguage", $_GET['lang_val'], time()+(3600*24*90));	
             header('Content-type: application/json');
             echo json_encode(array('Success'=>'Success','Query'=>$query));
             return;
