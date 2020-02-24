@@ -79,13 +79,12 @@ if (!$db_selected) {
         $command.= "--password=". $dbpassword ." ";
 		$command.= $dbname;
 		$command.= " > " . $dumpfname;
-########		system($command);
+		system($command);
 		// compress sql file and unlink (delete) sql file after creating zip file. 
 		$zipfname = $dbname . "_" . date("Y-m-d_H-i-s").".zip";
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Compressing Dump File \033[41m".$dumpfname."\033[0m \n";
-########		$zip = new ZipArchive();
-########		if($zip->open($zipfname,ZIPARCHIVE::CREATE)){
-		if(1==2){
+		$zip = new ZipArchive();
+		if($zip->open($zipfname,ZIPARCHIVE::CREATE)){
 			$zip->addFile($dumpfname,$dumpfname);
 			$zip->close();
 			unlink($dumpfname);
@@ -94,8 +93,7 @@ if (!$db_selected) {
 }
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Importing SQL File to Database \n";
 	// Name of the file
-####	$filename = __DIR__.'/MySQL_Database/pihome_mysql_database.sql';
-	$filename='';
+	$filename = __DIR__.'/MySQL_Database/pihome_mysql_database.sql';
 	// Select database
 	mysqli_select_db($conn, $dbname) or die('Error Selecting MySQL Database: ' . mysqli_error($conn));
 	// Temporary variable, used to store current query
