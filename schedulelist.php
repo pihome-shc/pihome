@@ -34,7 +34,7 @@ require_once(__DIR__ . '/st_inc/functions.php');
         <div class="panel-body">
             <ul class="chat">
                 <li class="left clearfix">
-                    <a href="schedule_add.php" style="color: #777; cursor: pointer;">
+                    <a href="scheduling.php" style="color: #777; cursor: pointer;">
                         <span class="chat-img pull-left">
                             <div class="circle orangesch">
                                 <i class="ionicons ion-plus"></i>
@@ -133,7 +133,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	echo '
 <small class="pull-right"><br>
 <a href="javascript:delete_schedule(' . $row["time_id"] . ');"><button class="btn btn-danger btn-sm" data-toggle="confirmation" data-title="ARE YOU SURE?" data-content="You are about to DELETE this SCHEDULE"><span class="glyphicon glyphicon-trash"></span></button> </a> &nbsp;&nbsp;
-<a href="schedule_add.php?id=' . $row["time_id"] . '" class="btn btn-default btn-sm login"><span class="ionicons ion-edit"></span></a>
+<a href="scheduling.php?id=' . $row["time_id"] . '" class="btn btn-default btn-sm login"><span class="ionicons ion-edit"></span></a>
 </small>
 </div>
  </div>

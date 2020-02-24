@@ -67,7 +67,7 @@ while ($hol_row = mysqli_fetch_assoc($hol_results)) {
 
 					 <a style="color: #333; cursor: pointer; text-decoration: none;" data-toggle="collapse" data-parent="#accordion" href="#collapse'.$hol_row['id'].'">
 
-	<a href="schedule_add.php?hol_id='.$hol_row["id"].'" style="color: #777; cursor: pointer;" ><small class="pull-right text-muted">
+	<a href="scheduling.php?hol_id='.$hol_row["id"].'" style="color: #777; cursor: pointer;" ><small class="pull-right text-muted">
 	'.$lang['schedule_add'].' <i class="fa fa-chevron-right fa-fw"></i></a>
 	</small>
 
@@ -79,7 +79,7 @@ while ($hol_row = mysqli_fetch_assoc($hol_results)) {
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	<a href="javascript:delete_holidays('.$hol_row["id"].');"><button class="btn btn-danger btn-xs" data-toggle="confirmation" data-title="ARE YOU SURE?" data-content="You are about to DELETE this SCHEDULE"><span class="glyphicon glyphicon-trash"></span></button> </a>
 	<a href="holiday.php?id='.$hol_row["id"].'" class="btn btn-default btn-xs login"><span class="ionicons ion-edit"></span></a>
-        <a href="schedule_add.php?hol_id='.$hol_row["id"].'" class="btn btn-default btn-xs login"><span class="fa fa-clock-o fa-lg fa-fw"></span></a>
+        <a href="scheduling.php?hol_id='.$hol_row["id"].'" class="btn btn-default btn-xs login"><span class="fa fa-clock-o fa-lg fa-fw"></span></a>
     </div></li>';
 //following variable set to 0 on start for array index. 
 $sch_time_index = '0';
@@ -147,7 +147,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 echo '
 <div class="list-group-item">
 <a href="javascript:delete_schedule('.$row["time_id"].');"><button class="btn btn-danger btn-xs" data-toggle="confirmation" data-title="ARE YOU SURE?" data-content="You are about to DELETE this SCHEDULE"><span class="glyphicon glyphicon-trash"></span></button> </a>	
-<a href="schedule_add.php?id='.$row["time_id"].'&hol_id='.$hol_row["id"].'" class="btn btn-default btn-xs login"><span class="ionicons ion-edit"></span></a>
+<a href="scheduling.php?id='.$row["time_id"].'&hol_id='.$hol_row["id"].'" class="btn btn-default btn-xs login"><span class="ionicons ion-edit"></span></a>
 
 </div>
 </div>

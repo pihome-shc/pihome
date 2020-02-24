@@ -144,7 +144,6 @@ if (isset($_POST['submit'])) {
 	}
 	$message_success .= "<p>".$lang['do_not_refresh']."</p>";
 	header("Refresh: 10; url=home.php");
-	$alert_message=$lang['zone']." ".$name." ".$lang['zone_not_added_to_schedule']; //What this message for?
 	// After update on all required tables, set $id to mysqli_insert_id.
 	if ($id==0){$id=$zone_id;}
 }
