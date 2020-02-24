@@ -145,12 +145,12 @@ echo '
 				
 				<form data-toggle="validator" role="form" method="post" action="settings.php" id="form-join">
 				<div class="form-group" class="control-label"><label>'.$lang['language'].'</label>
-				<select class="form-control input-sm" type="text" id="new_lang" name="new_lang">
-				<option value="en" ' . ($language=='en' ? 'selected' : '') . '>'.$lang['lang_en'].'</option>
-				<option value="pt" ' . ($language=='pt' ? 'selected' : '') . '>'.$lang['lang_pt'].'</option>
-				<option value="fr" ' . ($language=='fr' ? 'selected' : '') . '>'.$lang['lang_fr'].'</option>
-				<option value="ro" ' . ($language=='ro' ? 'selected' : '') . '>'.$lang['lang_ro'].'</option>
-				</select>
+				<select class="form-control input-sm" type="text" id="new_lang" name="new_lang">';
+				$languages = ListLanguages();
+				for ($x = 0; $x <=  count($languages) - 1; $x++) {
+					echo '<option value="'.$languages[$x][0].'" ' . ($language==$languages[$x][0] ? 'selected' : '') . '>'.$languages[$x][1].'</option>';
+				}	
+				echo '</select>
                 <div class="help-block with-errors"></div></div>
             </div>
             <div class="modal-footer">

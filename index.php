@@ -255,10 +255,11 @@ html {
 <br>
 								<h3 class="text-right">
 								<small>
-								<a class="text-info" style="text-decoration: none;" href="languages.php?lang=en" title="English">English</a> - 
-								<a class="text-info" style="text-decoration: none;" href="languages.php?lang=pt" title="Portuguese">Portuguese</a> - 
-								<a class="text-info" style="text-decoration: none;" href="languages.php?lang=fr" title="French">French</a> - 
-								<a class="text-info" style="text-decoration: none; padding-right:10px;" href="languages.php?lang=ro" title="Romanian">Romanian</a>	
+								<?php $languages = ListLanguages();
+								for ($x = 0; $x <= count($languages) - 1; $x++) {
+									echo '<a class="text-info" style="text-decoration: none;" href="languages.php?lang='.$languages[$x][0].'" title="'.$languages[$x][1].'">'.$languages[$x][1].'</a>';
+									if ($x <= count($languages) - 2) { echo ' - '; }
+								 } ?>	
 								</small>
 								</h3>
                     </div></div>	
