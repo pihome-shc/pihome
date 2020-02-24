@@ -119,8 +119,21 @@ require_once(__DIR__.'/st_inc/functions.php');
 				$_SESSION['user_id'] = $found_user['id'];
         		$_SESSION['username'] = $found_user['username'];
 				// add entry to database if login is success
-				$query = "INSERT INTO userhistory(username, password, date, audit, ipaddress) VALUES ('{$username}', '{$password}', '{$lastlogin}', 'Failed', '{$ip}')";
+				$query = "INSERT INTO userhistory(username, password, date, audit, ipaddress) VALUES ('{$username}', '{$password}', '{$lastlogin}', 'Successful', '{$ip}')";
 				$result = $conn->query($query);
+
+				// Set Language cookie if doesn't exist
+				if(!isset($_COOKIE['PiHomeLanguage'])) {
+					$query = "SELECT language FROM system;";
+					$result = $conn->query($query);
+					$row = mysqli_fetch_assoc($result);
+					if (mysqli_num_rows($result) == 1) {
+						$lang = $row['language'];
+						setcookie("PiHomeLanguage", $lang, time()+(3600*24*90));
+						header("Location: " . $_SERVER['HTTP_REFERER']);
+					}
+				}
+				
         		// Jump to secured page
         		//redirect_to('home.php?uid='.$_SESSION['user_id']);
 				if(isset($_SESSION['url'])) {
