@@ -255,7 +255,7 @@ html {
 <br>
 								<h3 class="text-right">
 								<small>
-								<?php $languages = ListLanguages();
+								<?php $languages = ListLanguages(settings($conn, 'language'));
 								for ($x = 0; $x <= count($languages) - 1; $x++) {
 									echo '<a class="text-info" style="text-decoration: none;" href="languages.php?lang='.$languages[$x][0].'" title="'.$languages[$x][1].'">'.$languages[$x][1].'</a>';
 									if ($x <= count($languages) - 2) { echo ' - '; }
