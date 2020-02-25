@@ -368,7 +368,4 @@ function ListLanguages($lang)
 return($Data);
 }
 
-}
-
-
 ?>
