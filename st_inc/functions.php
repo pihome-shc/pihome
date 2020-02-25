@@ -353,22 +353,22 @@ function Get_GPIO_List()
 
 }
 
-function ListLanguages($lang)
+function ListLanguages()
 {
         $dir    = '/var/www/languages/';
-        $fpath = $dir.$lang.'.php';
-        if (file_exists($fpath)) { $Content = file_get_contents($fpath); } else { $Content = file_get_contents($dir."en.php"); }
-        preg_match_all('/(?<match>.*lang_.*)/', $Content, $Matches);
-        $Data = array();
-        for($j = 0; $j < count($Matches[1]); $j++){
-                $Field = trim($Matches[1][$j]);
-                $Data[$j][0] = substr($Field, 12, 2);
-                $Data[$j][1] = substr($Field, 20, -2);
+        $files = array_slice(scandir($dir), 2);
+
+        for($i = 0; $i < count($files); $i++){
+                $Content = file_get_contents($dir.$files[$i]);
+                preg_match_all('/(?<match>.*lang_.*)/', $Content, $Matches);
+                $Data = array();
+                for($j = 0; $j < count($Matches[1]); $j++){
+                        $Field = trim($Matches[1][$j]);
+                        $Data[$j][0] = substr($Field, 12, 2);
+                        $Data[$j][1] = substr($Field, 20, -2);
+                }
         }
-return($Data);
+        return($Data);
 }
-
-}
-
 
 ?>
