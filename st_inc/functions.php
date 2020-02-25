@@ -356,8 +356,8 @@ function Get_GPIO_List()
 function ListLanguages($lang)
 {
         $dir    = '/var/www/languages/';
-
-        $Content = file_get_contents($dir.$lang.'.php');
+        $fpath = $dir.$lang.'.php';
+        if (file_exists($fpath)) { $Content = file_get_contents($fpath); } else { $Content = file_get_contents($dir."en.php"); }
         preg_match_all('/(?<match>.*lang_.*)/', $Content, $Matches);
         $Data = array();
         for($j = 0; $j < count($Matches[1]); $j++){
@@ -366,6 +366,8 @@ function ListLanguages($lang)
                 $Data[$j][1] = substr($Field, 20, -2);
         }
 return($Data);
+}
+
 }
 
 
