@@ -146,7 +146,7 @@ echo '
 				<form data-toggle="validator" role="form" method="post" action="settings.php" id="form-join">
 				<div class="form-group" class="control-label"><label>'.$lang['language'].'</label>
 				<select class="form-control input-sm" type="text" id="new_lang" name="new_lang">';
-				$languages = ListLanguages($language);
+				$languages = ListLanguages();
 				for ($x = 0; $x <=  count($languages) - 1; $x++) {
 					echo '<option value="'.$languages[$x][0].'" ' . ($language==$languages[$x][0] ? 'selected' : '') . '>'.$languages[$x][1].'</option>';
 				}	

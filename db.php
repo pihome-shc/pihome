@@ -341,24 +341,17 @@ if($what=="units"){
 //update language
 if($what=="lang"){
 	if($opp=="update"){
-                $lang_val = $_GET['lang_val'];
-                $query = "UPDATE `system` SET `language`='" . $lang_val . "';";
-                if (file_exists('/var/www/languages/'.$lang_val.'.php')) {
-                        if($conn->query($query)){
-                                setcookie("PiHomeLanguage", $lang_val, time()+(3600*24*90));
-                                header('Content-type: application/json');
-                                echo json_encode(array('Success'=>'Success','Query'=>$query));
-                                return;
-                        }else{
-                                header('Content-type: application/json');
-                                echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
-                                return;
-                        }
-                } else {
-                        header('Content-type: application/json');
-                        echo json_encode(array('Success'=>'Success','Query'=>$query));
-                        return;
-                }
+        $query = "UPDATE `system` SET `language`='" . $_GET['lang_val'] . "';";
+        if($conn->query($query)){
+	    setcookie("PiHomeLanguage", $_GET['lang_val'], time()+(3600*24*90));	
+            header('Content-type: application/json');
+            echo json_encode(array('Success'=>'Success','Query'=>$query));
+            return;
+        }else{
+            header('Content-type: application/json');
+            echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+            return;
+        }
 	}
 }
 
