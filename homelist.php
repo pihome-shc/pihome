@@ -97,6 +97,20 @@ if($boiler_notice > 0){
   }
 }
 
+//Get Weather Temperature
+$query = "SELECT * FROM messages_in WHERE node_id = '1' ORDER BY id desc LIMIT 1";
+$result = $conn->query($query);
+$weather_temp = mysqli_fetch_array($result);
+$weather_c = $weather_temp['payload'];
+//    1    00-05    0.3
+//    2    06-10    0.4
+//    3    11-15    0.5
+//    4    16-20    0.6
+//    5    21-30    0.7
+$weather_fact = 0;
+if ($weather_c <= 5 ) {$weather_fact = 0.3;} elseif ($weather_c <= 10 ) {$weather_fact = 0.4;} elseif ($weather_c <= 15 ) {$weather_fact = 0.5;} elseif ($weather_c <= 20 ) {$weather_fact = 0.6;} elseif ($weather_c <= 30 ) {$weather_fact = 0.7;}
+
+
 $query = "SELECT * FROM zone where zone.purge = '0' ORDER BY index_id asc; ";
 $results = $conn->query($query);
 while ($row = mysqli_fetch_assoc($results)) {
@@ -104,6 +118,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$max_operation_time=$row['max_operation_time'];
 	$location_hysteresis_time=$row['hysteresis_time'];
 	$zone_enable=$row['status'];
+	$zone_sp_deadband=$row['sp_deadband'];
 
 	//query to get node id from nodes table
 	$query = "SELECT * FROM nodes WHERE id = {$row['sensor_id']} AND nodes.`purge` = '0' AND status IS NOT NULL LIMIT 1;";
@@ -219,6 +234,13 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$boost_index = $boost_index+1;
 	$override_arr[$override_index] = $ovactive;
 	$override_index = $override_index+1;
+	
+	//Zone Temperature calculation
+	//$zone_temp = $room_c + $weather_fact + $zone_sp_deadband;
+	//Zone Temperature Sensors Reading 		$room_c
+	//Zone DeadBand 						$zone_sp_deadband;
+	//Zone Weather Factor 					$weather_fact
+	
    	echo '<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-href="#" data-toggle="modal" data-target="#'.$row['type'].''.$row['id'].'" data-backdrop="static" data-keyboard="false">
 	<h3><small>'.$row['name'].'</small></h3>
 	<h3 class="degre">'.number_format(DispTemp($conn,$room_c),1).'&deg;</h3>
@@ -315,6 +337,15 @@ while ($row = mysqli_fetch_assoc($results)) {
                   $shcolor='';
                   $target=number_format(DispTemp($conn,$override_c),0) . '&deg;';
               }
+			  
+              else if (($sch_status == 1) && ($room_c < ($schedule_c - $weather_fact)) OR ($fired_status == 0)) {
+                  //We are scheduled and heating
+                  $status='orange';
+                  $shactive='fa-leaf green';
+                  $shcolor='';
+                  $target=number_format(DispTemp($conn,$schedule_c),0) . '&deg;';
+              }
+			  
               else if (($sch_status == 1) && ($room_c < $schedule_c) && (($schedule_coop == 0)||($fired_status == 1))) {
                   //We are scheduled and heating
                   $status='red';
@@ -322,7 +353,7 @@ while ($row = mysqli_fetch_assoc($results)) {
                   $shcolor='';
                   $target=number_format(DispTemp($conn,$schedule_c),0) . '&deg;';
               }
-              else if (($sch_status == 1) && ($room_c < $schedule_c)&&($schedule_coop == 1)&&($fired_status == 0)) {
+              else if (($sch_status == 1) && ($room_c < $schedule_c) && ($schedule_coop == 1) && ($fired_status == 0)) {
                   //We are coop scheduled and waiting for boiler start
                   $status='blueinfo';   
                   $shactive='ion-ios-clock-outline';
