@@ -167,13 +167,14 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$nc_end_time = $night_climate['end_time'];
 	$nc_min_c = $night_climate['min_temperature'];
 	$nc_max_c = $night_climate['max_temperature'];
+	$nc_weekday = $night_climate['WeekDays'] & (1 << $dow);
 
 	//night climate time to add 10 minuts for record purpose
 	$timestamp =strtotime(date('H:i:s')) + 60 *10;
 	$nc_end_time_rc = date('H:i:s', $timestamp);
 
 	$current_time = date('H:i:s');
-	if ((TimeIsBetweenTwoTimes($current_time, $nc_start_time, $nc_end_time)) && ($nc_time_status =='1') && ($nc_zone_status =='1')) {
+	if ((TimeIsBetweenTwoTimes($current_time, $nc_start_time, $nc_end_time)) && ($nc_time_status =='1') && ($nc_zone_status =='1') && ($nc_weekday > 0)) {
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Night Climate Enabled for This Zone \n";
 		$night_climate_status='1';
 	} else {
