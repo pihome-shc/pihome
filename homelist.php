@@ -337,7 +337,7 @@ while ($row = mysqli_fetch_assoc($results)) {
                   $shcolor='';
                   $target=number_format(DispTemp($conn,$override_c),0) . '&deg;';
               }
-			  
+/*			  
               else if (($sch_status == 1) && ($room_c < ($schedule_c - $weather_fact)) OR ($fired_status == 0)) {
                   //We are scheduled and heating
                   $status='orange';
@@ -345,7 +345,7 @@ while ($row = mysqli_fetch_assoc($results)) {
                   $shcolor='';
                   $target=number_format(DispTemp($conn,$schedule_c),0) . '&deg;';
               }
-			  
+*/			  
               else if (($sch_status == 1) && ($room_c < $schedule_c) && (($schedule_coop == 0)||($fired_status == 1))) {
                   //We are scheduled and heating
                   $status='red';
