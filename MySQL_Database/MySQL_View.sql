@@ -82,7 +82,7 @@ join zone zone_idx on override.zone_id = zone_idx.id;
 -- Schedule List with zone details view table version 1.x
 Drop View if exists schedule_night_climat_zone_view;
 CREATE VIEW schedule_night_climat_zone_view AS
-select tnct.status as t_status, ncz.status as z_status, ncz.sync, ncz.zone_id, snct.start_time, enct.end_time, ncz.min_temperature, ncz.max_temperature
+select tnct.status as t_status, ncz.status as z_status, ncz.sync, ncz.zone_id, snct.start_time, enct.end_time, snct.WeekDays, ncz.min_temperature, ncz.max_temperature
 from schedule_night_climat_zone ncz
 join schedule_night_climate_time snct on ncz.schedule_night_climate_id = snct.id
 join schedule_night_climate_time enct on ncz.schedule_night_climate_id = enct.id
