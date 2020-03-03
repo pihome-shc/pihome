@@ -472,6 +472,7 @@ CREATE TABLE IF NOT EXISTS `schedule_night_climate_time` (
   `status` tinyint(4) DEFAULT NULL,
   `start_time` time DEFAULT '21:00:00',
   `end_time` time DEFAULT '06:00:00',
+  `WeekDays` smallint(6) NOT NULL DEFAULT 127,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
