@@ -24,18 +24,42 @@ require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
 
 if (isset($_POST['submit'])) {
+        $mask = 0;
+        $bit = isset($_POST['Sunday_en']) ? $_POST['Sunday_en'] : "0";
+        if ($bit) {
+          $mask =  $mask | (1 << 0); }
+        else {$mask =  $mask & (0 << 0); }
+        $bit = isset($_POST['Monday_en']) ? $_POST['Monday_en'] : "0";
+        if ($bit) {
+          $mask =  $mask | (1 << 1); }
+        $bit = isset($_POST['Tuesday_en']) ? $_POST['Tuesday_en'] : "0";
+        if ($bit) {
+          $mask =  $mask | (1 << 2); }
+        $bit = isset($_POST['Wednesday_en']) ? $_POST['Wednesday_en'] : "0";
+        if ($bit) {
+          $mask =  $mask | (1 << 3); }
+        $bit = isset($_POST['Thursday_en']) ? $_POST['Thursday_en'] : "0";
+        if ($bit) {
+          $mask =  $mask | (1 << 4); }
+        $bit = isset($_POST['Friday_en']) ? $_POST['Friday_en'] : "0";
+        if ($bit) {
+          $mask =  $mask | (1 << 5); }
+        $bit = isset($_POST['Saturday_en']) ? $_POST['Saturday_en'] : "0";
+        if ($bit) {
+          $mask =  $mask | (1 << 6);
+        }
 	$sc_en = isset($_POST['sc_en']) ? $_POST['sc_en'] : "0";
 	$start_time = $_POST['start_time'];
 	$end_time = $_POST['end_time'];
-	$query = "UPDATE schedule_night_climate_time SET sync = '0', status = '{$sc_en}', start_time = '{$start_time}', end_time = '{$end_time}' where id = 1;";
+	$query = "UPDATE schedule_night_climate_time SET sync = '0', status = '{$sc_en}', start_time = '{$start_time}', end_time = '{$end_time}', WeekDays = '{$mask}' where id = 1;";
 	$timeresults = $conn->query($query);
 	if ($timeresults) {
-        $message_success = "<p>".$lang['night_climate_time_success']."</p>";
-    	header("Refresh: 3; url=home.php");
-    } else {
-        $error = "<p>".$lang['night_climate_error']."</p><p>".mysqli_error($conn). "</p>";        
-    }
-	
+        	$message_success = "<p>".$lang['night_climate_time_success']."</p>";
+    		header("Refresh: 3; url=home.php");
+    	} else {
+        	$error = "<p>".$lang['night_climate_error']."</p><p>".mysqli_error($conn). "</p>";        
+    	}
+
 	foreach($_POST['id'] as $id){
 		$id = $_POST['id'][$id];
 		$status = isset($_POST['status'][$id]) ? $_POST['status'][$id] : "0";
@@ -44,11 +68,11 @@ if (isset($_POST['submit'])) {
 		$max =TempToDB($conn,$_POST['max'][$id]);
 		$query = "UPDATE schedule_night_climat_zone SET sync = '0', status='$status', min_temperature='" . number_format($min,1) . "', max_temperature='" . number_format($max,1) . "' WHERE id='$id'";
 		$zoneresults = $conn->query($query);
-		 if ($zoneresults) {
-            $message_success .= "<p>".$lang['night_climate_temp_success']."</p>";
-        } else {
-            $error .= "<p>".$lang['night_climate_error']."</p><p>".mysqli_error($conn). "</p>";        
-        }
+		if ($zoneresults) {
+            		$message_success .= "<p>".$lang['night_climate_temp_success']."</p>";
+        	} else {
+            		$error .= "<p>".$lang['night_climate_error']."</p><p>".mysqli_error($conn). "</p>";        
+        	}
 	}
 } ?>
 <?php include("header.php");  ?>
@@ -70,17 +94,50 @@ if (isset($_POST['submit'])) {
 				$results = $conn->query($query);	
 				$snct = mysqli_fetch_assoc($results);
 ?>
-				<div class="checkbox checkbox-default checkbox-circle">
+            	<!-- Enable Schedule -->
+                <div class="checkbox checkbox-default checkbox-circle">
                 <input id="checkbox0" class="styled" type="checkbox" name="sc_en" value="1" <?php $check = ($snct['status'] == 1) ? 'checked' : ''; echo $check; ?>>
-                <label for="checkbox0"> <?php echo $lang['night_climate_enable']; ?> </label>
+                <label for="checkbox0"> <?php echo $lang['night_climate_enable']; ?></label></div>
+		<div class="checkbox checkbox-default checkbox-circle">
+
+                <!-- Day Selector -->
+                <div class="row">
+                <div class="col-xs-3"><div class="checkbox checkbox-default checkbox-circle">
+                <input id="checkbox1" class="styled" type="checkbox" name="Sunday_en" value="1" <?php $check = (($snct['WeekDays'] & 1) > 0) ? 'checked' : ''; echo $check; ?>>
+                <label for="checkbox1"> <?php echo $lang['sun']; ?></label></div></div>
+                <div class="col-xs-3"><div class="checkbox checkbox-default checkbox-circle">
+                <input id="checkbox2" class="styled" type="checkbox" name="Monday_en" value="1" <?php $check = (($snct['WeekDays'] & 2) > 0) ? 'checked' : ''; echo $check; ?>>
+                <label for="checkbox2"> <?php echo $lang['mon']; ?></label></div></div>
+
+                <div class="col-xs-3"><div class="checkbox checkbox-default checkbox-circle">
+                <input id="checkbox3" class="styled" type="checkbox" name="Tuesday_en" value="1" <?php $check = (($snct['WeekDays'] & 4) > 0) ? 'checked' : ''; echo $check; ?>>
+                <label for="checkbox3"> <?php echo $lang['tue']; ?></label></div></div>
+
+                <div class="col-xs-3"><div class="checkbox checkbox-default checkbox-circle">
+                <input id="checkbox4" class="styled" type="checkbox" name="Wednesday_en" value="1" <?php $check = (($snct['WeekDays'] & 8) > 0) ? 'checked' : ''; echo $check; ?>>
+                <label for="checkbox4"> <?php echo $lang['wed']; ?></label></div></div>
+
+                <div class="col-xs-3"><div class="checkbox checkbox-default checkbox-circle">
+                <input id="checkbox5" class="styled" type="checkbox" name="Thursday_en" value="1" <?php $check = (($snct['WeekDays'] & 16) > 0) ? 'checked' : ''; echo $check; ?>>
+                <label for="checkbox5"> <?php echo $lang['thu']; ?></label></div></div>
+
+                <div class="col-xs-3"><div class="checkbox checkbox-default checkbox-circle">
+                <input id="checkbox6" class="styled" type="checkbox" name="Friday_en" value="1" <?php $check = (($snct['WeekDays'] & 32) > 0) ? 'checked' : ''; echo $check; ?>>
+                <label for="checkbox6"> <?php echo $lang['fri']; ?></label></div></div>
+
+                <div class="col-xs-3"><div class="checkbox checkbox-default checkbox-circle">
+                <input id="checkbox7" class="styled" type="checkbox" name="Saturday_en" value="1" <?php $check = (($snct['WeekDays'] & 64) > 0) ? 'checked' : ''; echo $check; ?>>
+                <label for="checkbox7"> <?php echo $lang['sat']; ?></label></div></div>
+                </div>
+
+		<!-- Start Time -->
+		<div class="form-group" class="control-label"><label><?php echo $lang['start_time']; ?></label>
+		<input class="form-control input-sm" type="time" id="start_time" name="start_time" value="<?php if(isset($_POST['start_time'])) { echo $_POST['start_time']; }else{echo $snct['start_time'];} ?>" required>
                 <div class="help-block with-errors"></div></div>
 
-				<div class="form-group" class="control-label"><label><?php echo $lang['start_time']; ?></label>
-				<input class="form-control input-sm" type="time" id="start_time" name="start_time" value="<?php if(isset($_POST['start_time'])) { echo $_POST['start_time']; }else{echo $snct['start_time'];} ?>" required>
-                <div class="help-block with-errors"></div></div>
-				
-				<div class="form-group" class="control-label"><label><?php echo $lang['end_time']; ?></label>
-				<input class="form-control input-sm" type="time" id="end_time" name="end_time" value="<?php if(isset($_POST['end_time'])) { echo $_POST['end_time']; }else{echo $snct['end_time'];} ?>" required>
+		<!-- End Time -->
+		<div class="form-group" class="control-label"><label><?php echo $lang['end_time']; ?></label>
+		<input class="form-control input-sm" type="time" id="end_time" name="end_time" value="<?php if(isset($_POST['end_time'])) { echo $_POST['end_time']; }else{echo $snct['end_time'];} ?>" required>
                 <div class="help-block with-errors"></div></div>				
 <?php
 $zquery = "
