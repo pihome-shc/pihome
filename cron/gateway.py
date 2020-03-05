@@ -86,6 +86,8 @@ try:
 	
 	while 1:
 	## Outgoing messages
+		con = mdb.connect(dbhost, dbuser, dbpass, dbname) # MySQL Database Connection Settings
+		cur = con.cursor() # Cursor object to Current Connection
 		cur.execute('SELECT COUNT(*) FROM `messages_out` where sent = 0') # MySQL query statement
 		count = cur.fetchone() # Grab all messages from database for Outgoing. 
 		count = count[0] # Parse first and the only one part of data table named "count" - there is number of records grabbed in SELECT above
