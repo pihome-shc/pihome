@@ -768,7 +768,7 @@ if($what=="time_zone"){
 		$time_zone_val = $_GET['time_zone_val'];
 		
 		$query = "UPDATE `system` SET `timezone`='" . $time_zone_val . "';";
-		exec("timedatectl set-timezone $time_zone_val");
+		exec("sudo timedatectl set-timezone $time_zone_val");
         if($conn->query($query)){
             header('Content-type: application/json');
             echo json_encode(array('Success'=>'Success','Query'=>$query));
