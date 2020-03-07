@@ -23,17 +23,19 @@ confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
 
+$time_id = 0;
 if(isset($_GET['hol_id'])) {
         $holidays_id = $_GET['hol_id'];
         $return_url = "holidays.php";
+} elseif(isset($_GET['nid'])) {
+        $return_url = "home.php";
+        $time_id = 1;
 } else {
         $holidays_id = "NULL";
         $return_url = "schedule.php";
 }
 if(isset($_GET['id'])) {
 	$time_id = $_GET['id'];
-} else {
-	$time_id = 0;
 }
 //Form submit
 if (isset($_POST['submit'])) {
@@ -66,43 +68,70 @@ if (isset($_POST['submit'])) {
           $mask =  $mask | (1 << 6);
 		}
 
-	$sch_name = $_POST['sch_name'];
 	$start_time = $_POST['start_time'];
 	$end_time = $_POST['end_time'];
 
-	$query = "INSERT INTO schedule_daily_time(id, sync, status, start, end, WeekDays, sch_name) VALUES ('{$time_id}','0', '{$sc_en}', '{$start_time}','{$end_time}','{$mask}', '{$sch_name}') ON DUPLICATE KEY UPDATE sync = VALUES(sync),  status = VALUES(status), start = VALUES(start), end = VALUES(end), WeekDays = VALUES(WeekDays), sch_name=VALUES(sch_name);";
-	$result = $conn->query($query);
-	$schedule_daily_time_id = mysqli_insert_id($conn);
-	
-	if ($result) {
-		$message_success = $lang['schedule_time_modify_success'];
-		header("Refresh: 3; url=".$return_url);
-	} else {
-		$error = $lang['schedule_time_modify_error']."<p>".mysqli_error($conn)."</p>"."  id1: ".$time_id;
-	}
-	
-	foreach($_POST['id'] as $id){
-		$id = $_POST['id'][$id];
-		if(isset($_GET['id'])) {
-			$tzid = $id;
-			$schedule_daily_time_id = $time_id;
-			$zoneid = $_POST['zoneid'][$id];
-		} else {
-			$tzid = 0;
-			$zoneid = $id;
-		}
-		$status = isset($_POST['status'][$id]) ? $_POST['status'][$id] : "0";				  
-		$coop = isset($_POST['coop'][$id]) ? $_POST['coop'][$id] : "0";
-		$temp=TempToDB($conn,$_POST['temp'][$id]);
-		
-		$query = "INSERT INTO schedule_daily_time_zone(id, sync, `status`, schedule_daily_time_id, zone_id, temperature, holidays_id, coop) VALUES ('{$tzid}', '0', '{$status}', '{$schedule_daily_time_id}','{$zoneid}','".number_format($temp,1)."',{$holidays_id},{$coop}) ON DUPLICATE KEY UPDATE sync = VALUES(sync), status = VALUES(status), temperature = VALUES(temperature), coop = VALUES(coop);";
-		$zoneresults = $conn->query($query);
+        if(isset($_GET['nid'])) {
+                $sc_en = isset($_POST['sc_en']) ? $_POST['sc_en'] : "0";
+                $query = "UPDATE schedule_night_climate_time SET sync = '0', status = '{$sc_en}', start_time = '{$start_time}', end_time = '{$end_time}', WeekDays = '{$mask}' where id = 1;";
+                $timeresults = $conn->query($query);
+                if ($timeresults) {
+                        $message_success = "<p>".$lang['night_climate_time_success']."</p>";
+                        header("Refresh: 3; url=home.php");
+                } else {
+                        $error = "<p>".$lang['night_climate_error']."</p><p>".mysqli_error($conn). "</p>";
+                }
 
-		if ($zoneresults) {
-			#$message_success = "<p>".$lang['zone_record_success']."</p>";
+                foreach($_POST['id'] as $id){
+                        $id = $_POST['id'][$id];
+                        $status = isset($_POST['status'][$id]) ? $_POST['status'][$id] : "0";
+                        //$status = $_POST['status'][$id];
+                        $min =TempToDB($conn,$_POST['min'][$id]);
+                        $max =TempToDB($conn,$_POST['max'][$id]);
+                        $query = "UPDATE schedule_night_climat_zone SET sync = '0', status='$status', min_temperature='".number_format(TempToDB($conn,$_POST['min_temp'][$id]),1)."', max_temperature='".number_format(TempToDB($conn,$_POST['max_temp'][$id]),1)."' WHERE id='$id'";
+                        $zoneresults = $conn->query($query);
+                        if ($zoneresults) {
+                                $message_success .= "<p>".$lang['night_climate_temp_success']."</p>";
+                        } else {
+                                $error .= "<p>".$lang['night_climate_error']."</p><p>".mysqli_error($conn). "</p>";
+                        }
+                }
+        } else {
+                $sch_name = $_POST['sch_name'];
+		$query = "INSERT INTO schedule_daily_time(id, sync, status, start, end, WeekDays, sch_name) VALUES ('{$time_id}','0', '{$sc_en}', '{$start_time}','{$end_time}','{$mask}', '{$sch_name}') ON DUPLICATE KEY UPDATE sync = VALUES(sync),  status = VALUES(status), start = VALUES(start), end = VALUES(end), WeekDays = VALUES(WeekDays), sch_name=VALUES(sch_name);";
+		$result = $conn->query($query);
+		$schedule_daily_time_id = mysqli_insert_id($conn);
+
+		if ($result) {
+			$message_success = $lang['schedule_time_modify_success'];
+			header("Refresh: 3; url=".$return_url);
 		} else {
-			#$error = "<p>".$lang['zone_record_fail']." </p> <p>" .mysqli_error($conn). "</p>"."  schedule_daily_time_id: ".$schedule_daily_time_id."  id: ".$id."  tzid: ".$tzid."  zone id: ".$zoneid."  holid: ".$holidays_id;
-			$error = "<p>".$lang['zone_record_fail']." </p> <p>" .mysqli_error($conn). "</p>";
+			$error = $lang['schedule_time_modify_error']."<p>".mysqli_error($conn)."</p>"."  id1: ".$time_id;
+		}
+
+		foreach($_POST['id'] as $id){
+			$id = $_POST['id'][$id];
+			if(isset($_GET['id'])) {
+				$tzid = $id;
+				$schedule_daily_time_id = $time_id;
+				$zoneid = $_POST['zoneid'][$id];
+			} else {
+				$tzid = 0;
+				$zoneid = $id;
+			}
+			$status = isset($_POST['status'][$id]) ? $_POST['status'][$id] : "0";
+			$coop = isset($_POST['coop'][$id]) ? $_POST['coop'][$id] : "0";
+			$temp=TempToDB($conn,$_POST['temp'][$id]);
+
+			$query = "INSERT INTO schedule_daily_time_zone(id, sync, `status`, schedule_daily_time_id, zone_id, temperature, holidays_id, coop) VALUES ('{$tzid}', '0', '{$status}', '{$schedule_daily_time_id}','{$zoneid}','".number_format($temp,1)."',{$holidays_id},{$coop}) ON DUPLICATE KEY UPDATE sync = VALUES(sync), status = VALUES(status), temperature = VALUES(temperature), coop = VALUES(coop);";
+			$zoneresults = $conn->query($query);
+
+			if ($zoneresults) {
+				#$message_success = "<p>".$lang['zone_record_success']."</p>";
+			} else {
+				#$error = "<p>".$lang['zone_record_fail']." </p> <p>" .mysqli_error($conn). "</p>"."  schedule_daily_time_id: ".$schedule_daily_time_id."  id: ".$id."  tzid: ".$tzid."  zone id: ".$zoneid."  holid: ".$holidays_id;
+				$error = "<p>".$lang['zone_record_fail']." </p> <p>" .mysqli_error($conn). "</p>";
+			}
 		}
 	}
 }
@@ -116,20 +145,30 @@ if (isset($_POST['submit'])) {
 <?php if (!(isset($_POST['submit']))) { ?>
 
 <!-- If the request is to EDIT, retrieve selected items from DB   -->
-<?php if ($time_id != 0) {
-	$query = "SELECT * FROM schedule_daily_time WHERE id = {$time_id}";
-	$results = $conn->query($query);
-	$time_row = mysqli_fetch_assoc($results);
+<?php if(isset($_GET['nid'])) {
+        $query = "SELECT `id`, `sync`, `purge`, `status`, `start_time` as start, `end_time` as end FROM schedule_night_climate_time WHERE id = 1;";
+        $results = $conn->query($query);
+        $time_row = mysqli_fetch_assoc($results);
+        $query = "
+        SELECT sncz.id as tz_id, sncz.status as tz_status, sncz.schedule_night_climate_id, sncz.zone_id as zone_id, zone.index_id, zone.name as zone_name, zone.status as zone_status, sncz.min_temperature, sncz.max_temperature
+        FROM schedule_night_climat_zone sncz
+        join zone on sncz.zone_id = zone.id
+        where zone.status = 1 order by zone.index_id;";
+        $zoneresults = $conn->query($query);
+} elseif ($time_id != 0) {
+        $query = "SELECT * FROM schedule_daily_time WHERE id = {$time_id}";
+        $results = $conn->query($query);
+        $time_row = mysqli_fetch_assoc($results);
 
-	$query = "select * from schedule_daily_time_zone_view where time_id = {$time_id}";
-	$zoneresults = $conn->query($query);
+        $query = "select * from schedule_daily_time_zone_view where time_id = {$time_id}";
+        $zoneresults = $conn->query($query);
 } else {
-	$query = "select id as tz_id, name as zone_name, type from zone where status = 1 AND `purge`= 0 order by index_id asc;";
-	$zoneresults = $conn->query($query);
+        $query = "select id as tz_id, name as zone_name, type from zone where status = 1 AND `purge`= 0 order by index_id asc;";
+        $zoneresults = $conn->query($query);
 }
 ?>
 
-<!-- Title (e.g. Add Schedule or Edit Schedule) -->										   
+<!-- Title (e.g. Add Schedule or Edit Schedule) -->
         <div id="page-wrapper">
 <br>
             <div class="row">
@@ -137,8 +176,13 @@ if (isset($_POST['submit'])) {
 				<div class="panel panel-primary">
                         <div class="panel-heading">
 							<i class="fa fa-clock-o fa-fw"></i>
-							<?php if ($time_id != 0) { echo $lang['schedule_edit'] . ": " . $time_row['sch_name']; }else{
-                            echo $lang['schedule_add'];} ?>
+                                                        <?php if(isset($_GET['nid'])) {
+                                                                echo $lang['night_climate'];
+                                                        } elseif ($time_id != 0) {
+                                                                echo $lang['schedule_edit'] . ": " . $time_row['sch_name'];
+                                                        } else {
+                                                                echo $lang['schedule_add'];
+                                                        } ?>
 						<div class="pull-right"> <div class="btn-group"><?php echo date("H:i"); ?></div> </div>
                         </div>
                         <!-- /.panel-heading -->
@@ -183,12 +227,13 @@ if (isset($_POST['submit'])) {
 			</div>
 
 			<!-- Schedule Name -->
-			<div class="form-group" class="control-label">
-				<label><?php echo $lang['sch_name']; ?></label>
-				<input class="form-control input-sm" type="text" id="sch_name" name="sch_name" value="<?php echo $time_row["sch_name"];?>" placeholder="Schedule Name">
-				<div class="help-block with-errors">
-				</div>
-			</div>
+                        <?php if(!isset($_GET['nid'])) {
+                        echo '<div class="form-group" class="control-label">
+                                <label><'.$lang['sch_name'].'></label>
+                                <input class="form-control input-sm" type="text" id="sch_name" name="sch_name" value="'.$time_row["sch_name"].'" placeholder="Schedule Name">
+                                <div class="help-block with-errors">
+                                </div>
+                        </div>'; } ?>
 
 			<!-- Start Time -->
 			<div class="form-group" class="control-label"><label><?php echo $lang['start_time']; ?></label>
@@ -239,20 +284,42 @@ while ($row = mysqli_fetch_assoc($zoneresults)) {
 		$min = 10;
 		$max = 80;
 	}
-	?>
-	<!-- Zone Coop Enable Checkbox -->
-	<div class="checkbox checkbox-default  checkbox-circle">
-    <input id="coop<?php echo $row["tz_id"];?>" class="styled" type="checkbox" name="coop[<?php echo $row["tz_id"];?>]" value="1" <?php if($time_id != 0){ $check = ($row['coop'] == 1) ? 'checked' : ''; echo $check;} ?> >
-    <label for="coop<?php echo $row["tz_id"];?>">Coop Start</label> <i class="glyphicon glyphicon-leaf green"></i>
-	<i class="fa fa-info-circle fa-lg text-info" data-container="body" data-toggle="popover" data-placement="right" data-content="<?php echo $lang['schedule_coop_help']; ?>"></i>
-    <div class="help-block with-errors"></div></div>
-    
-	<!-- Temperature and Slider -->
-	<div class="slidecontainer">
-		<h4><?php echo $lang['temperature']; ?>: <span id="val<?php echo $row["zone_id"];?>" style="display: inline-flex !important; font-size:18px !important;"><output name="show_temp_val" id="temp<?php echo $row["tz_id"];?>" style="padding-top:0px !important; font-size:18px !important;"><?php if($time_id != 0){ echo DispTemp($conn, $row['temperature']);}else{print '15.0';} ?></output></span>&deg;</h4><br>
-		<input type="range" min="<?php echo $min; ?>" max="<?php echo $max; ?>" step="0.5" value="<?php if($time_id != 0){ echo DispTemp($conn, $row['temperature']);}else{print '15.0';} ?>" class="slider" id="bb<?php echo $row["tz_id"];?>" name="temp[<?php echo $row["tz_id"];?>]" oninput="document.getElementById('temp<?php echo $row["tz_id"];?>').innerText = parseFloat(this.value);temp<?php echo $row["tz_id"];?>=parseFloat(this.value)">
-		
-	</div>
+        if(!isset($_GET['nid'])) {
+                //<!-- Zone Coop Enable Checkbox -->
+                if($time_id != 0){ $check = ($row['coop'] == 1) ? 'checked' : ''; }
+                echo '<div class="checkbox checkbox-default  checkbox-circle">
+                <input id="coop'.$row["tz_id"].'" class="styled" type="checkbox" name="coop['.$row["tz_id"].']" value="1" '.$check.'>
+                <label for="coop'.$row["tz_id"].'">Coop Start</label> <i class="glyphicon glyphicon-leaf green"></i>
+                <i class="fa fa-info-circle fa-lg text-info" data-container="body" data-toggle="popover" data-placement="right" data-content="'.$lang['schedule_coop_help'].'"></i>
+                <div class="help-block with-errors"></div></div>';
+                // <!-- Temperature and Slider -->
+                if($time_id != 0){ $temp = DispTemp($conn, $row['temperature']);} else { $temp = '15.0';}
+                echo '<div class="slidecontainer">
+                <h4>'.$lang['temperature'].': <span id="val'.$row["zone_id"].'" style="display: inline-flex !important; font-size:18px !important;"><output name="show_temp_val" id="temp'.$row["tz_id"].'" style="padding-top:0px !important; font-size:18px !important;">'.$temp.'</output></span>&deg;</h4><br>
+                <input type="range" min="'.$min.'" max="'.$max.'" step="0.5" value="'.$temp.'" class="slider" id="bb'.$row["tz_id"].'" name="temp['.$row["tz_id"].']" oninput=update_temp(this.value,"temp'.$row["tz_id"].'")>
+                </div>';
+        } else {
+                // <!-- Temperature and Slider -->
+                echo '<div class="slidecontainer">
+                <h4>'.$lang['min_temperature'].': <span id="min_val'.$row["zone_id"].'" style="display: inline-flex !important; font-size:18px !important;"><output name="show_min_temp_val" id="min_temp'.$row["tz_id"].'" style="padding-top:0px !important; font-size:18px !important;">'.DispTemp($conn, $row['min_temperature']).'</output></span>&deg;</h4><br>
+                <input type="range" min="'.$min.'" max="'.$max.'" step="0.5" value="'.DispTemp($conn, $row['min_temperature']).'" class="slider" id="min_bb'.$row["tz_id"].'" name="min_temp['.$row["tz_id"].']" oninput=update_temp(this.value,"min_temp'.$row["tz_id"].'")>
+                </div>';
+
+                echo '<div class="slidecontainer">
+                <h4>'.$lang['max_temperature'].': <span id="max_val'.$row["zone_id"].'" style="display: inline-flex !important; font-size:18px !important;"><output name="show_max_temp_val" id="max_temp'.$row["tz_id"].'" style="padding-top:0px !important; font-size:18px !important;">'.DispTemp($conn, $row['max_temperature']).'</output></span>&deg;</h4><br>
+                <input type="range" min="'.$min.'" max="'.$max.'" step="0.5" value="'.DispTemp($conn, $row['max_temperature']).'" class="slider" id="max_bb'.$row["tz_id"].'" name="max_temp['.$row["tz_id"].']" oninput=update_temp(this.value,"max_temp'.$row["tz_id"].'")>
+                </div>'; }
+        ?>
+<script language="javascript" type="text/javascript">
+function update_temp(value, id)
+{
+ var valuetext = value;
+ var idtext = id;
+ document.getElementById(id).innerTex = parseFloat(value);
+ document.getElementById(id).value = parseFloat(value);
+}
+</script>
+
     </div></div>
 <?php }?> <!-- End of Zone List Loop  -->
                 <br>
