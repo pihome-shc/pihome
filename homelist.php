@@ -599,7 +599,7 @@ echo '						<a style="color: #777; cursor: pointer; text-decoration: none;" href
 							$results = $conn->query($query);
 							$row = mysqli_fetch_assoc($results);
 							if ($row['status'] == 1) {$night_status='red';}else{$night_status='blue';}
-echo '						<a style="color: #777; cursor: pointer; text-decoration: none;" href="night_climate.php">
+echo '						<a style="color: #777; cursor: pointer; text-decoration: none;" href="scheduling.php?nid=0">
 							<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn">
 							<h3 class="buttontop"><small>'.$lang['night_climate'].'</small></h3>
 							<h3 class="degre" ><i class="fa fa-bed fa-1x"></i></h3>
