@@ -146,7 +146,7 @@ if (isset($_POST['submit'])) {
 
 <!-- If the request is to EDIT, retrieve selected items from DB   -->
 <?php if(isset($_GET['nid'])) {
-        $query = "SELECT `id`, `sync`, `purge`, `status`, `start_time` as start, `end_time` as end FROM schedule_night_climate_time WHERE id = 1;";
+        $query = "SELECT `id`, `sync`, `purge`, `status`, `start_time` as start, `end_time` as end, `WeekDays` FROM schedule_night_climate_time WHERE id = 1;";
         $results = $conn->query($query);
         $time_row = mysqli_fetch_assoc($results);
         $query = "
