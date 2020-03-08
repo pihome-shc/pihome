@@ -216,11 +216,11 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$query = "select * from schedule_night_climat_zone_view WHERE zone_id = {$row['id']} LIMIT 1";
 	$result = $conn->query($query);
 	$night_climate = mysqli_fetch_array($result);
-	$nc_time_status = $night_climate['t_status'];
-	$nc_zone_status = $night_climate['z_status'];
+	$nc_time_status = $night_climate['time_status'];
+	$nc_zone_status = $night_climate['tz_status'];
 	$nc_zone_id = $night_climate['zone_id'];
-	$nc_start_time = $night_climate['start_time'];
-	$nc_end_time = $night_climate['end_time'];
+	$nc_start_time = $night_climate['start'];
+	$nc_end_time = $night_climate['end'];
 	$nc_min_c = $night_climate['min_temperature'];
 	$nc_max_c = $night_climate['max_temperature'];
 	$current_time = date('H:i:s');
