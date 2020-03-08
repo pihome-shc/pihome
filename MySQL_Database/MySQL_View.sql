@@ -82,11 +82,16 @@ join zone zone_idx on override.zone_id = zone_idx.id;
 -- Schedule List with zone details view table version 1.x
 Drop View if exists schedule_night_climat_zone_view;
 CREATE VIEW schedule_night_climat_zone_view AS
-select tnct.status as t_status, ncz.status as z_status, ncz.sync, ncz.zone_id, snct.start_time, enct.end_time, snct.WeekDays, ncz.min_temperature, ncz.max_temperature
-from schedule_night_climat_zone ncz
-join schedule_night_climate_time snct on ncz.schedule_night_climate_id = snct.id
-join schedule_night_climate_time enct on ncz.schedule_night_climate_id = enct.id
-join schedule_night_climate_time tnct on ncz.schedule_night_climate_id = tnct.id;
+select tnct.id as time_id, tnct.status as time_status, snct.start_time as start, enct.end_time as end, snct.WeekDays, 
+nctz.sync as tz_sync, nctz.id as tz_id, nctz.status as tz_status, nctz.zone_id, zone.index_id, zone.name as zone_name, 
+zt.`type`, zone.status as zone_status, nctz.min_temperature, nctz.max_temperature
+from schedule_night_climat_zone nctz
+join schedule_night_climate_time snct on nctz.schedule_night_climate_id = snct.id
+join schedule_night_climate_time enct on nctz.schedule_night_climate_id = enct.id
+join schedule_night_climate_time tnct on nctz.schedule_night_climate_id = tnct.id
+join zone on nctz.zone_id = zone.id
+join zone zt on nctz.zone_id = zt.id
+where nctz.`purge` = '0' order by zone.index_id;
 
 
 -- Messages_in View for Graps
