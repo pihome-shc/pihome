@@ -149,11 +149,7 @@ if (isset($_POST['submit'])) {
         $query = "SELECT `id`, `sync`, `purge`, `status`, `start_time` as start, `end_time` as end, `WeekDays` FROM schedule_night_climate_time WHERE id = 1;";
         $results = $conn->query($query);
         $time_row = mysqli_fetch_assoc($results);
-        $query = "
-        SELECT sncz.id as tz_id, sncz.status as tz_status, sncz.schedule_night_climate_id, sncz.zone_id as zone_id, zone.index_id, zone.name as zone_name, zone.status as zone_status, sncz.min_temperature, sncz.max_temperature
-        FROM schedule_night_climat_zone sncz
-        join zone on sncz.zone_id = zone.id
-        where zone.status = 1 order by zone.index_id;";
+        $query = "select * from schedule_night_climat_zone_view where zone_status = 1;";
         $zoneresults = $conn->query($query);
 } elseif ($time_id != 0) {
         $query = "SELECT * FROM schedule_daily_time WHERE id = {$time_id}";
