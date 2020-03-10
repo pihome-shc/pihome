@@ -74,6 +74,7 @@ if ($rowcount > 0) {
 $query = "SELECT * FROM boiler LIMIT 1";
 $result = $conn->query($query);
 $row = mysqli_fetch_array($result);
+$bcount=$result->num_rows;
 $fired_status = $row['fired_status'];
 $boiler_name = $row['name'];
 $boiler_max_operation_time = $row['max_operation_time'];
@@ -500,80 +501,81 @@ while ($row = mysqli_fetch_assoc($results)) {
 
 
 //BOILER BUTTON
+if ($bcount != 0) {
 
+	//query to get last boiler statues change time
+	$query = "SELECT * FROM boiler_logs ORDER BY id desc LIMIT 1 ";
+	$result = $conn->query($query);
+	$boiler_onoff = mysqli_fetch_array($result);
+	$boiler_last_off = $boiler_onoff['stop_datetime'];
 
-//query to get last boiler statues change time
-$query = "SELECT * FROM boiler_logs ORDER BY id desc LIMIT 1 ";
-$result = $conn->query($query);
-$boiler_onoff = mysqli_fetch_array($result);
-$boiler_last_off = $boiler_onoff['stop_datetime'];
-
-//check if hysteresis is passed its time or not
-$hysteresis='0';
-if (isset($boiler_last_off)){
-	$boiler_last_off = strtotime( $boiler_last_off );
-	$boiler_hysteresis_time = $boiler_last_off + ($boiler_hysteresis_time * 60);
-	$now=strtotime(date('Y-m-d H:i:s'));
-	if ($boiler_hysteresis_time > $now){$hysteresis='1';}
-} else {$hysteresis='0';
-}
-
-if ($fired_status=='1'){$boiler_colour="red";} elseif ($fired_status=='0'){$boiler_colour="blue";}
-echo '<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-toggle="modal" href="#boiler" data-backdrop="static" data-keyboard="false">
-		<h3 class="text-info"><small>'.$boiler_name.'</small></h3>
-		<h3 class="degre" ><i class="ionicons ion-flame fa-1x '.$boiler_colour.'"></i></h3>';
-if($boiler_fault=='1') {echo'<h3 class="status"><small class="statusdegree"></small><small style="margin-left: 70px;" class="statuszoon"><i class="fa ion-android-cancel fa-1x red"></i> </small>';}
-elseif($hysteresis=='1') {echo'<h3 class="status"><small class="statusdegree"></small><small style="margin-left: 70px;" class="statuszoon"><i class="fa fa-hourglass fa-1x orange"></i> </small>';}
-else { echo'<h3 class="status"><small class="statusdegree"></small><small style="margin-left: 48px;" class="statuszoon"></small>';}
-echo '</h3></button>';
-
-
-	//Boiler Last 5 Status Logs listing model
-	echo '<div class="modal fade" id="boiler" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-	<div class="modal-content">
-	<div class="modal-header">
-	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-	<h5 class="modal-title">'.$boiler_name.' - '.$lang['boiler_recent_logs'].'</h5>
-	</div>
-	<div class="modal-body">';
-  if ($boiler_fault == '1') {
-		$date_time = date('Y-m-d H:i:s');
-		$datetime1 = strtotime("$date_time");
-		$datetime2 = strtotime("$boiler_seen");
-		$interval  = abs($datetime2 - $datetime1);
-		$ctr_minutes   = round($interval / 60);
-		echo '
-			<ul class="chat">
-			<li class="left clearfix">
-				<div class="header">
-				<strong class="primary-font red">Boiler Fault!!!</strong>
-				<small class="pull-right text-muted">
-					<i class="fa fa-clock-o fa-fw"></i> '.secondsToWords(($ctr_minutes)*60).' ago
-				</small>
-				<br><br>
-				<p>Node ID '.$boiler_id.' last seen at '.$boiler_seen.' </p>
-				<p class="text-info">Heating system will resume its normal operation once this issue is fixed. </p>
-				</div>
-			</li>
-		</ul>';
-  }
-	$bquery = "select DATE_FORMAT(start_datetime, '%H:%i') as start_datetime, DATE_FORMAT(stop_datetime, '%H:%i') as stop_datetime , DATE_FORMAT(expected_end_date_time, '%H:%i') as expected_end_date_time, TIMESTAMPDIFF(MINUTE, start_datetime, stop_datetime) as on_minuts
-	from boiler_logs order by id desc limit 5";
-	$bresults = $conn->query($bquery);
-	if (mysqli_num_rows($bresults) == 0){
-		echo '<div class=\"list-group\"><a href="#" class="list-group-item"><i class="fa fa-exclamation-triangle red"></i>&nbsp;&nbsp;'.$lang['boiler_no_log'].'</a>';
-	} else {
-		echo '<p class="text-muted">'. mysqli_num_rows($bresults) .' '.$lang['boiler_last_records'].'</p>
-		<div class=\"list-group\">' ;
-		echo '<a href="#" class="list-group-item"> <i class="ionicons ion-flame fa-1x red"></i> Start &nbsp; - &nbsp;End <span class="pull-right text-muted"><em> '.$lang['boiler_on_minuts'].' </em></span></a>';
-		while ($brow = mysqli_fetch_assoc($bresults)) {
-			echo '<a href="#" class="list-group-item"> <i class="ionicons ion-flame fa-1x red"></i> '. $brow['start_datetime'].' - ' .$brow['stop_datetime'].' <span class="pull-right text-muted"><em> '.$brow['on_minuts'].'&nbsp;</em></span></a>';
-		}
+	//check if hysteresis is passed its time or not
+	$hysteresis='0';
+	if (isset($boiler_last_off)){
+		$boiler_last_off = strtotime( $boiler_last_off );
+		$boiler_hysteresis_time = $boiler_last_off + ($boiler_hysteresis_time * 60);
+		$now=strtotime(date('Y-m-d H:i:s'));
+		if ($boiler_hysteresis_time > $now){$hysteresis='1';}
+	} else {$hysteresis='0';
 	}
-	echo '</div>
-	</div><div class="modal-footer"><button type="button" class="btn btn-default btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
-	</div></div></div></div>';
+
+	if ($fired_status=='1'){$boiler_colour="red";} elseif ($fired_status=='0'){$boiler_colour="blue";}
+	echo '<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-toggle="modal" href="#boiler" data-backdrop="static" data-keyboard="false">
+			<h3 class="text-info"><small>'.$boiler_name.'</small></h3>
+			<h3 class="degre" ><i class="ionicons ion-flame fa-1x '.$boiler_colour.'"></i></h3>';
+	if($boiler_fault=='1') {echo'<h3 class="status"><small class="statusdegree"></small><small style="margin-left: 70px;" class="statuszoon"><i class="fa ion-android-cancel fa-1x red"></i> </small>';}
+	elseif($hysteresis=='1') {echo'<h3 class="status"><small class="statusdegree"></small><small style="margin-left: 70px;" class="statuszoon"><i class="fa fa-hourglass fa-1x orange"></i> </small>';}
+	else { echo'<h3 class="status"><small class="statusdegree"></small><small style="margin-left: 48px;" class="statuszoon"></small>';}
+	echo '</h3></button>';
+
+
+		//Boiler Last 5 Status Logs listing model
+		echo '<div class="modal fade" id="boiler" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	    <div class="modal-dialog">
+		<div class="modal-content">
+		<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+		<h5 class="modal-title">'.$boiler_name.' - '.$lang['boiler_recent_logs'].'</h5>
+		</div>
+		<div class="modal-body">';
+	  if ($boiler_fault == '1') {
+			$date_time = date('Y-m-d H:i:s');
+			$datetime1 = strtotime("$date_time");
+			$datetime2 = strtotime("$boiler_seen");
+			$interval  = abs($datetime2 - $datetime1);
+			$ctr_minutes   = round($interval / 60);
+			echo '
+				<ul class="chat">
+				<li class="left clearfix">
+					<div class="header">
+					<strong class="primary-font red">Boiler Fault!!!</strong>
+					<small class="pull-right text-muted">
+						<i class="fa fa-clock-o fa-fw"></i> '.secondsToWords(($ctr_minutes)*60).' ago
+					</small>
+					<br><br>
+					<p>Node ID '.$boiler_id.' last seen at '.$boiler_seen.' </p>
+					<p class="text-info">Heating system will resume its normal operation once this issue is fixed. </p>
+					</div>
+				</li>
+			</ul>';
+	  }
+		$bquery = "select DATE_FORMAT(start_datetime, '%H:%i') as start_datetime, DATE_FORMAT(stop_datetime, '%H:%i') as stop_datetime , DATE_FORMAT(expected_end_date_time, '%H:%i') as expected_end_date_time, TIMESTAMPDIFF(MINUTE, start_datetime, stop_datetime) as on_minuts
+		from boiler_logs order by id desc limit 5";
+		$bresults = $conn->query($bquery);
+		if (mysqli_num_rows($bresults) == 0){
+			echo '<div class=\"list-group\"><a href="#" class="list-group-item"><i class="fa fa-exclamation-triangle red"></i>&nbsp;&nbsp;'.$lang['boiler_no_log'].'</a>';
+		} else {
+			echo '<p class="text-muted">'. mysqli_num_rows($bresults) .' '.$lang['boiler_last_records'].'</p>
+			<div class=\"list-group\">' ;
+			echo '<a href="#" class="list-group-item"> <i class="ionicons ion-flame fa-1x red"></i> Start &nbsp; - &nbsp;End <span class="pull-right text-muted"><em> '.$lang['boiler_on_minuts'].' </em></span></a>';
+			while ($brow = mysqli_fetch_assoc($bresults)) {
+				echo '<a href="#" class="list-group-item"> <i class="ionicons ion-flame fa-1x red"></i> '. $brow['start_datetime'].' - ' .$brow['stop_datetime'].' <span class="pull-right text-muted"><em> '.$brow['on_minuts'].'&nbsp;</em></span></a>';
+			}
+		}
+		echo '</div>
+		</div><div class="modal-footer"><button type="button" class="btn btn-default btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
+		</div></div></div></div>';
+}
 ?>
 
 <!-- One touch buttons -->
