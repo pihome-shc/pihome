@@ -598,7 +598,7 @@ echo '<p class="text-muted">'.$lang['node_add_info_text'].'</p>
 	<div class="help-block with-errors"></div></div>
 		
 	<div class="form-group" class="control-label" id="add_devices_label" style="display:block"><label>'.$lang['node_child_id'].'</label> <small class="text-muted">'.$lang['node_child_id_info'].'</small>
-	<input class="form-control input-sm" type="text" id="nodes_max_child_id" name="nodes_max_child_id" value="" placeholder="'.$lang['node_max_child_id'].'">
+	<input class="form-control input-sm" type="text" id="nodes_max_child_id" name="nodes_max_child_id" value="0" placeholder="'.$lang['node_max_child_id'].'">
 	<div class="help-block with-errors"></div></div>
 
 </div>
