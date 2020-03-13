@@ -53,10 +53,10 @@ $("#ajaxModal").on("show.bs.modal", function(e) {
 				<div class="accordion" id="accordion">
     					<div class="panel">
                       	        		<ul class="nav nav-pills">
-							<button class="btn btn-default btn-circle btn-lg" href="#collapse_status" data-toggle="collapse" data-parent="#accordion" data-toggle="tooltip" title="<?php echo $lang['tooltip_1']; ?>"><i class="fa fa-tachometer orange"></i></button>
-							<button class="btn btn-default btn-circle btn-lg" href="#collapse_system" data-toggle="collapse" data-parent="#accordion" data-toggle="tooltip" title="<?php echo $lang['tooltip_2']; ?>"><i class="fa fa-cogs green"></i></button>
-							<button class="btn btn-default btn-circle btn-lg" href="#collapse_boiler" data-toggle="collapse" data-parent="#accordion" data-toggle="tooltip" title="<?php echo $lang['tooltip_3']; ?>"><i class="fa fa-fire red"></i></button>
-							<button class="btn btn-default btn-circle btn-lg" href="#collapse_nodes" data-toggle="collapse" data-parent="#accordion"" data-toggle="tooltip" title="<?php echo $lang['tooltip_4']; ?>"><i class="fa fa-sitemap blue"></i></button>
+							<button class="btn-lg btn-default btn-circle" href="#collapse_status" data-toggle="collapse" data-parent="#accordion" data-toggle="tooltip" title="<?php echo $lang['tooltip_1']; ?>"><i class="fa fa-tachometer orange"></i></button>
+							<button class="btn-lg btn-default btn-circle" href="#collapse_system" data-toggle="collapse" data-parent="#accordion" data-toggle="tooltip" title="<?php echo $lang['tooltip_2']; ?>"><i class="fa fa-cogs green"></i></button>
+							<button class="btn-lg btn-default btn-circle" href="#collapse_boiler" data-toggle="collapse" data-parent="#accordion" data-toggle="tooltip" title="<?php echo $lang['tooltip_3']; ?>"><i class="fa fa-fire red"></i></button>
+							<button class="btn-lg btn-default btn-circle" href="#collapse_nodes" data-toggle="collapse" data-parent="#accordion"" data-toggle="tooltip" title="<?php echo $lang['tooltip_4']; ?>"><i class="fa fa-sitemap blue"></i></button>
 							<br><br>
 						</ul>
 
