@@ -364,4 +364,13 @@ $lang['time_zone_text'] = "It is very importat to select your correct time zone 
 $lang['time_zone'] = "Time Zone";
 $lang['time_zone_text'] = "It is very importat to select your correct time zone otherwise you will have problem with your schedules";
 
+$lang['tooltip_1'] = "System Status Displays";
+$lang['tooltip_2'] = "System Configuration Menus";
+$lang['tooltip_3'] = "Boiler Configuration Menus";
+$lang['tooltip_4'] = "Node and Zone Configuation";
+$lang['system_status'] = "System Status";
+$lang['system_configuration'] = "System Configuration";
+$lang['boiler_configuration'] = "Boiler Configuation";
+$lang['node_zone_configuration'] = "Node and Zone Configuation";
+
 ?>
