@@ -376,7 +376,7 @@ if($what=="boiler_settings"){
 	$query = "SELECT * FROM nodes WHERE node_id ='".$node_id."' LIMIT 1";
 	$results = $conn->query($query);
 	$row = mysqli_fetch_assoc($results);
-	
+
 	//Check messages_out for Boiler Node ID
 	$query = "SELECT * FROM messages_out WHERE node_id='".$node_id."' LIMIT 1;";
 	$result = $conn->query($query);
@@ -386,8 +386,15 @@ if($what=="boiler_settings"){
 		$conn->query($query);
 	}
 
-	//Update Boiler Setting 
-	$query = "UPDATE boiler SET status = '".$status."', name = '".$name."', node_id = '".$row['id']."', node_child_id = '".$node_child_id."', hysteresis_time = '".$hysteresis_time."', max_operation_time = '".$max_operation_time."' where ID = 1;";
+	$query = "SELECT * FROM boiler LIMIT 1;";
+        $result = $conn->query($query);
+        if (mysqli_num_rows($result)==0){
+		//No record in boiler table, so add
+		$query = "INSERT INTO `boiler` VALUES (1,0,0,1,1,'".$name."','".$row['id']."','".$node_child_id."','".$hysteresis_time."','".$max_operation_time."',now());";
+	} else {
+		//Update Boiler Setting 
+		$query = "UPDATE boiler SET status = '".$status."', name = '".$name."', node_id = '".$row['id']."', node_child_id = '".$node_child_id."', hysteresis_time = '".$hysteresis_time."', max_operation_time = '".$max_operation_time."' where ID = 1;";
+	}
 	if($conn->query($query)){
 		header('Content-type: application/json');
 		echo json_encode(array('Success'=>'Success','Query'=>$query));

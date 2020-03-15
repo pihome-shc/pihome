@@ -373,4 +373,8 @@ $lang['system_configuration'] = "System Configuration";
 $lang['boiler_configuration'] = "Boiler Configuation";
 $lang['node_zone_configuration'] = "Node and Zone Configuation";
 
+$lang['boiler_no_nodes'] = "*** YOU NEED TO CONFIGURE A SUITABLE NODE FIRST ***";
+$lang['schedule_night_climate_time_success'] = "Night Climate Time Default Added Successfully.";
+$lang['schedule_night_climate_time_fail'] = "Night Climate Time Default failed with error: ";
+
 ?>

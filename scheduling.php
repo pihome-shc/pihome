@@ -73,29 +73,49 @@ if (isset($_POST['submit'])) {
 
         if(isset($_GET['nid'])) {
                 $sc_en = isset($_POST['sc_en']) ? $_POST['sc_en'] : "0";
-                $query = "UPDATE schedule_night_climate_time SET sync = '0', status = '{$sc_en}', start_time = '{$start_time}', end_time = '{$end_time}', WeekDays = '{$mask}' where id = 1;";
-                $timeresults = $conn->query($query);
-                if ($timeresults) {
-                        $message_success = "<p>".$lang['night_climate_time_success']."</p>";
-                        header("Refresh: 3; url=home.php");
-                } else {
-                        $error = "<p>".$lang['night_climate_error']."</p><p>".mysqli_error($conn). "</p>";
-                }
-
-                foreach($_POST['id'] as $id){
-                        $id = $_POST['id'][$id];
-                        $status = isset($_POST['status'][$id]) ? $_POST['status'][$id] : "0";
-                        //$status = $_POST['status'][$id];
-                        $min =TempToDB($conn,$_POST['min'][$id]);
-                        $max =TempToDB($conn,$_POST['max'][$id]);
-                        $query = "UPDATE schedule_night_climat_zone SET sync = '0', status='$status', min_temperature='".number_format(TempToDB($conn,$_POST['min_temp'][$id]),1)."', max_temperature='".number_format(TempToDB($conn,$_POST['max_temp'][$id]),1)."' WHERE id='$id'";
-                        $zoneresults = $conn->query($query);
-                        if ($zoneresults) {
-                                $message_success .= "<p>".$lang['night_climate_temp_success']."</p>";
+                $query = "SELECT * FROM schedule_night_climate_time;";
+                $result = $conn->query($query);
+                $nctcount = $result->num_rows;
+                if ($nctcount == 0) {
+                        $query = "INSERT INTO `schedule_night_climate_time` VALUES (1,1,0,'{$sc_en}','{$start_time}','{$end_time}','{$mask}');";
+                        $result = $conn->query($query);
+                        if ($result) {
+                                $message_success .= "<p>".$lang['night_climate_time_success']."</p>";
+				header("Refresh: 3; url=".$return_url);
                         } else {
-                                $error .= "<p>".$lang['night_climate_error']."</p><p>".mysqli_error($conn). "</p>";
+                                $error .= "<p>".$lang['night_climate_time_fail']."</p> <p>" .mysqli_error($conn). "</p>";
                         }
                 }
+		else {
+	                $query = "UPDATE schedule_night_climate_time SET sync = '0', status = '{$sc_en}', start_time = '{$start_time}', end_time = '{$end_time}', WeekDays = '{$mask}' where id = 1;";
+        	        $timeresults = $conn->query($query);
+                	if ($timeresults) {
+                        	$message_success = "<p>".$lang['night_climate_time_success']."</p>";
+	                        header("Refresh: 3; url=".$return_url);
+        	        } else {
+                	        $error = "<p>".$lang['night_climate_error']."</p><p>".mysqli_error($conn). "</p>";
+	                }
+		}
+                $query = "SELECT * FROM zone;";
+                $result = $conn->query($query);
+                $zcount = $result->num_rows;
+                if ($zcount != 0) {
+	                foreach($_POST['id'] as $id){
+        	                $id = $_POST['id'][$id];
+                	        $status = isset($_POST['status'][$id]) ? $_POST['status'][$id] : "0";
+                        	//$status = $_POST['status'][$id];
+	                        $min =TempToDB($conn,$_POST['min'][$id]);
+        	                $max =TempToDB($conn,$_POST['max'][$id]);
+                	        $query = "UPDATE schedule_night_climat_zone SET sync = '0', status='$status', min_temperature='".number_format(TempToDB($conn,$_POST['min_temp'][$id]),1)."', max_temperature='".number_format(TempToDB($conn,$_POST['max_temp'][$id]),1)."' WHERE id='$id'";
+                        	$zoneresults = $conn->query($query);
+	                        if ($zoneresults) {
+        	                        $message_success .= "<p>".$lang['night_climate_temp_success']."</p>";
+					header("Refresh: 3; url=".$return_url);
+                	        } else {
+                                $error .= "<p>".$lang['night_climate_error']."</p><p>".mysqli_error($conn). "</p>";
+                        	}
+                	}
+		}
         } else {
                 $sch_name = $_POST['sch_name'];
 		$query = "INSERT INTO schedule_daily_time(id, sync, status, start, end, WeekDays, sch_name) VALUES ('{$time_id}','0', '{$sc_en}', '{$start_time}','{$end_time}','{$mask}', '{$sch_name}') ON DUPLICATE KEY UPDATE sync = VALUES(sync),  status = VALUES(status), start = VALUES(start), end = VALUES(end), WeekDays = VALUES(WeekDays), sch_name=VALUES(sch_name);";
