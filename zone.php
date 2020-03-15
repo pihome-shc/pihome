@@ -154,6 +154,36 @@ if (isset($_POST['submit'])) {
 			$error .= "<p>".$lang['zone_night_climate_fail']."</p> <p>" .mysqli_error($conn). "</p>";
 		}
 	}
+	
+        $date_time = date('Y-m-d H:i:s');
+        //query to check if default away record exists
+        $query = "SELECT * FROM away LIMIT 1;";
+        $result = $conn->query($query);
+        $acount = $result->num_rows;
+        if ($acount == 0) {
+                $query = "INSERT INTO `away` VALUES (1,0,0,0,'{$date_time}','{$date_time}',40, 4);";
+                $result = $conn->query($query);
+                if ($result) {
+                        $message_success .= "<p>".$lang['away_success']."</p>";
+                } else {
+                        $error .= "<p>".$lang['away_fail']."</p> <p>" .mysqli_error($conn). "</p>";
+                }
+        }
+
+        //query to check if default holiday record exists
+        $query = "SELECT * FROM holidays LIMIT 1;";
+        $result = $conn->query($query);
+        $hcount = $result->num_rows;
+        if ($hcount == 0) {
+                $query = "INSERT INTO `holidays` VALUES (1,0,0,0,'{$date_time}','{$date_time}');";
+                $result = $conn->query($query);
+                if ($result) {
+                        $message_success .= "<p>".$lang['holidays_success']."</p>";
+                } else {
+                        $error .= "<p>".$lang['holidays_fail']."</p> <p>" .mysqli_error($conn). "</p>";
+                }
+        }
+
 	$message_success .= "<p>".$lang['do_not_refresh']."</p>";
 	header("Refresh: 10; url=home.php");
 	// After update on all required tables, set $id to mysqli_insert_id.
