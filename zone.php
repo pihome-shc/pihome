@@ -134,6 +134,18 @@ if (isset($_POST['submit'])) {
 	
 	//Add Zone to schedule_night_climat_zone table at same time
 	if ($id==0){
+		$query = "SELECT * FROM schedule_night_climate_time;";
+        	$result = $conn->query($query);
+		$nctcount = $result->num_rows;
+        	if ($nctcount == 0) {
+			$query = "INSERT INTO `schedule_night_climate_time` VALUES (1,1,0,0,'18:00:00','23:30:00',0);";
+		        $result = $conn->query($query);
+        		if ($result) {
+                		$message_success .= "<p>".$lang['schedule_night_climate_time_success']."</p>";
+        		} else {
+                		$error .= "<p>".$lang['schedule_night_climate_time_fail']."</p> <p>" .mysqli_error($conn). "</p>";
+        		}
+		}
 		$query = "INSERT INTO schedule_night_climat_zone (status, zone_id, schedule_night_climate_id, min_temperature, max_temperature) VALUES ('0', '{$zone_id}', '1', '18','21');";
 		$result = $conn->query($query);
 		if ($result) {
