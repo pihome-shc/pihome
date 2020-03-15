@@ -196,130 +196,162 @@ echo '
 //Boiler settings
 echo '
 <div class="modal fade" id="boiler" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title">'.$lang['boiler_settings'].'</h5>
-            </div>
-            <div class="modal-body">';
-$query = "SELECT * FROM boiler;";
-$results = $conn->query($query);
-$brow = mysqli_fetch_array($results);
-echo '<p class="text-muted">'.$lang['boiler_info_text'].'</p>';
+	<div class="modal-dialog">
+        	<div class="modal-content">
+            		<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                		<h5 class="modal-title">'.$lang['boiler_settings'].'</h5>
+            		</div>
+            		<div class="modal-body">';
+				$query = "SELECT * FROM nodes where name = 'Boiler Relay' OR name = 'Boiler Controller' OR name = 'GPIO Controller' OR name = 'I2C Controller';";
+				$result = $conn->query($query);
+				$ncount=mysqli_num_rows($result);
+				if ($ncount > 0){
+					$query = "SELECT * FROM boiler;";
+					$bresult = $conn->query($query);
+					$brow = mysqli_fetch_array($bresult);
+					echo '<p class="text-muted">'.$lang['boiler_info_text'].'</p>';
 
-echo '
-	<form data-toggle="validator" role="form" method="post" action="settings.php" id="form-join">
+					echo '
+					<form data-toggle="validator" role="form" method="post" action="settings.php" id="form-join">
 
-	<div class="form-group" class="control-label">
-	<div class="checkbox checkbox-default checkbox-circle">';
-	if ($brow['status'] == '1'){
-		echo '<input id="checkbox2" class="styled" type="checkbox" value="1" name="status" checked Disabled>';
-	}else {
-		echo '<input id="checkbox2" class="styled" type="checkbox" value="1" name="status" Disabled>';
-	}
-	echo '<label for="checkbox2"> '.$lang['boiler_enable'].'</label></div></div>
+					<div class="form-group" class="control-label">
+						<div class="checkbox checkbox-default checkbox-circle">';
+							if ($bresult and $brow['status'] == '1'){
+								echo '<input id="checkbox2" class="styled" type="checkbox" value="1" name="status" checked Disabled>';
+							}else {
+								echo '<input id="checkbox2" class="styled" type="checkbox" value="1" name="status" Disabled>';
+							}
+							echo '<label for="checkbox2"> '.$lang['boiler_enable'].'</label>
+						</div>
+					</div>
+					<!-- /.form-group -->
 
-	<div class="form-group" class="control-label"><label>'.$lang['boiler_name'].'</label>
-	<input class="form-control input-sm" type="text" id="name" name="name" value="'.$brow['name'].'" placeholder="Boiler Name to Display on Screen ">
-	<div class="help-block with-errors"></div></div>
+					<div class="form-group" class="control-label"><label>'.$lang['boiler_name'].'</label>
+						<input class="form-control input-sm" type="text" id="name" name="name" value="'.$brow['name'].'" placeholder="Boiler Name to Display on Screen ">
+						<div class="help-block with-errors">
+						</div>
+					</div>
+					<!-- /.form-group -->
 
-	<div class="form-group" class="control-label"><label>'.$lang['boiler_node_id'].'</label> <small class="text-muted">'.$lang['boiler_node_id_info'].'</small>
-	<select class="form-control input-sm" type="text" id="node_id" name="node_id" onchange=BoilerChildList(this.options[this.selectedIndex].value)>';
-	//get current node_id from nodes table 
-	$query = "SELECT * FROM nodes WHERE id ='".$brow['node_id']."' Limit 1;";
-	$result = $conn->query($query);
-	$row = mysqli_fetch_assoc($result);
-	$node_id=$row['node_id'];
-        $node_type=$row['type'];
-	$max_child_id=$row['max_child_id'];
+					<div class="form-group" class="control-label"><label>'.$lang['boiler_node_id'].'</label> <small class="text-muted">'.$lang['boiler_node_id_info'].'</small>
+						<select class="form-control input-sm" type="text" id="node_id" name="node_id" onchange=BoilerChildList(this.options[this.selectedIndex].value)>';
+						//get current node_id from nodes table 
+						if ($bresult) {
+							$query = "SELECT * FROM nodes WHERE id ='".$brow['node_id']."' Limit 1;";
+							$result = $conn->query($query);
+							$row = mysqli_fetch_assoc($result);
+							$node_id=$row['node_id'];
+					     	   	$node_type=$row['type'];
+							$max_child_id=$row['max_child_id'];
 
-	echo '<option value="'.$node_id.'" selected>'.$node_type.' - '.$node_id.'</option>';
-	echo "<option></option>";
-	//get list from nodes table to display 
-	$query = "SELECT * FROM nodes where name = 'Boiler Relay' OR name = 'Boiler Controller' OR name = 'GPIO Controller' OR name = 'I2C Controller';";
-	$result = $conn->query($query);
-	if ($result){
-		while ($nrow=mysqli_fetch_array($result)) {
-			echo '<option value="'.$nrow['max_child_id'].'">'.$nrow['type'].' - '.$nrow['node_id'].'</option>';
-		}
-	}
-	echo '</select>
-    <div class="help-block with-errors"></div></div>';
+							echo '<option value="'.$node_id.'" selected>'.$node_type.' - '.$node_id.'</option>';
+							echo "<option></option>";
+						}
+						//get list from nodes table to display 
+						$query = "SELECT * FROM nodes where name = 'Boiler Relay' OR name = 'Boiler Controller' OR name = 'GPIO Controller' OR name = 'I2C Controller';";
+						$result = $conn->query($query);
+						if ($result){
+							while ($nrow=mysqli_fetch_array($result)) {
+								echo '<option value="'.$nrow['max_child_id'].'">'.$nrow['type'].' - '.$nrow['node_id'].'</option>';
+							}
+						}
+						echo '</select>
+	    					<div class="help-block with-errors">
+						</div>
+					</div>
+					<!-- /.form-group -->
+					';
 
-	echo '
-	<input class="form-control input-sm" type="hidden" id="selected_node_id" name="selected_node_id" value="'.$node_id.'"/>
-        <input class="form-control input-sm" type="hidden" id="selected_node_type" name="selected_node_type" value="'.$node_type.'"/>
-        <input class="form-control input-sm" type="hidden" id="gpio_pin_list" name="gpio_pin_list" value="'.implode(",", array_filter(Get_GPIO_List())).'"/>
-	<div class="form-group" class="control-label"><label>'.$lang['boiler_node_child_id'].'</label> <small class="text-muted">'.$lang['boiler_relay_gpio_text'].'</small>
-	<select class="form-control input-sm" type="text" id="node_child_id" name="node_child_id">
-	<option selected>'.$brow['node_child_id'].'</option>';
-        $pos=strpos($node_type, "GPIO");
-        if($pos !== false) {
-                $gpio_list=Get_GPIO_List();
-                for ($x = 0; $x <= count(array_filter($gpio_list)) - 1; $x++) {
-                        echo "<option value=".$gpio_list[$x].">".$gpio_list[$x]."</option>";
-                }
-        } else {
-                for ($x = 1; $x <=  $max_child_id; $x++) {
-                        echo '<option value="'.$x.'">'.$x.'</option>';
-                }
-        }
-	echo '
-	</select>
-    <div class="help-block with-errors"></div></div>
-	
-	<div class="form-group" class="control-label"><label>'.$lang['boiler_hysteresis_time'].'</label> <small class="text-muted">'.$lang['boiler_hysteresis_time_info'].'</small>
-	<select class="form-control input-sm" type="text" id="hysteresis_time" name="hysteresis_time">
-	<option selected>'.$brow['hysteresis_time'].'</option>
-	<option value="0">0</option>
-	<option value="1">1</option>
-	<option value="2">2</option>
-	<option value="3">3</option>
-	<option value="4">4</option>
-	<option value="5">5</option>
-	<option value="6">6</option>
-	<option value="7">7</option>
-	<option value="8">8</option>
-	<option value="9">9</option>
-	<option value="10">10</option>
-	<option value="15">15</option>
-	</select>
-    <div class="help-block with-errors"></div></div>
+					echo '
+					<input class="form-control input-sm" type="hidden" id="selected_node_id" name="selected_node_id" value="'.$node_id.'"/>
+				        <input class="form-control input-sm" type="hidden" id="selected_node_type" name="selected_node_type" value="'.$node_type.'"/>
+			        	<input class="form-control input-sm" type="hidden" id="gpio_pin_list" name="gpio_pin_list" value="'.implode(",", array_filter(Get_GPIO_List())).'"/>
+					<div class="form-group" class="control-label"><label>'.$lang['boiler_node_child_id'].'</label> <small class="text-muted">'.$lang['boiler_relay_gpio_text'].'</small>
+						<select class="form-control input-sm" type="text" id="node_child_id" name="node_child_id">
+						<option selected>'.$brow['node_child_id'].'</option>';
+				        	$pos=strpos($node_type, "GPIO");
+					        if($pos !== false) {
+				        	        $gpio_list=Get_GPIO_List();
+				                	for ($x = 0; $x <= count(array_filter($gpio_list)) - 1; $x++) {
+                        					echo "<option value=".$gpio_list[$x].">".$gpio_list[$x]."</option>";
+					                }
+				        	} else {
+				                	for ($x = 1; $x <=  $max_child_id; $x++) {
+                        					echo '<option value="'.$x.'">'.$x.'</option>';
+					                }
+        					}
+						echo '
+						</select>
+	    					<div class="help-block with-errors">
+						</div>
+					</div>
+					<!-- /.form-group -->
 
-	<div class="form-group" class="control-label"><label>'.$lang['max_operation_time'].'</label> <small class="text-muted">'.$lang['max_operation_time_info'].'</small>
-	<select class="form-control input-sm" type="text" id="max_operation_time" name="max_operation_time">
-	<option selected>'.$brow['max_operation_time'].'</option>
-	<option value="30">30</option>
-	<option value="40">40</option>
-	<option value="45">45</option>
-	<option value="50">50</option>
-	<option value="55">55</option>
-	<option value="60">60</option>
-	<option value="65">65</option>
-	<option value="70">70</option>
-	<option value="80">80</option>
-	<option value="85">85</option>
-	<option value="90">90</option>
-	<option value="95">95</option>
-	<option value="100">100</option>
-	<option value="110">110</option>
-	<option value="120">120</option>
-	<option value="180">180</option>
-	</select>
-    <div class="help-block with-errors"></div></div>
+					<div class="form-group" class="control-label"><label>'.$lang['boiler_hysteresis_time'].'</label> <small class="text-muted">'.$lang['boiler_hysteresis_time_info'].'</small>
+						<select class="form-control input-sm" type="text" id="hysteresis_time" name="hysteresis_time">
+						<option selected>'.$brow['hysteresis_time'].'</option>
+						<option value="0">0</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7">7</option>
+						<option value="8">8</option>
+						<option value="9">9</option>
+						<option value="10">10</option>
+						<option value="15">15</option>
+						</select>
+					    	<div class="help-block with-errors">
+						</div>
+					</div>
+					<!-- /.form-group -->
 
-	';
+					<div class="form-group" class="control-label"><label>'.$lang['max_operation_time'].'</label> <small class="text-muted">'.$lang['max_operation_time_info'].'</small>
+						<select class="form-control input-sm" type="text" id="max_operation_time" name="max_operation_time">
+						<option selected>'.$brow['max_operation_time'].'</option>
+						<option value="30">30</option>
+						<option value="40">40</option>
+						<option value="45">45</option>
+						<option value="50">50</option>
+						<option value="55">55</option>
+						<option value="60">60</option>
+						<option value="65">65</option>
+						<option value="70">70</option>
+						<option value="80">80</option>
+						<option value="85">85</option>
+						<option value="90">90</option>
+						<option value="95">95</option>
+						<option value="100">100</option>
+						<option value="110">110</option>
+						<option value="120">120</option>
+						<option value="180">180</option>
+						</select>
+	    					<div class="help-block with-errors">
+						</div>
+					</div>
+					<!-- /.form-group -->
+					';
+				} else {
+					echo '<p class="text-muted">'.$lang['boiler_no_nodes'].'</p>';
+				}
+			echo '</div>
+			<!-- /.modal-body -->
+        	   	<div class="modal-footer">
+				<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>';
+				if ($ncount > 0) { echo '<input type="button" name="submit" value="Save" class="btn btn-default login btn-sm" onclick="boiler_settings()">'; }
 
-	echo '</div>
-            <div class="modal-footer">
-				<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
-				<input type="button" name="submit" value="Save" class="btn btn-default login btn-sm" onclick="boiler_settings()">
-				
-            </div>
-        </div>
-    </div>
-</div>';
+            		echo '</div>
+			<!-- /.modal-footer -->
+        	</div>
+		<!-- /.modal-content -->
+	</div>
+	<!-- /.modal-dialog -->
+</div>
+<!-- /.modal fade -->
+';
 
 //boost model
 echo '
