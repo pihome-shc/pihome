@@ -514,7 +514,14 @@ if($what=="setup_piconnect"){
 	$api_key = $_GET['api_key'];
 	$status = $_GET['status'];
 	if ($status=='true'){$status = '1';}else {$status = '0';}
-	$query = "UPDATE piconnect SET status = '".$status."', api_key = '".$api_key."';";
+        $query = "SELECT * FROM piconnect LIMIT 1;";
+        $result = $conn->query($query);
+        if (mysqli_num_rows($result)==0){
+                //No record in frost_protction table, so add
+                $query = "INSERT INTO piconnect VALUES(1, '".$status."', 'http', 'www.pihome.eu', '/piconnect/mypihome.php', '".$api_key."');";
+        } else {
+                $query = "UPDATE piconnect SET status = '".$status."', api_key = '".$api_key."';";
+        }
 	if($conn->query($query)){
 		header('Content-type: application/json');
 		echo json_encode(array('Success'=>'Success','Query'=>$query));
