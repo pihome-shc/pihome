@@ -80,7 +80,14 @@ if ($row['openweather_api'] != NULL){
 			$conn->query($query);
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Database Updated \n"; 
 			//update weather table
-			$query = "update weather SET sync = '0', location = '{$location}', c = '{$weather_c}', wind_speed = '{$wind_speed}', title = '{$title}', description = '{$description}', sunrise = '{$sunrise}', sunset = '{$sunset}', img = '{$icon}' WHERE id = '1' LIMIT 1";
+                        $query = "SELECT * FROM weather";
+                        $result = $conn->query($query);
+                        $wcount = $result->num_rows;
+                        if ($wcount == 0) {
+        			$query = "INSERT INTO weather VALUES(1, 0, '{$location}', '{$weather_c}', '{$wind_speed}', '{$title}', '{$description}', '{$sunrise}', '{$sunset}', '{$icon}', '{$date_time}');";
+                        } else {
+				$query = "update weather SET sync = '0', location = '{$location}', c = '{$weather_c}', wind_speed = '{$wind_speed}', title = '{$title}', description = '{$description}', sunrise = '{$sunrise}', sunset = '{$sunset}', img = '{$icon}' WHERE id = '1' LIMIT 1";
+			}	
 			$conn->query($query);
 		}else {
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m  -Current Weather data was not downloaded \n"; 
