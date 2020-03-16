@@ -308,17 +308,25 @@ if($what=="away"){
 //update frost temperature
 if($what=="frost"){
 	if($opp=="update"){
+		$datetime = date("Y-m-d H:i:s");
 		$temp=TempToDB($conn,$_GET['frost_temp']);
-        $query = "UPDATE frost_protection SET temperature = '" . number_format($temp,1) . "', sync = 0 LIMIT 1";
-        if($conn->query($query)){
-            header('Content-type: application/json');
-            echo json_encode(array('Success'=>'Success','Query'=>$query));
-            return;
-        }else{
-            header('Content-type: application/json');
-            echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
-            return;
-        }
+                $query = "SELECT * FROM frost_protection LIMIT 1;";
+                $result = $conn->query($query);
+                if (mysqli_num_rows($result)==0){
+                        //No record in frost_protction table, so add
+                        $query = "INSERT INTO frost_protection VALUES(1, 0, 0, '{$datetime}', '" . number_format($temp,1) . "');";
+                } else {
+                        $query = "UPDATE frost_protection SET datetime = '{$datetime}', temperature = '" . number_format($temp,1) . "', sync = 0 LIMIT 1";
+                }
+        	if($conn->query($query)){
+            		header('Content-type: application/json');
+            		echo json_encode(array('Success'=>'Success','Query'=>$query));
+            		return;
+        	}else{
+            		header('Content-type: application/json');
+            		echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+            		return;
+        	}
 	}
 }
 
@@ -506,7 +514,14 @@ if($what=="setup_piconnect"){
 	$api_key = $_GET['api_key'];
 	$status = $_GET['status'];
 	if ($status=='true'){$status = '1';}else {$status = '0';}
-	$query = "UPDATE piconnect SET status = '".$status."', api_key = '".$api_key."';";
+        $query = "SELECT * FROM piconnect LIMIT 1;";
+        $result = $conn->query($query);
+        if (mysqli_num_rows($result)==0){
+                //No record in frost_protction table, so add
+                $query = "INSERT INTO piconnect VALUES(1, '".$status."', 'http', 'www.pihome.eu', '/piconnect/mypihome.php', '".$api_key."');";
+        } else {
+                $query = "UPDATE piconnect SET status = '".$status."', api_key = '".$api_key."';";
+        }
 	if($conn->query($query)){
 		header('Content-type: application/json');
 		echo json_encode(array('Success'=>'Success','Query'=>$query));
@@ -644,31 +659,22 @@ if($what=="setup_email"){
 	if (mysqli_num_rows($result)==0){
 		//Inset New Record
 		$query = "INSERT INTO email (`sync`, `purge`, smtp, username, password, `from`, `to`, status) VALUES (0, 0, '".$e_smtp."', '".$e_username."', '".$e_password."', '".$e_from_address."', '".$e_to_address."', '".$status."');";
-		if($conn->query($query)){
-			header('Content-type: application/json');
-			echo json_encode(array('Success'=>'Success','Query'=>$query));
-			return;
-		}else{
-			header('Content-type: application/json');
-			echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
-			return;
-		}
 	} else {
 		//Update Exiting Record
 		$row = mysqli_fetch_assoc($result);
 		$e_id= $row['id'];
 		$query = "Update email SET smtp = '".$e_smtp."', username = '".$e_username."', password = '".$e_password."', `from` = '".$e_from_address."', `to` = '".$e_to_address."', status = '".$status."' where ID = '".$e_id."';";
-		if($conn->query($query)){
-			header('Content-type: application/json');
-			echo json_encode(array('Success'=>'Success','Query'=>$query));
-			return;
-		}else{
-			header('Content-type: application/json');
-			echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
-			return;
-		}
-	
 	}
+	if($conn->query($query)){
+		header('Content-type: application/json');
+		echo json_encode(array('Success'=>'Success','Query'=>$query));
+		return;
+	}else{
+		header('Content-type: application/json');
+		echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+		return;
+	}
+
 }
 
 //Setup Graph Setting
