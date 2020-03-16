@@ -69,8 +69,15 @@ if ($rowcount > 0) {
 //query to get frost protection temperature
 $query = "SELECT * FROM frost_protection ORDER BY id desc LIMIT 1;";
 $result = $conn->query($query);
-$frost_q = mysqli_fetch_array($result);
-$frost_c = $frost_q['temperature'];
+if (mysqli_num_rows($result)==0){
+        //No record in frost_protction table, so add
+        $frost_c = 5;
+        $query = "INSERT INTO frost_protection VALUES(1, 0, 0, '{$date_time}', '" . number_format($frost_c,1) . "');";
+        $conn->query($query);
+} else {
+	$frost_q = mysqli_fetch_array($result);
+	$frost_c = $frost_q['temperature'];
+}
 
 //query to get last boiler statues change time
 $query = "SELECT * FROM boiler_logs ORDER BY id desc LIMIT 1;";
