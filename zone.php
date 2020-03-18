@@ -22,6 +22,9 @@ require_once(__DIR__.'/st_inc/session.php');
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
+
+$date_time = date('Y-m-d H:i:s');
+
 if(isset($_GET['id'])) {
 	$id = $_GET['id'];
 } else {
@@ -71,7 +74,7 @@ if (isset($_POST['submit'])) {
 	}
 	
     //Add or Edit Zone record to Zone Table 
-		$query = "INSERT INTO zone (id, status, index_id, name, type, max_c, max_operation_time, hysteresis_time, sp_deadband, sensor_id, sensor_child_id, controler_id, controler_child_id, boiler_id) VALUES ('{$id}', '{$zone_status}', '{$index_id}', '{$name}', '{$type}', '{$max_c}', '{$max_operation_time}', '{$hysteresis_time}', '{$sp_deadband}', '{$sensor_id}', '{$sensor_child_id}', '{$controler_id}', '{$controler_child_id}', '{$boiler_id}') ON DUPLICATE KEY UPDATE status=VALUES(status), index_id=VALUES(index_id), name=VALUES(name), type=VALUES(type), max_c=VALUES(max_c), max_operation_time=VALUES(max_operation_time), hysteresis_time=VALUES(hysteresis_time), sp_deadband=VALUES(sp_deadband), sensor_id=VALUES(sensor_id), sensor_child_id=VALUES(sensor_child_id), controler_id=VALUES(controler_id), controler_child_id=VALUES(controler_child_id), boiler_id=VALUES(boiler_id);";
+		$query = "INSERT INTO `zone` (`id`, `sync`, `purge`, `status`, `index_id`, `name`, `type`, `model`, `graph_it`, `max_c`, `max_operation_time`, `hysteresis_time`, `sp_deadband`, `sensor_id`, `sensor_child_id`, `controler_id`, `controler_child_id`, `boiler_id`) VALUES ('{$id}', '0', '0', '{$zone_status}', '{$index_id}', '{$name}', '{$type}', 'NULL', '1', '{$max_c}', '{$max_operation_time}', '{$hysteresis_time}', '{$sp_deadband}', '{$sensor_id}', '{$sensor_child_id}', '{$controler_id}', '{$controler_child_id}', '{$boiler_id}') ON DUPLICATE KEY UPDATE status=VALUES(status), index_id=VALUES(index_id), name=VALUES(name), type=VALUES(type), max_c=VALUES(max_c), max_operation_time=VALUES(max_operation_time), hysteresis_time=VALUES(hysteresis_time), sp_deadband=VALUES(sp_deadband), sensor_id=VALUES(sensor_id), sensor_child_id=VALUES(sensor_child_id), controler_id=VALUES(controler_id), controler_child_id=VALUES(controler_child_id), boiler_id=VALUES(boiler_id);";
 		$result = $conn->query($query);
 		$zone_id = mysqli_insert_id($conn);
 		if ($result) {
@@ -86,7 +89,8 @@ if (isset($_POST['submit'])) {
 	if ($result) {
 		//Add Zone to message out table at same time to send out instructions to controller for each zone.
 		if ($node_id !=0 OR $node_id !='0'){
-			$query = "INSERT INTO messages_out (node_id, child_id, sub_type, ack, type, payload, sent, zone_id) VALUES ('{$controler}','{$controler_child_id}', '1', '1', '2', '0', '0', '{$zone_id}');";
+			$query = "INSERT INTO `messages_out` (`sync`, `purge`, `node_id`, `child_id`, `sub_type`, `ack`, `type`, `payload`, `sent`, `datetime`, `zone_id`) VALUES ('0', '0', '{$controler}','{$controler_child_id}', '1', '1', '2', '0', '0', '{$date_time}', '{$zone_id}');";
+			$result = $conn->query($query);
 			$result = $conn->query($query);
 			if ($result) {
 				$message_success .= "<p>".$lang['zone_controler_success']."</p>";
@@ -99,7 +103,7 @@ if (isset($_POST['submit'])) {
 	//If boost button console isnt installed and editing existing zone, then no need to add this to message_out
 	if ($boost_button_id != 0 && $id==0){
 		//Add Zone Boost Button Console to messageout table at same time
-		$query = "INSERT INTO messages_out (node_id, child_id, sub_type, ack, type, payload, sent, zone_id)VALUES ('{$boost_button_id}','{$boost_button_child_id}', '2', '0', '0', '2', '1', '{$zone_id}');";
+		$query = "INSERT INTO `messages_out` (`sync`, `purge`, `node_id`, `child_id`, `sub_type`, `ack`, `type`, `payload`, `sent`,  `datetime`, `zone_id`) VALUES ('0', '0', '{$boost_button_id}','{$boost_button_child_id}', '2', '0', '0', '2', '1', '{$date_time}', '{$zone_id}');";
 		$result = $conn->query($query);
 		if ($result) {
 			$message_success .= "<p>".$lang['zone_button_success']."</p>";
@@ -110,7 +114,7 @@ if (isset($_POST['submit'])) {
 	
 	//Add Zone to boost table at same time
 	if ($id==0){
-		$query = "INSERT INTO boost (status, zone_id, temperature, minute, boost_button_id, boost_button_child_id)VALUES ('0', '{$zone_id}','{$max_c}','{$max_operation_time}', '{$boost_button_id}', '{$boost_button_child_id}');";
+		$query = "INSERT INTO `boost`(`sync`, `purge`, `status`, `zone_id`, `time`, `temperature`, `minute`, `boost_button_id`, `boost_button_child_id`) VALUES ('0', '0', '0', '{$zone_id}', '{$date_time}', '{$max_c}','{$max_operation_time}', '{$boost_button_id}', '{$boost_button_child_id}');";
 		$result = $conn->query($query);
 		if ($result) {
 			$message_success .= "<p>".$lang['zone_boost_success']."</p>";
@@ -121,7 +125,7 @@ if (isset($_POST['submit'])) {
 	
 	//Add or Edit Zone to override table at same time
 	if ($id==0){
-		$query = "INSERT INTO override (status, zone_id, temperature) VALUES ('0', '{$zone_id}','{$max_c}');";
+		$query = "INSERT INTO `override`(`sync`, `purge`, `status`, `zone_id`, `time`, `temperature`) VALUES ('0', '0', '0', '{$zone_id}', '{$date_time}', '{$max_c}');";
 	} else {
 		$query = "UPDATE override SET temperature='{$max_c}' WHERE zone_id='{$zone_id}';";
 	}
@@ -146,7 +150,7 @@ if (isset($_POST['submit'])) {
                 		$error .= "<p>".$lang['schedule_night_climate_time_fail']."</p> <p>" .mysqli_error($conn). "</p>";
         		}
 		}
-		$query = "INSERT INTO schedule_night_climat_zone (status, zone_id, schedule_night_climate_id, min_temperature, max_temperature) VALUES ('0', '{$zone_id}', '1', '18','21');";
+		$query = "INSERT INTO `schedule_night_climat_zone` (`sync`, `purge`, `status`, `zone_id`, `schedule_night_climate_id`, `min_temperature`, `max_temperature`) VALUES ('0', '0', '0', '{$zone_id}', '1', '18','21');";
 		$result = $conn->query($query);
 		if ($result) {
 			$message_success .= "<p>".$lang['zone_night_climate_success']."</p>";
