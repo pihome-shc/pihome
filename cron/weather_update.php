@@ -76,7 +76,7 @@ if ($row['openweather_api'] != NULL){
 		if ($weather_c != -272){
 			$time=date('H:i');
 			$date=date('y-m-d');
-			$query = "INSERT INTO messages_in (node_id, child_id, payload) VALUES ('1', '0', '{$weather_c}')";
+			$query = "INSERT INTO messages_in (`sync`, `purge`, `node_id`, `child_id`, `sub_type`, `payload`, `datetime`) VALUES ('0', '0', '1', '0','0', '{$weather_c}', '{$date_time}')";
 			$conn->query($query);
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Database Updated \n"; 
 			//update weather table
