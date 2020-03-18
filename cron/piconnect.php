@@ -943,7 +943,7 @@ if ($status == "1"){
 							echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Schedul Time Sync Updated in Local Database \n";
 						}elseif ($purge == '1' && $id == '0'){
 							// Add schedule_daily_time record and set to sync 0
-							$query = "INSERT INTO schedule_daily_time (status, start, end, WeekDays) VALUES ('{$status}', '{$start}', '{$end}', '{$WeekDays}');";
+							$query = "INSERT INTO schedule_daily_time (sync, purge, status, start, end, WeekDays, sch_name) VALUES ('{$sync}', '{$purge}', '{$status}', '{$start}', '{$end}', '{$WeekDays}''{$sch_name}', );";
 							$result = $conn->query($query);
 						}
 						echo $line;
@@ -1059,7 +1059,7 @@ if ($status == "1"){
 						echo "\033[1;33m WeekDays:\033[0m             \033[1;32m".$WeekDays."\033[0m \n";
 						if ($id == '0' && $purge == '1' && $sync == '0' ){
 							// Add schedule_daily_time record and set to sync 0
-							$query = "INSERT INTO schedule_daily_time (sync, `purge`, status, start, end, WeekDays) VALUES ('0', '0', '{$status}', '{$start}', '{$end}', '{$WeekDays}');";
+							$query = "INSERT INTO schedule_daily_time (sync, `purge`, status, start, end, WeekDays, sch_name) VALUES ('0', '0', '{$status}', '{$start}', '{$end}', '{$WeekDays}'', '{$sch_name}');";
 							$result = $conn->query($query);
 							echo mysqli_error($conn)."\n";
 							$schedule_daily_time_id = mysqli_insert_id($conn);
@@ -1077,7 +1077,7 @@ if ($status == "1"){
 						echo "\033[1;33m Schedule Time ID:\033[0m     \033[1;32m".$schedule_daily_time_id."\033[0m \n";
 						echo "\033[1;33m Temperature:\033[0m          \033[1;32m".$temperature."\033[0m \n";
 						echo "\033[1;33m Zone ID:\033[0m              \033[1;32m".$zone_id."\033[0m \n";
-						$query = "INSERT INTO schedule_daily_time_zone(sync, `purge`, status, schedule_daily_time_id, zone_id, temperature) VALUES ('0', '0', '{$status}', '{$schedule_daily_time_id}','{$zone_id}','{$temperature}')"; 
+						$query = "INSERT INTO schedule_daily_time_zone(sync, `purge`, status, schedule_daily_time_id, zone_id, temperature, holidays_id, coop) VALUES ('0', '0', '{$status}', '{$schedule_daily_time_id}','{$zone_id}','{$temperature}')";  
 						$results = $conn->query($query);
 						echo mysqli_error($conn)."\n";
 						echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - New Schedule Zone Data From PiConnect added to Database. \n";
@@ -1337,7 +1337,7 @@ if ($status == "1"){
 							echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Night Climate Time Data Updated in Local Database \n";
 						}else {
 							//Inset into schedule_daily_time table 
-							$query = "INSERT INTO schedule_night_climate_time (sync, status, start_time, end_time) VALUES ('1', '{$status}', '{$start_time}', '{$end_time}') where id = '{$id}';";
+							$query = "INSERT INTO schedule_night_climate_time (sync, purge, status, start_time, end_time, WeekDays) VALUES ('1', '{$status}', '{$start_time}', '{$end_time}', '{$WeekDays}') where id = '{$id}';";
 							$results = $conn->query($query);
 							echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Night Climate Time Data Pull from PiConnect Finished. \n";
 							echo $line;

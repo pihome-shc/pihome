@@ -43,6 +43,8 @@ dbuser = config.get('db', 'dbusername')
 dbpass = config.get('db', 'dbpassword')
 dbname = config.get('db', 'dbname')
 
+null_value = None
+
 print bc.dtm + time.ctime() + bc.ENDC + ' - DS18B20 Temperature Sensors Script Started'
 print "-" * 68
 
@@ -58,14 +60,14 @@ def insertDB(IDs, temperature):
 			row = int(row[0])
 			if (row == 0):
 				print bc.dtm + time.ctime() + bc.ENDC + ' - New DS18B20 Sensors Discovered' + bc.grn, IDs[i], bc.ENDC 
-				cur.execute('INSERT INTO nodes (node_id, max_child_id, name, last_seen, ms_version) VALUES(%s,%s,%s,%s,%s)', (IDs[i], '0', 'Temperature Sensor', time.strftime("%Y-%m-%d %H:%M:%S"), '0'))
+				cur.execute('INSERT INTO nodes(`sync`, `purge`, `type`, `node_id`, `max_child_id`, `name`, `last_seen`, `notice_interval`, `min_voltage`, `status`, `ms_version`, `sketch_version`, `repeater`) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', (0, 0, null_value, IDs[i], '0', 'Temperature Sensor', time.strftime("%Y-%m-%d %H:%M:%S"), 0, null_value, 'Active', null_value, null_value, null_value))
 				con.commit()
 			#If DS18B20 Sensor record exist: Update Nodes Table with Last seen status. 
 			if (row == 1):
 				cur.execute('UPDATE `nodes` SET `last_seen`=now() WHERE node_id = %s', [IDs[i]])
 				con.commit()
 			print bc.dtm + time.ctime() + bc.ENDC + ' - Sensors ID' + bc.grn, IDs[i], bc.ENDC + 'Temperature' + bc.grn, temperature[i], bc.ENDC
-			cur.execute('INSERT INTO messages_in(node_id, child_id, sub_type, payload, datetime) VALUES(%s, %s, %s, %s, %s)', (IDs[i], '0', '0', round(temperature[i],2), time.strftime("%Y-%m-%d %H:%M:%S")))
+			cur.execute('INSERT INTO messages_in(`sync`, `purge`, `node_id`, `child_id`, `sub_type`, `payload`, `datetime`) VALUES(%s,%s,%s,%s,%s,%s,%s)', (0, 0, IDs[i], 0, 0, round(temperature[i],2), time.strftime("%Y-%m-%d %H:%M:%S")))
 			con.commit()
 		con.close()
 	except mdb.Error, e:
