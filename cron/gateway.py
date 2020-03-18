@@ -44,6 +44,7 @@ logging.basicConfig( filename=logfile,
                      level=logging.DEBUG,
                      format= ('\n### %(asctime)s - %(levelname)s ###')
                    )
+null_value = None
 
 try:
 	# Initialise the database access variables
@@ -183,7 +184,8 @@ try:
 					if (row == 0):
 						if dbgLevel >= 2 and dbgMsgIn == 1:
 							print "1: Adding Node ID:",node_id, "MySensors Version:", payload
-						cur.execute('INSERT INTO nodes(type, node_id, status, ms_version) VALUES(%s, %s, %s, %s)', ('MySensor', node_id, 'Active', payload))
+						timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+						cur.execute('INSERT INTO `nodes`(`sync`, `purge`, `type`, `node_id`, `max_child_id`, `name`, `last_seen`, `notice_interval`, `min_voltage`, `status`, `ms_version`, `sketch_version`, `repeater`) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', (0, 0, 'MySensor', node_id, 0, null_value, timestamp, 0, 0, 'Active', payload, null_value, 0))
 						con.commit()
 					else:
 						if dbgLevel >= 2 and dbgMsgIn == 1:
@@ -201,7 +203,8 @@ try:
 					if (row == 0):
 						if dbgLevel >= 2 and dbgMsgIn == 1:
 							print "1-B: Adding Node ID:",node_id, "MySensors Version:", payload
-						cur.execute('INSERT INTO nodes(type, node_id, repeater, ms_version) VALUES(%s, %s, %s, %s)', ('MySensor', node_id, '1', payload))
+						timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+						cur.execute('INSERT INTO nodes(`sync`, `purge`, `type`, `node_id`, `max_child_id`, `name`, `last_seen`, `notice_interval`, `min_voltage`, `status`, `ms_version`, `sketch_version`, `repeater`) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', (0, 0, 'MySensor', node_id, 0, null_value, timestamp, 0, 0, 'Active', payload, null_value, 1))
 						con.commit()
 					else:
 						if dbgLevel >= 2 and dbgMsgIn == 1:
@@ -239,7 +242,8 @@ try:
 				if (node_id != 0 and child_sensor_id != 255 and message_type == 1 and sub_type == 0):
 					if dbgLevel >= 2 and dbgMsgIn == 1:
 						print "5: Adding Temperature Reading From Node ID:", node_id, " Child Sensor ID:", child_sensor_id, " PayLoad:", payload
-					cur.execute('INSERT INTO messages_in(node_id, child_id, sub_type, payload) VALUES(%s,%s,%s,%s)', (node_id,child_sensor_id,sub_type,payload))
+					timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+					cur.execute('INSERT INTO messages_in(`sync`, `purge`, `node_id`, `child_id`, `sub_type`, `payload`, `datetime`) VALUES(%s,%s,%s,%s,%s,%s,%s)', (0,0,node_id,child_sensor_id,sub_type,payload,timestamp))
 					con.commit()
 					cur.execute('UPDATE `nodes` SET `last_seen`=now(), `sync`=0  WHERE node_id = %s', [node_id])
 					con.commit()
@@ -251,7 +255,8 @@ try:
 					if dbgLevel >= 2 and dbgMsgIn == 1:
 						print "6: Battery Voltage for Node ID:", node_id, " Battery Voltage:", payload
 					##b_volt = payload # dont add record to table insted add record with battery voltage and level in next step
-					cur.execute('INSERT INTO nodes_battery(node_id, bat_voltage) VALUES(%s,%s)', (node_id,payload))
+					timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+					cur.execute('INSERT INTO nodes_battery(`sync`, `purge`, `node_id`, `bat_voltage`, `update`) VALUES(%s,%s,%s,%s,%s)', (0,0,node_id,payload,timestamp))
 					##cur.execute('UPDATE `nodes` SET `last_seen`=now() WHERE node_id = %s', [node_id])
 					con.commit()
 
