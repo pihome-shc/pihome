@@ -29,7 +29,7 @@ echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - System Temperature: ". $system_c
 if ($system_c == 0) {
 	//do nothing
 }else {
-	$query = "INSERT INTO messages_in (node_id, child_id, payload) VALUES ('0', '0', '{$system_c}')";
+	$query = "INSERT INTO messages_in (`sync`, `purge`, `node_id`, `child_id`, `sub_type`, `payload`, `datetime`) VALUES ('0', '0', '0', '0','0', '{$system_c}', '{$date_time}')";
 	$conn->query($query);
 }
 if(isset($conn)) { $conn->close();} 
