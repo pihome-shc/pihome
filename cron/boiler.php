@@ -420,7 +420,7 @@ if (in_array("1", $boiler)) {
 	//Update Boiler Status 
 	if ($boiler_fire_status != $new_boiler_status){
 		//insert date and time into boiler log table so we can record boiler start date and time.
-		$bsquery = "INSERT INTO `boiler_logs`(`sync`, `purge`, `start_datetime`, `start_cause`, `stop_datetime`, `stop_cause`, `expected_end_date_time`) VALUES ('0', '0', '{$date_time}', '{$start_cause}','', '', '{$expected_end_date_time}');";
+		$bsquery = "INSERT INTO `boiler_logs`(`sync`, `purge`, `start_datetime`, `start_cause`, `stop_datetime`, `stop_cause`, `expected_end_date_time`) VALUES ('0', '0', '{$date_time}', '{$start_cause}', NULL, NULL,'{$expected_end_date_time}');";
 		$result = $conn->query($bsquery);
 		$boiler_log_id = mysqli_insert_id($conn);
 
