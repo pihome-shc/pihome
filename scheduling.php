@@ -118,7 +118,7 @@ if (isset($_POST['submit'])) {
 		}
         } else {
                 $sch_name = $_POST['sch_name'];
-		$query = "INSERT INTO schedule_daily_time(id, sync, status, start, end, WeekDays, sch_name) VALUES ('{$time_id}','0', '{$sc_en}', '{$start_time}','{$end_time}','{$mask}', '{$sch_name}') ON DUPLICATE KEY UPDATE sync = VALUES(sync),  status = VALUES(status), start = VALUES(start), end = VALUES(end), WeekDays = VALUES(WeekDays), sch_name=VALUES(sch_name);";
+		$query = "INSERT INTO `schedule_daily_time`(`id`, `sync`, `purge`, `status`, `start`, `end`, `WeekDays`, `sch_name`) VALUES ('{$time_id}','0', '0', '{$sc_en}', '{$start_time}','{$end_time}','{$mask}', '{$sch_name}') ON DUPLICATE KEY UPDATE sync = VALUES(sync),  status = VALUES(status), start = VALUES(start), end = VALUES(end), WeekDays = VALUES(WeekDays), sch_name=VALUES(sch_name);";
 		$result = $conn->query($query);
 		$schedule_daily_time_id = mysqli_insert_id($conn);
 
@@ -143,7 +143,7 @@ if (isset($_POST['submit'])) {
 			$coop = isset($_POST['coop'][$id]) ? $_POST['coop'][$id] : "0";
 			$temp=TempToDB($conn,$_POST['temp'][$id]);
 
-			$query = "INSERT INTO schedule_daily_time_zone(id, sync, `status`, schedule_daily_time_id, zone_id, temperature, holidays_id, coop) VALUES ('{$tzid}', '0', '{$status}', '{$schedule_daily_time_id}','{$zoneid}','".number_format($temp,1)."',{$holidays_id},{$coop}) ON DUPLICATE KEY UPDATE sync = VALUES(sync), status = VALUES(status), temperature = VALUES(temperature), coop = VALUES(coop);";
+			$query = "INSERT INTO `schedule_daily_time_zone`(`id`, `sync`, `purge`, `status`, `schedule_daily_time_id`, `zone_id`, `temperature`, `holidays_id`, `coop`) VALUES ('{$tzid}', '0', '0', '{$status}', '{$schedule_daily_time_id}','{$zoneid}','".number_format($temp,1)."',{$holidays_id},{$coop}) ON DUPLICATE KEY UPDATE sync = VALUES(sync), status = VALUES(status), temperature = VALUES(temperature), coop = VALUES(coop);";
 			$zoneresults = $conn->query($query);
 
 			if ($zoneresults) {
