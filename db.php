@@ -190,6 +190,7 @@ if($what=="boost"){
         	}
 	}
 	if($opp=="add"){
+		$datetime = date("Y-m-d H:i:s");
 		$zone_id = $_GET['zone_id'];
 		$boost_time = $_GET['boost_time'];
 		$boost_temperature = $_GET['boost_temperature'];
@@ -197,11 +198,11 @@ if($what=="boost"){
 		$boost_button_child_id = $_GET['boost_button_child_id'];
 		//If boost Console is selected then add to messages_out table.
 		if ($boost_console_id != '0'){
-			$query = "INSERT INTO messages_out (node_id, child_id, sub_type, ack, type, payload, zone_id) VALUES ('{$boost_console_id}', '{$boost_button_child_id}', '1', '0', '2', '0', '{$zone_id}')";
+			$query = "INSERT INTO `messages_out`(`sync`, `purge`, `node_id`, `child_id`, `sub_type`, `ack`, `type`, `payload`, `sent`, `datetime`, `zone_id`) VALUES ('0', '0', '{$boost_console_id}', '{$boost_button_child_id}', '1', '0', '2', '0', '0', '{$datetime}', '{$zone_id}')";
 			$conn->query($query);
 		}
 		//Add record to Boost table
-		$query = "INSERT INTO boost (status, zone_id, temperature, minute, boost_button_id, boost_button_child_id) VALUES ('0', '{$zone_id}', '{$boost_temperature}', '{$boost_time}', '{$boost_console_id}', '{$boost_button_child_id}')";
+		$query = "INSERT INTO `boost`(`sync`, `purge`, `status`, `zone_id`, `time`, `temperature`, `minute`, `boost_button_id`, `boost_button_child_id`) VALUES ('0', '0', '0', '{$zone_id}', '{$datetime}', '{$boost_temperature}', '{$boost_time}', '{$boost_console_id}', '{$boost_button_child_id}')";
 		if($conn->query($query)){
             		header('Content-type: application/json');
             		echo json_encode(array('Success'=>'Success','Query'=>$query));
@@ -270,13 +271,14 @@ if($what=="node"){
         	}
 	}
 	if($opp=="add"){
+		$datetime = date("Y-m-d H:i:s");
 		$node_type = $_GET['node_type'];
 		$node_id = $_GET['add_node_id'];
 		$node_child_id = $_GET['nodes_max_child_id'];
 		$node_name = $_GET['node_name'];
                 $notice_interval = $_GET['notice_interval'];
 		//Add record to Nodes table
-		$query = "INSERT INTO nodes (`sync`, `purge`, `type`, node_id, max_child_id, `name`, `notice_interval`, `status`) VALUES ('0', '0', '{$node_type}', '{$node_id}', '{$node_child_id}', '{$node_name}', '{$notice_interval}', 'Active')";
+		$query = "INSERT INTO `nodes`(`sync`, `purge`, `type`, `node_id`, `max_child_id`, `name`, `last_seen`, `notice_interval`, `min_voltage`, `status`, `ms_version`, `sketch_version`, `repeater`) VALUES ('0', '0', '{$node_type}', '{$node_id}', '{$node_child_id}', '{$node_name}', '{$datetime}', '{$notice_interval}', '0', 'Active', '0', '0', '0')";
 		if($conn->query($query)){
             		header('Content-type: application/json');
             		echo json_encode(array('Success'=>'Success','Query'=>$query));
@@ -372,6 +374,7 @@ if($what=="lang"){
 
 //Boiler Settings
 if($what=="boiler_settings"){
+	$datetime = date("Y-m-d H:i:s");
 	$status = $_GET['status'];
 	$name = $_GET['name'];
 	$node_id = $_GET['node_id'];
@@ -390,7 +393,7 @@ if($what=="boiler_settings"){
 	$result = $conn->query($query);
 	if (mysqli_num_rows($result)==0){
 		//Update messages_out for Boiler Node. 
-		$query = "INSERT INTO messages_out (`sync`, `purge`, node_id, child_id, sub_type, ack, type, payload, sent, zone_id) VALUES (0, 0, '".$node_id."', '".$node_child_id."', 1, 1, 2, 0, 0, 0);";
+		$query = "INSERT INTO `messages_out`(`sync`, `purge`, `node_id`, `child_id`, `sub_type`, `ack`, `type`, `payload`, `sent`, `datetime`, `zone_id`) VALUES (0, 0, '".$node_id."', '".$node_child_id."', 1, 1, 2, 0, 0, '".$datetime."', 0);";
 		$conn->query($query);
 	}
 
