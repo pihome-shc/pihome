@@ -349,10 +349,16 @@ function find_gw() {
 
 //update Gateway 
 function setup_gateway(){
+var selected_gw_type=document.getElementById("gw_type").value;
 var idata="w=setup_gateway&o=update&status="+document.getElementById("checkbox1").checked;
     idata+="&gw_type="+document.getElementById("gw_type").value;
-	idata+="&gw_location="+document.getElementById("gw_location").value;
-	idata+="&gw_port="+document.getElementById("gw_port").value;
+        if(selected_gw_type.includes("wifi")) {
+            idata+="&gw_location="+document.getElementById("wifi_location").value;
+            idata+="&gw_port="+document.getElementById("wifi_port_num").value;
+        } else {
+            idata+="&gw_location="+document.getElementById("serial_location").value;
+            idata+="&gw_port="+document.getElementById("serial_port_speed").value;
+        }
 	idata+="&gw_timout="+document.getElementById("gw_timout").value;
     idata+="&wid=0";
     $.get('db.php',idata)
