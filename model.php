@@ -721,82 +721,145 @@ echo '
 //gateway model
 echo '
 <div class="modal fade" id="sensor_gateway" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title">'.$lang['smart_home_gateway'].'</h5>
-            </div>
-            <div class="modal-body">';
-$gquery = "SELECT * FROM gateway";
-$gresult = $conn->query($gquery);
-$grow = mysqli_fetch_array($gresult);
-echo '<p class="text-muted">'; 
-if ($grow['type']=='wifi'){echo $lang['smart_home_gateway_text_wifi'];}elseif ($grow['type']=='serial') {echo $lang['smart_home_gateway_text_serial'];}
-echo '</p>';
-echo '
-	<form data-toggle="validator" role="form" method="post" action="settings.php" id="form-join">
-	<div class="form-group" class="control-label">
-	<div class="checkbox checkbox-default checkbox-circle">';
-	if ($grow['status'] == '1'){
-		echo '<input id="checkbox1" class="styled" type="checkbox" value="1" name="status" checked>';
-	}else {
-		echo '<input id="checkbox1" class="styled" type="checkbox" value="1" name="status">';
-	}
-echo ' 
+	<div class="modal-dialog">
+        	<div class="modal-content">
+            		<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+               			<h5 class="modal-title">'.$lang['smart_home_gateway'].'</h5>
+            		</div>
+            		<div class="modal-body">';
+				$gquery = "SELECT * FROM gateway";
+				$gresult = $conn->query($gquery);
+				$grow = mysqli_fetch_array($gresult);
+				echo '<p class="text-muted">'; 
+				if ($grow['type']=='wifi'){
+					echo $lang['smart_home_gateway_text_wifi'];
+					$display_wifi = "display:block";
+					$display_serial = "display:none";
+				} elseif ($grow['type']=='serial') {
+					echo $lang['smart_home_gateway_text_serial'];
+                                        $display_wifi = "display:none";
+                                        $display_serial = "display:block";
+ 				}
+				echo '</p>';
+				echo '
+				<form data-toggle="validator" role="form" method="post" action="settings.php" id="form-join">
+				<div class="form-group" class="control-label">
+					<div class="checkbox checkbox-default checkbox-circle">';
+						if ($grow['status'] == '1'){
+							echo '<input id="checkbox1" class="styled" type="checkbox" value="1" name="status" checked>';
+						}else {
+							echo '<input id="checkbox1" class="styled" type="checkbox" value="1" name="status">';
+						}
+						echo '
+						<label for="checkbox0"> '.$lang['smart_home_gateway_enable'].'</label>
+					</div>
+				</div>
+                               	<!-- /.form-group -->
 
-	
-	<label for="checkbox0"> '.$lang['smart_home_gateway_enable'].'</label></div></div>
-	
-	<div class="form-group" class="control-label"><label>'.$lang['smart_home_gateway_type'].'</label>
-	<select class="form-control input-sm" type="text" id="gw_type" name="gw_type">
-	<option value="wifi" ' . ($grow['type']=='wifi' ? 'selected' : '') . '>'.$lang['wifi'].'</option>
-	<option value="serial" ' . ($grow['type']=='serial' ? 'selected' : '') . '>'.$lang['serial'].'</option>
-	</select>
-    <div class="help-block with-errors"></div></div>
-	
-	<div class="form-group" class="control-label"><label>'.$lang['smart_home_gateway_location'].'</label>
-	<input class="form-control input-sm" type="text" id="gw_location" name="gw_location" value="'.$grow['location'].'" placeholder="Gateway Location">
-	<div class="help-block with-errors"></div></div>
-	
-	<div class="form-group" class="control-label"><label>'.$lang['smart_home_gateway_port'].' </label>
-	<input class="form-control input-sm" type="text" id="gw_port" name="gw_port" value="'.$grow['port'].'" placeholder="Gateway Port">
-	<div class="help-block with-errors"></div></div>
+                                <div class="form-group" class="control-label"><label>'.$lang['smart_home_gateway_type'].'</label>
+                                        <select class="form-control input-sm" type="text" id="gw_type" name="gw_type" onchange=gw_location()>
+                                        <option value="wifi" ' . ($grow['type']=='wifi' ? 'selected' : '') . '>'.$lang['wifi'].'</option>
+                                        <option value="serial" ' . ($grow['type']=='serial' ? 'selected' : '') . '>'.$lang['serial'].'</option>
+                                        </select>
+                                        <div class="help-block with-errors">
+                                        </div>
+                                </div>
+                                <!-- /.form-group -->
 
-	<div class="form-group" class="control-label"><label>'.$lang['timeout'].' </label>
-	<input class="form-control input-sm" type="text" id="gw_timout" name="gw_timout" value="'.$grow['timout'].'" placeholder="Gateway Timeout">
-	<div class="help-block with-errors"></div></div>
+                                <div class="form-group" class="control-label" id="wifi_gw" style="'.$display_wifi.'"><label>'.$lang['wifi_gateway_location'].'</label>
+                                	<input class="form-control input-sm" type="text" id="wifi_location" name="wifi_location" value="'.$grow['location'].'" placeholder="Gateway Location">
+                                        <div class="help-block with-errors">
+                                        </div>
+                                </div>
+                                <!-- /.form-group -->
 
-	<div class="form-group" class="control-label"><label>'.$lang['smart_home_gateway_version'].' </label>
-	<input class="form-control input-sm" type="text" id="gw_version" name="gw_version" value="'.$grow['version'].'" disabled>
-	<div class="help-block with-errors"></div></div>
-	
-<br><h4 class="info"><i class="fa fa-heartbeat red"></i> '.$lang['smart_home_gateway_scr_info'].'</h4>
-<div class=\"list-group\">';
-echo "
-<a href=\"#\" class=\"list-group-item\"> PID <span class=\"pull-right text-muted small\"><em> ".$grow['pid']."</em></span></a>
-<a href=\"#\" class=\"list-group-item\"> ".$lang['smart_home_gateway_pid'].": <span class=\"pull-right text-muted small\"><em>".$grow['pid_running_since']."</em></span></a>";
+                                <div class="form-group" class="control-label" id="serial_gw" style="'.$display_serial.'"><label>'.$lang['serial_gateway_location'].'</label>
+                                        <select class="form-control input-sm" type="text" id="serial_location" name="serial_location">
+                                        <option selected>'.$grow['location'].'</option>';
+                                        $dev_tty = glob("/dev/tty*");
+                                        for ($x = 0; $x <=  count($dev_tty) - 1; $x++) {
+                                                echo '<option value="'.$dev_tty[$x].'" ' . '>'.$dev_tty[$x].'</option>';
+                                        }
+                                        echo '</select>
+                                        <div class="help-block with-errors">
+                                        </div>
+                                </div>
+                                <!-- /.form-group -->
 
-$query = "select * FROM gateway_logs WHERE pid_datetime >= NOW() - INTERVAL 5 MINUTE;";
-$result = $conn->query($query);
-if (mysqli_num_rows($result) != 0){
-	$gw_restarted = mysqli_num_rows($result);
-} else {
-	$gw_restarted = '0';
-}
-echo "<a href=\"#\" class=\"list-group-item\"> ".$lang['smart_home_gateway_scr'].": <span class=\"pull-right text-muted small\"><em>".$gw_restarted."</em></span></a>";
-echo '</div></div>
-            <div class="modal-footer">
-               
+                                <div class="form-group" class="control-label" id="wifi_port" style="'.$display_wifi.'"><label>'.$lang['wifi_gateway_port'].' </label>
+                                        <input class="form-control input-sm" type="text" id="wifi_port_num" name="wifi_port_num" value="'.$grow['port'].'" placeholder="Gateway Port">
+                                        <div class="help-block with-errors">
+                                        </div>
+                                </div>
+                                <!-- /.form-group -->
+
+                                <div class="form-group" class="control-label" id="serial_port" style="'.$display_serial.'"><label>'.$lang['serial_gateway_port'].' </label>
+                                        <select class="form-control input-sm" type="text" id="serial_port_speed" name="serial_port_speed">
+                                                <option selected>'.$grow['port'].'</option>
+                                                <option value="9600">96000</option>
+                                                <option value="19200">19200</option>
+                                                <option value="38400">38400</option>
+                                                <option value="57600">57600</option>
+                                                <option value="74880">74880</option>
+                                                <option value="115200">115200</option>
+                                                <option value="230400">233400</option>
+                                                <option value="250000">250000</option>
+                                                <option value="500000">500000</option>
+                                                <option value="1000000">1000000</option>
+                                                <option value="20000000">2000000</option>
+                                                </select>
+                                        <div class="help-block with-errors">
+                                        </div>
+                                </div>
+                                <!-- /.form-group -->
+
+				<div class="form-group" class="control-label"><label>'.$lang['timeout'].' </label>
+					<input class="form-control input-sm" type="text" id="gw_timout" name="gw_timout" value="'.$grow['timout'].'" placeholder="Gateway Timeout">
+					<div class="help-block with-errors">
+					</div>
+				</div>
+                                <!-- /.form-group -->
+
+				<div class="form-group" class="control-label"><label>'.$lang['smart_home_gateway_version'].' </label>
+					<input class="form-control input-sm" type="text" id="gw_version" name="gw_version" value="'.$grow['version'].'" disabled>
+					<div class="help-block with-errors">
+					</div>
+				</div>
+                                <!-- /.form-group -->
+
+				<br><h4 class="info"><i class="fa fa-heartbeat red"></i> '.$lang['smart_home_gateway_scr_info'].'</h4>
+				<div class=\"list-group\">';
+					echo "
+					<a href=\"#\" class=\"list-group-item\"> PID <span class=\"pull-right text-muted small\"><em> ".$grow['pid']."</em></span></a>
+					<a href=\"#\" class=\"list-group-item\"> ".$lang['smart_home_gateway_pid'].": <span class=\"pull-right text-muted small\"><em>".$grow['pid_running_since']."</em></span></a>";
+
+					$query = "select * FROM gateway_logs WHERE pid_datetime >= NOW() - INTERVAL 5 MINUTE;";
+					$result = $conn->query($query);
+					if (mysqli_num_rows($result) != 0){
+						$gw_restarted = mysqli_num_rows($result);
+					} else {
+						$gw_restarted = '0';
+					}
+					echo "<a href=\"#\" class=\"list-group-item\"> ".$lang['smart_home_gateway_scr'].": <span class=\"pull-right text-muted small\"><em>".$gw_restarted."</em></span></a>";
+				echo '</div>
+                                <!-- /.list-group -->
+			</div>
+			<!-- /.modal-body -->
+            		<div class="modal-footer">
 				<a href="javascript:resetgw('.$grow['pid'].')" class="btn btn-default login btn-sm btn-edit">Reset GW</a>
 				<a href="javascript:find_gw()" class="btn btn-default login btn-sm btn-edit">Search GW</a>
 				<input type="button" name="submit" value="Save" class="btn btn-default login btn-sm" onclick="setup_gateway()">
 				<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
-            </div>
-        </div>
-    </div>
-</div>';
-
+            		</div>
+			<!-- /.modal-footer -->
+        	</div>
+		<!-- /.modal-content -->
+    	</div>
+	<!-- /.modal-dialog -->
+</div>
+<!-- /.modal fade -->
+';
 
 //email settings model
 echo '
@@ -1497,6 +1560,26 @@ function show_hide_devices()
  } else {
         document.getElementById("nodes_max_child_id").style.visibility = 'visible';;
         document.getElementById("add_devices_label").style.visibility = 'visible';;
+ }
+}
+function gw_location()
+{
+ var e = document.getElementById("gw_type");
+ var selected_gw_type = e.value;
+ if(selected_gw_type.includes("wifi")) {
+        document.getElementById("serial_gw").style.display = 'none';
+        document.getElementById("wifi_gw").style.display = 'block';
+        document.getElementById("serial_port").style.display = 'none';
+        document.getElementById("wifi_port").style.display = 'block';
+        document.getElementById("wifi_location").value = "192.168.0.100";
+        document.getElementById("wifi_port_num").value = "5003";
+ } else {
+        document.getElementById("wifi_gw").style.display = 'none';
+        document.getElementById("serial_gw").style.display = 'block';
+        document.getElementById("wifi_port").style.display = 'none';
+        document.getElementById("serial_port").style.display = 'block';
+        document.getElementById("serial_location").value = "/dev/ttyAMA0";
+        document.getElementById("serial_port_speed").value = "115200";
  }
 }
  </script>

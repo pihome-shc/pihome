@@ -627,7 +627,7 @@ if($what=="setup_gateway"){
         $result = $conn->query($query);
         if (mysqli_num_rows($result)==0){
                 //No record in boiler gateway, so add
-                $query = "INSERT INTO `gateway` VALUES (1,'".$status."', 0, 0, '".$gw_type."', '".$gw_location."', '".$gw_port."', '".$gw_timout."', 0, 0, 0, 0, 0);";
+                $query = "INSERT INTO `gateway` VALUES (1,1,0,0,'".$gw_type."','".$gw_location."','".$gw_port."','".$gw_timout."',0, 0, 0, 0, 0);";
         } else {
 		$query = "UPDATE gateway SET status = '".$status."', `sync` = '0', type = '".$gw_type."', location = '".$gw_location."', port = '".$gw_port."', timout = '".$gw_timout."' where ID = 1;";
 	}
