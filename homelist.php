@@ -169,10 +169,10 @@ require_once(__DIR__.'/st_inc/functions.php');
 
 			//query to get schedule and temperature from table
 			if ($holidays_status) {
-				$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between start AND end AND zone_id = {$row['id']} AND time_status = '1' AND tz_status = '1' AND (WeekDays & (1 << {$dow})) > 0 AND holidays_id IS NOT NULL LIMIT 1";
+				$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between start AND end AND zone_id = {$row['id']} AND time_status = '1' AND tz_status = '1' AND (WeekDays & (1 << {$dow})) > 0 AND holidays_id > 0 LIMIT 1";
 				//$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between start AND end AND zone_id = {$row['id']} AND tz_status = '1' AND (WeekDays & (1 << {$dow})) > 0 LIMIT 1";
 			} else {
-				$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between start AND end AND zone_id = {$row['id']} AND time_status = '1' AND tz_status = '1' AND (WeekDays & (1 << {$dow})) > 0 AND holidays_id IS NULL LIMIT 1";
+				$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between start AND end AND zone_id = {$row['id']} AND time_status = '1' AND tz_status = '1' AND (WeekDays & (1 << {$dow})) > 0 AND holidays_id = 0 LIMIT 1";
 				//$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between start AND end AND zone_id = {$row['id']} AND tz_status = '1' LIMIT 1";
 			}
 			$sch_results = $conn->query($query);
