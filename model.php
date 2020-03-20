@@ -209,7 +209,8 @@ echo '
 				if ($ncount > 0){
 					$query = "SELECT * FROM boiler;";
 					$bresult = $conn->query($query);
-					$brow = mysqli_fetch_array($bresult);
+                                        $bcount = $bresult->num_rows;
+                                        if ($bcount > 0) { $brow = mysqli_fetch_array($bresult); }
 					echo '<p class="text-muted">'.$lang['boiler_info_text'].'</p>';
 
 					echo '
@@ -217,10 +218,14 @@ echo '
 
 					<div class="form-group" class="control-label">
 						<div class="checkbox checkbox-default checkbox-circle">';
-							if ($bresult and $brow['status'] == '1'){
-								echo '<input id="checkbox2" class="styled" type="checkbox" value="1" name="status" checked Disabled>';
-							}else {
-								echo '<input id="checkbox2" class="styled" type="checkbox" value="1" name="status" Disabled>';
+							if ($bcount > 0) {
+								if ($bresult and $brow['status'] == '1'){
+									echo '<input id="checkbox2" class="styled" type="checkbox" value="1" name="status" checked Disabled>';
+								}else {
+									echo '<input id="checkbox2" class="styled" type="checkbox" value="1" name="status" Disabled>';
+								}
+							} else {
+								echo '<input id="checkbox2" class="styled" type="checkbox" value="0" name="status" Enabled>';
 							}
 							echo '<label for="checkbox2"> '.$lang['boiler_enable'].'</label>
 						</div>
