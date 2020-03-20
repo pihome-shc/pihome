@@ -31,7 +31,7 @@ if(isset($_GET['hol_id'])) {
         $return_url = "home.php";
         $time_id = 1;
 } else {
-        $holidays_id = "NULL";
+        $holidays_id = 0;
         $return_url = "schedule.php";
 }
 if(isset($_GET['id'])) {
