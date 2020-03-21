@@ -51,7 +51,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 		if($row["status"]=="0"){ $shactive="bluesch"; $status="Off"; }else{ $shactive="redsch"; $status="On"; }
 		echo '<div class="circle '. $shactive.'"><p class="schdegree">'.number_format(DispTemp($conn,$row["temperature"]),0).'&deg;</p></div>
 		</span></a>
-		<div class="chat-body clearfix">
+		<div class="chat-body clearfix" style="padding-top: 10px;">
 		<div class="header">';
 		if($row["status"]=="0" && $type=="Heating"){ $pi_image = "radiator.png";  }
 		elseif($row["status"]=="0" && $type=="Water"){ $pi_image = "off_hot_water.png";  }
