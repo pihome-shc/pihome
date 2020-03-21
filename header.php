@@ -224,3 +224,4 @@ echo '<a href="weather.php" class="list-group-item"><img border="0" width="28" h
         </div>
     </div>
 </div>
+</div>

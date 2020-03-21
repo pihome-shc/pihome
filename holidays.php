@@ -26,19 +26,20 @@ require_once(__DIR__.'/st_inc/functions.php');
 ?>
 <?php include("header.php");  ?>
 <?php include_once("notice.php"); ?>
- <div id="page-wrapper">
-<br>
-            <div class="row">
-                <div class="col-lg-12">
-                        <div id="holidayslist" >
-                                   <div class="text-center"><br><br><p><?php echo $lang['please_wait_text']; ?></p>
-                                   <br><br><img src="images/loader.gif">
-                                   </div>
-                                   </div>
+<div id="page-wrapper">
+	<br>
+	<div class="row">
+        	<div class="col-lg-12">
+                	<div id="holidayslist" >
+                        	<div class="text-center"><br><br><p><?php echo $lang['please_wait_text']; ?></p>
+                                	<br><br><img src="images/loader.gif">
+                     		</div>
+			</div>
+                </div>
                 <!-- /.col-lg-4 -->
-            </div>
-            <!-- /.row -->
-        </div>
-        <!-- /#page-wrapper -->
+	</div>
+        <!-- /.row -->
+</div>
+<!-- /#page-wrapper -->
 <?php include("footer.php");  ?>
 

@@ -324,11 +324,11 @@ function GetModal_OpenWeather($conn){
                 <input type="text" class="form-control" name="inp_APIKEY" id="inp_APIKEY">
             </div>               
             </form>';
-    echo '</div>';      //close <div class="modal-body">
+    echo '</div>';      //close class="modal-body">
     echo '<div class="modal-footer" id="ajaxModalFooter">
             <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Cancel</button>
             <input type="button" name="submit" value="Save" class="btn btn-default login btn-sm" onclick="update_openweather()">
-        </div>';      //close <div class="modal-footer">
+        </div>';      //close class="modal-footer">
 
     echo '<script language="javascript" type="text/javascript">
         rad_CityZip_Changed=function() {
@@ -399,11 +399,11 @@ function GetModal_System($conn)
         <span class="pull-right text-muted small"><em>'.number_format(DispTemp($conn,$row['payload']),1).'&deg;</em></span>
         </span>'; 
     }
-    echo '</div>';      //close <div class="list-group">';
-    echo '</div>';      //close <div class="modal-body">
+    echo '</div>';      //close class="list-group">';
+    echo '</div>';      //close class="modal-body">
     echo '<div class="modal-footer" id="ajaxModalFooter">
             <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>            
-        </div>';      //close <div class="modal-footer">
+        </div>';      //close class="modal-footer">
     return;
 }
 if($_GET['Ajax']=='GetModal_System')
@@ -449,11 +449,11 @@ function GetModal_MQTT($conn)
         echo '</span>';
         echo '</span>';
     }
-    echo '</div>';      //close <div class="list-group">';
-    echo '</div>';      //close <div class="modal-body">
+    echo '</div>';      //close class="list-group">';
+    echo '</div>';      //close class="modal-body">
     echo '<div class="modal-footer" id="ajaxModalFooter">
             <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>            
-        </div>';      //close <div class="modal-footer">
+        </div>';      //close class="modal-footer">
     echo '<script language="javascript" type="text/javascript">
         mqtt_AddEdit=function(ithis){ $("#ajaxModal").one("hidden.bs.modal", function() { $("#ajaxModal").modal("show",$(ithis)); }).modal("hide");};
     </script>';
@@ -520,12 +520,12 @@ function GetModal_MQTTAddEdit($conn)
                 </select>
             </div>
             </form>';
-    echo '</div>';      //close <div class="modal-body">
+    echo '</div>';      //close class="modal-body">
     echo '<div class="modal-footer" id="ajaxModalFooter">' . ($IsAdd ?
             '<button type="button" class="btn btn-warning btn-sm" data-dismiss="modal" onclick="mqtt_add()">Add Conn</button>'
             : '<button type="button" class="btn btn-warning btn-sm" data-dismiss="modal" onclick="mqtt_edit()">Edit Conn</button>') . '
             <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>            
-        </div>';      //close <div class="modal-footer">
+        </div>';      //close class="modal-footer">
     echo '<script language="javascript" type="text/javascript">
         mqtt_add=function(){
             var idata="w=mqtt&o=add";
@@ -622,11 +622,11 @@ function GetModal_Services($conn)
         echo '</span>';
         echo '</span>';
     }
-    echo '</div>';      //close <div class="list-group">';
-    echo '</div>';      //close <div class="modal-body">
+    echo '</div>';      //close class="list-group">';
+    echo '</div>';      //close class="modal-body">
     echo '<div class="modal-footer" id="ajaxModalFooter">
             <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>            
-        </div>';      //close <div class="modal-footer">
+        </div>';      //close class="modal-footer">
     echo '<script language="javascript" type="text/javascript">
         services_Info=function(ithis){ $("#ajaxModal").one("hidden.bs.modal", function() { $("#ajaxModal").modal("show",$(ithis)); }).modal("hide");};
     </script>';
@@ -754,11 +754,11 @@ Refer to: <a href="www.freedesktop.org/software/systemd/man/journald.conf.html">
         echo '</span>';
     }
 
-    echo '</div>';      //close <div class="list-group">';
-    echo '</div>';      //close <div class="modal-body">
+    echo '</div>';      //close class="list-group">';
+    echo '</div>';      //close class="modal-body">
     echo '<div class="modal-footer" id="ajaxModalFooter">
             <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>            
-        </div>';      //close <div class="modal-footer">
+        </div>';      //close class="modal-footer">
     echo '<script language="javascript" type="text/javascript">
         services_Info=function(ithis){ $("#ajaxModal").one("hidden.bs.modal", function() { $("#ajaxModal").modal("show",$(ithis)); }).modal("hide");};
     </script>';
@@ -818,11 +818,11 @@ function GetModal_Uptime($conn)
         echo '</span>';
         echo '</span>';
     }*/
-    echo '</div>';      //close <div class="list-group">';
-    echo '</div>';      //close <div class="modal-body">
+    echo '</div>';      //close class="list-group">';
+    echo '</div>';      //close class="modal-body">
     echo '<div class="modal-footer" id="ajaxModalFooter">
             <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>            
-        </div>';      //close <div class="modal-footer">
+        </div>';      //close class="modal-footer">
     return;
 }
 if($_GET['Ajax']=='GetModal_Uptime')
