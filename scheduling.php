@@ -185,147 +185,207 @@ if (isset($_POST['submit'])) {
 ?>
 
 <!-- Title (e.g. Add Schedule or Edit Schedule) -->
-        <div id="page-wrapper">
-<br>
-            <div class="row">
-                <div class="col-lg-12">
-				<div class="panel panel-primary">
-                        <div class="panel-heading">
-							<i class="fa fa-clock-o fa-fw"></i>
-                                                        <?php if(isset($_GET['nid'])) {
-                                                                echo $lang['night_climate'];
-                                                        } elseif ($time_id != 0) {
-                                                                echo $lang['schedule_edit'] . ": " . $time_row['sch_name'];
-                                                        } else {
-                                                                echo $lang['schedule_add'];
-                                                        } ?>
-						<div class="pull-right"> <div class="btn-group"><?php echo date("H:i"); ?></div> </div>
-                        </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
+<div id="page-wrapper">
+	<br>
+ 	<div class="row">
+        	<div class="col-lg-12">
+			<div class="panel panel-primary">
+                        	<div class="panel-heading">
+					<i class="fa fa-clock-o fa-fw"></i>
+                                        <?php if(isset($_GET['nid'])) {
+                                        	echo $lang['night_climate'];
+                                     	} elseif ($time_id != 0) {
+                                        	echo $lang['schedule_edit'] . ": " . $time_row['sch_name'];
+                                        } else {
+                                        	echo $lang['schedule_add'];
+                                    	} ?>
+					<div class="pull-right"> 
+						<div class="btn-group"><?php echo date("H:i"); ?></div> 
+					</div>
+                        	</div>
+                        	<!-- /.panel-heading -->
+                        	<div class="panel-body">
 
-            <form data-toggle="validator" role="form" method="post" action="<?php $_SERVER['PHP_SELF'];?>" id="form-join">
-			
-			<!-- Enable Schedule -->
-			<div class="checkbox checkbox-default checkbox-circle">
-			<input id="checkbox0" class="styled" type="checkbox" name="sc_en" value="1" <?php $check = ($time_row['status'] == 1) ? 'checked' : ''; echo $check; ?>>
-			<label for="checkbox0"> <?php echo $lang['schedule_enable']; ?></label></div>
+            				<form data-toggle="validator" role="form" method="post" action="<?php $_SERVER['PHP_SELF'];?>" id="form-join">
 
-			<!-- Day Selector -->
-			<div class="row">
-			<div class="col-xs-3"><div class="checkbox checkbox-default checkbox-circle">
-    		<input id="checkbox1" class="styled" type="checkbox" name="Sunday_en" value="1" <?php $check = (($time_row['WeekDays'] & 1) > 0) ? 'checked' : ''; echo $check; ?>>
-    		<label for="checkbox1"> <?php echo $lang['sun']; ?></label></div></div>
+					<!-- Enable Schedule -->
+					<div class="checkbox checkbox-default checkbox-circle">
+						<input id="checkbox0" class="styled" type="checkbox" name="sc_en" value="1" <?php $check = ($time_row['status'] == 1) ? 'checked' : ''; echo $check; ?>>
+						<label for="checkbox0"> <?php echo $lang['schedule_enable']; ?></label>
+					</div>
 
-			<div class="col-xs-3"><div class="checkbox checkbox-default checkbox-circle">
-    		<input id="checkbox2" class="styled" type="checkbox" name="Monday_en" value="1" <?php $check = (($time_row['WeekDays'] & 2) > 0) ? 'checked' : ''; echo $check; ?>>
-    		<label for="checkbox2"> <?php echo $lang['mon']; ?></label></div></div>
+					<!-- Day Selector -->
+					<div class="row">
+						<div class="col-xs-3">
+							<div class="checkbox checkbox-default checkbox-circle">
+    								<input id="checkbox1" class="styled" type="checkbox" name="Sunday_en" value="1" <?php $check = (($time_row['WeekDays'] & 1) > 0) ? 'checked' : ''; echo $check; ?>>
+    								<label for="checkbox1"> <?php echo $lang['sun']; ?></label>
+							</div>
+						</div>
 
-        	<div class="col-xs-3"><div class="checkbox checkbox-default checkbox-circle">
-    		<input id="checkbox3" class="styled" type="checkbox" name="Tuesday_en" value="1" <?php $check = (($time_row['WeekDays'] & 4) > 0) ? 'checked' : ''; echo $check; ?>>
-    		<label for="checkbox3"> <?php echo $lang['tue']; ?></label></div></div>
+						<div class="col-xs-3">
+							<div class="checkbox checkbox-default checkbox-circle">
+    								<input id="checkbox2" class="styled" type="checkbox" name="Monday_en" value="1" <?php $check = (($time_row['WeekDays'] & 2) > 0) ? 'checked' : ''; echo $check; ?>>
+    								<label for="checkbox2"> <?php echo $lang['mon']; ?></label>
+							</div>
+						</div>
 
-			<div class="col-xs-3"><div class="checkbox checkbox-default checkbox-circle">
-    		<input id="checkbox4" class="styled" type="checkbox" name="Wednesday_en" value="1" <?php $check = (($time_row['WeekDays'] & 8) > 0) ? 'checked' : ''; echo $check; ?>>
-    		<label for="checkbox4"> <?php echo $lang['wed']; ?></label></div></div>
+        					<div class="col-xs-3">
+							<div class="checkbox checkbox-default checkbox-circle">
+    								<input id="checkbox3" class="styled" type="checkbox" name="Tuesday_en" value="1" <?php $check = (($time_row['WeekDays'] & 4) > 0) ? 'checked' : ''; echo $check; ?>>
+    								<label for="checkbox3"> <?php echo $lang['tue']; ?></label>
+							</div>
+						</div>
 
-        	<div class="col-xs-3"><div class="checkbox checkbox-default checkbox-circle">
-    		<input id="checkbox5" class="styled" type="checkbox" name="Thursday_en" value="1" <?php $check = (($time_row['WeekDays'] & 16) > 0) ? 'checked' : ''; echo $check; ?>>
-    		<label for="checkbox5"> <?php echo $lang['thu']; ?></label></div></div>
+						<div class="col-xs-3">
+							<div class="checkbox checkbox-default checkbox-circle">
+    								<input id="checkbox4" class="styled" type="checkbox" name="Wednesday_en" value="1" <?php $check = (($time_row['WeekDays'] & 8) > 0) ? 'checked' : ''; echo $check; ?>>
+    								<label for="checkbox4"> <?php echo $lang['wed']; ?></label>
+							</div>
+						</div>
 
-			<div class="col-xs-3"><div class="checkbox checkbox-default checkbox-circle">
-    		<input id="checkbox6" class="styled" type="checkbox" name="Friday_en" value="1" <?php $check = (($time_row['WeekDays'] & 32) > 0) ? 'checked' : ''; echo $check; ?>>
-    		<label for="checkbox6"> <?php echo $lang['fri']; ?></label></div></div>
+        					<div class="col-xs-3">
+							<div class="checkbox checkbox-default checkbox-circle">
+    								<input id="checkbox5" class="styled" type="checkbox" name="Thursday_en" value="1" <?php $check = (($time_row['WeekDays'] & 16) > 0) ? 'checked' : ''; echo $check; ?>>
+	    							<label for="checkbox5"> <?php echo $lang['thu']; ?></label>
+							</div>
+						</div>
 
-			<div class="col-xs-3"><div class="checkbox checkbox-default checkbox-circle">
-    		<input id="checkbox7" class="styled" type="checkbox" name="Saturday_en" value="1" <?php $check = (($time_row['WeekDays'] & 64) > 0) ? 'checked' : ''; echo $check; ?>>
-    		<label for="checkbox7"> <?php echo $lang['sat']; ?></label></div></div>
-			</div>
+						<div class="col-xs-3">
+							<div class="checkbox checkbox-default checkbox-circle">
+    								<input id="checkbox6" class="styled" type="checkbox" name="Friday_en" value="1" <?php $check = (($time_row['WeekDays'] & 32) > 0) ? 'checked' : ''; echo $check; ?>>
+    								<label for="checkbox6"> <?php echo $lang['fri']; ?></label>
+							</div>
+						</div>
 
-			<!-- Schedule Name -->
-                        <?php if(!isset($_GET['nid'])) {
-                        echo '<div class="form-group" class="control-label">
-                                <label><'.$lang['sch_name'].'></label>
-                                <input class="form-control input-sm" type="text" id="sch_name" name="sch_name" value="'.$time_row["sch_name"].'" placeholder="Schedule Name">
-                                <div class="help-block with-errors">
-                                </div>
-                        </div>'; } ?>
+						<div class="col-xs-3">
+							<div class="checkbox checkbox-default checkbox-circle">
+    								<input id="checkbox7" class="styled" type="checkbox" name="Saturday_en" value="1" <?php $check = (($time_row['WeekDays'] & 64) > 0) ? 'checked' : ''; echo $check; ?>>
+    								<label for="checkbox7"> <?php echo $lang['sat']; ?></label>
+							</div>
+						</div>
+					</div>
+					<!-- /.row -->
 
-			<!-- Start Time -->
-			<div class="form-group" class="control-label"><label><?php echo $lang['start_time']; ?></label>
-			<input class="form-control input-sm" type="time" id="start_time" name="start_time" value="<?php echo $time_row["start"];?>" placeholder="Start Time" required>
-			<div class="help-block with-errors"></div></div>
+					<!-- Schedule Name -->
+                        		<?php if(!isset($_GET['nid'])) {
+                        		echo '<div class="form-group" class="control-label">
+                                		<label><'.$lang['sch_name'].'></label>
+                                		<input class="form-control input-sm" type="text" id="sch_name" name="sch_name" value="'.$time_row["sch_name"].'" placeholder="Schedule Name">
+                                		<div class="help-block with-errors"></div>
+                        		</div>'; } ?>
 
-			<!-- End Time -->
-			<div class="form-group" class="control-label"><label><?php echo $lang['end_time']; ?></label>
-			<input class="form-control input-sm" type="time" id="end_time" name="end_time" value="<?php echo $time_row["end"];?>" placeholder="End Time" required>
-			<div class="help-block with-errors"></div></div>
-<?php
-// Zone List Loop
-while ($row = mysqli_fetch_assoc($zoneresults)) {
-?>
-	<hr>
-	<!-- Zone ID (tz_id) -->
-	<input type="hidden" name="id[<?php echo $row["tz_id"];?>]" value="<?php echo $row["tz_id"];?>">
-	<?php if($time_id != 0){
-	echo '<input type="hidden" name="zoneid['.$row["tz_id"].']" value="'.$row["zone_id"].'">';
-	}?>
-	<!-- Zone Enable Checkbox -->
-	<div class="checkbox checkbox-default  checkbox-circle">
-	<input id="checkbox<?php echo $row["tz_id"];?>" class="styled" type="checkbox" name="status[<?php echo $row["tz_id"];?>]" value="1" <?php if($time_id != 0){ $check = ($row['tz_status'] == 1) ? 'checked' : ''; echo $check;} ?> onclick="$('#<?php echo $row["tz_id"];?>').toggle();">
-    <label for="checkbox<?php echo $row["tz_id"];?>"><?php echo $row["zone_name"];?></label>
-	<?php echo $check;?>
-    <div class="help-block with-errors"></div></div>
+					<!-- Start Time -->
+					<div class="form-group" class="control-label"><label><?php echo $lang['start_time']; ?></label>
+						<input class="form-control input-sm" type="time" id="start_time" name="start_time" value="<?php echo $time_row["start"];?>" placeholder="Start Time" required>
+						<div class="help-block with-errors"></div>
+					</div>
 
-	<!-- Group Zone Settings -->
-	<?php
-	if($row['tz_status'] == 1 AND $time_id != 0){
-	//if($time_id != 0){
-		echo '<div id="'.$row["tz_id"].'"><div class="form-group" class="control-label">';
-	}else{
-		echo '<div id="'.$row["tz_id"].'" style="display:none !important;"><div class="form-group" class="control-label">';
-	}
-	//0=C, 1=F
-	$c_f = settings($conn, 'c_f');
-    if(($c_f==1 || $c_f=='1') AND ($row["type"]=='Heating')) {
-		$min = 50;
-		$max = 85;
-	}elseif (($c_f==1 || $c_f=='1') AND ($row["type"]=='Water')) {
-		$min = 50;
-		$max = 170;
-	}elseif (($c_f==0 || $c_f=='0') AND ($row["type"]=='Heating')) {
-		$min = 10;
-		$max = 30;
-	}elseif (($c_f==0 || $c_f=='0') AND ($row["type"]=='Water')) {
-		$min = 10;
-		$max = 80;
-	}
-        if(!isset($_GET['nid'])) {
-                //<!-- Zone Coop Enable Checkbox -->
-                if($time_id != 0){ $check = ($row['coop'] == 1) ? 'checked' : ''; }
-                echo '<div class="checkbox checkbox-default  checkbox-circle">
-                <input id="coop'.$row["tz_id"].'" class="styled" type="checkbox" name="coop['.$row["tz_id"].']" value="1" '.$check.'>
-                <label for="coop'.$row["tz_id"].'">Coop Start</label> <i class="glyphicon glyphicon-leaf green"></i>
-                <i class="fa fa-info-circle fa-lg text-info" data-container="body" data-toggle="popover" data-placement="right" data-content="'.$lang['schedule_coop_help'].'"></i>
-                <div class="help-block with-errors"></div></div>';
-                // <!-- Temperature and Slider -->
-                if($time_id != 0){ $temp = DispTemp($conn, $row['temperature']);} else { $temp = '15.0';}
-                echo '<div class="slidecontainer">
-                <h4>'.$lang['temperature'].': <span id="val'.$row["zone_id"].'" style="display: inline-flex !important; font-size:18px !important;"><output name="show_temp_val" id="temp'.$row["tz_id"].'" style="padding-top:0px !important; font-size:18px !important;">'.$temp.'</output></span>&deg;</h4><br>
-                <input type="range" min="'.$min.'" max="'.$max.'" step="0.5" value="'.$temp.'" class="slider" id="bb'.$row["tz_id"].'" name="temp['.$row["tz_id"].']" oninput=update_temp(this.value,"temp'.$row["tz_id"].'")>
-                </div>';
-        } else {
-                // <!-- Temperature and Slider -->
-                echo '<div class="slidecontainer">
-                <h4>'.$lang['min_temperature'].': <span id="min_val'.$row["zone_id"].'" style="display: inline-flex !important; font-size:18px !important;"><output name="show_min_temp_val" id="min_temp'.$row["tz_id"].'" style="padding-top:0px !important; font-size:18px !important;">'.DispTemp($conn, $row['min_temperature']).'</output></span>&deg;</h4><br>
-                <input type="range" min="'.$min.'" max="'.$max.'" step="0.5" value="'.DispTemp($conn, $row['min_temperature']).'" class="slider" id="min_bb'.$row["tz_id"].'" name="min_temp['.$row["tz_id"].']" oninput=update_temp(this.value,"min_temp'.$row["tz_id"].'")>
-                </div>';
+					<!-- End Time -->
+					<div class="form-group" class="control-label"><label><?php echo $lang['end_time']; ?></label>
+						<input class="form-control input-sm" type="time" id="end_time" name="end_time" value="<?php echo $time_row["end"];?>" placeholder="End Time" required>
+						<div class="help-block with-errors"></div>
+					</div>
+					<?php
+					// Zone List Loop
+					while ($row = mysqli_fetch_assoc($zoneresults)) {
+						?>
+						<hr>
+						<!-- Zone ID (tz_id) -->
+						<input type="hidden" name="id[<?php echo $row["tz_id"];?>]" value="<?php echo $row["tz_id"];?>">
+						<?php if($time_id != 0){
+							echo '<input type="hidden" name="zoneid['.$row["tz_id"].']" value="'.$row["zone_id"].'">';
+						}?>
+						<!-- Zone Enable Checkbox -->
+						<div class="checkbox checkbox-default  checkbox-circle">
+							<input id="checkbox<?php echo $row["tz_id"];?>" class="styled" type="checkbox" name="status[<?php echo $row["tz_id"];?>]" value="1" <?php if($time_id != 0){ $check = ($row['tz_status'] == 1) ? 'checked' : ''; echo $check;} ?> onclick="$('#<?php echo $row["tz_id"];?>').toggle();">
+    							<label for="checkbox<?php echo $row["tz_id"];?>"><?php echo $row["zone_name"];?></label>
+							<?php echo $check;?>
+    							<div class="help-block with-errors"></div>
+						</div>
 
-                echo '<div class="slidecontainer">
-                <h4>'.$lang['max_temperature'].': <span id="max_val'.$row["zone_id"].'" style="display: inline-flex !important; font-size:18px !important;"><output name="show_max_temp_val" id="max_temp'.$row["tz_id"].'" style="padding-top:0px !important; font-size:18px !important;">'.DispTemp($conn, $row['max_temperature']).'</output></span>&deg;</h4><br>
-                <input type="range" min="'.$min.'" max="'.$max.'" step="0.5" value="'.DispTemp($conn, $row['max_temperature']).'" class="slider" id="max_bb'.$row["tz_id"].'" name="max_temp['.$row["tz_id"].']" oninput=update_temp(this.value,"max_temp'.$row["tz_id"].'")>
-                </div>'; }
-        ?>
+						<!-- Group Zone Settings -->
+						<?php
+						if($row['tz_status'] == 1 AND $time_id != 0){
+							//if($time_id != 0){
+							$style_text = "";
+						}else{
+							$style_text = "display:none !important;";
+						}
+						 echo '<div id="'.$row["tz_id"].'" style=".$style_text.">
+							<div class="form-group" class="control-label">';
+								//0=C, 1=F
+								$c_f = settings($conn, 'c_f');
+    								if(($c_f==1 || $c_f=='1') AND ($row["type"]=='Heating')) {
+									$min = 50;
+									$max = 85;
+								}elseif (($c_f==1 || $c_f=='1') AND ($row["type"]=='Water')) {
+									$min = 50;
+									$max = 170;
+								}elseif (($c_f==0 || $c_f=='0') AND ($row["type"]=='Heating')) {
+									$min = 10;
+									$max = 30;
+								}elseif (($c_f==0 || $c_f=='0') AND ($row["type"]=='Water')) {
+									$min = 10;
+									$max = 80;
+								}
+        							if(!isset($_GET['nid'])) {
+									//<!-- Zone Coop Enable Checkbox -->
+								        if($time_id != 0){ $check = ($row['coop'] == 1) ? 'checked' : ''; }
+								        echo '<div class="checkbox checkbox-default  checkbox-circle">
+										<input id="coop'.$row["tz_id"].'" class="styled" type="checkbox" name="coop['.$row["tz_id"].']" value="1" '.$check.'>
+									        <label for="coop'.$row["tz_id"].'">Coop Start</label> <i class="glyphicon glyphicon-leaf green"></i>
+									        <i class="fa fa-info-circle fa-lg text-info" data-container="body" data-toggle="popover" data-placement="right" data-content="'.$lang['schedule_coop_help'].'"></i>
+										<div class="help-block with-errors"></div>
+									</div>';
+								        // <!-- Temperature and Slider -->
+								        if($time_id != 0){ $temp = DispTemp($conn, $row['temperature']);} else { $temp = '15.0';}
+								        echo '<div class="slidecontainer">
+										<h4>'.$lang['temperature'].': <span id="val'.$row["zone_id"].'" style="display: inline-flex !important; font-size:18px !important;"><output name="show_temp_val" id="temp'.$row["tz_id"].'" style="padding-top:0px !important; font-size:18px !important;">'.$temp.'</output></span>&deg;</h4><br>
+									        <input type="range" min="'.$min.'" max="'.$max.'" step="0.5" value="'.$temp.'" class="slider" id="bb'.$row["tz_id"].'" name="temp['.$row["tz_id"].']" oninput=update_temp(this.value,"temp'.$row["tz_id"].'")>
+                							</div>';
+        							} else {
+									// <!-- Temperature and Slider -->
+								        echo '<div class="slidecontainer">
+									 	<h4>'.$lang['min_temperature'].': <span id="min_val'.$row["zone_id"].'" style="display: inline-flex !important; font-size:18px !important;"><output name="show_min_temp_val" id="min_temp'.$row["tz_id"].'" style="padding-top:0px !important; font-size:18px !important;">'.DispTemp($conn, $row['min_temperature']).'</output></span>&deg;</h4><br>
+									        <input type="range" min="'.$min.'" max="'.$max.'" step="0.5" value="'.DispTemp($conn, $row['min_temperature']).'" class="slider" id="min_bb'.$row["tz_id"].'" name="min_temp['.$row["tz_id"].']" oninput=update_temp(this.value,"min_temp'.$row["tz_id"].'")>
+								        </div>';
+
+								        echo '<div class="slidecontainer">
+									 	<h4>'.$lang['max_temperature'].': <span id="max_val'.$row["zone_id"].'" style="display: inline-flex !important; font-size:18px !important;"><output name="show_max_temp_val" id="max_temp'.$row["tz_id"].'" style="padding-top:0px !important; font-size:18px !important;">'.DispTemp($conn, $row['max_temperature']).'</output></span>&deg;</h4><br>
+									        <input type="range" min="'.$min.'" max="'.$max.'" step="0.5" value="'.DispTemp($conn, $row['max_temperature']).'" class="slider" id="max_bb'.$row["tz_id"].'" name="max_temp['.$row["tz_id"].']" oninput=update_temp(this.value,"max_temp'.$row["tz_id"].'")>
+								       	</div>'; 
+								}
+        							?>
+    							</div>
+							<!-- /.form-group -->
+						</div>
+						<!-- /.row -->
+					<?php }?> <!-- End of Zone List Loop  -->
+                			<br>
+					<!-- Buttons -->
+					<a href="<?php echo $return_url ?>"><button type="button" class="btn btn-primary btn-sm" ><?php echo $lang['cancel']; ?></button></a>
+                			<input type="submit" name="submit" value="<?php echo $lang['submit']; ?>" class="btn btn-default btn-sm login">
+					</form>
+				</div>
+                        	<!-- /.panel-body -->
+				<div class="panel-footer">
+					<?php
+					ShowWeather($conn);
+					?>
+                        	</div>
+				<!-- /.panel-footer -->
+                    	</div>
+			<!-- /.panel-primary -->
+		</div>
+                <!-- /.col-lg-12 -->
+	</div>
+        <!-- /.row -->
+</div>
+<!-- /#page-wrapper -->
+<?php }  ?>
+<?php include("footer.php"); ?>
+
 <script language="javascript" type="text/javascript">
 function update_temp(value, id)
 {
@@ -336,26 +396,3 @@ function update_temp(value, id)
 }
 </script>
 
-    </div></div>
-<?php }?> <!-- End of Zone List Loop  -->
-                <br>
-				<!-- Buttons -->
-				<a href="<?php echo $return_url ?>"><button type="button" class="btn btn-primary btn-sm" ><?php echo $lang['cancel']; ?></button></a>
-                <input type="submit" name="submit" value="<?php echo $lang['submit']; ?>" class="btn btn-default btn-sm login">
-				</form>
-						</div>
-                        <!-- /.panel-body -->
-						<div class="panel-footer">
-<?php
-ShowWeather($conn);
-?>
-                        </div>
-                    </div>
-                </div>
-                <!-- /.col-lg-4 -->
-            </div>
-            <!-- /.row -->
-        </div>
-        <!-- /#page-wrapper -->
-<?php }  ?>
-		<?php include("footer.php"); ?>
