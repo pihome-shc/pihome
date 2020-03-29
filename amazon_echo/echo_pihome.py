@@ -69,6 +69,13 @@ class device_handler(debounce_handler):
 	con.commit()
         return True
 
+    def status(self, client_address, name):
+        query = """SELECT * FROM boost_view WHERE name LIKE '%s' Limit 1""" % ('%'+name)
+        cur = con.cursor()
+        cur.execute(query)
+        row = cur.fetchone();
+        return row[1]
+
 if __name__ == "__main__":
     # Startup the fauxmo server
     fauxmo.DEBUG = True

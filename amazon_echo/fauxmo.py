@@ -49,11 +49,22 @@ SETUP_XML = """<?xml version="1.0"?>
     <manufacturer>Belkin International Inc.</manufacturer>
     <modelName>Emulated Socket</modelName>
     <modelNumber>3.1415</modelNumber>
+    <modelDescription>Belkin Plugin Socket 1.0</modelDescription>\r\n
     <UDN>uuid:Socket-1_0-%(device_serial)s</UDN>
+    <serialNumber>221517K0101769</serialNumber>
+    <binaryState>0</binaryState>
+    <serviceList>
+      <service>
+        <serviceType>urn:Belkin:service:basicevent:1</serviceType>
+        <serviceId>urn:Belkin:serviceId:basicevent1</serviceId>
+        <controlURL>/upnp/control/basicevent1</controlURL>
+        <eventSubURL>/upnp/event/basicevent1</eventSubURL>
+        <SCPDURL>/eventservice.xml</SCPDURL>
+      </service>
+    </serviceList>
   </device>
 </root>
 """
-
 
 def dbg(msg):
     logging.debug(msg)
@@ -172,8 +183,10 @@ class upnp_device(object):
                   "ST: %s\r\n"
                   "USN: uuid:%s::%s\r\n" % (date_str, location_url, self.uuid, self.server_version, search_target, self.persistent_uuid, search_target))
         if self.other_headers:
+	    i = 0
             for header in self.other_headers:
                 message += "%s\r\n" % header
+		i = i + 1
         message += "\r\n"
         temp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         temp_socket.sendto(message, destination)
@@ -203,6 +216,8 @@ class fauxmo(upnp_device):
         return self.name
 
     def handle_request(self, data, sender, socket, client_address):
+	success = False
+	soap = ""
         if data.find('GET /setup.xml HTTP/1.1') == 0:
             dbg("Responding to setup.xml for %s" % self.name)
             xml = SETUP_XML % {'device_name' : self.name, 'device_serial' : self.serial}
@@ -218,35 +233,42 @@ class fauxmo(upnp_device):
                        "\r\n"
                        "%s" % (len(xml), date_str, xml))
             socket.send(message)
+        elif data.find('SOAPACTION: "urn:Belkin:service:basicevent:1#GetBinaryState"') != -1:
+	    dbg("Responding to GetBinaryState")
+            state = self.action_handler.status(client_address[0], self.name)
+	    success = True
         elif data.find('SOAPACTION: "urn:Belkin:service:basicevent:1#SetBinaryState"') != -1:
-            success = False
             if data.find('<BinaryState>1</BinaryState>') != -1:
                 # on
                 dbg("Responding to ON for %s" % self.name)
                 success = self.action_handler.on(client_address[0], self.name)
+		state = 1
             elif data.find('<BinaryState>0</BinaryState>') != -1:
                 # off
                 dbg("Responding to OFF for %s" % self.name)
                 success = self.action_handler.off(client_address[0], self.name)
+                state = 0
             else:
                 dbg("Unknown Binary State request:")
                 dbg(data)
-            if success:
-                # The echo is happy with the 200 status code and doesn't
-                # appear to care about the SOAP response body
-                soap = ""
-                date_str = email.utils.formatdate(timeval=None, localtime=False, usegmt=True)
-                message = ("HTTP/1.1 200 OK\r\n"
-                           "CONTENT-LENGTH: %d\r\n"
-                           "CONTENT-TYPE: text/xml charset=\"utf-8\"\r\n"
-                           "DATE: %s\r\n"
-                           "EXT:\r\n"
-                           "SERVER: Unspecified, UPnP/1.0, Unspecified\r\n"
-                           "X-User-Agent: redsonic\r\n"
-                           "CONNECTION: close\r\n"
-                           "\r\n"
-                           "%s" % (len(soap), date_str, soap))
-                socket.send(message)
+        if success:
+            soap = ("<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body>\r\n"
+                       "<u:GetBinaryStateResponse xmlns:u=\"urn:Belkin:service:basicevent:1\">\r\n"
+                       "<BinaryState>%s</BinaryState>\r\n"
+                       "</u:GetBinaryStateResponse>\r\n"
+                       "</s:Body> </s:Envelope>\r\n" % (state))
+            date_str = email.utils.formatdate(timeval=None, localtime=False, usegmt=True)
+            message = ("HTTP/1.1 200 OK\r\n"
+                       "CONTENT-LENGTH: %d\r\n"
+                       "CONTENT-TYPE: text/xml charset=\"utf-8\"\r\n"
+                       "DATE: %s\r\n"
+                       "EXT:\r\n"
+                       "SERVER: Unspecified, UPnP/1.0, Unspecified\r\n"
+                       "X-User-Agent: redsonic\r\n"
+                       "CONNECTION: close\r\n"
+                       "\r\n"
+                       "%s" % (len(soap), date_str, soap))
+            socket.send(message)
         else:
             dbg(data)
 
@@ -308,7 +330,7 @@ class upnp_broadcast_responder(object):
     def do_read(self, fileno):
         data, sender = self.recvfrom(1024)
         if data:
-            if data.find('M-SEARCH') == 0 and data.find('urn:Belkin:device:**') != -1:
+            if data.find('M-SEARCH') == 0 and (data.find('urn:Belkin:device:**') != -1 or data.find('upnp:rootdevice') != -1 or data.find('ssdp:all') != -1):
                 for device in self.devices:
                     time.sleep(0.5)
                     device.respond_to_search(sender, 'urn:Belkin:device:**')
