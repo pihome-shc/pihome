@@ -140,7 +140,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 				
                 <li class="dropdown">
                     <a class="dropdown-toggle" href="settings.php">
-                        <i class="fa fa-cog fa-fg"></i>
+                        <i class="fa fa-cog fa-lg"></i>
                     </a>
                 </li>
 

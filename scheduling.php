@@ -300,7 +300,7 @@ if (isset($_POST['submit'])) {
 						<div class="checkbox checkbox-default  checkbox-circle">
 							<input id="checkbox<?php echo $row["tz_id"];?>" class="styled" type="checkbox" name="status[<?php echo $row["tz_id"];?>]" value="1" <?php if($time_id != 0){ $check = ($row['tz_status'] == 1) ? 'checked' : ''; echo $check;} ?> onclick="$('#<?php echo $row["tz_id"];?>').toggle();">
     							<label for="checkbox<?php echo $row["tz_id"];?>"><?php echo $row["zone_name"];?></label>
-							<?php echo $check;?>
+							
     							<div class="help-block with-errors"></div>
 						</div>
 
