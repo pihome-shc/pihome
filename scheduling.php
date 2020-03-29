@@ -179,7 +179,7 @@ if (isset($_POST['submit'])) {
         $query = "select * from schedule_daily_time_zone_view where time_id = {$time_id}";
         $zoneresults = $conn->query($query);
 } else {
-        $query = "select id as tz_id, name as zone_name, type from zone where status = 1 AND `purge`= 0 order by index_id asc;";
+        $query = "select id as tz_id, name as zone_name, status as tz_status, type from zone where status = 1 AND `purge`= 0 order by index_id asc;";
         $zoneresults = $conn->query($query);
 }
 ?>
@@ -312,7 +312,7 @@ if (isset($_POST['submit'])) {
 						}else{
 							$style_text = "display:none !important;";
 						}
-						 echo '<div id="'.$row["tz_id"].'" style=".$style_text.">
+						 echo '<div id="'.$row["tz_id"].'" style="'.$style_text.'">
 							<div class="form-group" class="control-label">';
 								//0=C, 1=F
 								$c_f = settings($conn, 'c_f');
