@@ -662,8 +662,8 @@ function GetModal_ServicesInfo($conn)
     }
     
     $rval=my_exec("/bin/systemctl status " . $_GET['id']);
-    echo '<span class="list-group-item">' . $_GET['id'];
-    echo '<span class="pull-right text-muted small">';
+    echo '<span class="list-group-item">' . $_GET['id'] . '<br/>';
+    echo '<span class="text-muted small">';
     if($rval['stdout']=='') {
         echo 'Error: ' . $rval['stderr'];
     } else {
@@ -686,7 +686,7 @@ function GetModal_ServicesInfo($conn)
                 }
             }
         }
-        echo $stat;
+        echo $stat . '<br/>';
     }    
     echo '</span>';
     echo '</span>';
