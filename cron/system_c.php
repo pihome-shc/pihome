@@ -13,7 +13,7 @@ echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
 echo "********************************************************\n";
 echo "* System Temperature Version 0.4 Build Date 31/03/2018 *\n";
-echo "* Update on 31/03/218                                  *\n";
+echo "* Update on 30/03/2020                                 *\n";
 echo "*                                 Have Fun - PiHome.eu *\n";
 echo "********************************************************\n";
 echo " \033[0m \n";
@@ -21,8 +21,7 @@ echo " \033[0m \n";
 require_once(__DIR__.'../../st_inc/connection.php');
 require_once(__DIR__.'../../st_inc/functions.php');
 
-$time=date('H:i');
-$date=date('y-m-d');
+$date_time = date('Y-m-d H:i:s');
 $system_c = exec ("vcgencmd measure_temp | cut -c6,7,8,9");
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - System Temperature: ". $system_c."\n";
 
