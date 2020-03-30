@@ -21,7 +21,7 @@ echo " \033[0m \n";
 
 require_once(__DIR__.'../../st_inc/connection.php');
 require_once(__DIR__.'../../st_inc/functions.php'); 
-
+$date_time = date('Y-m-d H:i:s');
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Weather Update Script Started \n"; 
 //set the Unit
 $c_f = settings($conn, 'c_f');
