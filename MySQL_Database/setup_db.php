@@ -137,7 +137,6 @@ if (!$db_selected) {
 				$templine = '';
 			}
 	}
-	
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - DataBase File \033[41m".$filename."\033[0m Imported Successfully \n";
 	//Table View 
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Creating Table View \n";
@@ -167,6 +166,29 @@ if (!$db_selected) {
 			}
 	}
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - DataBase File \033[41m".$tableviewfilename."\033[0m Imported Successfully \n";
+
+	// Add User and System table data 
+        echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Creating User Table.  \n";
+        $query_user = "REPLACE INTO `user` (`id`, `account_enable`, `fullname`, `username`, `email`, `password`, `cpdate`, `account_date`, `backup`, `users`, `support`, `settings`) VALUES(1, 1, 'Administrator', 'admin', '', '0f5f9ba0136d5a8588b3fc70ec752869', 'date1', 'date2', 1, 1, 1, 1);";
+        $query_user = str_replace("date1",$date_time,$query_user);
+        $query_user = str_replace("date2",$date_time,$query_user);
+        $results = $conn->query($query_user);
+        if ($results) {
+                echo  "\033[36m".date('Y-m-d H:i:s'). "\033[0m - DataBase Add \033[41mUser\033[0m Data  Succeeded \n";
+        } else {
+                echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - DataBase Add \033[41mUser\033[0m Data Failed \n";
+        }
+
+        echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Creating System Table.  \n";
+        $query_system = "REPLACE INTO `system` (`id`, `sync`, `purge`, `name`, `version`, `build`, `update_location`, `update_file`, `update_alias`, `country`, `language`, `city`, `zip`, `openweather_api`, `backup_email`, `ping_home`, `timezone`, `shutdown`, `reboot`, `c_f`) VALUES (2, 1, 0, 'PiHome - Smart Heating Control', 'version_val', 'build_val', 'http://www.pihome.eu/updates/', 'current-release-versions.php', 'pihome', 'IE', 'en', 'Portlaoise', NULL, 'aa22d10d34b1e6cb32bd6a5f2cb3fb46', '', b'1', 'Europe/Dublin', 0, 0, 0);";
+        $query_system = str_replace("version_val",$version,$query_system);
+        $query_system = str_replace("build_val",$build,$query_system);
+        $results = $conn->query($query_system);
+        if ($results) {
+                echo  "\033[36m".date('Y-m-d H:i:s'). "\033[0m - DataBase Add \033[41mSystem\033[0m Data Succeeded \n";
+        } else {
+                echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - DataBase Add \033[41mSystem\033[0m Data Failed \n";
+        }
 
 echo "---------------------------------------------------------------------------------------- \n";
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - MySQL DataBase Table View Script Ended \n"; 
