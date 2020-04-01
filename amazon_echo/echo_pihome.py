@@ -29,23 +29,24 @@ dbhost = config.get('db', 'hostname')
 dbuser = config.get('db', 'dbusername')
 dbpass = config.get('db', 'dbpassword')
 dbname = config.get('db', 'dbname')
-con = mdb.connect(dbhost, dbuser, dbpass, dbname)
 
 class device_handler(debounce_handler):
     """Publishes the on/off state requested,
        and the IP address of the Echo making the request.
     """
     # Find the active zone names and create the Amazon Echo device name and allocate it a port number
+    con = mdb.connect(dbhost, dbuser, dbpass, dbname)
     cur = con.cursor()
     cur.execute("SELECT * FROM zone WHERE status  = 1")
     result = cur.fetchall()
+    cur.close()
     zone_name = []
+    con.close()
     TRIGGERS = {}
     port = 52000
     # Build a python list of zone names
     for row in result:
         zone_name.append(row[5].strip('Ch. '))
-    cur.close()
     # Build a python dictionary of zone names and allocate sequential port numbers
     for x in range(0, len(zone_name)) :
         TRIGGERS[zone_name[x]] = port + x
@@ -58,8 +59,9 @@ class device_handler(debounce_handler):
 	else :
 		boost = 0
         # Get id numbers for the boost table
-	query = """SELECT * FROM boost_view WHERE name LIKE '%s' Limit 1""" % ('%'+name)
+        con = mdb.connect(dbhost, dbuser, dbpass, dbname)
 	cur = con.cursor()
+        query = """SELECT * FROM boost_view WHERE name LIKE '%s' Limit 1""" % ('%'+name)
         cur.execute(query)
         row = cur.fetchone();
         boost_id = row[0]
@@ -67,13 +69,17 @@ class device_handler(debounce_handler):
 	cur.execute('UPDATE boost SET status=%s WHERE id=%s', (boost,boost_id))
 	cur.close()
 	con.commit()
+        con.close()
         return True
 
     def status(self, client_address, name):
-        query = """SELECT * FROM boost_view WHERE name LIKE '%s' Limit 1""" % ('%'+name)
+        con = mdb.connect(dbhost, dbuser, dbpass, dbname)
         cur = con.cursor()
+        query = """SELECT * FROM boost_view WHERE name LIKE '%s' Limit 1""" % ('%'+name)
         cur.execute(query)
         row = cur.fetchone();
+	cur.close()
+        con.close()
         return row[1]
 
 if __name__ == "__main__":
