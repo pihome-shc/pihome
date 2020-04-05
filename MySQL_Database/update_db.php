@@ -12,8 +12,8 @@ echo " \033[0m \n";
 echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
 echo "***************************************************************\n";
-echo "*   PiHome Datase Script Version 0.01 Build Date 15/09/2019   *\n";
-echo "*   Last Modified on 27/01/2020                               *\n";
+echo "*   PiHome Datase Script Version 0.02 Build Date 15/09/2019   *\n";
+echo "*   Last Modified on 05/04/2020                               *\n";
 echo "*                                      Have Fun - PiHome.eu   *\n";
 echo "***************************************************************\n";
 echo "\033[0m";
@@ -119,8 +119,8 @@ if ($db_selected) {
                         }
 
 		// get the new version and build values
-		$ver =substr($struct2, strpos($struct2, 'PiHome - Smart Heating Control') + 34, 4);
-		$build =substr($struct2, strpos($struct2, 'PiHome - Smart Heating Control') + 42, 6);
+		//$ver =substr($struct2, strpos($struct2, 'PiHome - Smart Heating Control') + 34, 4);
+		//$build =substr($struct2, strpos($struct2, 'PiHome - Smart Heating Control') + 42, 6);
 
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Applying Updates to Database. \n";
 		// Name of the file
@@ -183,10 +183,13 @@ if ($db_selected) {
 			}
 	}
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - DataBase File \033[41m".$tableviewfilename."\033[0m Imported Successfully \n";
-	
-	$query = "UPDATE system SET version = '{$ver}', build = '{$build}' LIMIT 1;";
+	//Update Schedule Daily time zone table to set holiday id zero where is set null. 
+	$query = "UPDATE schedule_daily_time_zone SET holidays_id = '0' WHERE holidays_id is Null;";
 	$conn->query($query);
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Update Version: \033[41m".$ver."\033[0m \n";
+	//Update Version and build number 
+	$query = "UPDATE system SET version = '{$version}', build = '{$build}' LIMIT 1;";
+	$conn->query($query);
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Update Version: \033[41m".$version."\033[0m \n";
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Update Build: \033[41m".$build."\033[0m \n";
 		
 } else {

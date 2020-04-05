@@ -12,6 +12,7 @@ $lang['lang_pt'] = "Portugues";
 $lang['lang_fr'] = "Français";
 $lang['lang_ro'] = "Română";
 $lang['lang_lv'] = "Lavian";
+$lang['lang_it'] = "Italiano";
 
 $lang['start_time'] = "Hora de Inicio";
 $lang['end_time'] = "Hora de Fim";
