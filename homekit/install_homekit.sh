@@ -64,6 +64,6 @@ sudo systemctl enable pihome_homekit_api.service
 echo "Starting the service"
 sudo systemctl start pihome_homekit_api.service
 
-echo "Backing Up and Updateing /var/lib/homebridge/config.json
-python config_json.py
+echo "Backing Up and Updateing /var/lib/homebridge/config.json"
+/usr/bin/python config_json.py
 
