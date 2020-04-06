@@ -6,7 +6,7 @@ For controlling local devices with the iOS Home App.
 1. Install HomeKit, see https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Raspbian
 2. Install the homebridge-http-switch, see https://www.npmjs.com/package/homebridge-http-switch
 3. Install the RESTful API service by executing bash /var/www/homekit/install_homekit.sh 
-4. The install shell will automatically update the HomeKit configuration file /var/lib/homebridge/config.json and add accessory sections for each of the active zones, an example accessories section is shown below :-
+4. The install shell will automatically update the homebridge configuration file /var/lib/homebridge/config.json and add accessory sections for each of the active zones, an example accessories section is shown below :-
 
         {
             "accessory": "HTTP-SWITCH",

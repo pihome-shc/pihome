@@ -586,6 +586,7 @@ function GetModal_Services($conn)
            ['name'=>'MariaDB','service'=>'mariadb.service'],
            ['name'=>'PiHome MQTT','service'=>'pihome.mqtt.service'],
 	   ['name'=>'Amazon Echo','service'=>'pihome_amazon_echo.service'],
+           ['name'=>'Homebridge','service'=>'homebridge.service'],
            ['name'=>'HomeKit API','service'=>'pihome_homekit_api.service']];	   
     echo '<div class="list-group">';
     foreach($SArr as $SArrKey=>$SArrVal) {
@@ -651,11 +652,25 @@ function GetModal_ServicesInfo($conn)
     echo '<div class="list-group">';
     if(isset($_GET['Action'])) {
         if($_GET['Action']=='start' || $_GET['Action']=='stop' || $_GET['Action']=='enable' || $_GET['Action']=='disable') {
-            $rval=my_exec("/usr/bin/sudo /bin/systemctl " . $_GET['Action'] . " " . $_GET['id']);
+            if(substr($_GET['id'],0,10)=='homebridge') {
+                if($_GET['Action']=='start' || $_GET['Action']=='stop') {
+                        $rval=my_exec("sudo hb-service " . $_GET['Action']);
+                } elseif ($_GET['Action']=='enable') {
+                        $rval=my_exec("sudo hb-service install --user homebridge");
+                } else {
+                        $rval=my_exec("sudo hb-service uninstall");
+                }
+            } else {
+                $rval=my_exec("/usr/bin/sudo /bin/systemctl " . $_GET['Action'] . " " . $_GET['id']);
+            }
             $per='';
             similar_text($rval['stderr'],'We trust you have received the usual lecture from the local System Administrator. It usually boils down to these three things: #1) Respect the privacy of others. #2) Think before you type. #3) With great power comes great responsibility. sudo: no tty present and no askpass program specified',$per);
             if($per>80) {
-                $rval['stdout']='www-data cannot issue systemctl commands.<br/><br/>If you would like it to be able to, add<br/><code>www-data ALL=/bin/systemctl<br/>www-data ALL=NOPASSWD: /bin/systemctl</code><br/>to /etc/sudoers.d/010_pi-nopasswd.';
+		if(substr($_GET['id'],0,10)=='homebridge') {
+                	$rval['stdout']='www-data cannot issue  hb-service commands.<br/><br/>If you would like it to be able to, add<br/><code>www-data ALL=/usr/bin/hb-service<br/>www-data ALL=NOPASSWD: /usr/bin/hb-service</code><br/>to /etc/sudoers.d/010_pi-nopasswd.';
+		} else {
+			$rval['stdout']='www-data cannot issue systemctl commands.<br/><br/>If you would like it to be able to, add<br/><code>www-data ALL=/bin/systemctl<br/>www-data ALL=NOPASSWD: /bin/systemctl</code><br/>to /etc/sudoers.d/010_pi-nopasswd.';
+		}
                 $rval['stderr']='';
             }
             echo '<p class="text-muted">systemctl ' . $_GET['Action'] . ' ' . $_GET['id'] . '<br/>stdout: ' . $rval['stdout'] . '<br/>stderr: ' . $rval['stderr'] . '</p>';
@@ -692,7 +707,7 @@ function GetModal_ServicesInfo($conn)
     echo '</span>';
     echo '</span>';
     
-    if(substr($_GET['id'],0,7)=='pihome.' or substr($_GET['id'],0,7)=='pihome_') {
+    if(substr($_GET['id'],0,7)=='pihome.' or substr($_GET['id'],0,7)=='pihome_' or substr($_GET['id'],0,10)=='homebridge') {
         echo '<span class="list-group-item" style="height:40px;">&nbsp;';
         echo '<span class="pull-right text-muted small">
               <button class="btn btn-warning btn-xs" data-remote="false" data-target="#ajaxModal" data-ajax="ajax.php?Ajax=GetModal_ServicesInfo&id=' . $_GET['id'] . '&Action=start" onclick="services_Info(this);">
