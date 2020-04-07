@@ -802,7 +802,7 @@ echo '
                                 <div class="form-group" class="control-label" id="serial_port" style="'.$display_serial.'"><label>'.$lang['serial_gateway_port'].' </label>
                                         <select class="form-control input-sm" type="text" id="serial_port_speed" name="serial_port_speed">
                                                 <option selected>'.$grow['port'].'</option>
-                                                <option value="9600">96000</option>
+                                                <option value="9600">9600</option>
                                                 <option value="19200">19200</option>
                                                 <option value="38400">38400</option>
                                                 <option value="57600">57600</option>
@@ -812,7 +812,7 @@ echo '
                                                 <option value="250000">250000</option>
                                                 <option value="500000">500000</option>
                                                 <option value="1000000">1000000</option>
-                                                <option value="20000000">2000000</option>
+                                                <option value="20000000">20000000</option>
                                                 </select>
                                         <div class="help-block with-errors">
                                         </div>

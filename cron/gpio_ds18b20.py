@@ -35,9 +35,9 @@ logger=logging.getLogger(__name__)
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
 
-# Initialise the database access varables
+# Initialise the database access variables
 config = ConfigParser.ConfigParser()
-config.read('../st_inc/db_config.ini')
+config.read('/var/www/st_inc/db_config.ini')
 dbhost = config.get('db', 'hostname')
 dbuser = config.get('db', 'dbusername')
 dbpass = config.get('db', 'dbpassword')
@@ -60,7 +60,7 @@ def insertDB(IDs, temperature):
 			row = int(row[0])
 			if (row == 0):
 				print bc.dtm + time.ctime() + bc.ENDC + ' - New DS18B20 Sensors Discovered' + bc.grn, IDs[i], bc.ENDC 
-				cur.execute('INSERT INTO nodes(`sync`, `purge`, `type`, `node_id`, `max_child_id`, `name`, `last_seen`, `notice_interval`, `min_voltage`, `status`, `ms_version`, `sketch_version`, `repeater`) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', (0, 0, null_value, IDs[i], '0', 'Temperature Sensor', time.strftime("%Y-%m-%d %H:%M:%S"), 0, null_value, 'Active', null_value, null_value, null_value))
+				cur.execute('INSERT INTO nodes(`sync`, `purge`, `type`, `node_id`, `max_child_id`, `name`, `last_seen`, `notice_interval`, `min_voltage`, `status`, `ms_version`, `sketch_version`, `repeater`) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', (0, 0, 'GPIO', IDs[i], '0', 'Temperature Sensor', time.strftime("%Y-%m-%d %H:%M:%S"), 0, 0, 'Active', 0, 0, 0))
 				con.commit()
 			#If DS18B20 Sensor record exist: Update Nodes Table with Last seen status. 
 			if (row == 1):
