@@ -812,7 +812,7 @@ echo '
                                                 <option value="250000">250000</option>
                                                 <option value="500000">500000</option>
                                                 <option value="1000000">1000000</option>
-                                                <option value="20000000">20000000</option>
+                                                <option value="2000000">2000000</option>
                                                 </select>
                                         <div class="help-block with-errors">
                                         </div>
