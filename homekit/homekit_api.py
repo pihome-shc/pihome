@@ -60,7 +60,31 @@ try:
                 else :
                         return False
 
-        app = Flask(__name__)
+        def getTemp():
+                zonename = request.args.get('zonename')
+                if len(zonename) > 0 :
+                        con = mdb.connect(dbhost, dbuser, dbpass, dbname)
+                        cur = con.cursor()
+                        cur.execute('SELECT * FROM zone where name = (%s) limit 1', (zonename, ))
+                        row = cur.fetchone();
+                        sensor_id = row[13]
+                        sensor_child_id = row[14]
+                        cur.execute('SELECT * FROM nodes where id = (%s) limit 1', (sensor_id, ))
+                        nrow = cur.fetchone();
+                        node_id = nrow[4]
+                        # Get the latest temperature
+                        cur.execute('SELECT * FROM messages_in WHERE node_id = (%s)  AND child_id = (%s) ORDER BY id desc LIMIT 1', (node_id, sensor_child_id ))
+                        mrow = cur.fetchone()
+                        cur.close()
+                        con.close()
+                        if mrow :
+                                return mrow[6]
+                        else :
+                                return False
+                else :
+                        return False
+
+	app = Flask(__name__)
 
         @app.route("/api/switchOn", methods=["GET"])
         def on():
@@ -76,6 +100,11 @@ try:
         def status():
                 status = getBoost()
                 return jsonify(status)
+
+        @app.route("/api/getTemperature", methods=["GET"])
+        def temperature():
+                temp = float(getTemp())
+                return jsonify(temp)
 
         if __name__ == '__main__':
                 app.run(port=8081)
