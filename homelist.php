@@ -216,20 +216,25 @@ require_once(__DIR__.'/st_inc/functions.php');
 			}
 
 			//query to check night cliemate status and get temperature from night climate table
-			$query = "select * from schedule_night_climat_zone_view WHERE zone_id = {$row['id']} LIMIT 1";
+			//$query = "select * from schedule_night_climat_zone_view WHERE zone_id = {$row['id']} LIMIT 1";
+			$query = "select * from schedule_night_climat_zone_view WHERE zone_id = {$row['id']} AND time_status = '1' AND tz_status = '1' AND (WeekDays & (1 << {$dow})) > 0 LIMIT 1;";
 			$result = $conn->query($query);
-			$night_climate = mysqli_fetch_array($result);
-			$nc_time_status = $night_climate['time_status'];
-			$nc_zone_status = $night_climate['tz_status'];
-			$nc_zone_id = $night_climate['zone_id'];
-			$nc_start_time = $night_climate['start'];
-			$nc_end_time = $night_climate['end'];
-			$nc_min_c = $night_climate['min_temperature'];
-			$nc_max_c = $night_climate['max_temperature'];
-			$current_time = date('H:i:s');
-			if ((TimeIsBetweenTwoTimes($current_time, $nc_start_time, $nc_end_time)) AND ($nc_time_status =='1') AND ($nc_zone_status =='1')) {
-				$night_climate_status='1';
-			} else {
+			if (mysqli_num_rows($result) != 0){
+				$night_climate = mysqli_fetch_array($result);
+				$nc_time_status = $night_climate['time_status'];
+				$nc_zone_status = $night_climate['tz_status'];
+				$nc_zone_id = $night_climate['zone_id'];
+				$nc_start_time = $night_climate['start'];
+				$nc_end_time = $night_climate['end'];
+				$nc_min_c = $night_climate['min_temperature'];
+				$nc_max_c = $night_climate['max_temperature'];
+				$current_time = date('H:i:s');
+				if ((TimeIsBetweenTwoTimes($current_time, $nc_start_time, $nc_end_time)) AND ($nc_time_status =='1') AND ($nc_zone_status =='1')) {
+					$night_climate_status='1';
+				} else {
+					$night_climate_status='0';
+				}
+			}else {
 				$night_climate_status='0';
 			}
 			//Boost and Override Array
