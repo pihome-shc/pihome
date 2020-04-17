@@ -92,6 +92,7 @@ echo "--------------------------------------------------------------------------
 //following variable set to 0 on start for array index.
 $boiler_index = '0';
 $zone_index = '0';
+$current_time = date('H:i:s');
 
 //following variable set to current day of the week.
 $dow = idate('w');
