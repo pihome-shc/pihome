@@ -61,11 +61,12 @@ $query = "SELECT * FROM holidays WHERE NOW() between start_date_time AND end_dat
 $result = $conn->query($query);
 $rowcount=mysqli_num_rows($result);
 if ($rowcount > 0) {
-        $holidays = mysqli_fetch_array($result);
-        $holidays_status = $holidays['status'];
+	$holidays = mysqli_fetch_array($result);
+	$holidays_status = $holidays['status'];
 }else {
-        $holidays_status = 0;
+	$holidays_status = 0;
 }
+
 //query to get frost protection temperature
 $query = "SELECT * FROM frost_protection ORDER BY id desc LIMIT 1;";
 $result = $conn->query($query);
@@ -91,6 +92,7 @@ echo "--------------------------------------------------------------------------
 //following variable set to 0 on start for array index.
 $boiler_index = '0';
 $zone_index = '0';
+$current_time = date('H:i:s');
 
 //following variable set to current day of the week.
 $dow = idate('w');
@@ -122,7 +124,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	if($holidays_status == 0) {
 		$query = "SELECT * FROM schedule_daily_time_zone_view WHERE ((`end`>`start` AND CURTIME() between `start` AND `end`) OR (`end`<`start` AND CURTIME()<`end`) OR (`end`<`start` AND CURTIME()>`start`)) AND zone_id = {$zone_id} AND time_status = '1' AND (WeekDays & (1 << {$dow})) > 0 AND holidays_id = 0 LIMIT 1;";
 	}else{
-    $query = "SELECT * FROM schedule_daily_time_zone_view WHERE ((`end`>`start` AND CURTIME() between `start` AND `end`) OR (`end`<`start` AND CURTIME()<`end`) OR (`end`<`start` AND CURTIME()>`start`)) AND zone_id = {$zone_id} AND time_status = '1' AND (WeekDays & (1 << {$dow})) > 0 AND holidays_id > 0 LIMIT 1;";
+		$query = "SELECT * FROM schedule_daily_time_zone_view WHERE ((`end`>`start` AND CURTIME() between `start` AND `end`) OR (`end`<`start` AND CURTIME()<`end`) OR (`end`<`start` AND CURTIME()>`start`)) AND zone_id = {$zone_id} AND time_status = '1' AND (WeekDays & (1 << {$dow})) > 0 AND holidays_id > 0 LIMIT 1;";
 	}
 	//echo $query . PHP_EOL;
 	$result = $conn->query($query);
@@ -164,27 +166,30 @@ while ($row = mysqli_fetch_assoc($results)) {
 	}
 
 	//query to check night climate status and get temperature from night climate table
-	$query = "select * from schedule_night_climat_zone_view WHERE zone_id = {$zone_id} LIMIT 1;";
+	//$query = "select * from schedule_night_climat_zone_view WHERE zone_id = {$zone_id} LIMIT 1;";
+	$query = "SELECT * from schedule_night_climat_zone_view WHERE ((`end`>`start` AND CURTIME() between `start` AND `end`) OR (`end`<`start` AND CURTIME()<`end`) OR (`end`<`start` AND CURTIME()>`start`)) AND zone_id = {$zone_id} AND time_status = '1' AND tz_status = '1' AND (WeekDays & (1 << {$dow})) > 0 LIMIT 1;";
 	$result = $conn->query($query);
-	$night_climate = mysqli_fetch_array($result);
-	$nc_time_status = $night_climate['time_status'];
-	$nc_zone_status = $night_climate['tz_status'];
-	$nc_zone_id = $night_climate['zone_id'];
-	$nc_start_time = $night_climate['start'];
-	$nc_end_time = $night_climate['end'];
-	$nc_min_c = $night_climate['min_temperature'];
-	$nc_max_c = $night_climate['max_temperature'];
-	$nc_weekday = $night_climate['WeekDays'] & (1 << $dow);
-
-	//night climate time to add 10 minuts for record purpose
-	$timestamp =strtotime(date('H:i:s')) + 60 *10;
-	$nc_end_time_rc = date('H:i:s', $timestamp);
-
-	$current_time = date('H:i:s');
-	if ((TimeIsBetweenTwoTimes($current_time, $nc_start_time, $nc_end_time)) && ($nc_time_status =='1') && ($nc_zone_status =='1') && ($nc_weekday > 0)) {
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Night Climate Enabled for This Zone \n";
-		$night_climate_status='1';
-	} else {
+	if (mysqli_num_rows($result) != 0){
+		$night_climate = mysqli_fetch_array($result);
+		$nc_time_status = $night_climate['time_status'];
+		$nc_zone_status = $night_climate['tz_status'];
+		$nc_zone_id = $night_climate['zone_id'];
+		$nc_start_time = $night_climate['start'];
+		$nc_end_time = $night_climate['end'];
+		$nc_min_c = $night_climate['min_temperature'];
+		$nc_max_c = $night_climate['max_temperature'];
+		$nc_weekday = $night_climate['WeekDays'] & (1 << $dow);
+		//night climate time to add 10 minuts for record purpose
+		$timestamp =strtotime(date('H:i:s')) + 60 *10;
+		$nc_end_time_rc = date('H:i:s', $timestamp);
+		$current_time = date('H:i:s');
+		if ((TimeIsBetweenTwoTimes($current_time, $nc_start_time, $nc_end_time)) && ($nc_time_status =='1') && ($nc_zone_status =='1') && ($nc_weekday > 0)) {
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Night Climate Enabled for This Zone \n";
+			$night_climate_status='1';
+		} else {
+			$night_climate_status='0';
+		}
+	}else {
 		$night_climate_status='0';
 	}
 
@@ -217,28 +222,27 @@ while ($row = mysqli_fetch_assoc($results)) {
 	}
 
 	//Get Weather Temperature
-  $query = "SELECT * FROM messages_in WHERE node_id = '1' ORDER BY id desc LIMIT 1";
-  $result = $conn->query($query);
-  $weather_temp = mysqli_fetch_array($result);
-  $weather_c = $weather_temp['payload'];
+	$query = "SELECT * FROM messages_in WHERE node_id = '1' ORDER BY id desc LIMIT 1";
+	$result = $conn->query($query);
+	$weather_temp = mysqli_fetch_array($result);
+	$weather_c = $weather_temp['payload'];
 	//    1    00-05    0.3
 	//    2    06-10    0.4
 	//    3    11-15    0.5
 	//    4    16-20    0.6
 	//    5    21-30    0.7
-  $weather_fact = 0;
-  if ($weather_c <= 5 ) {$weather_fact = 0.3;} elseif ($weather_c <= 10 ) {$weather_fact = 0.4;} elseif ($weather_c <= 15 ) {$weather_fact = 0.5;} elseif ($weather_c <= 20 ) {$weather_fact = 0.6;} elseif ($weather_c <= 30 ) {$weather_fact = 0.7;}
+	$weather_fact = 0;
+	if ($weather_c <= 5 ) {$weather_fact = 0.3;} elseif ($weather_c <= 10 ) {$weather_fact = 0.4;} elseif ($weather_c <= 15 ) {$weather_fact = 0.5;} elseif ($weather_c <= 20 ) {$weather_fact = 0.6;} elseif ($weather_c <= 30 ) {$weather_fact = 0.7;}
 
-$zone_temp = $zone_c + $weather_fact + $zone_sp_deadband;
-echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: Sensor Reading     \033[41m".$zone_c."\033[0m \n";
-echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: Weather Factor     \033[41m".$weather_fact."\033[0m \n";
-echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: DeadBand           \033[41m".$zone_sp_deadband."\033[0m \n";
-echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: Temperature        \033[41m".$zone_temp."\033[0m \n";
-$zone_c = $zone_c + $weather_fact; //Add to Actual Zone Temperature to Predict Accurate Temperature
+	$zone_temp = $zone_c + $weather_fact + $zone_sp_deadband;
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: Sensor Reading     \033[41m".$zone_c."\033[0m \n";
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: Weather Factor     \033[41m".$weather_fact."\033[0m \n";
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: DeadBand           \033[41m".$zone_sp_deadband."\033[0m \n";
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: Temperature        \033[41m".$zone_temp."\033[0m \n";
+	$zone_c = $zone_c + $weather_fact; //Add to Actual Zone Temperature to Predict Accurate Temperature
  
-
 	//Following line to decide which temperature is target temperature
-  if ($boost_active=='1'){$target_c=$boost_c;} elseif ($night_climate_status =='1') {$target_c=$nc_min_c;} elseif($override_status=='1'){$target_c=$override_c;} elseif($override_status=='0'){$target_c=$sch_c;}
+	if ($boost_active=='1'){$target_c=$boost_c;} elseif ($night_climate_status =='1') {$target_c=$nc_min_c;} elseif($override_status=='1'){$target_c=$override_c;} elseif($override_status=='0'){$target_c=$sch_c;}
 
 	//check if hysteresis is passed its time or not
 	$hysteresis='0';
@@ -289,7 +293,7 @@ $zone_c = $zone_c + $weather_fact; //Add to Actual Zone Temperature to Predict A
           echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Temperature sensor communication timeout for This Zone. Last temperature reading: ".$temp_reading_time."\n";
       }
 	}
-  if($boiler_notice > 0){
+	if($boiler_notice > 0){
 		$now=strtotime(date('Y-m-d H:i:s'));
 		$boiler_seen_time = strtotime($boiler_seen);
 		if ($boiler_seen_time  < ($now - ($boiler_notice*60))){
@@ -297,7 +301,6 @@ $zone_c = $zone_c + $weather_fact; //Add to Actual Zone Temperature to Predict A
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler controler communication timeout. Boiler Last Seen: ".$boiler_seen."\n";
 		}
 	}
-
 
 	//initialize two variable
 	$start_cause ='';

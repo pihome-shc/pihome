@@ -104,9 +104,9 @@ try:
 			out_payload = msg[8] 	#Payload to send out. 
 			sent = msg[9] 			#Status of message either its sent or not. (1 for sent, 0 for not sent yet)
 			if dbgLevel >= 1 and dbgMsgOut == 1: # Debug print to screen
-				print bc.grn + "\nTotal Messages to Sent: ",count, bc.ENDC # Print how many Messages we have to send out.
-				print "Date & Time:            ",time.ctime()
-				print "Message From Database:  ",out_id, out_node_id, out_child_id, out_sub_type, out_ack, out_type, out_payload, sent #Print what will be sent including record id and sent status.
+				print bc.grn + "\nTotal Messages to Sent:      ",count, bc.ENDC # Print how many Messages we have to send out.
+				print "Date & Time:                 ",time.ctime()
+				print "Message From Database:       ",out_id, out_node_id, out_child_id, out_sub_type, out_ack, out_type, out_payload, sent #Print what will be sent including record id and sent status.
 			msg = str(out_node_id) 	#Node ID
 			msg += ';' 				#Separator
 			msg += str(out_child_id) #Child ID of the Node.
@@ -120,13 +120,13 @@ try:
 			msg += str(out_payload) #Payload from DB
 			msg += ' \n'			#New line
 			if dbgLevel >= 3 and dbgMsgOut == 1:
-				print "Full Message to Send:   ",msg.replace("\n","\\n") #Print Full Message
-				print "Node ID:                 ",out_node_id
-				print "Child Sensor ID:         ",out_child_id
-				print "Command Type:            ",out_sub_type			
-				print "Ack Req/Resp:            ",out_ack			
-				print "Type:                    ",out_type			
-				print "Pay Load:                ",out_payload
+				print "Full Message to Send:        ",msg.replace("\n","\\n") #Print Full Message
+				print "Node ID:                     ",out_node_id
+				print "Child Sensor ID:             ",out_child_id
+				print "Command Type:                ",out_sub_type			
+				print "Ack Req/Resp:                ",out_ack			
+				print "Type:                        ",out_type			
+				print "Pay Load:                    ",out_payload
 				
 			# node-id ; child-sensor-id ; command ; ack ; type ; payload \n
 			gw.write(msg) # !!!! send it to serial (arduino attached to rPI by USB port)

@@ -213,35 +213,55 @@ if($what=="boost"){
             		return;
         	}
 	}
-        if($opp=="update"){
-                $sel_query = "SELECT * FROM boost ORDER BY id asc";
-                $results = $conn->query($sel_query);
-                while ($row = mysqli_fetch_assoc($results)) {
-                        $id = $row['id'];
-                        $input1 = 'minute'.$id;
-                        $input2 = 'temperature'.$id;
-                        $input3= 'boost_button_id'.$id;
-                        $input4 = 'boost_button_child_id'.$id;
-                        $minute = $_GET[$input1];
-                        $temperature = $_GET[$input2];
-                        $boost_button_id = $_GET[$input3];
-                        $boost_button_child_id = $_GET[$input4];
-                        $query = "UPDATE boost SET minute = '".$minute."', temperature = '".$temperature."', boost_button_id = '".$boost_button_id."', boost_button_child_id = '".$boost_button_child_id."' WHERE id='".$row['id']."' LIMIT 1;";
-                        $update_error=0;
-                        if(!$conn->query($query)){
-                                $update_error=1;
-                        }
-                }
-                if($update_error==0){
-                        header('Content-type: application/json');
-                        echo json_encode(array('Success'=>'Success','Query'=>$query));
-                        return;
-                }else{
-                        header('Content-type: application/json');
-                        echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
-                        return;
-                }
-        }
+	if($opp=="update"){
+		$datetime = date("Y-m-d H:i:s");
+		$sel_query = "SELECT * FROM boost ORDER BY id asc;";
+		$results = $conn->query($sel_query);
+		while ($row = mysqli_fetch_assoc($results)) {
+			$id = $row['id'];
+			$input1 = 'minute'.$id;
+			$input2 = 'temperature'.$id;
+			$input3= 'boost_button_id'.$id;
+			$input4 = 'boost_button_child_id'.$id;
+			$input5 = 'zone_id'.$id;
+			$minute = $_GET[$input1];
+			$temperature = $_GET[$input2];
+			$boost_button_id = $_GET[$input3];
+			$boost_button_child_id = $_GET[$input4];
+			$zone_id = $_GET[$input5];
+			//Delete all boost console records from messages_out 
+			$query = "DELETE FROM messages_out WHERE node_id = '{$boost_button_id}';";
+			$conn->query($query);
+			//Update Boost table
+			$query = "UPDATE boost SET minute = '".$minute."', temperature = '".$temperature."', boost_button_id = '".$boost_button_id."', boost_button_child_id = '".$boost_button_child_id."' WHERE id='".$row['id']."' LIMIT 1;";
+			$conn->query($sel_query);
+			$update_error=0;
+			if(!$conn->query($query)){
+				$update_error=1;
+			}
+		}
+		$query = "SELECT * FROM boost WHERE boost_button_id != 0 ORDER BY id asc;";
+		$results = $conn->query($query);
+		while ($row = mysqli_fetch_assoc($results)) {
+			$zone_id = $row['zone_id'];
+			$boost_button_id = $row['boost_button_id'];
+			$boost_button_child_id = $row['boost_button_child_id'];
+			$query = "INSERT INTO `messages_out`(`sync`, `purge`, `node_id`, `child_id`, `sub_type`, `ack`, `type`, `payload`, `sent`, `datetime`, `zone_id`) VALUES ('0', '0', '{$boost_button_id}', '{$boost_button_child_id}', '1', '0', '2', '0', '0', '{$datetime}', '{$zone_id}')";
+			$conn->query($query);
+			if(!$conn->query($query)){
+				$update_error=1;
+			}
+		}
+		if($update_error==0){
+			header('Content-type: application/json');
+			echo json_encode(array('Success'=>'Success','Query'=>$query));
+			return;
+		}else{
+			header('Content-type: application/json');
+			echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+			return;
+		}
+	}
 }
 //Nodes
 if($what=="node"){
