@@ -34,7 +34,7 @@ After=multi-user.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python -u /var/www/amazon_echo/echo_pihome.py
+ExecStart=/usr/bin/python -u /var/www/add_on/amazon_echo/echo_pihome.py
 Restart=on-abort
 
 [Install]
