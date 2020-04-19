@@ -11,7 +11,7 @@ then
         if [ -z "$var" ]
         then
             echo "Installing pip"
-            sudo apt-get insall python-pip
+            sudo apt-get install python-pip
         else
             echo "pip already installed"
         fi
