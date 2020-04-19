@@ -1,5 +1,5 @@
 # Homekit
-For controlling local devices with the iOS Home App.
+For controlling local devices with the iOS Home App. This interface uses Homebridge and the Homebridge Http Webhooks plugin to provide control of BOOST for individual zones and to interogate temperature sensors. 
 
 ## Quick Start
 
