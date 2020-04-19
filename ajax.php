@@ -754,7 +754,7 @@ Type=simple<br/>';
 if($_GET['id']=='pihome.mqtt.service') {
         echo 'ExecStart=/usr/bin/python -u /var/www/cron/mqtt.py<br/>';
 } elseif($_GET['id']=='pihome_amazon_echo.service') {
-        echo 'ExecStart=/usr/bin/python -u /var/www/amazon_echo/echo_pihome.py<br/>';
+        echo 'ExecStart=/usr/bin/python -u /var/www/add_on/amazon_echo/echo_pihome.py<br/>';
 }
 echo 'Restart=on-abort<br/>
 <br/>
