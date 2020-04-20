@@ -28,25 +28,56 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 require_once(__DIR__.'../../st_inc/connection.php');
 require_once(__DIR__.'../../st_inc/functions.php');
 
-if(isset($_GET['zonename']) and isset($_GET['state'])) {
-        $boost_status = $_GET['state'];
+if(isset($_GET['zonename'])) {
         $zonename = $_GET['zonename'];
         $query = "SELECT * FROM boost_view where name = '{$zonename}' LIMIT 1;";
         $results = $conn->query($query);
         $row = mysqli_fetch_assoc($results);
-        $boost_id=$row['id'];
-        $query = "UPDATE boost SET status = '{$boost_status}' where id = '{$boost_id}';";
-        $conn->query($query);
-        if($conn->query($query)){
-                http_response_code(200);
-                echo json_encode(array("state" => $boost_status));
-        } else {
-                http_response_code(400);
-                echo json_encode(array("message" => "Update database error."));
-        }
+	if(! $row) {
+	        http_response_code(400);
+        	echo json_encode(array("success" => False, "state" => "No record found."));
+	} else {
+	        $boost_id=$row['id'];
+		if(isset($_GET['state'])) {
+			switch ($_GET['state']) {
+    				case 'true':
+        				$boost_status = 1;
+        				break;
+    				case 'false':
+        				$boost_status = 0;
+				        break;
+                                case '1':
+                                        $boost_status = 1;
+                                        break;
+ 				case '0':
+				        $boost_status = 0;
+				        break;
+				default:
+	                                http_response_code(400);
+        	                        echo json_encode(array("success" => False, "state" => "'state' parameter not correctly set."));
+					$boost_status = -1;
+			}
+			if($boost_status == 0 or $boost_status == 1) {
+	        		$query = "UPDATE boost SET status = '{$boost_status}' where id = '{$boost_id}';";
+		        	$conn->query($query);
+        			if($conn->query($query)){
+                			http_response_code(200);
+					if($boost_status == 1) {$boost_status = True;} else {$boost_status = False;}
+	                		echo json_encode(array("success" => True, "state" => $boost_status));
+		        	} else {
+        		        	http_response_code(400);
+                			echo json_encode(array("success" => False, "state" => "Update database error."));
+		        	}
+			}
+		} else {
+        		http_response_code(200);
+			if($row['status'] == 1) {$boost_status = True;} else {$boost_status = False;}
+	                echo json_encode(array("success" => True, "state" => $boost_status));
+		}
+	}
 } else {
         http_response_code(400);
-        echo json_encode(array("message" => "Data is incomplete."));
+        echo json_encode(array("success" => False, "state" => "Data is incomplete."));
 }
 ?>
 
