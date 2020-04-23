@@ -117,7 +117,7 @@ if($nopids==0) { // Script not running
 	$query = "UPDATE gateway SET pid = '{$out[0]}', pid_running_since = '{$pid_details}' LIMIT 1";
 	$conn->query($query);
 	echo mysqli_error($conn)."\n";
-	$query = "INSERT INTO gateway_logs (`sync`, `purge`, type, location, port, pid, pid_start_time) VALUES ('0', '0', '{$gw_type}', '{$gw_location}', '{$gw_port}', '{$out[0]}', '{$pid_details}' )";
+	$query = "INSERT INTO gateway_logs (`sync`, `purge`, type, location, port, pid, pid_start_time) VALUES ('0', '0', '{$gw_type}', '{$gw_location}', '{$gw_port}', '{$out[0]}', '{$date_time}' )";
 	$conn->query($query);
 	echo mysqli_error($conn)."\n";
 	echo $line;
