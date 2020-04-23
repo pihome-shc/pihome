@@ -197,7 +197,7 @@ CREATE TABLE IF NOT EXISTS `gateway_logs` (
   `location` char(50) COLLATE utf16_bin COMMENT 'ip address or serial port location i.e. /dev/ttyAMA0',
   `port` char(50) COLLATE utf16_bin COMMENT 'port number or baud rate for serial gateway',
   `pid` char(50) COLLATE utf16_bin,
-  `pid_start_time` char(50) COLLATE utf16_bin,
+  `pid_start_time` DATETIME NULL DEFAULT NULL,
   `pid_datetime` timestamp NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
