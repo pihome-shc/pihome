@@ -55,6 +55,14 @@ if ($gw_status == '0') {
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Gateway is DISABLED \n";
 	}
 } else {
+	//if reboot set to 1 then kill gateway PID and set reboot status to 0
+	if ($gw_reboot == '1' OR $gw_status == '0') {
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Stopping Python Gateway Script \n"; 
+		exec("kill -9 $gw_pid");
+		$query = "UPDATE gateway SET reboot = '0' LIMIT 1;";
+		$conn->query($query);
+		echo $line;
+	}
 	//if find_gw set to 1 then start the search script and set find_gw to 0
 	if ($find_gw == '1') {
 		if ($gw_type == 'wifi') {
