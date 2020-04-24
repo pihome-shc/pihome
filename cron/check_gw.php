@@ -41,7 +41,7 @@ $gw_reboot = $row['reboot'];
 $find_gw = $row['find_gw'];
 
 //if reboot set to 1 then kill gateway PID and set reboot status to 0
-if ($gw_reboot == '1' OR $gw_status == '0') {
+if ($gw_reboot == '1') {
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Stopping Python Gateway Script \n"; 
 	exec("kill -9 $gw_pid");
 	$query = "UPDATE gateway SET reboot = '0' LIMIT 1;";
@@ -117,7 +117,7 @@ if($nopids==0) { // Script not running
 	$query = "UPDATE gateway SET pid = '{$out[0]}', pid_running_since = '{$pid_details}' LIMIT 1";
 	$conn->query($query);
 	echo mysqli_error($conn)."\n";
-	$query = "INSERT INTO gateway_logs (`sync`, `purge`, type, location, port, pid, pid_start_time) VALUES ('0', '0', '{$gw_type}', '{$gw_location}', '{$gw_port}', '{$out[0]}', '{$pid_details}' )";
+	$query = "INSERT INTO gateway_logs (`sync`, `purge`, type, location, port, pid, pid_start_time, pid_datetime) VALUES ('0', '0', '{$gw_type}', '{$gw_location}', '{$gw_port}', '{$out[0]}', '{$pid_details}', '{$date_time}' )";
 	$conn->query($query);
 	echo mysqli_error($conn)."\n";
 	echo $line;
