@@ -160,7 +160,7 @@ try:
 				print "Full Statement Received:     ",statement
 			
 			if len(statement) == 6 and statement[0].isdigit(): #check if received message is right format
-				node_id = int(statement[0])
+				node_id = str(statement[0])
 				child_sensor_id = int(statement[1])
 				message_type = int(statement[2])
 				ack = int(statement[3])
