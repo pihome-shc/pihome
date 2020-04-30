@@ -557,7 +557,7 @@ echo '
             <div class="modal-body">
 <p class="text-muted"> '.$lang['node_settings_text'].' </p>';
 
-$query = "SELECT * FROM nodes where type !='MySensor';";
+$query = "SELECT * FROM nodes where type not like '%Sensor';";
 $results = $conn->query($query);
 echo '<table class="table table-bordered">
     <tr>
