@@ -440,8 +440,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 		if ($zone_controller_type == 'GPIO'){
 			$relay_status = ($zone_status == '1') ? $relay_on : $relay_off;
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: GIOP Relay Status: \033[41m".$relay_status. "\033[0m (0=On, 1=Off) \n";
-			exec("/usr/local/bin/gpio write ".$zone_controler_child_id." ".$relay_status );
-			exec("/usr/local/bin/gpio mode ".$zone_controler_child_id." out");
+			exec("python3 /var/www/cron/gpio/gpio3_relay.py ".$zone_controler_child_id." ".$relay_status);
 		}
 
 		/***************************************************************************************
@@ -504,8 +503,7 @@ if (in_array("1", $boiler)) {
 	Boiler Wired to Raspberry Pi GPIO Section: Make sure you have WiringPi installed.
 	****************************************************************************************/
 	if ($boiler_controller_type == 'GPIO'){
-		exec("/usr/local/bin/gpio write ".$boiler_node_child_id ." ".$relay_on );
-		exec("/usr/local/bin/gpio mode ".$boiler_node_child_id ." out");
+		exec("python3 /var/www/cron/gpio/gpio3_relay.py" .$boiler_node_child_id ." ".$relay_on );
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler GIOP: \033[41m".$boiler_node_child_id. "\033[0m Status: \033[41m".$relay_on."\033[0m (0=On, 1=Off) \n";
 	}
 	
@@ -561,8 +559,7 @@ if (in_array("1", $boiler)) {
 	Boiler Wired to Raspberry Pi GPIO Section: Make sure you have WiringPi installed.
 	****************************************************************************************/
 	if ($boiler_controller_type == 'GPIO'){
-		exec("/usr/local/bin/gpio write ".$boiler_node_child_id ." ".$relay_off );
-		exec("/usr/local/bin/gpio mode ".$boiler_node_child_id ." out");
+		exec("python3 /var/www/cron/gpio/gpio3_relay.py" .$boiler_node_child_id ." ".$relay_off );
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler GIOP: \033[41m".$boiler_node_child_id. "\033[0m Status: \033[41m".$relay_off."\033[0m (0=On, 1=Off) \n";
 	}
 
