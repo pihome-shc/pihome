@@ -82,7 +82,7 @@ $lang['boiler_node_id'] = "Node ID";
 $lang['boiler_node_id_info'] = "Boiler Controller Node ID";
 $lang['boiler_node_child_id'] = "Node Child ID";
 $lang['boiler_relay_gpio'] = "GPIO Pin";
-$lang['boiler_relay_gpio_text'] = "Refer to WiringPi GPIO Pin Numbering for this <u><a class=\"text-muted\" href=\"http://www.pihome.eu/2017/10/13/wiringpi-installation/\" target=\"_blank\" >GPIO Pin</a></u>";
+$lang['boiler_relay_gpio_text'] = "Use PHysical Header Pin Numbering ie for GPIO18 use 12;
 $lang['boiler_hysteresis_time'] = "Hysteresis Time";
 $lang['boiler_hysteresis_time_info'] = "Delay Between Stop and Start of Boiler in minutes, Default is 3 minuts.";
 $lang['max_operation_time'] = "Max Operation Time";
@@ -167,7 +167,7 @@ $lang['zone_hysteresis_time_error'] = "Hysteresis Time for Safty, Please consult
 $lang['zone_temp_sensor_id_error'] = "Zone sensor id can not be empty.";
 $lang['zone_controller_id_error'] = "Zone Controller ID can not be empty! Select Node connect to Zone's motorized valve, If your zone connected to RPI GPIO you can select 0.";
 $lang['zone_controller_child_id_error'] = "Child ID on Zone Controller, This value is from 1 to 8 that connect to your Zone's motorized valve relay, If your zone connected to RPI GPIO you can select 0.";
-$lang['zone_gpio_pin_error'] = "If Zone motorized valve connected to Raspberry pi GPIO Pin,  Make sure you follow WiringPi GPIO Pin. if you are using Wireless Relay you can select any GPIO.";
+$lang['zone_gpio_pin_error'] = "If Zone motorized valve connected to Raspberry pi GPIO Pin,  use physical header pin numbering for the GPIO Pin. if you are using Wireless Relay you can select any GPIO.";
 $lang['zone_boost_id_error'] = "If you have Boost Console then you can select Boost Console ID";
 $lang['zone_boost_child_id_error'] = "Boost Console Button Child ID for this Zone";
 $lang['zone_settings'] = "Zone Settings";
@@ -186,7 +186,7 @@ $lang['zone_sp_deadband_info'] = "Check link for <u><a class=\"text-muted\" href
 $lang['zone_sensor_id_info'] = "Pre-discovered sensor";
 $lang['zone_controler_id_info'] = "Select Zone Controller Type and Number ";
 $lang['zone_controler_child_id_info'] = "Zone controller relay number where zone is connected";
-$lang['zone_gpio_pin_info'] = "In case zone valve is controlled by RPI GPIO these are WiringPi GPIO number";
+$lang['zone_gpio_pin_info'] = "In case zone valve is controlled by RPI GPIO these are the physical header pin numbers for the GPIO used";
 $lang['zone_boost_info'] = "Boost console if you have any";
 $lang['zone_boost_button_info'] = "Boost button number if you have any";
 
