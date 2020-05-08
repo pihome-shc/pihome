@@ -82,7 +82,7 @@ $lang['boiler_node_id'] = "ID nod centrală";
 $lang['boiler_node_id_info'] = "ID nod controler centrală";
 $lang['boiler_node_child_id'] = "Child ID nod";
 $lang['boiler_relay_gpio'] = "Pin GPIO";
-$lang['boiler_relay_gpio_text'] = "Faceți referire la WiringPi GPIO Pin  <u><a class=\"text-muted\" href=\"http://www.pihome.eu/2017/10/13/wiringpi-installation/\" target=\"_blank\" >GPIO Pin</a></u>";
+$lang['boiler_relay_gpio_text'] = "Utilizați numerotarea fizică a antetului adică pentru utilizarea GPIO18 12";
 $lang['boiler_hysteresis_time'] = "Timp histerezis";
 $lang['boiler_hysteresis_time_info'] = "Întârzierea dintre oprirea și pornirea centralei (în minute). Implicit este de 3 minute.";
 $lang['max_operation_time'] = "Timp de operare maxim";
@@ -186,7 +186,7 @@ $lang['zone_sp_deadband_info'] = "Verificati linkul pentru <u><a class=\"text-mu
 $lang['zone_sensor_id_info'] = "Senzor pre-descoperit";
 $lang['zone_controler_id_info'] = "Număr controler zonă fără fir";
 $lang['zone_controler_child_id_info'] = "Numărul releului, controlerului de zonă fără fir, unde este conectată zona";
-$lang['zone_gpio_pin_info'] = "În cazul în care electrovalva de zonă este controlată de RPI GPIO, acestea sunt numărul GPIO WiringPi";
+$lang['zone_gpio_pin_info'] = "În cazul în care supapa de zonă este controlată de RPI GPIO, acestea sunt numerele fizice ale antetului pentru GPIO utilizat";
 $lang['zone_boost_info'] = "Consola Stimulare, dacă aveți";
 $lang['zone_boost_button_info'] = "Numărul butonului de Stimulare, dacă aveți";
 

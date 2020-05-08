@@ -82,7 +82,7 @@ $lang['boiler_node_id'] = "Node ID";
 $lang['boiler_node_id_info'] = "Boiler Controller Node ID";
 $lang['boiler_node_child_id'] = "Node Child ID";
 $lang['boiler_relay_gpio'] = "GPIO Pin";
-$lang['boiler_relay_gpio_text'] = "Refer to WiringPi GPIO Pin Numbering for this <u><a class=\"text-muted\" href=\"http://www.pihome.eu/2017/10/13/wiringpi-installation/\" target=\"_blank\" >GPIO Pin</a></u>";
+$lang['boiler_relay_gpio_text'] = "Use Physical Header Pin Numbering ie for GPIO18 use 12";
 $lang['boiler_hysteresis_time'] = "Hysteresis Time";
 $lang['boiler_hysteresis_time_info'] = "Delay Between Stop and Start of Boiler in minutes, Default is 3 minuts";
 $lang['max_operation_time'] = "Max Operation Time";
@@ -186,7 +186,7 @@ $lang['zone_sp_deadband_info'] = "Check link for <u><a class=\"text-muted\" href
 $lang['zone_sensor_id_info'] = "Pre-discovered sensor";
 $lang['zone_controler_id_info'] = "Wireless zone controller number ";
 $lang['zone_controler_child_id_info'] = "Wireless zone controller relay number where zone is connected";
-$lang['zone_gpio_pin_info'] = "In case zone valve is controlled by RPI GPIO these are WiringPi GPIO number";
+$lang['zone_gpio_pin_info'] = "No caso de a válvula de zona ser controlada pelo RPI GPIO, esses são os números de pinos físicos do cabeçalho do GPIO usado";
 $lang['zone_boost_info'] = "Boost console if you have any";
 $lang['zone_boost_button_info'] = "Boost button number if you have any";
 

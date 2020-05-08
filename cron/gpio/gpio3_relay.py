@@ -64,7 +64,7 @@ def main():
             "36": "D16",
             "37": "D26",
             "38": "D20",
-            "40": "D21"
+            "40": "D21",
         }
     # check if a BEAGLEBONE
     elif board.board_id.find('BEAGLEBONE') != -1:

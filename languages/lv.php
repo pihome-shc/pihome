@@ -83,7 +83,7 @@ $lang['boiler_node_id'] = "Mezgla ID";
 $lang['boiler_node_id_info'] = "Katla kontroliera mezgla ID";
 $lang['boiler_node_child_id'] = "Mezgla bērna ID";
 $lang['boiler_relay_gpio'] = "GPIO pin";
-$lang['boiler_relay_gpio_text'] = "Skatiet WiringPi GPIO PIN numerāciju <u><a class=\"text-muted\" href=\"http://www.pihome.eu/2017/10/13/wiringpi-installation/\" target=\"_blank\" >GPIO Pin</a></u>";
+$lang['boiler_relay_gpio_text'] = "Izmantojiet fizisko galvenes tapu numerāciju, ti, GPIO18 lietošanai 12";
 $lang['boiler_hysteresis_time'] = "Histerēzes laiks";
 $lang['boiler_hysteresis_time_info'] = "Kavēšanās starp katla apstāšanos un sākumu minūtēs, noklusējums ir 3 minūtes.";
 $lang['max_operation_time'] = "Maksimālais darbības laiks";
@@ -187,7 +187,7 @@ $lang['zone_sp_deadband_info'] = "Skatīt šeit <u><a class=\"text-muted\" href=
 $lang['zone_sensor_id_info'] = "Iepriekš atklāts sensors";
 $lang['zone_controler_id_info'] = "Bezvadu zonas kontroliera numurs ";
 $lang['zone_controler_child_id_info'] = "Bezvadu zonas kontroliera releja numurs, kur zona ir savienota";
-$lang['zone_gpio_pin_info'] = "Ja zonas vārstu kontrolē RPI GPIO, tie ir WiringPi GPIO numurs";
+$lang['zone_gpio_pin_info'] = "Ja zonas vārstu kontrolē RPI GPIO, šie ir fiziskā galvenes tapu skaitļi izmantotajam GPIO";
 $lang['zone_boost_info'] = "Uzsildīšanas konsole, ja jums tāda ir";
 $lang['zone_boost_button_info'] = "Uzsildīšanas pogas numurs, ja tāds ir";
 
