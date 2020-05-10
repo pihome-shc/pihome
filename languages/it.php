@@ -1,40 +1,22 @@
 <?php
 /*
-
    _____    _   _    _                             
-
   |  __ \  (_) | |  | |                            
-
   | |__) |  _  | |__| |   ___    _ __ ___     ___  
-
   |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \ 
-
   | |      | | | |  | | | (_) | | | | | | | |  __/ 
-
   |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___| 
-
-
 
      S M A R T   H E A T I N G   C O N T R O L 
 
 
-
-
-
 ****************************************************************
-
-* Italian Language File Version 0.1 Build Date 04/04/2020       *
-
-*  *
-
+* Italian Language File Version 0.1 Build Date 04/04/2020      *
+* 															   *
 *                                        Have Fun - PiHome.eu  *
-
 ****************************************************************
-
 Created By: PiHome
-
 Last Modified by: eb
-
 */
 
 $lang['title'] = "PiHome - Smart Heating Control";
@@ -118,7 +100,7 @@ $lang['boiler_node_id'] = "Node ID";
 $lang['boiler_node_id_info'] = "Controller Caldaia Node ID";
 $lang['boiler_node_child_id'] = "Node Child ID";
 $lang['boiler_relay_gpio'] = "GPIO Pin";
-$lang['boiler_relay_gpio_text'] = "Riferirsi a WiringPi GPIO Pin Numbering per questo <u><a class=\"text-muted\" href=\"http://www.pihome.eu/2017/10/13/wiringpi-installation/\" target=\"_blank\" >GPIO Pin</a></u>";
+$lang['boiler_relay_gpio_text'] = "Utilizzare la numerazione dei pin dell'intestazione fisica, ad esempio per l'uso GPIO18 12";
 $lang['boiler_hysteresis_time'] = "Tempo di isteresi";
 $lang['boiler_hysteresis_time_info'] = "Ritardo tra Stop e Start della caldaia in minuti, Default é 3 minuti.";
 $lang['max_operation_time'] = "Max Tempo Operativo";
@@ -222,7 +204,7 @@ $lang['zone_sp_deadband_info'] = "Per maggiori info link <u><a class=\"text-mute
 $lang['zone_sensor_id_info'] = "Auto rilevamento sensore";
 $lang['zone_controler_id_info'] = "Selezionare Controller Zona, Tipo e Numero ";
 $lang['zone_controler_child_id_info'] = "Numero Relé controller Zona, dove la Zona è connessa";
-$lang['zone_gpio_pin_info'] = "Nel caso in cui la valvola di Zona fosse controllata da RPI GPIO questi sono i numeri WiringPi GPIO";
+$lang['zone_gpio_pin_info'] = "Nel caso in cui la valvola di zona sia controllata da RPI GPIO, questi sono i numeri dei pin dell'intestazione fisica per il GPIO utilizzato";
 $lang['zone_boost_info'] = "Boost console, se installata";
 $lang['zone_boost_button_info'] = "Numero Pulsante Boost, se presente";
 
