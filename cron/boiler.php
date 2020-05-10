@@ -56,11 +56,6 @@ function scanArrayRecursively($arr, $index) {
 
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Script Started \n";
 
-$switches = array(); // array of switch zone ids in homebridge config.json
-$sensors = array(); // array of sensor zone ids in homebridge config.json
-$platform = 0; // flag to indicate if webhooks plugin is present
-$path = '/usr/lib/node_modules/homebridge-http-webhooks'; // path to webhooks directory
-$filename = '/var/lib/homebridge/config.json'; // path to config.json
 //check if homebridge service is running
 $rval=my_exec("/bin/systemctl status homebridge");
 if($rval['stdout']=='') {
@@ -78,7 +73,12 @@ if($rval['stdout']=='') {
                         if(strstr($line,'active (running)')) {
                                 $stat=trim($line);
                                 // homebridge service is running so check if config.json file exists
-                                if (file_exists($filename) and file_exists($path)) {
+				$switches = array(); // array of switch zone ids in homebridge config.json
+				$sensors = array(); // array of sensor zone ids in homebridge config.json
+				$platform = 0; // flag to indicate if webhooks plugin is present
+				$path = exec('find /usr/ -name homebridge-http-webhooks'); // path to webhooks directory
+				$filename = '/var/lib/homebridge/config.json'; // path to config.json
+				if (file_exists($filename) and file_exists($path)) {
                                         $string = file_get_contents($filename);
                                         $json_data = json_decode($string, true);
                                         // check if webhooks platform section is present in config.json
