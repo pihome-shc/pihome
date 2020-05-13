@@ -24,7 +24,7 @@ require_once(__DIR__.'../../st_inc/functions.php');
 //Set php script execution time in seconds
 ini_set('max_execution_time', 60); 
 $date_time = date('Y-m-d H:i:s');
-$gw_script_txt = 'python /var/www/cron/gateway.py';
+$gw_script_txt = 'python3 /var/www/cron/gateway.py';
 $line = "--------------------------------------------------------------------------\n";
 
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Python Gateway Script Status Check Script Started \n"; 
@@ -43,7 +43,7 @@ $find_gw = $row['find_gw'];
 //if status set to 0 then check if gateway PID is running and if found then kill
 if ($gw_status == '0') {
 	//Gateway Python Script location
-	$gw_script_txt = 'python /var/www/cron/gateway.py';
+	$gw_script_txt = 'python3 /var/www/cron/gateway.py';
 	//Check if Porocess is running and get its PID
 	exec("ps aux | grep '$gw_script_txt' | grep -v grep | awk '{ print $2 }' | head -1", $out);
 	if (count($out) > 1) {
@@ -67,13 +67,13 @@ if ($gw_status == '0') {
 	if ($find_gw == '1') {
 		if ($gw_type == 'wifi') {
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Checking Python Script Status to Find Smart Home Gateway \n";
-			exec("ps ax | grep find_mygw.py", $fgw_pids); 
-			$gw_script_txt = 'python /var/www/cron/find_mygw/find_mygw.py';
+			exec("ps ax | grep find_mygw.py", $fgw_pids);
+			$gw_script_txt = 'python3 /var/www/cron/find_mygw/find_mygw.py';
 			$fgw_position = searchArray($gw_script_txt, $fgw_pids);
 			if($fgw_position===false) {
 				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Search for Smart Home Gateway \033[41mNot Running\033[0m \n";
 				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Starting Search for Smart Home Gateway \n";
-				exec("python /var/www/cron/find_mygw/find_mygw.py </dev/null >/dev/null 2>&1 & ");
+				exec("python3 /var/www/cron/find_mygw/find_mygw.py </dev/null >/dev/null 2>&1 & ");
 			exec("ps aux | grep '$gw_script_txt' | grep -v grep | awk '{ print $2 }' | head -1", $out);
 				echo "\033[36m".date('Y-m-d H:i:s')."\033[0m - Search Script Started on PID: \033[41m".$out[0]."\033[0m \n";
 				echo $line;
@@ -103,7 +103,7 @@ if ($gw_status == '0') {
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Checking Python Script Status to Find Smart Home Gateway \n";
 		//Check if Search Script already started 
 		exec("ps ax | grep find_mygw.py", $fgw_pids);
-		$gw_script_txt = 'python /var/www/cron/find_mygw/find_mygw.py';
+		$gw_script_txt = 'python3 /var/www/cron/find_mygw/find_mygw.py';
 		$fgw_position = searchArray($gw_script_txt, $fgw_pids);
 		if($fgw_position===false) {
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Search for Smart Home Gateway \033[41mNot Running\033[0m \n";

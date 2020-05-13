@@ -200,7 +200,7 @@ $message = '#
 
 # If you have Temperature Sensors Wired to Raspberry pi GPIO un-comment
 # following line to read temperature sensors data.
-# */1 * * * * python /var/www/cron/gpio_ds18b20.py >/dev/null 2>&1
+# */1 * * * * python3 /var/www/cron/gpio_ds18b20.py >/dev/null 2>&1
 
 
 # Main engine for PiHome Smart Heating, If you want to ouput logs then comment first line and uncomment second line.
