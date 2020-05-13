@@ -30,7 +30,7 @@ print(" " + bc.ENDC)
 # Contributed by Raju and updated by Jim
 # 
 # Use:
-# import easyi2c3
+# import easyi2c
 # dev = easyi2c.IIC(<device i2c address 7 bit>,<Bus number>)
 # example
 # dev = easyi2c.IIC(0x32,1)
