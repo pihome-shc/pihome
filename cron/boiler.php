@@ -448,8 +448,8 @@ while ($row = mysqli_fetch_assoc($results)) {
 		Zone Valve Wired over I2C Interface Make sure you have i2c Interface enabled 
 		****************************************************************************************/
 		if ($zone_controller_type == 'I2C'){
-			//exec("python /var/www/cron/i2c/i2c_relay.py 50 ".$zone_gpio_pin." ".$zone_status);
-			exec("python /var/www/cron/i2c/i2c_relay.py ".$zone_controler_id." ".$zone_controler_child_id." ".$zone_status);
+			//exec("python3 /var/www/cron/i2c/i2c_relay.py 50 ".$zone_gpio_pin." ".$zone_status);
+			exec("python3 /var/www/cron/i2c/i2c_relay.py ".$zone_controler_id." ".$zone_controler_child_id." ".$zone_status);
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Relay Broad: ".$zone_controler_id. " Relay No: ".$zone_controler_child_id." Status: ".$zone_status." \n";
 		}
 
@@ -512,7 +512,7 @@ if (in_array("1", $boiler)) {
 	Boiler Wired over I2C Interface Make sure you have i2c Interface enabled 
 	****************************************************************************************/
 	if ($boiler_controller_type == 'I2C'){
-		exec("python /var/www/cron/i2c/i2c_relay.py" .$boiler_node_id." ".$boiler_node_child_id." 1"); 
+		exec("python3 /var/www/cron/i2c/i2c_relay.py" .$boiler_node_id." ".$boiler_node_child_id." 1"); 
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler I2C Rrelay Board: \033[41m".$boiler_node_id."\033[0m Relay ID: \033[41m".$boiler_node_child_id."\033[0m \n";
 	}
 
@@ -568,7 +568,7 @@ if (in_array("1", $boiler)) {
 	Boiler Wired over I2C Interface Make sure you have i2c Interface enabled 
 	****************************************************************************************/
 	if ($boiler_controller_type == 'I2C'){
-		exec("python /var/www/cron/i2c/i2c_relay.py" .$boiler_node_id." ".$boiler_node_child_id." 0");
+		exec("python3 /var/www/cron/i2c/i2c_relay.py" .$boiler_node_id." ".$boiler_node_child_id." 0");
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler I2C Rrelay Board: \033[41m".$boiler_node_id."\033[0m Relay ID: \033[41m".$boiler_node_child_id."\033[0m \n";
 	}
 
