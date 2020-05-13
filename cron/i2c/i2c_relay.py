@@ -29,7 +29,7 @@ print(" " + bc.ENDC)
 # Simple test for BV4627 using RPi i2c
 # use wget http://www.byvac.com/downloads/py/easyi2c.py
 
-import easyi2c # have easyi2c3.py in same directory
+import easyi2c # have easyi2c.py in same directory
 import sys
 from time import sleep
 
