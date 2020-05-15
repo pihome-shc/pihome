@@ -1556,6 +1556,10 @@ if ($status == "1"){
 	$query = "DELETE FROM schedule_daily_time_zone WHERE `purge`= '1';";
 	$conn->query($query);
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Schedul Time Zone Purged in Local Database \n";
+	//Delete Holidays records 
+	$query = "DELETE FROM holidays WHERE `purge`= '1';";
+	$conn->query($query);
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Holidays Records Purged in Local Database \n";
 	//Delete schedule dialy time 
 	$query = "DELETE FROM schedule_daily_time WHERE `purge`= '1';";
 	$conn->query($query);
