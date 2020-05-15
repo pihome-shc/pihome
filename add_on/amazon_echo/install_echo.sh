@@ -21,7 +21,7 @@ echo "Changing Privileges for Fauxmo"
 sudo chmod 755 /var/www/add_on/amazon_echo/fauxmo
 sudo chown fauxmo:fauxmo fauxmo
 
-confdir="/etc/fauxmon"
+confdir="/etc/fauxmo"
 ### Check for dir, if not found create it using the mkdir ##
 [ ! -d "$confdir" ] && mkdir -p "$confdir"
 echo "Backing Up and Updateing /etc/fauxmo/config.json"
