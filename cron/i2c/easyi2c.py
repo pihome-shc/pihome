@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 class bc:
 	hed = '\033[95m'
 	dtm = '\033[0;36;40m'
@@ -9,28 +9,28 @@ class bc:
 	wht = '\033[0;37;40m'
 	ylw = '\033[93m'
 	fail = '\033[91m'
-print bc.hed + " "	
-print "  _____    _   _    _                            "
-print " |  __ \  (_) | |  | |                           "
-print " | |__) |  _  | |__| |   ___    _ __ ___     ___ "
-print " |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \ "
-print " | |      | | | |  | | | (_) | | | | | | | |  __/"
-print " |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___|"
-print " "
-print "    "+bc.SUB + "S M A R T   H E A T I N G   C O N T R O L "+ bc.ENDC
-print bc.WARN +" "
-print "********************************************************"
-print "*   I2C Interface Relay Support Communication Script   *"
-print "*   Build Date: 11/09/2019 Version 0.01                *"
-print "    Last Modified: 20/07/2019                          *"
-print "*                                 Have Fun - PiHome.eu *"
-print "********************************************************"
-print " " + bc.ENDC
+print(bc.hed + " ")	
+print("  _____    _   _    _                            ")
+print(" |  __ \  (_) | |  | |                           ")
+print(" | |__) |  _  | |__| |   ___    _ __ ___     ___ ")
+print(" |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \ ")
+print(" | |      | | | |  | | | (_) | | | | | | | |  __/")
+print(" |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___|")
+print(" ")
+print("    "+bc.SUB + "S M A R T   H E A T I N G   C O N T R O L "+ bc.ENDC)
+print(bc.WARN +" ")
+print("********************************************************")
+print("*   I2C Interface Relay Support Communication Script   *")
+print("*   Build Date: 11/09/2019 Version 0.01                *")
+print("    Last Modified: 20/07/2019                          *")
+print("*                                 Have Fun - PiHome.eu *")
+print("********************************************************")
+print(" " + bc.ENDC)
 
 # Contributed by Raju and updated by Jim
 # 
 # Use:
-# import easyi2c 
+# import easyi2c
 # dev = easyi2c.IIC(<device i2c address 7 bit>,<Bus number>)
 # example
 # dev = easyi2c.IIC(0x32,1)
