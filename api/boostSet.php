@@ -71,8 +71,8 @@ if(isset($_GET['zonename'])) {
 			}
 		} else {
         		http_response_code(200);
-			if($row['status'] == 1) {$boost_status = True;} else {$boost_status = False;}
-	                echo json_encode(array("success" => True, "state" => $boost_status));
+                        if($row['status'] == 1) {$boost_status = True; $on_off = 'on';} else {$boost_status = False; $on_off = 'off';}
+                        echo json_encode(array("success" => True, "state" => $boost_status, "state_str" => $on_off));
 		}
 	}
 } else {
