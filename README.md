@@ -47,12 +47,13 @@ Follow Instructions on [PiHome](http://www.pihome.eu "PiHome - Smart Heating Con
 ## Requirements
 Basic knowledge of command line with following main components for pihome to function. 
 * Apache Web Server
-* PHP 5.5
-* MySQL 
+* PHP 7.x
+* MySQL/MariaDB 
 
 ## How To Install 
 sudo apt-get install git
 sudo git clone https://github.com/pihome-shc/pihome "/var/www"
+For more detailed instructiosn vist [PiHome](http://www.pihome.eu "PiHome - Smart Heating Control") website 
 
 
 ## Secial Thanks to
