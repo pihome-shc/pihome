@@ -319,13 +319,13 @@ if (isset($_POST['submit'])) {
     								if(($c_f==1 || $c_f=='1') AND ($row["type"]=='Heating')) {
 									$min = 50;
 									$max = 85;
-								}elseif (($c_f==1 || $c_f=='1') AND ($row["type"]=='Water')) {
+								}elseif (($c_f==1 || $c_f=='1') AND ($row["type"]=='Water' OR $row["type"]=='Immersion')) {
 									$min = 50;
 									$max = 170;
 								}elseif (($c_f==0 || $c_f=='0') AND ($row["type"]=='Heating')) {
 									$min = 10;
 									$max = 30;
-								}elseif (($c_f==0 || $c_f=='0') AND ($row["type"]=='Water')) {
+								}elseif (($c_f==0 || $c_f=='0') AND ($row["type"]=='Water' OR $row["type"]=='Immersion')) {
 									$min = 10;
 									$max = 80;
 								}

@@ -141,7 +141,7 @@ function rainbow(numOfSteps, step) {
 // create wdataset based on all available zones
 var wdataset = [
 <?php
-    $queryw ="select * from zone_view where `type` = 'Water' order BY index_id asc;";
+    $queryw ="select * from zone_view where `type` = 'Water' OR `type` = 'Immersion' order BY index_id asc;";
     $resultw = $conn->query($queryw);
     $counter = 0;
     $count = mysqli_num_rows($resultw) + 1;
@@ -168,7 +168,7 @@ var wdataset = [
 //background-color for boiler on time 
 var wmarkings = [
 <?php
-$query="select start_datetime, stop_datetime from zone_log_view where (start_datetime > DATE_SUB( NOW(), INTERVAL 24 HOUR)) AND type='Water' AND status= '1';";
+$query="select start_datetime, stop_datetime from zone_log_view where (start_datetime > DATE_SUB( NOW(), INTERVAL 24 HOUR)) AND type='Water' OR `type` = 'Immersion' AND status= '1';";
 $results = $conn->query($query);
 $count=mysqli_num_rows($results); 
 while ($row = mysqli_fetch_assoc($results)) {
