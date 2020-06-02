@@ -166,9 +166,10 @@ echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Day of the Week: \033[41m".$dow.
 $query = "SELECT * FROM zone_view where status = 1 order by index_id asc;";
 $results = $conn->query($query);
 while ($row = mysqli_fetch_assoc($results)) {
-        $zone_status=$row['status'];
+	$zone_status=$row['status'];
 	$zone_id=$row['id'];
 	$zone_name=$row['name'];
+	$zone_type=$row['type'];
 	$zone_max_c=$row['max_c'];
 	$zone_max_operation_time=$row['max_operation_time'];
 	$zone_hysteresis_time=$row['hysteresis_time'];
@@ -184,21 +185,21 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$result = $conn->query($query);
 	$sensor = mysqli_fetch_array($result);
 	$zone_c = $sensor['payload'];
-        // check if webhooks plugin installed and if a sensor is configured for this zone
-        if ($platform == 1 and in_array($row['id'], $sensors)) {
-                // get current temperature vale
-                $url = "http://127.0.0.1:51828/?accessoryId=sensor" . $zone_id;
-                $contents = file_get_contents($url);
-                $contents = utf8_encode($contents);
-                $temp = json_decode($contents, true);
-                // update if the vales do not match
-                if (floatval($temp['state']) != floatval($zone_c)) {
-                        $url = $url . "&value=" . $zone_c;
-                        $contents = file_get_contents($url);
-                }
-        }
+	// check if webhooks plugin installed and if a sensor is configured for this zone
+	if ($platform == 1 and in_array($row['id'], $sensors)) {
+		// get current temperature vale
+		$url = "http://127.0.0.1:51828/?accessoryId=sensor" . $zone_id;
+		$contents = file_get_contents($url);
+		$contents = utf8_encode($contents);
+		$temp = json_decode($contents, true);
+		// update if the vales do not match
+		if (floatval($temp['state']) != floatval($zone_c)) {
+			$url = $url . "&value=" . $zone_c;
+			$contents = file_get_contents($url);
+		}
+	}
         // only process active zones
-        if ($zone_status == 1) {
+	if ($zone_status == 1) {
 		$temp_reading_time = $sensor['datetime'];
 
 		//Have to account for midnight rollover conditions
@@ -229,9 +230,13 @@ while ($row = mysqli_fetch_assoc($results)) {
 		//query to check override status and get temperature from override table
 		$query = "SELECT * FROM override WHERE zone_id = {$zone_id} LIMIT 1;";
 		$result = $conn->query($query);
-		$override = mysqli_fetch_array($result);
-		$override_status = $override['status'];
-		$override_c = $override['temperature'];
+		if (mysqli_num_rows($result) != 0){
+			$override = mysqli_fetch_array($result);
+			$override_status = $override['status'];
+			$override_c = $override['temperature'];
+		}else {
+			$override_status = '0';
+		}
 
 		//query to check boost status and get temperature from boost table
 		$query = "SELECT * FROM boost WHERE zone_id = {$zone_id} AND status = 1 LIMIT 1;";
@@ -302,21 +307,21 @@ while ($row = mysqli_fetch_assoc($results)) {
 			$boost_active='0';
 		}
 
-                // check if webhooks plugin installed and if a switch is configured for this zone
-                if ($platform == 1 and in_array($row['id'], $switches)) {
-                        if (strcasecmp($boost_active,'1') == 0) {$boost_state = 'true';} else {$boost_state = 'false';}
-                        // get the current state of the switch
-                        $url = "http://127.0.0.1:51828/?accessoryId=switch" . $row['id'];
-                        $contents = file_get_contents($url);
-                        $contents = utf8_encode($contents);
-                        $resp = json_decode($contents, true);
-                        if ($resp['state']) {$state = 'true';} else {$state = 'false';}
-                        // update if the states do not match
-                        if ($state !=  $boost_state) {
-                                $url = $url . "&state=" . $boost_state;
-                                $contents = file_get_contents($url);
-                        }
-                }
+		// check if webhooks plugin installed and if a switch is configured for this zone
+		if ($platform == 1 and in_array($row['id'], $switches)) {
+			if (strcasecmp($boost_active,'1') == 0) {$boost_state = 'true';} else {$boost_state = 'false';}
+			// get the current state of the switch
+			$url = "http://127.0.0.1:51828/?accessoryId=switch" . $row['id'];
+			$contents = file_get_contents($url);
+			$contents = utf8_encode($contents);
+			$resp = json_decode($contents, true);
+			if ($resp['state']) {$state = 'true';} else {$state = 'false';}
+			// update if the states do not match
+			if ($state !=  $boost_state) {
+				$url = $url . "&state=" . $boost_state;
+				$contents = file_get_contents($url);
+			}
+		}
 
 		//Get Weather Temperature
 		$query = "SELECT * FROM messages_in WHERE node_id = '1' ORDER BY id desc LIMIT 1";
@@ -461,14 +466,15 @@ while ($row = mysqli_fetch_assoc($results)) {
 			$query = "UPDATE messages_out SET sent = '0', payload = '{$zone_status}' WHERE node_id ='$zone_controler_id' AND child_id = '$zone_controler_child_id' LIMIT 1;";
 			$conn->query($query);
 		}
+		if ($zone_type == 'Heating' OR $zone_type == 'Water'){
+			//all zone status to boiler array and increment array index
+			$boiler[$boiler_index] = $zone_status;
+			$boiler_index = $boiler_index+1;
+			//all zone ids and status to multidimensional Array. and increment array index.
+			$zone_log[$zone_index] = (array('zone_id' =>$zone_id, 'status'=>$zone_status));
+			$zone_index = $zone_index+1;
+		}
 
-		//all zone status to boiler array and increment array index
-		$boiler[$boiler_index] = $zone_status;
-		$boiler_index = $boiler_index+1;
-
-		//all zone ids and status to multidimensional Array. and increment array index.
-		$zone_log[$zone_index] = (array('zone_id' =>$zone_id, 'status'=>$zone_status));
-		$zone_index = $zone_index+1;
 		echo "---------------------------------------------------------------------------------------- \n";
 	} //end if($zone_status == 1)
 } //end of while loop
