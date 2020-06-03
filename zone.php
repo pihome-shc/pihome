@@ -270,6 +270,7 @@ $new_index_id = $found_product['index_id']+1;
 <?php if(isset($row['type'])) { echo '<option selected >'.$row['type'].'</option>'; } ?>
 <option><?php echo $lang['zone_type_heating']; ?></option>
 <option><?php echo $lang['zone_type_water']; ?></option>
+<option><?php echo $lang['zone_type_electrical_immersion']; ?></option>
 </select>				
 <div class="help-block with-errors"></div></div>
 
@@ -446,7 +447,7 @@ function ControlerChildList(value)
 <?php  $query = "SELECT id, node_id, name FROM boiler;";
 $result = $conn->query($query);
 while ($datarw=mysqli_fetch_array($result)) {
-$boiler_id=$datarw["id"].'-'.$datarw["name"].' Node ID: '.$datarw["node_id"];
+	$boiler_id=$datarw["id"].'-'.$datarw["name"].' Node ID: '.$datarw["node_id"];
 echo "<option>$boiler_id</option>";} ?>
 </select>				
 <div class="help-block with-errors"></div></div>
