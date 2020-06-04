@@ -216,6 +216,11 @@ $lang['graph_consumed_time'] = "Tempo Consumido";
 $lang['graph_saved_time'] = "Tempo Gravado";
 $lang['graph_settings'] = "Configurações do gráfico de zona";
 $lang['graph_settings_text'] = "Selecione quais zonas de aquecimento serão representadas graficamente. ";
+$lang['graph_battery_usage'] = "Sensor's Battery Graphs";
+$lang['graph_battery_level_text'] = "Battery level reported by temperature senosrs";
+$lang['battery_level'] = "Battery Level";
+$lang['battery_voltage'] = "Battery Voltage";
+$lang['battery_level_text'] = "Battery voltage reported by temperature sensors";
 
 $lang['user_change_password'] = "Alterar Password";
 $lang['user_logout'] = "Terminar Sessao";
