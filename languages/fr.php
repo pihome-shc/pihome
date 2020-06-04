@@ -234,6 +234,11 @@ $lang['graph_consumed_time'] = "Durée d'activation du chauffage";
 $lang['graph_saved_time'] = "Durée d'activation du chauffage évitée";
 $lang['graph_settings'] = "Paramètres de graphique de zone";
 $lang['graph_settings_text'] = "Sélectionnez les zones de chauffage qui seront représentées. ";
+$lang['graph_battery_usage'] = "Sensor's Battery Graphs";
+$lang['graph_battery_level_text'] = "Battery level reported by temperature senosrs";
+$lang['battery_level'] = "Battery Level";
+$lang['battery_voltage'] = "Battery Voltage";
+$lang['battery_level_text'] = "Battery voltage reported by temperature sensors";
 
 $lang['user_change_password'] = "Changement du mot de passe";
 $lang['user_logout'] = "Se déconnecter";
