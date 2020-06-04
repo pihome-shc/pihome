@@ -216,6 +216,11 @@ $lang['graph_consumed_time'] = "Timp consumat";
 $lang['graph_saved_time'] = "Timp economisit";
 $lang['graph_settings'] = "Setări grafic zonă";
 $lang['graph_settings_text'] = "Selectați care zone de încălzire vor fi afișate în grafic.";
+$lang['graph_battery_usage'] = "Sensor's Battery Graphs";
+$lang['graph_battery_level_text'] = "Battery level reported by temperature senosrs";
+$lang['battery_level'] = "Battery Level";
+$lang['battery_voltage'] = "Battery Voltage";
+$lang['battery_level_text'] = "Battery voltage reported by temperature sensors";
 
 $lang['user_change_password'] = "Schimbă parola";
 $lang['user_logout'] = "Deconectare";

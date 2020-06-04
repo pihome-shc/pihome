@@ -217,6 +217,11 @@ $lang['graph_consumed_time'] = "Patērētais laiks";
 $lang['graph_saved_time'] = "Ietaupītais laiks";
 $lang['graph_settings'] = "Zonas diagrammas iestatījumi";
 $lang['graph_settings_text'] = "Izvēlieties, kuras apkures zonas tiks attēlotas. ";
+$lang['graph_battery_usage'] = "Sensor's Battery Graphs";
+$lang['graph_battery_level_text'] = "Battery level reported by temperature senosrs";
+$lang['battery_level'] = "Battery Level";
+$lang['battery_voltage'] = "Battery Voltage";
+$lang['battery_level_text'] = "Battery voltage reported by temperature sensors";
 
 $lang['user_change_password'] = "Mainīt paroli";
 $lang['user_logout'] = "Iziet";
