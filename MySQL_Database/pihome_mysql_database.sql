@@ -374,6 +374,39 @@ CREATE TABLE IF NOT EXISTS `piconnect` (
 /*!40000 ALTER TABLE `piconnect` DISABLE KEYS */;
 /*!40000 ALTER TABLE `piconnect` ENABLE KEYS */;
 
+-- Dumping structure for table pihome.piconnect_logs
+DROP TABLE IF EXISTS `piconnect_logs`;
+CREATE TABLE IF NOT EXISTS `piconnect_logs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sync` int(11) DEFAULT NULL,
+  `picurl` char(200) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `content_type` char(200) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `http_code` char(50) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `header_size` char(50) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `request_size` char(50) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `filetime` char(50) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `ssl_verify_result` char(50) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `redirect_count` char(50) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `total_time` char(50) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `connect_time` char(50) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `pretransfer_time` char(50) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `size_upload` char(50) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `size_download` char(50) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `speed_download` char(50) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `speed_upload` char(50) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `download_content_length` char(50) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `upload_content_length` char(50) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `starttransfer_time` char(50) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `primary_port` char(50) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `local_port` char(50) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `start_time` char(50) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `end_time` char(50) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `n_tables` char(50) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `records` char(50) CHARACTER SET utf8mb4 DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+
+
 -- Dumping structure for table pihome.schedule_daily_time
 DROP TABLE IF EXISTS `schedule_daily_time`;
 CREATE TABLE IF NOT EXISTS `schedule_daily_time` (
