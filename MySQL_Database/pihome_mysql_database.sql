@@ -360,15 +360,43 @@ CREATE TABLE IF NOT EXISTS `override` (
 
 -- Dumping structure for table pihome.piconnect
 DROP TABLE IF EXISTS `piconnect`;
-CREATE TABLE IF NOT EXISTS `piconnect` (
+CREATE TABLE `piconnect` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `status` int(11) NOT NULL,
-  `protocol` varchar(50) COLLATE utf16_bin,
-  `url` varchar(50) COLLATE utf16_bin,
-  `script` char(50) COLLATE utf16_bin,
-  `api_key` varchar(200) COLLATE utf16_bin,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+  `status` tinyint(4) NOT NULL DEFAULT 0,
+  `sync` tinyint(4) NOT NULL DEFAULT 0,
+  `protocol` varchar(50) COLLATE utf16_bin DEFAULT NULL,
+  `url` varchar(50) COLLATE utf16_bin DEFAULT NULL,
+  `script` char(50) COLLATE utf16_bin DEFAULT NULL,
+  `api_key` varchar(200) COLLATE utf16_bin DEFAULT NULL,
+  `version` char(50) COLLATE utf16_bin DEFAULT NULL,
+  `build` char(50) COLLATE utf16_bin DEFAULT NULL,
+  `connect_datetime` datetime DEFAULT NULL,
+  `delay` int(11) DEFAULT NULL,
+  `away` bit(1) DEFAULT NULL,
+  `boiler` bit(1) DEFAULT NULL,
+  `boiler_logs` bit(1) DEFAULT NULL,
+  `boost` bit(1) DEFAULT NULL,
+  `email` bit(1) DEFAULT NULL,
+  `frost_protection` bit(1) DEFAULT NULL,
+  `gateway` bit(1) DEFAULT NULL,
+  `gateway_log` bit(1) DEFAULT NULL,
+  `holidays` bit(1) DEFAULT NULL,
+  `messages_in` bit(1) DEFAULT NULL,
+  `messages_out` bit(1) DEFAULT NULL,
+  `mqtt` bit(1) DEFAULT NULL,
+  `nodes` bit(1) DEFAULT NULL,
+  `nodes_battery` bit(1) DEFAULT NULL,
+  `notice` bit(1) DEFAULT NULL,
+  `override` bit(1) DEFAULT NULL,
+  `piconnect_logs` bit(1) DEFAULT NULL,
+  `schedule` bit(1) DEFAULT NULL,
+  `system` bit(1) DEFAULT NULL,
+  `weather` bit(1) DEFAULT NULL,
+  `zone` bit(1) DEFAULT NULL,
+  `zone_logs` bit(1) DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 -- Dumping data for table pihome.piconnect: ~0 rows (approximately)
 /*!40000 ALTER TABLE `piconnect` DISABLE KEYS */;
