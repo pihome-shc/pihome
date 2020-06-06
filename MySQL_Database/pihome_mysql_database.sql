@@ -404,7 +404,7 @@ CREATE TABLE IF NOT EXISTS `piconnect_logs` (
   `n_tables` char(50) CHARACTER SET utf8mb4 DEFAULT NULL,
   `records` char(50) CHARACTER SET utf8mb4 DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 
 -- Dumping structure for table pihome.schedule_daily_time
