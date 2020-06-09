@@ -239,6 +239,30 @@ if (file_exists($cronfile)) {
 	unlink($cronfile);
 }
 
+// Add User table data 
+echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Creating User Table.  \n";
+$query_user = "REPLACE INTO `user` (`id`, `account_enable`, `fullname`, `username`, `email`, `password`, `cpdate`, `account_date`, `backup`, `users`, `support`, `settings`) VALUES(1, 1, 'Administrator', 'admin', '', '0f5f9ba0136d5a8588b3fc70ec752869', 'date1', 'date2', 1, 1, 1, 1);";
+$query_user = str_replace("date1",$date_time,$query_user);
+$query_user = str_replace("date2",$date_time,$query_user);
+$results = $conn->query($query_user);
+if ($results) {
+        echo  "\033[36m".date('Y-m-d H:i:s'). "\033[0m - DataBase Add \033[41mUser\033[0m Data  Succeeded \n";
+} else {
+        echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - DataBase Add \033[41mUser\033[0m Data Failed \n";
+}
+
+// Add System table data 
+echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Creating System Table.  \n";
+$query_system = "REPLACE INTO `system` (`id`, `sync`, `purge`, `name`, `version`, `build`, `update_location`, `update_file`, `update_alias`, `country`, `language`, `city`, `zip`, `openweather_api`, `backup_email`, `ping_home`, `timezone`, `shutdown`, `reboot`, `c_f`) VALUES (2, 1, 0, 'PiHome - Smart Heating Control', 'version_val', 'build_val', 'http://www.pihome.eu/updates/', 'current-release-versions.php', 'pihome', 'IE', 'en', 'Portlaoise', NULL, 'aa22d10d34b1e6cb32bd6a5f2cb3fb46', '', b'1', 'Europe/Dublin', 0, 0, 0);";
+$query_system = str_replace("version_val",$version,$query_system);
+$query_system = str_replace("build_val",$build,$query_system);
+$results = $conn->query($query_system);
+if ($results) {
+        echo  "\033[36m".date('Y-m-d H:i:s'). "\033[0m - DataBase Add \033[41mSystem\033[0m Data Succeeded \n";
+} else {
+        echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - DataBase Add \033[41mSystem\033[0m Data Failed \n";
+}
+
 // 
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Database and Crontab Setup Completed.\n\t\t\tDo you want to continue with Time Zone, Language and Temperature Unit setup?\n\t\t\tEnter 'y' to continue or 'n' to finish with setup.\n";
 $units = array('y' => 1, 'yes'=> 1, 'n'=> 0, 'no'=> 0);
@@ -441,7 +465,8 @@ if ($tzname == 1) {
 		$tzinput = trim(fgets(STDIN));
 		if (array_key_exists($tzinput-1, $units)) {
 			$tzname = $units[$tzinput-1];
-			$query = "UPDATE `system` SET `c_f`='" . $tzname . "';";
+			if ($tzname == 'Celsius'){$sunit=0;}else{$sunit=1;}
+			$query = "UPDATE `system` SET `c_f`='" . $sunit . "';";
 			$conn->query($query) or print("MySQL Database Error with Query ".$query.":". mysqli_error($conn)."\n");
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Temperature Unit Updated Database Value to \033[41m".$tzname."\033[0m.\n";
 			$correct = 1;
