@@ -310,6 +310,39 @@ if($what=="node"){
         	}
 	}
 }
+
+//Zone Types
+if($what=="zone_type"){
+        if($opp=="delete"){
+                //Delete from Zone Type
+                $query = "DELETE FROM zone_type WHERE id = '".$wid."';";
+                $conn->query($query);
+                if($conn->query($query)){
+                        header('Content-type: application/json');
+                        echo json_encode(array('Success'=>'Success','Query'=>$query));
+                        return;
+                }else{
+                        header('Content-type: application/json');
+                        echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+                        return;
+                }
+        }
+        if($opp=="add"){
+                $zone_type = $_GET['zone_type'];
+                //Add record to zone_type table
+                $query = "INSERT INTO `zone_type`(`type`) VALUES ('{$zone_type}')";
+                if($conn->query($query)){
+                        header('Content-type: application/json');
+                        echo json_encode(array('Success'=>'Success','Query'=>$query));
+                        return;
+                }else{
+                        header('Content-type: application/json');
+                        echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+                        return;
+                }
+        }
+}
+
 //Away 
 if($what=="away"){
 	if($opp=="active"){

@@ -268,10 +268,12 @@ $new_index_id = $found_product['index_id']+1;
 <div class="form-group" class="control-label"><label><?php echo $lang['zone_type']; ?></label> <small class="text-muted"><?php echo $lang['zone_type_info'];?></small>
 <select id="type" name="type" class="form-control select2" autocomplete="off" required>
 <?php if(isset($row['type'])) { echo '<option selected >'.$row['type'].'</option>'; } ?>
-<option><?php echo $lang['zone_type_heating']; ?></option>
-<option><?php echo $lang['zone_type_water']; ?></option>
-<option><?php echo $lang['zone_type_electrical_immersion']; ?></option>
-</select>				
+<?php  $query = "SELECT DISTINCT `type` FROM `zone_type` ORDER BY `type` ASC;";
+$result = $conn->query($query);
+echo "<option></option>";
+while ($datarw=mysqli_fetch_array($result)) {
+        echo "<option value=".$datarw['type'].">".$datarw['type']."</option>"; } ?>
+</select>
 <div class="help-block with-errors"></div></div>
 
 <!-- Maximum Temperature -->
