@@ -8,8 +8,8 @@
 //    S M A R T   H E A T I N G   C O N T R O L 
 // *****************************************************************
 // *       Battery Powered OneWire DS18B20 Temperature Sensor      *
-// *           Version 0.33 Build Date 06/11/2017                  *
-// *            Last Modification Date 18/07/2019                  *
+// *           Version 0.34 Build Date 06/11/2017                  *
+// *            Last Modification Date 06/06/2020                  *
 // *                                          Have Fun - PiHome.eu *
 // *****************************************************************
 
@@ -22,7 +22,7 @@
 //Define Sketch Name 
 #define SKETCH_NAME "Temperature Sensor"
 //Define Sketch Version 
-#define SKETCH_VERSION "0.33"
+#define SKETCH_VERSION "0.34"
 
 // Enable and select radio type attached
 #define MY_RADIO_RF24
@@ -30,16 +30,12 @@
 //#define MY_RADIO_RFM69
 //#define MY_RADIO_RFM95
 
-//IRQ Pin will be implemeted in future developemnt 
-//https://forum.mysensors.org/topic/10452/nrf24l01-communication-failure-root-cause-and-solution
 //IRQ Pin on Arduino
-//#define MY_RF24_IRQ_PIN 8
+#define MY_RF24_IRQ_PIN 2
 
-// Good Reading about Frequency usage regulations
-// http://eur-lex.europa.eu/legal-content/EN/TXT/?qid=1519682383896&uri=CELEX:32017D1483
-// CEPT recommendation
-// http://www.erodocdb.dk/Docs/doc98/official/pdf/REC7003E.PDF
-// https://forum.mysensors.org/topic/9072/frequency-usage-regulations
+//Enable OTA 
+//#define MY_OTA_FIRMWARE_FEATURE
+
 // * - RF24_PA_MIN = -18dBm
 // * - RF24_PA_LOW = -12dBm
 // * - RF24_PA_HIGH = -6dBm
@@ -69,7 +65,7 @@
 #define MY_RF24_CHANNEL	91
 
 //PiHome - Make Sure you change Node ID, for each temperature sensor. 21 for Ground Floor, 20 for First Floor, 30 for Domastic Hot Water.
-#define MY_NODE_ID 22
+#define MY_NODE_ID 20
 
 //RF24_250KBPS for 250kbs, RF24_1MBPS for 1Mbps, or RF24_2MBPS for 2Mbps
 #define MY_RF24_DATARATE RF24_250KBPS
@@ -96,20 +92,13 @@
 #define CHILD_ID_BATT 1
 #define CHILD_ID_TEMP 0
 
-#define COMPARE_TEMP 10 // Send temperature only if changed? 1 = Yes 0 = No, > 1 - force send if it value not sent that number of times and value is valid (keep lower than notice interval)
-#define COMPARE_BVOLT 1 	// Send battery voltage only if changed? 1 = Yes 0 = No, > 1 - force send if it value not sent that number of times
-//#define MIN_TEMP_DIFF 0.2	// Minimum temperature difference for comparision 
-#define MIN_BVOLT_DIFF 0.05	// Minimum Battery voltage difference for comparision
-#define ONE_WIRE_BUS 3 		// Pin where dallase sensor is connected 
+#define COMPARE_TEMP 1 // Send temperature only if changed? 1 = Yes 0 = No, > 1 - force send if it value not sent that number of times and value is valid (keep lower than notice interval)
+#define COMPARE_BVOLT 0 // Send battery voltage only if changed? 1 = Yes 0 = No, > 1 - force send if it value not sent that number of times
+#define ONE_WIRE_BUS 3 // Pin where dallase sensor is connected 
 
 #define MAX_ATTACHED_DS18B20 1
 unsigned long SLEEP_TIME = 56000; // Sleep time between reads (in milliseconds)
 
-/*
-https://forum.43oh.com/topic/329-reading-the-ds18b20-temperature-sensor/?page=2
-#define delayMicroseconds(n) __delay_cycles(1*n)
-#define delay(n) delayMicroseconds(1000u*n)
-*/
 int batteryNotSentCount=0;
 int temperatureNotSentCount[MAX_ATTACHED_DS18B20];
 
@@ -139,7 +128,6 @@ void setup(){
 	digitalWrite(ledpin, HIGH);
 	delay(60);
 	digitalWrite(ledpin, LOW);
-
 	// requestTemperatures() will not block current thread
 	sensors.setWaitForConversion(false);
 	// needed for battery soc
@@ -189,8 +177,9 @@ void loop(){
 	float batteryV  = battSensorValue * 0.011828;    //R1 1M, R2 100K divider across battery and using internal ADC ref of 1.1v
 	
 	//int batteryPcnt = ((batteryV - 2.9) / (4.2 - 2.9) * 100); // for 18650 Battery Powred 
-	int batteryPcnt = ((batteryV - 2.1) / (3.0 - 2.1) * 100); // for AAA Battery Powered
-	
+	//int batteryPcnt = ((batteryV - 2.1) / (3.0 - 2.1) * 100); // for 2 x AAA Battery Powered
+	int batteryPcnt = ((batteryV - 2.5) / (4.5 - 2.5) * 100); // for 3 x AAA Battery Powered
+		
 	#ifdef MY_DEBUG
 		Serial.print("Pin Reading: ");
 		Serial.println(battSensorValue);
@@ -204,33 +193,36 @@ void loop(){
 	#endif
 	
 	#if COMPARE_BVOLT == 1
-		float CUR_BVOLT_DIFF = (oldBatteryV - batteryV);
-		if (CUR_BVOLT_DIFF < 0) { //if value is in minus make convert into positive 
-			CUR_BVOLT_DIFF = CUR_BVOLT_DIFF * -1;
-		}
-		if ((oldBatteryV != batteryV) && (CUR_BVOLT_DIFF > MIN_BVOLT_DIFF)) {
+		if (oldBatteryV != batteryV) {
 			send(msgBatt.set(batteryV, 2));
 			sendBatteryLevel(batteryPcnt);
 			oldBatteryV = batteryV;
 		}
-	#else
+	#elif COMPARE_BVOLT == 0
 		send(msgBatt.set(batteryV, 2));
 		sendBatteryLevel(batteryPcnt);
-		oldBatteryV = batteryV; 
+	#else
+		if (oldBatteryV != batteryV || batteryNotSentCount>=COMPARE_BVOLT) {
+			send(msgBatt.set(batteryV, 2));
+			sendBatteryLevel(batteryPcnt);
+			oldBatteryV = batteryV;
+			batteryNotSentCount=0;
+		}else{
+			batteryNotSentCount++;
+		}
 	#endif
-  
+
 	// Fetch temperatures from Dallas sensors
 	sensors.requestTemperatures();
 	// query conversion time and sleep until conversion completed
 	int16_t conversionTime = sensors.millisToWaitForConversion(sensors.getResolution());
 	//sleep() call can be replaced by wait() call if node need to process incoming messages (or if node is repeater)
 	sleep(conversionTime);
-	
 	// Read temperatures and send them to controller 
 	for (int i=0; i<numSensors && i<MAX_ATTACHED_DS18B20; i++) {
 		// Fetch and round temperature to one decimal
 		float temperature = static_cast<float>(static_cast<int>((getControllerConfig().isMetric?sensors.getTempCByIndex(i):sensors.getTempFByIndex(i)) * 10.)) / 10.;
-		
+
 		// Only send data if temperature has changed and no error
 		#if COMPARE_TEMP == 1
 			if (lastTemperature[i] != temperature && temperature != -127.00 && temperature != 85.00) {
@@ -241,30 +233,32 @@ void loop(){
 			}
 		#elif COMPARE_TEMP == 0
 			if (temperature != -127.00 && temperature != 85.00) {
-			// Send in the new temperature
+				// Send in the new temperature
 				send(msg.setSensor(i).set(temperature,1));
 			}
 		#else
-		if ((lastTemperature[i] != temperature || temperatureNotSentCount[i]>=COMPARE_TEMP) && temperature != -127.00 && temperature != 85.00) {
-			// Send in the new temperature
-			send(msg.setSensor(i).set(temperature,1));
-			// Save new temperatures for next compare
-			lastTemperature[i]=temperature; 
-			//Reset values not sent count
-			temperatureNotSentCount[i]=0;      
-		}else{
-			lastTemperature[i]=temperature; 
-			temperatureNotSentCount[i]++;
-		}
+			if ((lastTemperature[i] != temperature || temperatureNotSentCount[i]>=COMPARE_TEMP) && temperature != -127.00 && temperature != 85.00) {
+				// Send in the new temperature
+				send(msg.setSensor(i).set(temperature,1));
+				// Save new temperatures for next compare
+				lastTemperature[i]=temperature; 
+				//Reset values not sent count
+				temperatureNotSentCount[i]=0;      
+			}else{
+				lastTemperature[i]=temperature; 
+				temperatureNotSentCount[i]++;
+			}
 		#endif
 	}
-		
-		//Condition to check battery levell is lower then minimum then blink led 3 times
-		//if (batteryV < 2.9) { //for 18650 Battery Powered Sensor 
-		if (batteryV < 1.8) { //for AAA Battery Powered Sensor 
-			blink_led(3, ledpin);
-			//Serial.print("Low Voltage");
-		}
+	
+	//Condition to check battery levell is lower then minimum then blink led 3 times
+	//if (batteryV < 2.9) { //for 18650 Battery Powered Sensor 
+	//if (batteryV < 2.0) { //for 2 x AAA Battery Powered Sensor 
+	
+	//if (batteryV < 2.0) { //for 3 x AAA Battery Powered Sensor 
+		//blink_led(3, ledpin);
+		//Serial.print("Low Voltage");
+	//}
 	//go to sleep for while
 	//smartSleep(SLEEP_TIME);
 	sleep(SLEEP_TIME);
