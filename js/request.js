@@ -278,6 +278,43 @@ var idata="w=node&o=delete&wid="+wid;
     });
 }
 
+//Add Zone Type
+function add_zone_type(){
+var idata="w=zone_type&o=add&zone_type="+document.getElementById("zone_type").value;
+    idata+="&wid=0";
+    $.get('db.php',idata)
+    .done(function(odata){
+        if(odata.Success)
+            reload_page();
+        else
+            console.log(odata.Message);
+    })
+    .fail(function( jqXHR, textStatus, errorThrown ){
+        if(jqXHR==401 || jqXHR==403) return;
+        console.log("add_zone_type: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
+    })
+    .always(function() {
+    });
+}
+
+//Delete Zone Type
+function delete_zone_type(wid){
+var idata="w=zone_type&o=delete&wid="+wid;
+    $.get('db.php',idata)
+    .done(function(odata){
+        if(odata.Success)
+            reload_page();
+        else
+            console.log(odata.Message);
+    })
+    .fail(function( jqXHR, textStatus, errorThrown ){
+        if(jqXHR==401 || jqXHR==403) return;
+        console.log("delete_zone_type: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
+    })
+    .always(function() {
+    });
+}
+
 function reload_page()
 {
     var loc = window.location;
