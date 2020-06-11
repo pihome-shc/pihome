@@ -306,7 +306,7 @@ if ($results) {
 //Adding Zone Type Records 
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Adding Zone Type\n";
 $datetime = date('Y-m-d H:i:s');
-$query_zone_type = "insert INTO `zone_type` (`type`, `category`,) VALUES ('Heating', 0), ('Hot Water', 0);";
+$query_zone_type = "insert INTO `zone_type` (`type`, `category`,) VALUES ('Heating', 0), ('Water', 0);";
 $results = $conn->query($query_zone_type);
 if ($results) {
 		echo  "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Type Records Added \033[41mZone Type\033[0m Data  Succeeded \n";
