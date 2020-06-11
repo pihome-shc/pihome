@@ -179,8 +179,8 @@ if (isset($_POST['submit'])) {
         $query = "select * from schedule_daily_time_zone_view where time_id = {$time_id}";
         $zoneresults = $conn->query($query);
 } else {
-        $query = "select id as tz_id, name as zone_name, status as tz_status, type from zone where status = 1 AND `purge`= 0 order by index_id asc;";
-        $zoneresults = $conn->query($query);
+        $query = "select zone.id as tz_id, zone.name as zone_name, zone.status as tz_status, zone.type, zone_type.category FROM zone, zone_type WHERE zone.type = zone_type.type AND status = 1 AND `purge`= 0 ORDER BY index_id asc;";
+	$zoneresults = $conn->query($query);
 }
 ?>
 
@@ -306,63 +306,65 @@ if (isset($_POST['submit'])) {
 
 						<!-- Group Zone Settings -->
 						<?php
-						if($row['tz_status'] == 1 AND $time_id != 0){
-							//if($time_id != 0){
-							$style_text = "";
-						}else{
-							$style_text = "display:none !important;";
-						}
-						 echo '<div id="'.$row["tz_id"].'" style="'.$style_text.'">
-							<div class="form-group" class="control-label">';
-								//0=C, 1=F
-								$c_f = settings($conn, 'c_f');
-    								if(($c_f==1 || $c_f=='1') AND ($row["type"]=='Heating')) {
-									$min = 50;
-									$max = 85;
-								}elseif (($c_f==1 || $c_f=='1') AND ($row["type"]=='Water' OR $row["type"]=='Immersion')) {
-									$min = 50;
-									$max = 170;
-								}elseif (($c_f==0 || $c_f=='0') AND ($row["type"]=='Heating')) {
-									$min = 10;
-									$max = 30;
-								}elseif (($c_f==0 || $c_f=='0') AND ($row["type"]=='Water' OR $row["type"]=='Immersion')) {
-									$min = 10;
-									$max = 80;
-								}
-        							if(!isset($_GET['nid'])) {
-									//<!-- Zone Coop Enable Checkbox -->
-								        if($time_id != 0){ $check = ($row['coop'] == 1) ? 'checked' : ''; }
-								        echo '<div class="checkbox checkbox-default  checkbox-circle">
-										<input id="coop'.$row["tz_id"].'" class="styled" type="checkbox" name="coop['.$row["tz_id"].']" value="1" '.$check.'>
-									        <label for="coop'.$row["tz_id"].'">Coop Start</label> <i class="glyphicon glyphicon-leaf green"></i>
-									        <i class="fa fa-info-circle fa-lg text-info" data-container="body" data-toggle="popover" data-placement="right" data-content="'.$lang['schedule_coop_help'].'"></i>
-										<div class="help-block with-errors"></div>
-									</div>';
-								        // <!-- Temperature and Slider -->
-								        if($time_id != 0){ $temp = DispTemp($conn, $row['temperature']);} else { $temp = '15.0';}
-								        echo '<div class="slidecontainer">
-										<h4>'.$lang['temperature'].': <span id="val'.$row["zone_id"].'" style="display: inline-flex !important; font-size:18px !important;"><output name="show_temp_val" id="temp'.$row["tz_id"].'" style="padding-top:0px !important; font-size:18px !important;">'.$temp.'</output></span>&deg;</h4><br>
-									        <input type="range" min="'.$min.'" max="'.$max.'" step="0.5" value="'.$temp.'" class="slider" id="bb'.$row["tz_id"].'" name="temp['.$row["tz_id"].']" oninput=update_temp(this.value,"temp'.$row["tz_id"].'")>
-                							</div>';
-        							} else {
-									// <!-- Temperature and Slider -->
-								        echo '<div class="slidecontainer">
-									 	<h4>'.$lang['min_temperature'].': <span id="min_val'.$row["zone_id"].'" style="display: inline-flex !important; font-size:18px !important;"><output name="show_min_temp_val" id="min_temp'.$row["tz_id"].'" style="padding-top:0px !important; font-size:18px !important;">'.DispTemp($conn, $row['min_temperature']).'</output></span>&deg;</h4><br>
-									        <input type="range" min="'.$min.'" max="'.$max.'" step="0.5" value="'.DispTemp($conn, $row['min_temperature']).'" class="slider" id="min_bb'.$row["tz_id"].'" name="min_temp['.$row["tz_id"].']" oninput=update_temp(this.value,"min_temp'.$row["tz_id"].'")>
-								        </div>';
+                                                if ($row["category"] == 0 OR $row["category"] == 1) {
+							if($row['tz_status'] == 1 AND $time_id != 0){
+								//if($time_id != 0){
+								$style_text = "";
+							}else{
+								$style_text = "display:none !important;";
+							}
+							 echo '<div id="'.$row["tz_id"].'" style="'.$style_text.'">
+								<div class="form-group" class="control-label">';
+									//0=C, 1=F
+									$c_f = settings($conn, 'c_f');
+    									if(($c_f==1 || $c_f=='1') AND ($row["type"]=='Heating')) {
+										$min = 50;
+										$max = 85;
+									}elseif (($c_f==1 || $c_f=='1') AND ($row["type"]=='Water' OR $row["type"]=='Immersion')) {
+										$min = 50;
+										$max = 170;
+									}elseif (($c_f==0 || $c_f=='0') AND ($row["type"]=='Heating')) {
+										$min = 10;
+										$max = 30;
+									}elseif (($c_f==0 || $c_f=='0') AND ($row["type"]=='Water' OR $row["type"]=='Immersion')) {
+										$min = 10;
+										$max = 80;
+									}
+        								if(!isset($_GET['nid'])) {
+										//<!-- Zone Coop Enable Checkbox -->
+								        	if($time_id != 0){ $check = ($row['coop'] == 1) ? 'checked' : ''; }
+									        echo '<div class="checkbox checkbox-default  checkbox-circle">
+											<input id="coop'.$row["tz_id"].'" class="styled" type="checkbox" name="coop['.$row["tz_id"].']" value="1" '.$check.'>
+										        <label for="coop'.$row["tz_id"].'">Coop Start</label> <i class="glyphicon glyphicon-leaf green"></i>
+										        <i class="fa fa-info-circle fa-lg text-info" data-container="body" data-toggle="popover" data-placement="right" data-content="'.$lang['schedule_coop_help'].'"></i>
+											<div class="help-block with-errors"></div>
+										</div>';
+									        // <!-- Temperature and Slider -->
+									        if($time_id != 0){ $temp = DispTemp($conn, $row['temperature']);} else { $temp = '15.0';}
+									        echo '<div class="slidecontainer">
+											<h4>'.$lang['temperature'].': <span id="val'.$row["zone_id"].'" style="display: inline-flex !important; font-size:18px !important;"><output name="show_temp_val" id="temp'.$row["tz_id"].'" style="padding-top:0px !important; font-size:18px !important;">'.$temp.'</output></span>&deg;</h4><br>
+									        	<input type="range" min="'.$min.'" max="'.$max.'" step="0.5" value="'.$temp.'" class="slider" id="bb'.$row["tz_id"].'" name="temp['.$row["tz_id"].']" oninput=update_temp(this.value,"temp'.$row["tz_id"].'")>
+	                							</div>';
+        								} else {
+										// <!-- Temperature and Slider -->
+									        echo '<div class="slidecontainer">
+										 	<h4>'.$lang['min_temperature'].': <span id="min_val'.$row["zone_id"].'" style="display: inline-flex !important; font-size:18px !important;"><output name="show_min_temp_val" id="min_temp'.$row["tz_id"].'" style="padding-top:0px !important; font-size:18px !important;">'.DispTemp($conn, $row['min_temperature']).'</output></span>&deg;</h4><br>
+										        <input type="range" min="'.$min.'" max="'.$max.'" step="0.5" value="'.DispTemp($conn, $row['min_temperature']).'" class="slider" id="min_bb'.$row["tz_id"].'" name="min_temp['.$row["tz_id"].']" oninput=update_temp(this.value,"min_temp'.$row["tz_id"].'")>
+									        </div>';
 
-								        echo '<div class="slidecontainer">
-									 	<h4>'.$lang['max_temperature'].': <span id="max_val'.$row["zone_id"].'" style="display: inline-flex !important; font-size:18px !important;"><output name="show_max_temp_val" id="max_temp'.$row["tz_id"].'" style="padding-top:0px !important; font-size:18px !important;">'.DispTemp($conn, $row['max_temperature']).'</output></span>&deg;</h4><br>
-									        <input type="range" min="'.$min.'" max="'.$max.'" step="0.5" value="'.DispTemp($conn, $row['max_temperature']).'" class="slider" id="max_bb'.$row["tz_id"].'" name="max_temp['.$row["tz_id"].']" oninput=update_temp(this.value,"max_temp'.$row["tz_id"].'")>
-								       	</div>'; 
-								}
-        							?>
-    							</div>
-							<!-- /.form-group -->
-						</div>
-						<!-- /.row -->
-					<?php }?> <!-- End of Zone List Loop  -->
-                			<br>
+									        echo '<div class="slidecontainer">
+										 	<h4>'.$lang['max_temperature'].': <span id="max_val'.$row["zone_id"].'" style="display: inline-flex !important; font-size:18px !important;"><output name="show_max_temp_val" id="max_temp'.$row["tz_id"].'" style="padding-top:0px !important; font-size:18px !important;">'.DispTemp($conn, $row['max_temperature']).'</output></span>&deg;</h4><br>
+										        <input type="range" min="'.$min.'" max="'.$max.'" step="0.5" value="'.DispTemp($conn, $row['max_temperature']).'" class="slider" id="max_bb'.$row["tz_id"].'" name="max_temp['.$row["tz_id"].']" oninput=update_temp(this.value,"max_temp'.$row["tz_id"].'")>
+									       	</div>'; 
+									}
+        								?>
+    								</div>
+								<!-- /.form-group -->
+							</div>
+                                                        <!-- /.row -->
+                                                <?php }
+                                        }?> <!-- End of Zone List Loop  -->
+                                        <br>
 					<!-- Buttons -->
 					<a href="<?php echo $return_url ?>"><button type="button" class="btn btn-primary btn-sm" ><?php echo $lang['cancel']; ?></button></a>
                 			<input type="submit" name="submit" value="<?php echo $lang['submit']; ?>" class="btn btn-default btn-sm login">
