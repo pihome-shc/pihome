@@ -663,6 +663,7 @@ DROP TABLE IF EXISTS `zone_type`;
 CREATE TABLE IF NOT EXISTS `zone_type` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `type` char(50) COLLATE utf8_bin,
+  `category` int(11),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
