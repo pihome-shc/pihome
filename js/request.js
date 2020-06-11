@@ -281,6 +281,7 @@ var idata="w=node&o=delete&wid="+wid;
 //Add Zone Type
 function add_zone_type(){
 var idata="w=zone_type&o=add&zone_type="+document.getElementById("zone_type").value;
+    idata+="&zone_category="+document.getElementById("category").value;
     idata+="&wid=0";
     $.get('db.php',idata)
     .done(function(odata){
