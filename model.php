@@ -649,7 +649,7 @@ echo '<p class="text-muted">'.$lang['node_add_info_text'].'</p>
     </div>
 </div>';
 
-// Add Zone Type
+//Zone Type
 echo '
 <div class="modal fade" id="zone_types" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -663,7 +663,8 @@ echo '
 
 echo '<table class="table table-bordered">
     <tr>
-        <th class="col-xs-11"><small>'.$lang['type'].'</small></th>
+        <th class="col-xs-4"><small>'.$lang['type'].'</small></th>
+        <th class="col-xs-7"><small>'.$lang['category'].'</small></th>
         <th class="col-xs-1"></th>
     </tr>';
 
@@ -682,6 +683,7 @@ while ($row = mysqli_fetch_assoc($results)) {
     echo '
         <tr>
             <td>'.$row["type"].'</td>
+            <td>'.$lang['zone_category'.$row["category"]].'</td>
             <td><a href="javascript:delete_zone_type('.$row["id"].');"><button class="btn btn-danger btn-xs" data-toggle="confirmation" data-title="ARE YOU SURE?" data-content="'.$content_msg.'"><span class="glyphicon glyphicon-trash"></span></button> </a></td>
         </tr>';
 }
@@ -711,6 +713,15 @@ echo '<p class="text-muted">'.$lang['zone_type_add_info_text'].'</p>
         <div class="form-group" class="control-label"><label>'.$lang['zone_type'].'</label> <small class="text-muted">'.$lang['zone_type_info'].'</small>
         <input class="form-control input-sm" type="text" id="zone_type" name="zone_type" value="" placeholder="'.$lang['zone_type'].'">
         <div class="help-block with-errors"></div></div>
+
+        <div class="form-group" class="control-label"><label>'.$lang['category'].'</label> <small class="text-muted">'.$lang['zone_category_info'].'</small>
+
+        <select class="form-control input-sm" type="text" id="category" name="category">
+        <option value=0 selected>'.$lang['zone_category0'].'</option>
+        <option value=1>'.$lang['zone_category1'].'</option>
+        <option value=2>'.$lang['zone_category2'].'</option>
+        </select>
+    <div class="help-block with-errors"></div></div>
 
 </div>
             <div class="modal-footer">
