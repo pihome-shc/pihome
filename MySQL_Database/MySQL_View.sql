@@ -26,7 +26,7 @@ Drop View if exists schedule_daily_time_zone_view;
 CREATE VIEW schedule_daily_time_zone_view AS
 select ss.id as time_id, ss.status as time_status, sstart.start, send.end, sWeekDays.WeekDays,
 sdtz.sync as tz_sync, sdtz.id as tz_id, sdtz.status as tz_status,
-sdtz.zone_id, zone.index_id, zone.name as zone_name, zt.`type`, temperature, holidays_id , coop, ss.sch_name
+sdtz.zone_id, zone.index_id, zone.name as zone_name, zt.`type`, ztype.category, temperature, holidays_id , coop, ss.sch_name
 from schedule_daily_time_zone sdtz
 join schedule_daily_time ss on sdtz.schedule_daily_time_id = ss.id
 join schedule_daily_time sstart on sdtz.schedule_daily_time_id = sstart.id
@@ -34,6 +34,7 @@ join schedule_daily_time send on sdtz.schedule_daily_time_id = send.id
 join schedule_daily_time sWeekDays on sdtz.schedule_daily_time_id = sWeekDays.id
 join zone on sdtz.zone_id = zone.id
 join zone zt on sdtz.zone_id = zt.id
+join zone_type ztype on zone.type = ztype.type
 where sdtz.`purge` = '0' order by zone.index_id;
 
 -- Zone View version 2
@@ -85,15 +86,15 @@ Drop View if exists schedule_night_climat_zone_view;
 CREATE VIEW schedule_night_climat_zone_view AS
 select tnct.id as time_id, tnct.status as time_status, snct.start_time as start, enct.end_time as end, snct.WeekDays, 
 nctz.sync as tz_sync, nctz.id as tz_id, nctz.status as tz_status, nctz.zone_id, zone.index_id, zone.name as zone_name, 
-zt.`type`, zone.status as zone_status, nctz.min_temperature, nctz.max_temperature
+zt.`type`, ztype.category, zone.status as zone_status, nctz.min_temperature, nctz.max_temperature
 from schedule_night_climat_zone nctz
 join schedule_night_climate_time snct on nctz.schedule_night_climate_id = snct.id
 join schedule_night_climate_time enct on nctz.schedule_night_climate_id = enct.id
 join schedule_night_climate_time tnct on nctz.schedule_night_climate_id = tnct.id
 join zone on nctz.zone_id = zone.id
 join zone zt on nctz.zone_id = zt.id
+join zone_type ztype on zone.type = ztype.type
 where nctz.`purge` = '0' order by zone.index_id;
-
 
 -- Messages_in View for Graps
 Drop View if exists messages_in_view_24h;
