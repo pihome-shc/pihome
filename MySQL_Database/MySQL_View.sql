@@ -46,12 +46,12 @@ ctype.`type` AS controller_type, cid.node_id as controler_id, zone.controler_chi
 lasts.last_seen, msv.ms_version, skv.sketch_version
 from zone
 join zone_type ztype on zone.type = ztype.type
-join nodes sid on zone.sensor_id = sid.id
+LEFT join nodes sid on zone.sensor_id = sid.id
 join nodes ctype on zone.controler_id = ctype.id
 join nodes cid on zone.controler_id = cid.id
-join nodes lasts on zone.sensor_id = lasts.id
-join nodes msv on zone.sensor_id = msv.id
-join nodes skv on zone.sensor_id = skv.id
+LEFT join nodes lasts on zone.sensor_id = lasts.id
+LEFT join nodes msv on zone.sensor_id = msv.id
+LEFT join nodes skv on zone.sensor_id = skv.id
 where zone.`purge` = '0';
 
 -- Boiler View
