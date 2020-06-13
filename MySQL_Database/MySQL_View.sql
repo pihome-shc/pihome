@@ -43,16 +43,18 @@ CREATE VIEW zone_view AS
 select zone.status, zone.sync, zone.id, zone.index_id, zone.name, zone.type, ztype.category, zone.graph_it, zone.max_c, zone.max_operation_time, zone.hysteresis_time,
 zone.sp_deadband, sid.node_id as sensors_id, zone.sensor_child_id,
 ctype.`type` AS controller_type, cid.node_id as controler_id, zone.controler_child_id,
-lasts.last_seen, msv.ms_version, skv.sketch_version
+IFNULL(lasts.last_seen, lasts_2.last_seen), IFNULL(msv.ms_version, msv_2.ms_version), IFNULL(skv.sketch_version, skv_2.sketch_version)
 from zone
 join zone_type ztype on zone.type = ztype.type
 LEFT join nodes sid on zone.sensor_id = sid.id
 join nodes ctype on zone.controler_id = ctype.id
 join nodes cid on zone.controler_id = cid.id
 LEFT join nodes lasts on zone.sensor_id = lasts.id
+LEFT join nodes lasts_2 on zone.controler_id = lasts_2.id
 LEFT join nodes msv on zone.sensor_id = msv.id
+LEFT join nodes msv_2 on zone.controler_id = msv_2.id
 LEFT join nodes skv on zone.sensor_id = skv.id
-where zone.`purge` = '0';
+LEFT join nodes skv_2 on zone.controler_id = skv_2.idwhere zone.`purge` = '0';
 
 -- Boiler View
 Drop View if exists boiler_view;
