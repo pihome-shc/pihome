@@ -54,7 +54,8 @@ LEFT join nodes lasts_2 on zone.controler_id = lasts_2.id
 LEFT join nodes msv on zone.sensor_id = msv.id
 LEFT join nodes msv_2 on zone.controler_id = msv_2.id
 LEFT join nodes skv on zone.sensor_id = skv.id
-LEFT join nodes skv_2 on zone.controler_id = skv_2.idwhere zone.`purge` = '0';
+LEFT join nodes skv_2 on zone.controler_id = skv_2.id
+where zone.`purge` = '0';
 
 -- Boiler View
 Drop View if exists boiler_view;
