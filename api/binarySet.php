@@ -81,7 +81,7 @@ if(isset($_GET['zonename'])) {
                                         echo json_encode(array("success" => True, "state" => $status));
                                 } else {
                                         http_response_code(400);
-                                        echo json_encode(array("success" => False, "state" => "Update messages_out record error."));
+                                        echo json_encode(array("success" => False, "state" => "Update Database error."));
                                 }
 			}
 		} else {
