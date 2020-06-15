@@ -361,6 +361,41 @@ if($what=="away"){
 	}
 }
 
+//add_on
+if($what=="add_on"){
+        if($opp=="active"){
+                $time = date("Y-m-d H:i:s");
+                $query = "SELECT * FROM messages_out WHERE zone_id = '{$wid}' LIMIT 1";
+                $results = $conn->query($query);
+                $row = mysqli_fetch_assoc($results);
+                $da= $row['payload'];
+                if($da=="1"){ $set="0"; }else{ $set="1"; }
+                $query = "UPDATE messages_out SET payload = '{$set}', datetime = '{$time}', sent = '0' WHERE zone_id = '{$wid}' LIMIT 1";
+                if($conn->query($query)){
+                        $update_error=0;
+                }else{
+                        $update_error=1;
+                }
+
+                $query = "UPDATE zone SET zone_status = '{$set}' WHERE id = '{$wid}' LIMIT 1";
+                if($conn->query($query)){
+                        $update_error=0;
+                }else{
+                        $update_error=1;
+                }
+
+                if($update_error==0){
+                      header('Content-type: application/json');
+                        echo json_encode(array('Success'=>'Success','Query'=>$query));
+                        return;
+                }else{
+                        header('Content-type: application/json');
+                        echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+                        return;
+                }
+        }
+}
+
 //update frost temperature
 if($what=="frost"){
 	if($opp=="update"){
