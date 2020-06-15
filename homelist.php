@@ -114,7 +114,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 		$weather_fact = 0;
 		if ($weather_c <= 5 ) {$weather_fact = 0.3;} elseif ($weather_c <= 10 ) {$weather_fact = 0.4;} elseif ($weather_c <= 15 ) {$weather_fact = 0.5;} elseif ($weather_c <= 20 ) {$weather_fact = 0.6;} elseif ($weather_c <= 30 ) {$weather_fact = 0.7;}
 
-		$query = "SELECT * FROM zone where zone.purge = '0' ORDER BY index_id asc; ";
+                $query = "SELECT * FROM zone_view where category < 2 ORDER BY index_id asc; ";
 		$results = $conn->query($query);
 		while ($row = mysqli_fetch_assoc($results)) {
 			$max_room_c=$row['max_c'];
@@ -602,6 +602,25 @@ require_once(__DIR__.'/st_inc/functions.php');
 			<!-- /.modal fade -->
 			';
 		}	// end if boiler button
+
+		// Add-On buttons
+                $query = "SELECT zone.*, zone_type.category FROM zone, zone_type WHERE zone.type = zone_type.type AND zone.purge = 0 AND category = 2 ORDER BY index_id asc; ";
+                $results = $conn->query($query);
+                while ($row = mysqli_fetch_assoc($results)) {
+                        //query to get on/off state from table with sensor id
+                        $query = "SELECT * FROM messages_out WHERE zone_id = '{$row['id']}' LIMIT 1;";
+                        $result = $conn->query($query);
+                        $state = mysqli_fetch_array($result);
+                        $add_on_active = $state['payload'];
+
+                        if ($add_on_active=='1'){$add_on_colour="orange";} elseif ($add_on_active=='0'){$add_on_colour="black";}
+                        echo '<a href="javascript:active_add_on('.$row['id'].');">
+                        <button type="button" class="btn btn-default btn-circle btn-xxl mainbtn">
+                        <h3 class="buttontop"><small>'.$row['name'].'</small></h3>
+                        <h3 class="degre" ><i class="fa fa-lightbulb-o fa-1x '.$add_on_colour.'"></i></h3>
+                        <h3 class="status">
+                        </h3></button></a>';
+                }	// end if add-on buttons 
 		?>
 		<!-- One touch buttons -->
 		<div id="collapseone" class="panel-collapse collapse animated fadeIn">

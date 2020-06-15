@@ -88,6 +88,12 @@ function active_away(){
 	request('db.php', 'GET', quest, function(){ $('#homelist').load('homelist.php'); } );
 }
 
+//activate and deactivate add_on
+function active_add_on(wid){
+        var quest = "?w=add_on&o=active&wid=" + wid + "&frost_temp=0";
+        request('db.php', 'GET', quest, function(){ $('#homelist').load('homelist.php'); } );
+}
+
 //update frost temperate 
 function update_frost(){
     var idata="w=frost&o=update";

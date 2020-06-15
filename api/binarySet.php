@@ -30,7 +30,7 @@ require_once(__DIR__.'../../st_inc/functions.php');
 
 if(isset($_GET['zonename'])) {
         $zonename = $_GET['zonename'];
-        $query = "SELECT controler_id, controler_child_id FROM zone_view where name = '{$zonename}' LIMIT 1;";
+        $query = "SELECT controler_id, controler_child_id, zone_status FROM zone_view where name = '{$zonename}' LIMIT 1;";
         $results = $conn->query($query);
         $row = mysqli_fetch_assoc($results);
 	if(! $row) {
@@ -59,16 +59,30 @@ if(isset($_GET['zonename'])) {
 					$status = -1;
 			}
 			if($status == 0 or $status == 1) {
-	        		$query = "UPDATE messages_out SET payload = '{$status}', sent = 0 where node_id = '{$controler_id}' AND child_id = '{$controler_child_id}';";
-		        	$conn->query($query);
-        			if($conn->query($query)){
-                			http_response_code(200);
-					if($status == 1) {$status = True;} else {$status = False;}
-	                		echo json_encode(array("success" => True, "state" => $status));
-		        	} else {
-        		        	http_response_code(400);
-                			echo json_encode(array("success" => False, "state" => "Update database error."));
-		        	}
+                                $query = "UPDATE messages_out SET payload = '{$status}', sent = 0 where node_id = '{$controler_id}' AND child_id = '{$controler_child_id}';";
+                                $conn->query($query);
+                                if($conn->query($query)){
+                                        $update = 0;
+                                } else {
+                                        $update = 1;
+                                }
+
+                                $query = "UPDATE zone SET zone_status = '{$status}' where name = '{$zonename}';";
+                                $conn->query($query);
+                                if($conn->query($query)){
+                                        $update = 0;
+                                } else {
+                                        $update = 1;
+                                }
+
+                                if($update == 0){
+                                        http_response_code(200);
+                                        if($status == 1) {$status = True;} else {$status = False;}
+                                        echo json_encode(array("success" => True, "state" => $status));
+                                } else {
+                                        http_response_code(400);
+                                        echo json_encode(array("success" => False, "state" => "Update Database error."));
+                                }
 			}
 		} else {
         		http_response_code(200);
