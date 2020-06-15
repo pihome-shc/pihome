@@ -40,7 +40,7 @@ where sdtz.`purge` = '0' order by zone.index_id;
 -- Zone View version 2
 Drop View if exists zone_view;
 CREATE VIEW zone_view AS
-select zone.status, zone.sync, zone.id, zone.index_id, zone.name, zone.type, ztype.category, zone.graph_it, zone.max_c, zone.max_operation_time, zone.hysteresis_time,
+select zone.status, zone.zone_status, zone.sync, zone.id, zone.index_id, zone.name, zone.type, ztype.category, zone.graph_it, zone.max_c, zone.max_operation_time, zone.hysteresis_time,
 zone.sp_deadband, sid.node_id as sensors_id, zone.sensor_child_id,
 ctype.`type` AS controller_type, cid.node_id as controler_id, zone.controler_child_id,
 IFNULL(lasts.last_seen, lasts_2.last_seen) as last_seen, IFNULL(msv.ms_version, msv_2.ms_version) as ms_version, IFNULL(skv.sketch_version, skv_2.sketch_version) as sketch_version
