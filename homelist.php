@@ -42,11 +42,7 @@ require_once(__DIR__.'/st_inc/functions.php');
                 <h3 class="status"></h3>
                 </button></a>
                 <?php
-		//query to get frost protection temperature
-		$query = "SELECT * FROM frost_protection ORDER BY id desc LIMIT 1; ";
-		$result = $conn->query($query);
-		$frost_q = mysqli_fetch_array($result);
-		$frost_c = $frost_q['temperature'];
+
 
 		//following two variable set to 0 on start for array index.
 		$boost_index = '0';
@@ -55,22 +51,9 @@ require_once(__DIR__.'/st_inc/functions.php');
 		//following variable set to current day of the week.
 		$dow = idate('w');
 
-		//query to check away status
-		$query = "SELECT * FROM away LIMIT 1";
-		$result = $conn->query($query);
-		$away = mysqli_fetch_array($result);
-		$away_active = $away['status'];
 
-		//query to check holidays status
-		$query = "SELECT * FROM holidays WHERE NOW() between start_date_time AND end_date_time AND status = '1' LIMIT 1";
-		$result = $conn->query($query);
-		$rowcount=mysqli_num_rows($result);
-		if ($rowcount > 0) {
-		        $holidays = mysqli_fetch_array($result);
-		        $holidays_status = $holidays['status'];
-		}else {
-		        $holidays_status = 0;
-		}
+
+
 
 		//GET BOILER DATA AND FAIL ZONES IF BOILER COMMS TIMEOUT
 		//query to get last boiler operation time and hysteresis time
@@ -101,299 +84,195 @@ require_once(__DIR__.'/st_inc/functions.php');
   			}
 		}
 
-		//Get Weather Temperature
-		$query = "SELECT * FROM messages_in WHERE node_id = '1' ORDER BY id desc LIMIT 1";
-		$result = $conn->query($query);
-		$weather_temp = mysqli_fetch_array($result);
-		$weather_c = $weather_temp['payload'];
-		//    1    00-05    0.3
-		//    2    06-10    0.4
-		//    3    11-15    0.5
-		//    4    16-20    0.6
-		//    5    21-30    0.7
-		$weather_fact = 0;
-		if ($weather_c <= 5 ) {$weather_fact = 0.3;} elseif ($weather_c <= 10 ) {$weather_fact = 0.4;} elseif ($weather_c <= 15 ) {$weather_fact = 0.5;} elseif ($weather_c <= 20 ) {$weather_fact = 0.6;} elseif ($weather_c <= 30 ) {$weather_fact = 0.7;}
-
-		$query = "SELECT * FROM zone where zone.purge = '0' ORDER BY index_id asc; ";
+		
+		
+		$query = "SELECT * FROM zone_view  ORDER BY index_id asc; ";
 		$results = $conn->query($query);
 		while ($row = mysqli_fetch_assoc($results)) {
-			$max_room_c=$row['max_c'];
-			$max_operation_time=$row['max_operation_time'];
-			$location_hysteresis_time=$row['hysteresis_time'];
-			$zone_enable=$row['status'];
+			$zone_status=$row['status'];
+			$zone_id=$row['id'];
+			$zone_name=$row['name'];
+			$zone_type=$row['type'];
+			$zone_max_c=$row['max_c'];
+			$zone_max_operation_time=$row['max_operation_time'];
+			$zone_hysteresis_time=$row['hysteresis_time'];
 			$zone_sp_deadband=$row['sp_deadband'];
+			$zone_sensor_id=$row['sensors_id'];
+			$zone_sensor_child_id=$row['sensor_child_id'];
+			$zone_controller_type=$row['controller_type'];
+			$zone_controler_id=$row['controler_id'];
+			$zone_controler_child_id=$row['controler_child_id'];
 
-			//query to get node id from nodes table
-			$query = "SELECT * FROM nodes WHERE id = {$row['sensor_id']} AND nodes.`purge` = '0' AND status IS NOT NULL LIMIT 1;";
+			//query to get zone current state
+			$query = "SELECT * FROM zone_current_state WHERE id = '{$zone_id}' LIMIT 1;";
+			$result = $conn->query($query);
+			$zone_current_state = mysqli_fetch_array($result);
+			$zone_status = $zone_current_state['status'];
+			$zone_mode = $zone_current_state['mode'];	
+			$zone_temp_reading = $zone_current_state['temp_reading'];	
+			$zone_temp_target = $zone_current_state['temp_target'];
+			$zone_temp_cut_in = $zone_current_state['temp_cut_in']; 
+			$zone_temp_cut_out = $zone_current_state['temp_cut_out'];
+			$zone_ctr_fault = $zone_current_state['controler_fault'];
+			$controler_seen = $zone_current_state['controler_seen_time'];
+			$zone_sensor_fault = $zone_current_state['sensor_fault'];
+			$sensor_seen = $zone_current_state['sensor_seen_time'];
+			$temp_reading_time= $zone_current_state['sensor_reading_time'];
+
+			//query to get temperature from messages_in_view_24h table view
+			$query = "SELECT * FROM messages_in_view_24h WHERE node_id = '{$zone_sensor_id}' AND child_id = {$zone_sensor_child_id} ORDER BY datetime desc LIMIT 1;";
 			$result = $conn->query($query);
 			$sensor = mysqli_fetch_array($result);
-			$sensor_id = $sensor['node_id'];
-			$sensor_child_id = $row['sensor_child_id'];
-			$sensor_seen = $sensor['last_seen']; //not using this cause it updates on battery update
-			$sensor_notice = $sensor['notice_interval'];
+			$zone_c = $sensor['payload'];
 
-			//Get data from nodes table
-			$query = "SELECT * FROM nodes WHERE id ={$row['controler_id']} AND status = 'Active' LIMIT 1;";
-			$result = $conn->query($query);
-			$controler_node = mysqli_fetch_array($result);
-			$controler_id = $controler_node['node_id'];
-			$controler_seen = $controler_node['last_seen'];
-			$controler_notice = $controler_node['notice_interval'];
+			//Zone Main Mode
+		/*	0 - idle
+			10 - fault
+			20 - frost
+			30 - overtemperature
+			40 - holiday
+			50 - nightclimate
+			60 - boost
+			70 - override
+			80 - sheduled
+			90 - away
+			100 - hysteresis */
+			$zone_mode_main=floor($zone_mode/10)*10;
+			
+			//Zone sub mode - running/ stopped different types
+		/*	0 - stopped (above cut out setpoint or not running in this mode)
+			1 - running 
+			2 - stopped (within deadband) 
+			3 - stopped (coop start waiting for boiler) */
 
-			//query to get temperature from table with sensor id
-			$query = "SELECT * FROM messages_in WHERE node_id = '{$sensor_id}' AND child_id = '{$sensor_child_id}' ORDER BY id desc LIMIT 1;";
-			$result = $conn->query($query);
-			$roomtemp = mysqli_fetch_array($result);
-			$room_c = $roomtemp['payload'];
-			$temp_reading_time = $roomtemp['datetime'];
+			$zone_mode_sub=floor($zone_mode%10);
 
-  			//Check Zone Controller Fault
-			$zone_ctr_fault = 0;
-			$zone_sensor_fault = 0;
-			if($controler_notice > 0) {
-				$now=strtotime(date('Y-m-d H:i:s'));
-				$controler_seen_time = strtotime($controler_seen);
-				if($controler_seen_time  < ($now - ($controler_notice*60))){
-					$zone_ctr_fault = 1;
-				}
-			}
+			//status animation
 
-			//Check Zone Temperature Sensors Fault
-			if($sensor_notice > 0) {
-				$now=strtotime(date('Y-m-d H:i:s'));
-				$sensor_seen_time = strtotime($temp_reading_time); //using time from messages_in
-				if ($sensor_seen_time  < ($now - ($sensor_notice*60))){
-					$zone_sensor_fault = 1;
-				}
-			}
-
-			//query to get schedule and temperature from table
-			if ($holidays_status) {
-				$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between start AND end AND zone_id = {$row['id']} AND time_status = '1' AND tz_status = '1' AND (WeekDays & (1 << {$dow})) > 0 AND holidays_id > 0 LIMIT 1";
-				//$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between start AND end AND zone_id = {$row['id']} AND tz_status = '1' AND (WeekDays & (1 << {$dow})) > 0 LIMIT 1";
-			} else {
-				$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between start AND end AND zone_id = {$row['id']} AND time_status = '1' AND tz_status = '1' AND (WeekDays & (1 << {$dow})) > 0 AND holidays_id = 0 LIMIT 1";
-				//$query = "SELECT * FROM schedule_daily_time_zone_view WHERE CURTIME() between start AND end AND zone_id = {$row['id']} AND tz_status = '1' LIMIT 1";
-			}
-			$sch_results = $conn->query($query);
-			$schedule = mysqli_fetch_array($sch_results);
-			$zone_status = $schedule['tz_status'];
-			$start_time = $schedule['start'];
-			$end_time = $schedule['end'];
-			$schedule_c = $schedule['temperature'];
-			$schedule_coop = $schedule['coop'];
-			$sch_status = $schedule['time_status'];
-  			if (isset($schedule['holidays_id'])) {
-    				$sch_holidays = 1;
-    				$sch_boiler_holidays = 1;
-  			} else {
-    				$sch_holidays = 0;
-			}
-			$shactive=" ";
-			/*
-			$sch_status = $schedule['status'];
-			$sch_active = $schedule['active'];
-			*/
-			//query to check override status and get temperature from override table
-			$query = "SELECT * FROM override WHERE zone_id = {$row['id']} LIMIT 1";
-			$result = $conn->query($query);
-			$override = mysqli_fetch_array($result);
-			$ovactive = $override['status'];
-			$override_c = $override['temperature'];
-
-			//query to check boost status and get temperature from boost table
-			//$query = "SELECT * FROM boost WHERE zone_id = {$zone_id} LIMIT 1;";
-			$query = "SELECT * FROM boost WHERE zone_id = {$row['id']} AND status = 1 LIMIT 1;";
-			$result = $conn->query($query);
-			if (mysqli_num_rows($result) != 0){
-				$boost = mysqli_fetch_array($result);
-				$bactive = $boost['status'];
-				$time = $boost['time'];
-				$boost_c = $boost['temperature'];
-				$minute = $boost['minute'];
-			} else {
-				$bactive = '0';
-			}
-
-			//query to check night cliemate status and get temperature from night climate table
-			//$query = "select * from schedule_night_climat_zone_view WHERE zone_id = {$row['id']} LIMIT 1";
-			$query = "select * from schedule_night_climat_zone_view WHERE zone_id = {$row['id']} AND time_status = '1' AND tz_status = '1' AND (WeekDays & (1 << {$dow})) > 0 LIMIT 1;";
-			$result = $conn->query($query);
-			if (mysqli_num_rows($result) != 0){
-				$night_climate = mysqli_fetch_array($result);
-				$nc_time_status = $night_climate['time_status'];
-				$nc_zone_status = $night_climate['tz_status'];
-				$nc_zone_id = $night_climate['zone_id'];
-				$nc_start_time = $night_climate['start'];
-				$nc_end_time = $night_climate['end'];
-				$nc_min_c = $night_climate['min_temperature'];
-				$nc_max_c = $night_climate['max_temperature'];
-				$current_time = date('H:i:s');
-				if ((TimeIsBetweenTwoTimes($current_time, $nc_start_time, $nc_end_time)) AND ($nc_time_status =='1') AND ($nc_zone_status =='1')) {
-					$night_climate_status='1';
-				} else {
-					$night_climate_status='0';
-				}
-			}else {
-				$night_climate_status='0';
-			}
-			//Boost and Override Array
-			$boost_arr[$boost_index] = $bactive;
-			$boost_index = $boost_index+1;
-			$override_arr[$override_index] = $ovactive;
-			$override_index = $override_index+1;
-
-			//Zone Temperature calculation
-			//$zone_temp = $room_c + $weather_fact + $zone_sp_deadband;
-			//Zone Temperature Sensors Reading 		$room_c
-			//Zone DeadBand 						$zone_sp_deadband;
-			//Zone Weather Factor 					$weather_fact
-
-   			echo '<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-href="#" data-toggle="modal" data-target="#'.$row['type'].''.$row['id'].'" data-backdrop="static" data-keyboard="false">
-			<h3><small>'.$row['name'].'</small></h3>
-			<h3 class="degre">'.number_format(DispTemp($conn,$room_c),1).'&deg;</h3>
+   			echo '<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-href="#" data-toggle="modal" data-target="#'.$zone_type.''.$zone_id.'" data-backdrop="static" data-keyboard="false">
+			<h3><small>'.$zone_name.'</small></h3>
+			<h3 class="degre">'.number_format(DispTemp($conn,$zone_c),1).'&deg;</h3>
 			<h3 class="status">';
-    			//Now show status indicators
-    			//Left is circle with color showing heating, on target, away
-				//  #dc0000 red     - heating
-				//  #F0AD4E orance  - on target, or above max
-				//  #5292f7 blue    - away, or
-    			//Middle is target temperature
-    			//Right is icon for
-    			//  frost(snowy)
-    			//  away(signout)
-    			//  scheduled(clockoutline)
-    			//  over temp(thermometer)
-    			//  boost(rocket)
-    			//  override(refresh)
-    			//  bed(bed)
+  
+			/****************************************************** */
+			//Status indicator animation
+			/****************************************************** */
 
-    			if (($zone_ctr_fault == '1') OR ($zone_sensor_fault == '1') OR $boiler_fault == '1') {
-      				//Zone fault
-      				$status='';
-      				$shactive='ion-android-cancel';
-      				$shcolor='red';
-      				$target='';     //show no target temperature
-    			}
-    			else{
-      				if ($room_c < $frost_c) {
-          				//We don't care about any other conditions, protect against frost
-          				$status='red';
-          				$shactive='ion-ios-snowy';
-          				$shcolor='';
-          				$target=number_format(DispTemp($conn,$frost_c),0) . '&deg;';
-      				}
-      				else
-      				{
-          				//we aren't in danger of freezing, so check our normal conditions.
-          				if ($away_active == '0') {
-              					//We are under normal operating conditions.
-              					if ($room_c >= $max_room_c) {
-                  					//We are over temp
-                  					$status='orange';
-                  					$shactive='ion-thermometer';
-                  					$shcolor='red';                 //special color
-                  					$target=number_format(DispTemp($conn,$max_room_c),0) . '&deg;';
-            					}
-						else if (($holidays_status == '1') &&  ($sch_holidays == '0')) {
-                					//We are on holiday
-                					$status='blue';
-                					$shactive='fa-paper-plane';
-                					$shcolor='';
-                					$target='';
-              					}
-              					else if ($night_climate_status == '1' && $room_c < $nc_min_c) {
-                  					//We are night climate and heating
-                 					 $status='red';
-                  					$shactive='fa-bed';
-                  					$shcolor='';
-                  					$target=number_format(DispTemp($conn,$nc_min_c),0) . '&deg;';
-              					}
-              					else if ($night_climate_status == '1' && $room_c >= $nc_min_c) {
-                  					//We are night climate and NOT heating
-                  					$status='orange';
-                  					$shactive='fa-bed';
-                  					$shcolor='';
-                  					$target=number_format(DispTemp($conn,$nc_min_c),0) . '&deg;';
-              					}
-              					else if ($bactive == '1' && $room_c < $boost_c) {
-                  					//We are boost and heating
-                  					$status='red';
-                  					$shactive='fa-rocket';
-                  					$shcolor='';
-                  					$target=number_format(DispTemp($conn,$boost_c),0) . '&deg;';
-              					}
-              					else if ($bactive == '1' && $room_c >= $boost_c) {
-                  					//We are boost and NOT heating
-                  					$status='orange';
-                  					$shactive='fa-rocket';
-                  					$shcolor='';
-                  					$target=number_format(DispTemp($conn,$boost_c),0) . '&deg;';
-              					}
-              					//else if (($sch_status == 1) && ($ovactive == '1') && ($room_c < $schedule_c)) {
-  						else if (($ovactive == '1') && ($room_c < $override_c)) {
-                  					//We are override scheduled and heating
-                  					$status="blue";
-                  					$shactive='fa-refresh';
-                  					$shcolor='';
-                  					$target=number_format(DispTemp($conn,$override_c),0) . '&deg;';
-              					}
-              					else if (($ovactive == '1') && ($room_c >= $override_c)) {
-                  					//We are override scheduled and NOT heating
-                  					$status='orange';
-                  					$shactive='fa-refresh';
-                  					$shcolor='';
-                  					$target=number_format(DispTemp($conn,$override_c),0) . '&deg;';
-              					}
-/*
-              					else if (($sch_status == 1) && ($room_c < ($schedule_c - $weather_fact)) OR ($fired_status == 0)) {
-                  					//We are scheduled and heating
-                  					$status='orange';
-                  					$shactive='fa-leaf green';
-                  					$shcolor='';
-                  					$target=number_format(DispTemp($conn,$schedule_c),0) . '&deg;';
-              					}
-*/
-              					else if (($sch_status == 1) && ($room_c < $schedule_c) && (($schedule_coop == 0)||($fired_status == 1))) {
-                  					//We are scheduled and heating
-                  					$status='red';
-                  					$shactive='ion-ios-clock-outline';
-                  					$shcolor='';
-                  					$target=number_format(DispTemp($conn,$schedule_c),0) . '&deg;';
-              					}
-              					else if (($sch_status == 1) && ($room_c < $schedule_c) && ($schedule_coop == 1) && ($fired_status == 0)) {
-                  					//We are coop scheduled and waiting for boiler start
-                  					$status='blueinfo';   
-                  					$shactive='ion-ios-clock-outline';
-                  					$shcolor='orange';
-                  					$target=number_format(DispTemp($conn,$schedule_c),0) . '&deg;';
-              					}
-              					else if (($sch_status == 1) && ($room_c >= $schedule_c)) {
-                  					//We are scheduled and heating
-                  					$status='orange';
-                  					$shactive='ion-ios-clock-outline';
-                  					$shcolor='';
-                  					$target=number_format(DispTemp($conn,$schedule_c),0) . '&deg;';
-              					}
-              					else {
-                  					//We shouldn't get here.
-                  					$status='';
-  							//$shactive='fa-question';
-  							$shactive='';
-                  					$shcolor='';
-                  					$target='';     //show no target temperature
-              					}
-          				}
-          				else
-          				{
-              					//We are away
-              					$status='blue';
-              					$shactive='fa-sign-out';
-              					$shcolor='';
-              					$target='';     //show no target temperature
-          				}
-      				}
-    			}
+			//not running - temperature reached or not running in this mode
+			if($zone_mode_sub == 0){
+				//fault or idle
+				if(($zone_mode_main == 0)||($zone_mode_main == 10)){
+					$status='';
+				}
+				//away, holidays or hysteresis
+				else if(($zone_mode_main == 40)||($zone_mode_main == 90)||($zone_mode_main == 100)){ 
+					$status='blue';
+				}
+				//all other modes
+				else{
+					$status='orange';
+				}
+			}
+			//running
+			else if($zone_mode_sub == 1){
+				$status='red';
+			}
+			//not running - deadband
+			else if($zone_mode_sub == 2){
+				$status='blueinfo';  
+						}
+			//not running - coop start waiting for boiler
+			else if($zone_mode_sub == 3){
+				$status='blueinfo';  
+			}
+
+			/****************************************************** */
+			//Icon Animation and target temperature
+			/****************************************************** */
+
+			 //idle
+			if($zone_mode_main == 0){
+				$shactive='';
+				$shcolor='';
+				$target='';     //show no target temperature
+			}
+			//fault
+			else if($zone_mode_main == 10){
+				$shactive='ion-android-cancel';
+				$shcolor='red';
+				$target='';     //show no target temperature
+			}
+			//frost
+			else if($zone_mode_main == 20){
+				$shactive='ion-ios-snowy';
+          		$shcolor='';
+				$target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';
+			}
+			//overtemperature
+			else if($zone_mode_main == 30){
+				$shactive='ion-thermometer';
+				$shcolor='red';
+				$target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';   
+			}
+			//holiday
+			else if($zone_mode_main == 40){
+				$shactive='fa-paper-plane';
+				$shcolor='';
+				$target='';     //show no target temperature
+			}
+			//nightclimate
+			else if($zone_mode_main == 50){
+				$shactive='fa-bed';
+				$shcolor='';
+				$target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';
+			}
+			//boost
+			else if($zone_mode_main == 60){
+				$shactive='fa-rocket';
+				$shcolor='';
+				$target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';
+			}
+			//override
+			else if($zone_mode_main == 70){
+				$shactive='fa-refresh';
+				$shcolor='';
+				$target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';
+			}
+			//sheduled
+			else if($zone_mode_main == 80){
+				//if not coop start waiting for boiler
+				if($zone_mode_sub <> 3){
+					$shactive='ion-ios-clock-outline';
+                  	$shcolor='';
+				}
+				//if coop start waiting for boiler
+				else{
+					$shactive='ion-leaf';
+                  	$shcolor='green';
+				}
+				$target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';
+			}
+			//away
+			else if($zone_mode_main == 90){
+				$shactive='fa-sign-out';
+				$shcolor='';
+				$target='';     //show no target temperature
+			}
+			//hysteresis
+			else if($zone_mode_main == 100){
+				
+				$shactive='fa-hourglass';
+				$shcolor='';
+				$target='';     //show no target temperature
+			}
+			//shouldn't get here
+			else {
+				$shactive='fa-question';
+				$shcolor='';
+				$target='';     //show no target temperature
+			}
+
+			
     			//Left small circular icon/color status
     			echo '<small class="statuscircle"><i class="fa fa-circle fa-fw ' . $status . '"></i></small>';
     			//Middle target temp
@@ -404,12 +283,12 @@ require_once(__DIR__.'/st_inc/functions.php');
 
 
 			//Zone Schedule listing model
-			echo '<div class="modal fade" id="'.$row['type'].''.$row['id'].'" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			echo '<div class="modal fade" id="'.$zone_type.''.$zone_id.'" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     				<div class="modal-dialog">
 					<div class="modal-content">
 						<div class="modal-header">
 							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-							<h5 class="modal-title">'.$row['name'].'</h5>
+							<h5 class="modal-title">'.$zone_name.'</h5>
 						</div>
 						<div class="modal-body">';
   							if ($boiler_fault == '1') {
@@ -448,7 +327,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 											<i class="fa fa-clock-o fa-fw"></i> '.secondsToWords(($ctr_minutes)*60).' ago
 											</small>
 											<br><br>
-											<p>Controller ID '.$controler_id.' last seen at '.$controler_seen.' </p>
+											<p>Controller ID '.$zone_controler_id.' last seen at '.$controler_seen.' </p>
 											<p class="text-info">Heating system will resume its normal operation once this issue is fixed. </p>
 										</div>
 									</li>
@@ -469,17 +348,26 @@ require_once(__DIR__.'/st_inc/functions.php');
 											<i class="fa fa-clock-o fa-fw"></i> '.secondsToWords(($sensor_minutes)*60).' ago
 											</small>
 											<br><br>
-											<p>Sensor ID '.$sensor_id.' last seen at '.$sensor_seen.' <br>Last Temperature reading received at '.$temp_reading_time.' </p>
+											<p>Sensor ID '.$zone_sensor_id.' last seen at '.$sensor_seen.' <br>Last Temperature reading received at '.$temp_reading_time.' </p>
 											<p class="text-info"> Heating system will resume for this zone its normal operation once this issue is fixed. </p>
 										</div>
 									</li>
 								</ul>';
 							}else{
-								$squery = "SELECT * FROM schedule_daily_time_zone_view where zone_id ='{$row['id']}' AND tz_status = 1 AND time_status = '1' AND (WeekDays & (1 << {$dow})) > 0 ORDER BY start asc";
+								//if temperature control active display cut in and cut out levels
+								if ((($zone_type == 'Heating' ) || ($zone_type == 'Water' )|| ($zone_type == 'Immersion' )) && (($zone_mode_main == 20 ) || ($zone_mode_main == 50 ) || ($zone_mode_main == 60 ) || ($zone_mode_main == 70 )||($zone_mode_main == 80 ))){
+									echo '<p>Cut In Temperature : '.$zone_temp_cut_in.'&degC</p>
+									<p>Cut Out Temperature : ' .$zone_temp_cut_out.'&degC</p>';
+								}
+								//display coop start info
+								if($zone_mode_sub == 3){
+									echo '<p>Coop Start Schedule - Waiting for boiler start.</p>';	
+								}
+								$squery = "SELECT * FROM schedule_daily_time_zone_view where zone_id ='{$zone_id}' AND tz_status = 1 AND time_status = '1' AND (WeekDays & (1 << {$dow})) > 0 ORDER BY start asc";
 								$sresults = $conn->query($squery);
 								if (mysqli_num_rows($sresults) == 0){
 									echo '<div class=\"list-group\">
-									<a href="#" class="list-group-item"><i class="fa fa-exclamation-triangle red"></i>&nbsp;&nbsp;'.$lang['schedule_active_today'].' '.$row['name'].'!!! </a>
+									<a href="#" class="list-group-item"><i class="fa fa-exclamation-triangle red"></i>&nbsp;&nbsp;'.$lang['schedule_active_today'].' '.$zone_name.'!!! </a>
 							</div>';
 							} else {
 								//echo '<h4>'.mysqli_num_rows($sresults).' Schedule Records found.</h4>';
@@ -606,7 +494,11 @@ require_once(__DIR__.'/st_inc/functions.php');
 		<!-- One touch buttons -->
 		<div id="collapseone" class="panel-collapse collapse animated fadeIn">
 			<?php
-			if (in_array("1", $override_arr)) {$override_status='red';}else{$override_status='blue';}
+			//query to check override status
+			$query = "SELECT status FROM override WHERE status = '1' LIMIT 1";
+			$result = $conn->query($query);
+			$override_status=mysqli_num_rows($result);
+			if ($override_status==1) {$override_status='red';}else{$override_status='blue';}
 			echo '<a style="color: #777; cursor: pointer; text-decoration: none;" href="override.php">
 			<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn">
 			<h3 class="buttontop"><small>'.$lang['override'].'</small></h3>
@@ -614,14 +506,19 @@ require_once(__DIR__.'/st_inc/functions.php');
 			<h3 class="status"><small class="statuscircle"><i class="fa fa-circle fa-fw '.$override_status.'"></i></small>
 			</h3></button></a>';
 
-			if (in_array("1", $boost_arr)) {$boost_status='red';}else{$boost_status='blue';}
+			//query to check boost status
+			$query = "SELECT status FROM boost WHERE status = '1' LIMIT 1";
+			$result = $conn->query($query);
+			$boost_status=mysqli_num_rows($result);
+			if ($boost_status ==1) {$boost_status='red';}else{$boost_status='blue';}
 			echo '<a style="color: #777; cursor: pointer; text-decoration: none;" href="boost.php">
 			<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn">
 			<h3 class="buttontop"><small>'.$lang['boost'].'</small></h3>
 			<h3 class="degre" ><i class="fa fa-rocket fa-1x"></i></h3>
 			<h3 class="status"><small class="statuscircle"><i class="fa fa-circle fa-fw '.$boost_status.'"></i></small>
 			</h3></button></a>';
-
+			
+			//query to check night climate
 			$query = "SELECT * FROM schedule_night_climate_time WHERE id = 1";
 			$results = $conn->query($query);
 			$row = mysqli_fetch_assoc($results);
@@ -633,13 +530,22 @@ require_once(__DIR__.'/st_inc/functions.php');
 			<h3 class="status"><small class="statuscircle"><i class="fa fa-circle fa-fw '.$night_status.'"></i></small>
 			</h3></button>';
 
-			if ($away_active=='1'){$awaystatus="red";}elseif ($away_active=='0'){$awaystatus="blue";}
+			//query to check away status
+			$query = "SELECT * FROM away LIMIT 1";
+			$result = $conn->query($query);
+			$away = mysqli_fetch_array($result);
+			if ($away['status']=='1'){$awaystatus="red";}elseif ($away['status']=='0'){$awaystatus="blue";}
 			echo '<a href="javascript:active_away();">
 			<button type="button" class="btn btn-default btn-circle btn-xxl mainbtn">
 			<h3 class="buttontop"><small>'.$lang['away'].'</small></h3>
 			<h3 class="degre" ><i class="fa fa-sign-out fa-1x"></i></h3>
 			<h3 class="status"><small class="statuscircle"><i class="fa fa-circle fa-fw '.$awaystatus.'"></i></small>
 			</h3></button></a>';
+			
+			//query to check holidays status
+			$query = "SELECT status FROM holidays WHERE NOW() between start_date_time AND end_date_time AND status = '1' LIMIT 1";
+			$result = $conn->query($query);
+			$holidays_status=mysqli_num_rows($result);
 			if ($holidays_status=='1'){$holidaystatus="red";}elseif ($holidays_status=='0'){$holidaystatus="blue";}
 			?>
 			<a style="color: #777; cursor: pointer; text-decoration: none;" href="holidays.php">
