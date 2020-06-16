@@ -95,6 +95,17 @@ if($rval['stdout']=='') {
                 }
         }
 }
+
+$query = "select zone.id as tz_id, zone.name, zone.status as tz_status, zone.type, zone_type.category FROM zone, zone_type WHERE zone.type = zone_type.type AND status = 1 AND `purge`= 0 ORDER BY index_id asc; ";
+$results = $conn->query($query);
+while ($row = mysqli_fetch_assoc($results)) {
+    echo "ID ".$row['tz_id']."\n";
+    echo "Name ".$row['name']."\n";
+    echo "Status ".$row['tz_status']."\n";
+    echo "Type ".$row['category']."\n";
+    echo "Category ".$row['category']."\n";
+    if ($row["category"] == 1 OR $row["category"] == 2) { echo "Found\n"; }
+}
 //query to check boiler status
 $query = "SELECT * FROM boiler_view LIMIT 1;";
 $result = $conn->query($query);
@@ -166,6 +177,7 @@ $query = "SELECT * FROM zone_view where status = 1 order by index_id asc;";
 $results = $conn->query($query);
 while ($row = mysqli_fetch_assoc($results)) {
 	$zone_status=$row['status'];
+        $zone_active_status = $row['zone_status'];
 	$zone_id=$row['id'];
 	$zone_name=$row['name'];
 	$zone_type=$row['type'];
@@ -179,6 +191,21 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$zone_controller_type=$row['controller_type'];
 	$zone_controler_id=$row['controler_id'];
 	$zone_controler_child_id=$row['controler_child_id'];
+
+
+	//query to check if zone_current_state record exists tor the zone
+	$query = "SELECT * FROM zone_current_state WHERE id = {$zone_id} LIMIT 1;";
+	$result = $conn->query($query);
+	if (mysqli_num_rows($result)==0){
+	        //No record in zone_current_statw table, so add
+        	$query = "INSERT INTO zone_current_state VALUES({$zone_id}, 0, 0, 0, 0, 0, 0, 0,NULL ,0 ,NULL, NULL );";
+	        $conn->query($query);
+	}
+	//query to get zone previous running status
+	$query = "SELECT * FROM zone_current_state WHERE id = '{$zone_id}' LIMIT 1;";
+	$result = $conn->query($query);
+	$zone_current_state = mysqli_fetch_array($result);
+	$zone_status_prev = $zone_current_state['status'];
 
 	// process if a sensor is attached to this zone
 	if ($zone_category == 0 OR $zone_category == 1) {
@@ -224,13 +251,18 @@ while ($row = mysqli_fetch_assoc($results)) {
 			$sch_c = $schedule['temperature'];
 			$sch_coop = $schedule['coop'];
 
-			if (isset($schedule['holidays_id'])) {
+
+			if ($schedule['holidays_id']>0) {
 				$sch_holidays = '1';
+			}else{
+				$sch_holidays = '0';
 			}
 		}
 
                 //Calculate zone fail
                 $zone_fault = 0;
+		$zone_ctr_fault = 0;
+		$zone_sensor_fault = 0;
                 //Get data from nodes table
                 $query = "SELECT * FROM nodes WHERE node_id ='$zone_controler_id' AND status IS NOT NULL LIMIT 1;";
                 $result = $conn->query($query);
@@ -243,6 +275,7 @@ while ($row = mysqli_fetch_assoc($results)) {
                         $controler_seen_time = strtotime($controler_seen);
                         if ($controler_seen_time  < ($now - ($controler_notice*60))){
                                 $zone_fault = 1;
+				$zone_ctr_fault = 1;
                                 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone valve communication timeout for This Zone. Node Last Seen: ".$controler_seen."\n";
                         }
                 }
@@ -341,15 +374,13 @@ while ($row = mysqli_fetch_assoc($results)) {
 			$weather_fact = 0;
 			if ($weather_c <= 5 ) {$weather_fact = 0.3;} elseif ($weather_c <= 10 ) {$weather_fact = 0.4;} elseif ($weather_c <= 15 ) {$weather_fact = 0.5;} elseif ($weather_c <= 20 ) {$weather_fact = 0.6;} elseif ($weather_c <= 30 ) {$weather_fact = 0.7;}
 
-			$zone_temp = $zone_c + $weather_fact + $zone_sp_deadband;
-			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: Sensor Reading     \033[41m".$zone_c."\033[0m \n";
-			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: Weather Factor     \033[41m".$weather_fact."\033[0m \n";
-			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: DeadBand           \033[41m".$zone_sp_deadband."\033[0m \n";
-			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: Temperature        \033[41m".$zone_temp."\033[0m \n";
-			$zone_c = $zone_c + $weather_fact; //Add to Actual Zone Temperature to Predict Accurate Temperature
- 
+
 			//Following line to decide which temperature is target temperature
 			if ($boost_active=='1'){$target_c=$boost_c;} elseif ($night_climate_status =='1') {$target_c=$nc_min_c;} elseif($override_status=='1'){$target_c=$override_c;} elseif($override_status=='0'){$target_c=$sch_c;}
+
+			//calculate cutin/cut out temperatures
+			$temp_cut_in = $target_c - $weather_fact - $zone_sp_deadband;
+			$temp_cut_out = $target_c - $weather_fact;
 
 			//check if hysteresis is passed its time or not
 			$hysteresis='0';
@@ -363,12 +394,6 @@ while ($row = mysqli_fetch_assoc($results)) {
 				}else{$hysteresis='0';}
 			}
 
-			//Get previous command for zone for use with deadband
-			$query = "SELECT * FROM messages_out WHERE node_id ='$zone_controler_id' AND child_id = '$zone_controler_child_id' LIMIT 1;";
-			$result = $conn->query($query);
-			$command_out = mysqli_fetch_array($result);
-			$zone_status_prev = $command_out['payload'];
-
 			//Get data from nodes table
 			$query = "SELECT * FROM nodes WHERE node_id ='$zone_sensor_id' AND status IS NOT NULL LIMIT 1;";
 			$result = $conn->query($query);
@@ -381,7 +406,8 @@ while ($row = mysqli_fetch_assoc($results)) {
                 	        $sensor_seen_time = strtotime($temp_reading_time); //using time from messages_in
                         	if ($sensor_seen_time  < ($now - ($sensor_notice*60))){
                                 	$zone_fault = 1;
-	                                echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Temperature sensor communication timeout for This Zone. Last temperature reading: ".$temp_reading_time."\n";
+					$zone_sensor_fault = 1;  
+					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Temperature sensor communication timeout for This Zone. Last temperature reading: ".$temp_reading_time."\n";
         	                }
                 	}
 	                if($boiler_notice > 0){
@@ -413,134 +439,207 @@ while ($row = mysqli_fetch_assoc($results)) {
 		//initialize two variable
 		$start_cause ='';
 		$stop_cause = '';
+		$zone_mode = 0;
 		if ($zone_fault == '0'){
 			if ($zone_category == 0 OR $zone_category == 1) {
 				if ($zone_c < $frost_c-$zone_sp_deadband){
 					$zone_status="1";
+					$zone_mode = 21;
 					$start_cause="Frost Protection";
-				} elseif (($zone_c >= $frost_c-$zone_sp_deadband) && ($zone_c < $frost_c)){
-					$zone_status=$zone_status_prev; 
+				}
+				elseif(($zone_c >= $frost_c-$zone_sp_deadband) && ($zone_c < $frost_c)){
+					$zone_status=$zone_status_prev;
+					$zone_mode = 22 - $zone_status_prev;
 					$start_cause="Frost Protection Deadband";
 					$stop_cause="Frost Protection Deadband";
-				} elseif (($zone_c >= $frost_c) && ($zone_c < $zone_max_c) && ($hysteresis=='0')){
+				}
+				elseif(($zone_c >= $frost_c) && ($zone_c < $zone_max_c) && ($hysteresis=='0')){
 					if ($away_status=='0'){
 						if (($holidays_status=='0') || ($sch_holidays=='1')) {
 							if($boost_status=='0'){
 								$zone_status="0";
 								$stop_cause="Boost Finished";
 								if ($night_climate_status =='0') {
-									if (($sch_status =='1') && ($zone_c < $target_c-$zone_sp_deadband)&&(($sch_coop == 0)||($boiler_fire_status == "1"))){
+									if (($sch_status =='1') && ($zone_c < $temp_cut_in)&&(($sch_coop == 0)||($boiler_fire_status == "1"))){
 										$zone_status="1";
+										$zone_mode = 81;
 										$start_cause="Schedule Started";
 										$expected_end_date_time=date('Y-m-d '.$sch_end_time.'');
 									}
-									if (($sch_status =='1') && ($zone_c < $target_c-$zone_sp_deadband)&&($sch_coop == 1)&&($boiler_fire_status == "0")){
+									if (($sch_status =='1') && ($zone_c < $temp_cut_in)&&($sch_coop == 1)&&($boiler_fire_status == "0")){
 										$zone_status="0";
+										$zone_mode = 83;
 										$stop_cause="Coop Start Schedule Waiting for Boiler Start";
 										$expected_end_date_time=date('Y-m-d '.$sch_end_time.'');
 									}
-									if (($sch_status =='1') && ($zone_c >= $target_c-$zone_sp_deadband) && ($zone_c < $target_c)){
+									if (($sch_status =='1') && ($zone_c >= $temp_cut_in) && ($zone_c < $temp_cut_out)){
 										$zone_status=$zone_status_prev;
+										$zone_mode = 82 - $zone_status_prev;
 										$start_cause="Schedule Target Deadband";
 										$stop_cause="Schedule Target Deadband";
 									}
-									if (($sch_status =='1') && ($zone_c >= $target_c)){
+									if (($sch_status =='1') && ($zone_c >= $temp_cut_out)){
 										$zone_status="0";
+										$zone_mode = 80;
 										$stop_cause="Schedule Target C Achieved";
 									}
-									if (($sch_status =='1') && ($override_status=='1') && ($zone_c < $target_c-$zone_sp_deadband)){
+									if (($sch_status =='1') && ($override_status=='1') && ($zone_c < $temp_cut_in)){
 										$zone_status="1";
+										$zone_mode = 71;
 										$start_cause="Schedule Override Started";
 										$expected_end_date_time=date('Y-m-d '.$sch_end_time.'');
 									}
-									if (($sch_status =='1') && ($override_status=='1') && ($zone_c >= $target_c-$zone_sp_deadband) && ($zone_c < $target_c)){
+									if (($sch_status =='1') && ($override_status=='1') && ($zone_c >= $temp_cut_in && ($zone_c < $temp_cut_out))){
 										$zone_status=$zone_status_prev;
+										$zone_mode = 72 - $zone_status_prev;
 										$start_cause="Schedule Override Target Deadband";
 										$stop_cause="Schedule Override Target Deadband";
 									}
-									if (($sch_status =='1') && ($override_status=='1') && ($zone_c >= $target_c)){
+									if (($sch_status =='1') && ($override_status=='1') && ($zone_c >= $temp_cut_out)){
 										$zone_status="0";
+										$zone_mode = 70;
 										$stop_cause="Schedule Override Target C Achieved";
 									}
-									if (($sch_status =='0') &&($override_status=='0')){
+									if (($sch_status =='0') &&($sch_holidays=='1')){
 										$zone_status="0";
-										$stop_cause="No Schedule For This Zone \n";
+										$zone_mode = 40;
+										$stop_cause="Holidays - No Schedule";
 									}
-									if ($sch_status=='0') {
+									if (($sch_status =='0') && ($sch_holidays=='0')) {
 										$zone_status="0";
+										$zone_mode = 0;
 										$stop_cause="No Schedule";
 									}
-								} elseif (($night_climate_status=='1') && ($zone_c < $target_c-$zone_sp_deadband)){
+								}elseif(($night_climate_status=='1') && ($zone_c < $temp_cut_in)){
 									$zone_status="1";
+									$zone_mode = 51;
 									$start_cause="Night Climate";
 									$expected_end_date_time=date('Y-m-d '.$nc_end_time_rc.'');
-								} elseif (($night_climate_status=='1') && ($zone_c >= $target_c-$zone_sp_deadband) && ($zone_c < $target_c)){
+								}elseif(($night_climate_status=='1') && ($zone_c >= $temp_cut_in) && ($zone_c < $temp_cut_out)){
 									$zone_status=$zone_status_prev;
+									$zone_mode = 52 - $zone_status_prev;
 									$start_cause="Night Climate Deadband";
 									$stop_cause="Night Climate Deadband";
 									$expected_end_date_time=date('Y-m-d '.$nc_end_time_rc.'');
-								}elseif (($night_climate_status=='1') && ($zone_c >= $target_c)){
+								}elseif(($night_climate_status=='1') && ($zone_c >= $temp_cut_out)){
 									$zone_status="0";
+									$zone_mode = 50;
 									$stop_cause="Night Climate C Reached";
 									$expected_end_date_time=date('Y-m-d '.$nc_end_time_rc.'');
 								}
-							} elseif (($boost_status=='1') && ($zone_c < $target_c-$zone_sp_deadband)) {
+							}elseif (($boost_status=='1') && ($zone_c < $temp_cut_in)) {
 								$zone_status="1";
+								$zone_mode = 61;
 								$start_cause="Boost Active";
 								$expected_end_date_time=date('Y-m-d H:i:s', $boost_time);
-							} elseif (($boost_status=='1') && ($zone_c >= $target_c-$zone_sp_deadband) && ($zone_c < $target_c)) {
+							}elseif (($boost_status=='1') && ($zone_c >= $temp_cut_in) && ($zone_c < $temp_cut_out)) {
 								$zone_status=$zone_status_prev;
+								$zone_mode = 62 - $zone_status_prev;
 								$start_cause="Boost Target Deadband";
 								$stop_cause="Boost Target Deadband";
-							} elseif (($boost_status=='1') && ($zone_c >= $target_c)) {
+							}elseif (($boost_status=='1') && ($zone_c >= $temp_cut_out)) {
 								$zone_status="0";
+								$zone_mode = 60;
 								$stop_cause="Boost Target C Achived";
 							}
-						} elseif (($holidays_status=='1') && ($sch_holidays=='0')){
+						}elseif(($holidays_status=='1') && ($sch_holidays=='0')){
 							$zone_status="0";
+							$zone_mode = 40;
 							$stop_cause="Holiday Active";
 						}
-					} elseif ($away_status=='1'){
+					}elseif($away_status=='1'){
 						$zone_status="0";
+						$zone_mode = 90;
 						$stop_cause="Away Active";
 					}
-				} elseif ($zone_c >= $zone_max_c){
+				}elseif($zone_c >= $zone_max_c){
 					$zone_status="0";
+					$zone_mode = 30;
 					$stop_cause="Zone Reached its Max Temperature ".$zone_max_c;
 				} else {
 					$zone_status="0";
+					$zone_mode = 100;
 					$stop_cause="Hysteresis active ";
 				}
-      			} else {
-				if ($away_status=='0'){
-					if (($holidays_status=='0') || ($sch_holidays=='1')) {
+                       	} else { // end process Zone Category 0 and 1
+                                // process Zone Category 2
+                                if ($away_status=='0'){
+                                        if (($holidays_status=='0') || ($sch_holidays=='1')) {
                                                 if($boost_status=='0'){
-                                                	$zone_status="0";
+                                                        $zone_status="0";
                                                         $stop_cause="Boost Finished";
-							if ($sch_status =='1') {
-								$zone_status="1";
-								$start_cause="Schedule Started";
-								$expected_end_date_time=date('Y-m-d '.$sch_end_time.'');
-							}
-						}
-					} elseif (($holidays_status=='1') && ($sch_holidays=='0')){
-						$zone_status="0";
-						$stop_cause="Holiday Active";
-					}
-					if ($sch_status=='0') {
-						$zone_status="0";
-						$stop_cause="No Schedule";
-					}
-				} elseif ($away_status=='1'){
-					$zone_status="0";
-					$stop_cause="Away Active";
-				}
-      			}
-		} else {
-			$zone_status="0";
-			$stop_cause="Zone fault";
-		}
+                                                        if ($sch_status =='1') {
+                                                                $zone_status="1";
+                                                                $start_cause="Schedule Started";
+                                                                $expected_end_date_time=date('Y-m-d '.$sch_end_time.'');
+                                                        }
+                                                        if ($zone_active_status =='1') {
+                                                                $zone_status="1";
+                                                                $start_cause="Manual Start";
+                                                                $expected_end_date_time=date('Y-m-d '.$sch_end_time.'');
+                                                        }
+                                                }
+                                        } elseif (($holidays_status=='1') && ($sch_holidays=='0')){
+                                                $zone_status="0";
+                                                $stop_cause="Holiday Active";
+                                        }
+                                        if ($sch_status=='0') {
+                                                $zone_status="0";
+                                                $stop_cause="No Schedule";
+                                        }
+                                } elseif ($away_status=='1'){
+                                        $zone_status="0";
+                                        $stop_cause="Away Active";
+                                }
+                        } // end process
+                } else {
+                        $zone_status="0";
+                        $stop_cause="Zone fault";
+                }
 
+		//Update temperature values fore zone current status table (frost protection and overtemperature)
+		if (floor($zone_mode/10) == 2 ) { $target_c= $frost_c;$temp_cut_in = $frost_c-$zone_sp_deadband; $temp_cut_out = $frost_c;}
+		if (floor($zone_mode/10) == 3 ) { $target_c= $zone_max_c;$temp_cut_in = 0; $temp_cut_out = 0;}
+		//reset if temperature control is not active
+		if ((floor($zone_mode/10) == 0 ) || (floor($zone_mode/10) == 1 ) || (floor($zone_mode/10) == 4 ) || (floor($zone_mode/10) == 9 )||(floor($zone_mode/10) == 10 ))  { $target_c= 0;$temp_cut_in = 0; $temp_cut_out = 0;}
+
+
+
+
+		//***************************************************************************************
+		//update zone_current_state table
+		//***************************************************************************************
+
+		//Zone Main Mode
+		/*	0 - idle
+			10 - fault
+			20 - frost
+			30 - overtemperature
+			40 - holiday
+			50 - nightclimate
+			60 - boost
+			70 - override
+			80 - sheduled
+			90 - away
+			100 - hysteresis */
+
+			//Zone sub mode - running/ stopped different types
+		/*	0 - stopped (above cut out setpoint or not running in this mode)
+			1 - running 
+			2 - stopped (within deadband) 
+			3 - stopped (coop start waiting for boiler) */
+		$query = "UPDATE zone_current_state SET mode = {$zone_mode}, status = {$zone_status}, temp_reading = '{$zone_c}', temp_target = {$target_c},temp_cut_in = {$temp_cut_in}, temp_cut_out = {$temp_cut_out}, controler_fault = {$zone_ctr_fault}, controler_seen_time = '{$controler_seen}', sensor_fault  = {$zone_sensor_fault}, sensor_seen_time = '{$sensor_seen}', sensor_reading_time = '{$temp_reading_time}' WHERE id ={$zone_id} LIMIT 1;";
+		$conn->query($query);
+
+
+                if ($zone_category == 0 OR $zone_category == 1) {
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: Sensor Reading     \033[41m".$zone_c."\033[0m \n";
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: Weather Factor     \033[41m".$weather_fact."\033[0m \n";
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: DeadBand           \033[41m".$zone_sp_deadband."\033[0m \n";
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: Cut In Temperature        \033[41m".$temp_cut_in."\033[0m \n";
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: Cut Out Temperature       \033[41m".$temp_cut_out."\033[0m \n";
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: Mode       \033[41m".$zone_mode."\033[0m \n";
+		}
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone ID: \033[41m".$zone_id. "\033[0m \n";
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Controller: \033[41m".$zone_controler_id."\033[0m Controller Child: \033[41m".$zone_controler_child_id."\033[0m Zone Status: \033[41m".$zone_status."\033[0m \n";
 		if ($zone_category == 0) {
@@ -550,7 +649,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 			if ($zone_status=='1') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Start Cause: ".$start_cause."\033[0m \n";}
 			if ($zone_status=='0') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Stop Cause: ".$stop_cause."\033[0m \n";}		}
 		/***************************************************************************************
-		Zone Valve Wired to Raspberry Pi GPIO Section: Zone Vole Connected Raspberry Pi GPIO.
+		Zone Valve Wired to Raspberry Pi GPIO Section: Zone Valve Connected Raspberry Pi GPIO.
 		****************************************************************************************/
 		if ($zone_controller_type == 'GPIO'){
 			$relay_status = ($zone_status == '1') ? $relay_on : $relay_off;
@@ -568,7 +667,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 		}
 
 		/***************************************************************************************
-		Zone Vole Wireless Section: MySensors Wireless Relay module for your Zone vole control.
+		Zone Valve Wireless Section: MySensors Wireless Relay module for your Zone Valve control.
 		****************************************************************************************/
 		if ($zone_controller_type == 'MySensor'){
 			//update messages_out table with sent status to 0 and payload to as zone status.

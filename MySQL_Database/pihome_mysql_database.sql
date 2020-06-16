@@ -638,6 +638,28 @@ CREATE TABLE IF NOT EXISTS `zone` (
 /*!40000 ALTER TABLE `zone` DISABLE KEYS */;
 /*!40000 ALTER TABLE `zone` ENABLE KEYS */;
 
+-- Dumping structure for table pihome.zone_current_state
+DROP TABLE IF EXISTS `zone_current_state`;
+CREATE TABLE IF NOT EXISTS `zone_current_state` (
+  `id` int(11) NOT NULL,
+  `mode` int(11) ,
+  `status` tinyint(1) ,
+  `temp_reading` decimal(4,1) ,
+  `temp_target` decimal(4,1) ,
+  `temp_cut_in` decimal(4,1) ,
+  `temp_cut_out` decimal(4,1) ,
+  `controler_fault` int(1) ,
+  `controler_seen_time` timestamp NULL ,
+  `sensor_fault` int(1) ,
+  `sensor_seen_time` timestamp NULL ,
+  `sensor_reading_time` timestamp NULL ,
+  PRIMARY KEY (`id`)
+) ENGINE=MEMORY DEFAULT CHARSET=utf8;
+
+-- Dumping data for table pihome.zone_current_state: 8 rows
+/*!40000 ALTER TABLE `zone_current_state` DISABLE KEYS */;
+/*!40000 ALTER TABLE `zone_current_state` ENABLE KEYS */;
+
 -- Dumping structure for table pihome.zone_logs
 DROP TABLE IF EXISTS `zone_logs`;
 CREATE TABLE IF NOT EXISTS `zone_logs` (
