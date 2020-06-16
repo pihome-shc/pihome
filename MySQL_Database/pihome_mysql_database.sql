@@ -394,7 +394,7 @@ CREATE TABLE `piconnect` (
   `weather` bit(1) DEFAULT NULL,
   `zone` bit(1) DEFAULT NULL,
   `zone_logs` bit(1) DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -431,7 +431,7 @@ CREATE TABLE IF NOT EXISTS `piconnect_logs` (
   `end_time` char(50) CHARACTER SET utf8mb4 DEFAULT NULL,
   `n_tables` char(50) CHARACTER SET utf8mb4 DEFAULT NULL,
   `records` char(50) CHARACTER SET utf8mb4 DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 
