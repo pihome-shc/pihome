@@ -29,6 +29,20 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
+-- Dumping structure for table pihome.add_on_logs
+DROP TABLE IF EXISTS `add_on_logs`;
+CREATE TABLE IF NOT EXISTS `add_on_logs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sync` tinyint(4) NOT NULL,
+  `purge` tinyint(4) NOT NULL COMMENT 'Mark For Deletion',
+  `start_datetime` timestamp NULL,
+  `start_cause` char(50) COLLATE utf16_bin,
+  `stop_datetime` timestamp NULL,
+  `stop_cause` char(50) COLLATE utf16_bin,
+  `expected_end_date_time` timestamp NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+
 -- Dumping structure for table pihome.away
 DROP TABLE IF EXISTS `away`;
 CREATE TABLE IF NOT EXISTS `away` (
