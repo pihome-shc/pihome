@@ -576,6 +576,7 @@ while ($row = mysqli_fetch_assoc($results)) {
                                                         }
                                                         if ($zone_active_status =='1') {
                                                                 $zone_status="1";
+								$zone_mode = 111;
                                                                 $start_cause="Manual Start";
                                                         }
                                                 } elseif ($boost_status=='1') {
@@ -629,7 +630,8 @@ while ($row = mysqli_fetch_assoc($results)) {
 			70 - override
 			80 - sheduled
 			90 - away
-			100 - hysteresis */
+			100 - hysteresis 
+			110 - Add-On*/
 
 			//Zone sub mode - running/ stopped different types
 		/*	0 - stopped (above cut out setpoint or not running in this mode)
@@ -696,7 +698,11 @@ while ($row = mysqli_fetch_assoc($results)) {
                         // Process Logs Category 1 and 2 logs if zone status has changed
                         // zone switching ON
                         if($zone_status_prev == '0' &&  $zone_status == '1') {
-                                $aoquery = "INSERT INTO `add_on_logs`(`sync`, `purge`, `start_datetime`, `start_cause`, `stop_datetime`, `stop_cause`, `expected_end_date_time`) VALUES ('0', '0', '{$date_time}', '{$start_cause}', NULL, NULL,'{$expected_end_date_time}');";
+				if($zone_mode == '111') {
+                                	$aoquery = "INSERT INTO `add_on_logs`(`sync`, `purge`, `start_datetime`, `start_cause`, `stop_datetime`, `stop_cause`, `expected_end_date_time`) VALUES ('0', '0', '{$date_time}', '{$start_cause}', NULL, NULL, NULL);";
+				} else {
+					$aoquery = "INSERT INTO `add_on_logs`(`sync`, `purge`, `start_datetime`, `start_cause`, `stop_datetime`, `stop_cause`, `expected_end_date_time`) VALUES ('0', '0', '{$date_time}', '{$start_cause}', NULL, NULL,'{$expected_end_date_time}');";
+				}
                                 $result = $conn->query($aoquery);
                                 $add_on_log_id = mysqli_insert_id($conn);
                                 //if in manual mode then clear zone_status
