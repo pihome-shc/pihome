@@ -693,8 +693,6 @@ while ($row = mysqli_fetch_assoc($results)) {
 		//process Zone Cat 1 and 2 logs
 		} else {
                         // Process Logs Category 1 and 2 logs if zone status has changed
-                        echo "zone_status_prev ".$zone_status_prev."\n";
-                        echo "zone_status ".$zone_status."\n";
                         // zone switching ON
                         if($zone_status_prev == '0' &&  $zone_status == '1') {
                                 $aoquery = "INSERT INTO `add_on_logs`(`sync`, `purge`, `start_datetime`, `start_cause`, `stop_datetime`, `stop_cause`, `expected_end_date_time`) VALUES ('0', '0', '{$date_time}', '{$start_cause}', NULL, NULL,'{$expected_end_date_time}');";
