@@ -367,4 +367,133 @@ function ListLanguages($lang)
         }
 return($Data);
 }
+
+function getIndicators($conn, $zone_mode, $zone_temp_target)
+{
+	/****************************************************** */
+	//Status indicator animation
+	/****************************************************** */
+
+	$zone_mode_main=floor($zone_mode/10)*10;
+        $zone_mode_sub=floor($zone_mode%10);
+
+	//not running - temperature reached or not running in this mode
+	if($zone_mode_sub == 0){
+		//fault or idle
+		if(($zone_mode_main == 0)||($zone_mode_main == 10)){
+			$status='';
+		}
+		//away, holidays or hysteresis
+		else if(($zone_mode_main == 40)||($zone_mode_main == 90)||($zone_mode_main == 100)){ 
+			$status='blue';
+		}
+		//all other modes
+		else{
+			$status='orange';
+		}
+	}
+	//running
+	else if($zone_mode_sub == 1){
+		$status='red';
+	}
+	//not running - deadband
+	else if($zone_mode_sub == 2){
+		$status='blueinfo';  
+						}
+	//not running - coop start waiting for boiler
+	else if($zone_mode_sub == 3){
+		$status='blueinfo';  
+	}
+
+	/****************************************************** */
+	//Icon Animation and target temperature
+	/****************************************************** */
+
+	 //idle
+	if($zone_mode_main == 0){
+		$shactive='';
+		$shcolor='';
+		$target='';     //show no target temperature
+	}
+	//fault
+	else if($zone_mode_main == 10){
+		$shactive='ion-android-cancel';
+		$shcolor='red';
+		$target='';     //show no target temperature
+	}
+	//frost
+	else if($zone_mode_main == 20){
+		$shactive='ion-ios-snowy';
+       		$shcolor='';
+		$target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';
+	}
+	//overtemperature
+	else if($zone_mode_main == 30){
+		$shactive='ion-thermometer';
+		$shcolor='red';
+		$target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';   
+	}
+	//holiday
+	else if($zone_mode_main == 40){
+		$shactive='fa-paper-plane';
+		$shcolor='';
+		$target='';     //show no target temperature
+	}
+	//nightclimate
+	else if($zone_mode_main == 50){
+		$shactive='fa-bed';
+		$shcolor='';
+		$target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';
+	}
+	//boost
+	else if($zone_mode_main == 60){
+		$shactive='fa-rocket';
+		$shcolor='';
+		$target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';
+	}
+	//override
+	else if($zone_mode_main == 70){
+		$shactive='fa-refresh';
+		$shcolor='';
+		$target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';
+	}
+	//sheduled
+	else if($zone_mode_main == 80){
+		//if not coop start waiting for boiler
+		if($zone_mode_sub <> 3){
+			$shactive='ion-ios-clock-outline';
+               	$shcolor='';
+		}
+		//if coop start waiting for boiler
+		else{
+			$shactive='ion-leaf';
+	               	$shcolor='green';
+		}
+		$target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';
+	}
+	//away
+	else if($zone_mode_main == 90){
+		$shactive='fa-sign-out';
+		$shcolor='';
+		$target='';     //show no target temperature
+	}
+	//hysteresis
+	else if($zone_mode_main == 100){
+		$shactive='fa-hourglass';
+		$shcolor='';
+		$target='';     //show no target temperature
+	}
+	//shouldn't get here
+	else {
+		$shactive='fa-question';
+		$shcolor='';
+		$target='';     //show no target temperature
+	}
+
+	return array('status'=>$status,
+ 		'shactive'=>$shactive,
+       		'shcolor'=>$shcolor,
+       		'target'=>$target
+       	);
+}
 ?>

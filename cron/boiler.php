@@ -570,25 +570,39 @@ while ($row = mysqli_fetch_assoc($results)) {
                                                         $stop_cause="Boost Finished";
                                                         if ($sch_status =='1') {
                                                                 $zone_status="1";
+                                                                $zone_mode = 81;
                                                                 $start_cause="Schedule Started";
                                                                 $expected_end_date_time=date('Y-m-d '.$sch_end_time.'');
+                                                                if ($zone_active_status == '1') {
+                                                                        $zone_status_prev = '0';
+                                                                        $query = "UPDATE zone SET sync = '0', zone_status = '0' WHERE id = '{$zone_id}' LIMIT 1";
+                                                                        $conn->query($query);
+                                                                }
                                                         }
                                                         if ($zone_active_status =='1') {
                                                                 $zone_status="1";
+								$zone_mode = 111;
                                                                 $start_cause="Manual Start";
-                                                                $expected_end_date_time=date('Y-m-d '.$sch_end_time.'');
                                                         }
+                                                } elseif ($boost_status=='1') {
+                                                        $zone_status="1";
+                                                        $zone_mode = 61;
+                                                        $start_cause="Boost Active";
+                                                        $expected_end_date_time=date('Y-m-d H:i:s', $boost_time);
                                                 }
                                         } elseif (($holidays_status=='1') && ($sch_holidays=='0')){
                                                 $zone_status="0";
+                                                $zone_mode = 40;
                                                 $stop_cause="Holiday Active";
                                         }
                                         if ($sch_status=='0') {
                                                 $zone_status="0";
+                                                $zone_mode = 0;
                                                 $stop_cause="No Schedule";
                                         }
                                 } elseif ($away_status=='1'){
                                         $zone_status="0";
+                                        $zone_mode = 90;
                                         $stop_cause="Away Active";
                                 }
                         } // end process
@@ -621,7 +635,8 @@ while ($row = mysqli_fetch_assoc($results)) {
 			70 - override
 			80 - sheduled
 			90 - away
-			100 - hysteresis */
+			100 - hysteresis 
+			110 - Add-On*/
 
 			//Zone sub mode - running/ stopped different types
 		/*	0 - stopped (above cut out setpoint or not running in this mode)
@@ -670,18 +685,53 @@ while ($row = mysqli_fetch_assoc($results)) {
 		Zone Valve Wireless Section: MySensors Wireless Relay module for your Zone Valve control.
 		****************************************************************************************/
 		if ($zone_controller_type == 'MySensor'){
+                        $zstatus = ($zone_status or $zone_active_status);
 			//update messages_out table with sent status to 0 and payload to as zone status.
 			$query = "UPDATE messages_out SET sent = '0', payload = '{$zone_status}' WHERE node_id ='$zone_controler_id' AND child_id = '$zone_controler_child_id' LIMIT 1;";
 			$conn->query($query);
 		}
-		if ($zone_category == 0){
-			//all zone status to boiler array and increment array index
-			$boiler[$boiler_index] = $zone_status;
-			$boiler_index = $boiler_index+1;
-			//all zone ids and status to multidimensional Array. and increment array index.
-			$zone_log[$zone_index] = (array('zone_id' =>$zone_id, 'status'=>$zone_status));
-			$zone_index = $zone_index+1;
-		}
+                //process Zone Cat 0 logs
+                if ($zone_category == 0){
+                        //all zone status to boiler array and increment array index
+                        $boiler[$boiler_index] = $zone_status;
+                        $boiler_index = $boiler_index+1;
+                        //all zone ids and status to multidimensional Array. and increment array index.
+                        $zone_log[$zone_index] = (array('zone_id' =>$zone_id, 'status'=>$zone_status));
+                        $zone_index = $zone_index+1;
+		//process Zone Cat 1 and 2 logs
+		} else {
+                        // Process Logs Category 1 and 2 logs if zone status has changed
+                        // zone switching ON
+                        if($zone_status_prev == '0' &&  $zone_status == '1') {
+				if($zone_mode == '111') {
+                                	$aoquery = "INSERT INTO `add_on_logs`(`sync`, `purge`, `start_datetime`, `start_cause`, `stop_datetime`, `stop_cause`, `expected_end_date_time`) VALUES ('0', '0', '{$date_time}', '{$start_cause}', NULL, NULL, NULL);";
+				} else {
+					$aoquery = "INSERT INTO `add_on_logs`(`sync`, `purge`, `start_datetime`, `start_cause`, `stop_datetime`, `stop_cause`, `expected_end_date_time`) VALUES ('0', '0', '{$date_time}', '{$start_cause}', NULL, NULL,'{$expected_end_date_time}');";
+				}
+                                $result = $conn->query($aoquery);
+                                $add_on_log_id = mysqli_insert_id($conn);
+
+                                 //echo all zone and status
+                                echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone ID: ".$zone_id." Status: ".$zone_status."\n";
+                                $zlquery = "INSERT INTO `zone_logs`(`sync`, `purge`, `zone_id`, `add_on_log_id`, `status`) VALUES ('0', '0', '{$zone_id}', '{$add_on_log_id}', '{$zone_status}');";
+                                $zlresults = $conn->query($zlquery);
+                                if ($zlresults) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Log table updated successfully. \n";} else {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone log update failed... ".mysql_error(). " \n";}
+                                if ($result) {
+                                        echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Add-On Log table added Successfully. \n";
+                                }else {
+                                        echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Add-On Log table addition failed. \n";
+                                }
+                        // zone switching OFF
+                        } elseif ($zone_status_prev == '1' &&  $zone_status == '0') {
+                                $query = "UPDATE add_on_logs SET stop_datetime = '{$date_time}', stop_cause = '{$stop_cause}' ORDER BY id DESC LIMIT 1";
+                                $result = $conn->query($query);
+                                if ($result) {
+                                        echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Add-On Log table updated Successfully. \n";
+                                }else {
+                                        echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Add-On Log table update failed. \n";
+                                }
+                        }
+                } //end process Zone Cat 1 and 2 logs
 
 		echo "---------------------------------------------------------------------------------------- \n";
 	} //end if($zone_status == 1)

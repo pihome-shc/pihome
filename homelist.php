@@ -137,142 +137,19 @@ require_once(__DIR__.'/st_inc/functions.php');
 			2 - stopped (within deadband) 
 			3 - stopped (coop start waiting for boiler) */
 
-			$zone_mode_sub=floor($zone_mode%10);
-
-			//status animation
-
    			echo '<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-href="#" data-toggle="modal" data-target="#'.$zone_type.''.$zone_id.'" data-backdrop="static" data-keyboard="false">
 			<h3><small>'.$zone_name.'</small></h3>
 			<h3 class="degre">'.number_format(DispTemp($conn,$zone_c),1).'&deg;</h3>
 			<h3 class="status">';
 
-			/****************************************************** */
-			//Status indicator animation
-			/****************************************************** */
-
-			//not running - temperature reached or not running in this mode
-			if($zone_mode_sub == 0){
-				//fault or idle
-				if(($zone_mode_main == 0)||($zone_mode_main == 10)){
-					$status='';
-				}
-				//away, holidays or hysteresis
-				else if(($zone_mode_main == 40)||($zone_mode_main == 90)||($zone_mode_main == 100)){ 
-					$status='blue';
-				}
-				//all other modes
-				else{
-					$status='orange';
-				}
-			}
-			//running
-			else if($zone_mode_sub == 1){
-				$status='red';
-			}
-			//not running - deadband
-			else if($zone_mode_sub == 2){
-				$status='green';  
-						}
-			//not running - coop start waiting for boiler
-			else if($zone_mode_sub == 3){
-				$status='green';  
-			}
-
-			/****************************************************** */
-			//Icon Animation and target temperature
-			/****************************************************** */
-
-			 //idle
-			if($zone_mode_main == 0){
-				$shactive='';
-				$shcolor='';
-				$target='';     //show no target temperature
-			}
-			//fault
-			else if($zone_mode_main == 10){
-				$shactive='ion-android-cancel';
-				$shcolor='red';
-				$target='';     //show no target temperature
-			}
-			//frost
-			else if($zone_mode_main == 20){
-				$shactive='ion-ios-snowy';
-          		$shcolor='';
-				$target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';
-			}
-			//overtemperature
-			else if($zone_mode_main == 30){
-				$shactive='ion-thermometer';
-				$shcolor='red';
-				$target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';   
-			}
-			//holiday
-			else if($zone_mode_main == 40){
-				$shactive='fa-paper-plane';
-				$shcolor='';
-				$target='';     //show no target temperature
-			}
-			//nightclimate
-			else if($zone_mode_main == 50){
-				$shactive='fa-bed';
-				$shcolor='';
-				$target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';
-			}
-			//boost
-			else if($zone_mode_main == 60){
-				$shactive='fa-rocket';
-				$shcolor='';
-				$target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';
-			}
-			//override
-			else if($zone_mode_main == 70){
-				$shactive='fa-refresh';
-				$shcolor='';
-				$target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';
-			}
-			//sheduled
-			else if($zone_mode_main == 80){
-				//if not coop start waiting for boiler
-				if($zone_mode_sub <> 3){
-					$shactive='ion-ios-clock-outline';
-                  	$shcolor='';
-				}
-				//if coop start waiting for boiler
-				else{
-					$shactive='ion-leaf';
-                  	$shcolor='green';
-				}
-				$target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';
-			}
-			//away
-			else if($zone_mode_main == 90){
-				$shactive='fa-sign-out';
-				$shcolor='';
-				$target='';     //show no target temperature
-			}
-			//hysteresis
-			else if($zone_mode_main == 100){
-
-				$shactive='fa-hourglass';
-				$shcolor='';
-				$target='';     //show no target temperature
-			}
-			//shouldn't get here
-			else {
-				$shactive='fa-question';
-				$shcolor='';
-				$target='';     //show no target temperature
-			}
-
-
-    			//Left small circular icon/color status
-    			echo '<small class="statuscircle"><i class="fa fa-circle fa-fw ' . $status . '"></i></small>';
-    			//Middle target temp
-    			echo '<small class="statusdegree">' . $target .'</small>';
-    			//Right icon for what/why
-    			echo '<small class="statuszoon"><i class="fa ' . $shactive . ' ' . $shcolor . ' fa-fw"></i></small>';
-    			echo '</h3></button>';      //close out status and button
-
+                        $rval=getIndicators($conn, $zone_mode, $zone_temp_target);
+                        //Left small circular icon/color status
+                        echo '<small class="statuscircle"><i class="fa fa-circle fa-fw ' . $rval['status'] . '"></i></small>';
+                        //Middle target temp
+                        echo '<small class="statusdegree">' . $target .'</small>';
+                        //Right icon for what/why
+                        echo '<small class="statuszoon"><i class="fa ' . $rval['shactive'] . ' ' . $rval['shcolor'] . ' fa-fw"></i></small>';
+                        echo '</h3></button>';      //close out status and button
 
 			//Zone Schedule listing model
 			echo '<div class="modal fade" id="'.$zone_type.''.$zone_id.'" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -492,14 +369,37 @@ require_once(__DIR__.'/st_inc/functions.php');
                         $result = $conn->query($query);
                         $state = mysqli_fetch_array($result);
                         $add_on_active = $state['payload'];
+                        //query to get zone current state
+                        $query = "SELECT * FROM zone_current_state WHERE id =  '{$row['id']}' LIMIT 1;";
+                        $result = $conn->query($query);
+                        $zone_current_state = mysqli_fetch_array($result);
+                        $zone_status = $zone_current_state['status'];
+                        $zone_mode = $zone_current_state['mode'];
+                        $zone_temp_reading = $zone_current_state['temp_reading'];
+                        $zone_temp_target = $zone_current_state['temp_target'];
+                        $zone_temp_cut_in = $zone_current_state['temp_cut_in'];
+                        $zone_temp_cut_out = $zone_current_state['temp_cut_out'];
+                        $zone_ctr_fault = $zone_current_state['controler_fault'];
+                        $controler_seen = $zone_current_state['controler_seen_time'];
+                        $zone_sensor_fault = $zone_current_state['sensor_fault'];
+                        $sensor_seen = $zone_current_state['sensor_seen_time'];
+                        $temp_reading_time= $zone_current_state['sensor_reading_time'];
 
                         if ($add_on_active=='1'){$add_on_colour="orange";} elseif ($add_on_active=='0'){$add_on_colour="black";}
                         echo '<a href="javascript:active_add_on('.$row['id'].');">
                         <button type="button" class="btn btn-default btn-circle btn-xxl mainbtn">
                         <h3 class="buttontop"><small>'.$row['name'].'</small></h3>
                         <h3 class="degre" ><i class="fa fa-lightbulb-o fa-1x '.$add_on_colour.'"></i></h3>
-                        <h3 class="status">
-                        </h3></button></a>';
+                        <h3 class="status">';
+
+                        $rval=getIndicators($conn, $zone_mode, $zone_temp_target);
+                        //Left small circular icon/color status
+                        echo '<small class="statuscircle"><i class="fa fa-circle fa-fw ' . $rval['status'] . '"></i></small>';
+                        //Middle target temp
+                        echo '<small class="statusdegree">' . $target .'</small>';
+                        //Right icon for what/why
+                        echo '<small class="statuszoon"><i class="fa ' . $rval['shactive'] . ' ' . $rval['shcolor'] . ' fa-fw"></i></small>';
+                        echo '</h3></button>';      //close out status and button
 
                 }
 		?>
