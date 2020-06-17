@@ -642,8 +642,6 @@ CREATE TABLE IF NOT EXISTS `zone` (
   PRIMARY KEY (`id`),
   KEY `FK_zone_nodes` (`sensor_id`),
   KEY `FK_zone_nodes_2` (`controler_id`),
-  KEY `FK_zone_boiler` (`boiler_id`),
-  CONSTRAINT `FK_zone_boiler` FOREIGN KEY (`boiler_id`) REFERENCES `boiler` (`id`),
   CONSTRAINT `FK_zone_nodes` FOREIGN KEY (`sensor_id`) REFERENCES `nodes` (`id`),
   CONSTRAINT `FK_zone_nodes_2` FOREIGN KEY (`controler_id`) REFERENCES `nodes` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
@@ -655,19 +653,19 @@ CREATE TABLE IF NOT EXISTS `zone` (
 -- Dumping structure for table pihome.zone_current_state
 DROP TABLE IF EXISTS `zone_current_state`;
 CREATE TABLE IF NOT EXISTS `zone_current_state` (
-  `id` int(11) NOT NULL,
-  `mode` int(11) ,
-  `status` tinyint(1) ,
-  `temp_reading` decimal(4,1) ,
-  `temp_target` decimal(4,1) ,
-  `temp_cut_in` decimal(4,1) ,
-  `temp_cut_out` decimal(4,1) ,
-  `controler_fault` int(1) ,
-  `controler_seen_time` timestamp NULL ,
-  `sensor_fault` int(1) ,
-  `sensor_seen_time` timestamp NULL ,
-  `sensor_reading_time` timestamp NULL ,
-  PRIMARY KEY (`id`)
+  `id` int(11) NOT NULL,
+  `mode` int(11),
+  `status` tinyint(1),
+  `temp_reading` decimal(4,1),
+  `temp_target` decimal(4,1),
+  `temp_cut_in` decimal(4,1),
+  `temp_cut_out` decimal(4,1),
+  `controler_fault` int(1),
+  `controler_seen_time` timestamp NULL,
+  `sensor_fault` int(1),
+  `sensor_seen_time` timestamp NULL,
+  `sensor_reading_time` timestamp NULL,
+ PRIMARY KEY (`id`)
 ) ENGINE=MEMORY DEFAULT CHARSET=utf8;
 
 -- Dumping data for table pihome.zone_current_state: 8 rows
