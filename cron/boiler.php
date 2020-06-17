@@ -573,6 +573,11 @@ while ($row = mysqli_fetch_assoc($results)) {
                                                                 $zone_mode = 81;
                                                                 $start_cause="Schedule Started";
                                                                 $expected_end_date_time=date('Y-m-d '.$sch_end_time.'');
+                                                                if ($zone_active_status == '1') {
+                                                                        $zone_status_prev = '0';
+                                                                        $query = "UPDATE zone SET sync = '0', zone_status = '0' WHERE id = '{$zone_id}' LIMIT 1";
+                                                                        $conn->query($query);
+                                                                }
                                                         }
                                                         if ($zone_active_status =='1') {
                                                                 $zone_status="1";
@@ -705,11 +710,6 @@ while ($row = mysqli_fetch_assoc($results)) {
 				}
                                 $result = $conn->query($aoquery);
                                 $add_on_log_id = mysqli_insert_id($conn);
-                                //if in manual mode then clear zone_status
-                                if ($zone_active_status == '1') {
-                                        $query = "UPDATE zone SET sync = '0', zone_status = '0' WHERE id = '{$zone_id}' LIMIT 1";
-                                        $conn->query($query);
-                                }
 
                                  //echo all zone and status
                                 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone ID: ".$zone_id." Status: ".$zone_status."\n";
