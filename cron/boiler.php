@@ -678,6 +678,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 		Zone Valve Wireless Section: MySensors Wireless Relay module for your Zone Valve control.
 		****************************************************************************************/
 		if ($zone_controller_type == 'MySensor'){
+                        $zstatus = ($zone_status or $zone_active_status);
 			//update messages_out table with sent status to 0 and payload to as zone status.
 			$query = "UPDATE messages_out SET sent = '0', payload = '{$zone_status}' WHERE node_id ='$zone_controler_id' AND child_id = '$zone_controler_child_id' LIMIT 1;";
 			$conn->query($query);
