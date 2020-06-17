@@ -680,6 +680,7 @@ CREATE TABLE IF NOT EXISTS `zone_logs` (
   `purge` tinyint(4) NOT NULL COMMENT 'Mark For Deletion',
   `zone_id` int(11),
   `boiler_log_id` int(11),
+  `add_on_log_id` int(11),
   `status` int(11),
   PRIMARY KEY (`id`),
   KEY `FK_zone_logs_zone` (`zone_id`),
