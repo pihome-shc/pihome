@@ -106,7 +106,7 @@ if (is_null($row['stop_datetime'])) {
 } ?> ];
  
 var options_one = {
-    xaxis: { mode: "time", timeformat: "%H:%M"},
+    xaxis: { mode: "time", timezone: "browser", timeformat: "%H:%M"},
     series: { lines: { show: true, lineWidth: 1, fill: false}, curvedLines: { apply: true,  active: true,  monotonicFit: true } },
     grid: { hoverable: true, borderWidth: 1,  backgroundColor: { colors: ["#ffffff", "#fdf9f9"] }, borderColor: "#ff8839", markings: markings,},
     legend: { noColumns: 3, labelBoxBorderColor: "#ffff", position: "nw" }
@@ -181,7 +181,7 @@ if (is_null($row['stop_datetime'])) {
 } ?> ];
  
 var options_two = {
-    xaxis: { mode: "time", timeformat: "%H:%M"},
+    xaxis: { mode: "time", timezone: "browser", timeformat: "%H:%M"},
     series: { lines: { show: true, lineWidth: 1, fill: false}, curvedLines: { apply: true,  active: true,  monotonicFit: true } },
     grid: { hoverable: true, borderWidth: 1,  backgroundColor: { colors: ["#ffffff", "#fdf9f9"] }, borderColor: "#ff8839", markings: wmarkings,},
     legend: { noColumns: 3, labelBoxBorderColor: "#ffff", position: "nw" }
@@ -215,7 +215,7 @@ if (is_null($row['stop_datetime'])) {
 } ?> ];
 
 var options_three = {
-    xaxis: { mode: "time", timeformat: "%H:%M"},
+    xaxis: { mode: "time", timezone: "browser", timeformat: "%H:%M"},
     series: { lines: { show: true, lineWidth: 1, fill: false}, curvedLines: { apply: true,  active: true,  monotonicFit: true } },
     grid: { hoverable: true, borderWidth: 1,  backgroundColor: { colors: ["#ffffff", "#fdf7f4"] }, borderColor: "#ff8839", markings: markings_boiler, },
     legend: { noColumns: 3, labelBoxBorderColor: "#ffff", position: "nw" }
@@ -305,7 +305,7 @@ Timeformat specifiers
 %w: weekday as number (0-6, 0 being Sunday)
 */
 var options_four = {
-    xaxis: { mode: "time", timeformat: "%b %Y"},
+    xaxis: { mode: "time", timezone: "browser", timeformat: "%b %Y"},
 	//yaxis: {axisLabel: 'Hours', axisLabelPadding: 15 },
     series: { lines: { show: true, lineWidth: 1, fill: false}, curvedLines: { apply: true,  active: true,  monotonicFit: true } },
     grid: { hoverable: true, borderWidth: 1,  backgroundColor: { colors: ["#ffffff", "#fdf7f4"] }, borderColor: "#ff8839" },
@@ -394,7 +394,7 @@ var bat_level_dataset = [
 		$zone_row = mysqli_fetch_array($result);
 		$zone_name = $zone_row['name'];
 		$label = $zone_name ." - ID ".$node_id;
-		$query="SELECT bat_voltage, bat_level, `update`  FROM nodes_battery WHERE `update` >= last_day(now()) + interval 1 day - interval 3 MONTH AND bat_level is not NULL and node_id = '{$node_id}' GROUP BY YEAR(`update`), MONTH(`update`), DAY(`update`), HOUR(`UPDATE`) ORDER BY `update` ASC;";
+		$query="SELECT bat_voltage, bat_level, `update`  FROM nodes_battery WHERE `update` >= last_day(now()) + interval 1 day - interval 3 MONTH AND bat_level is not NULL and node_id = '{$node_id}' GROUP BY YEAR(`update`), MONTH(`update`), DAY(`update`) ORDER BY `update` ASC;";
         $result = $conn->query($query);
         // create array of pairs of x and y values for every zone
         $bat_level = array();
@@ -409,7 +409,7 @@ var bat_level_dataset = [
     }
 ?> ];
 var options_bat = {
-	xaxis: { mode: "time", timeformat: "%b %Y"},
+	xaxis: { mode: "time", timezone: "browser", timeformat: "%b %Y"},
     series: { lines: { show: true, lineWidth: 1, fill: false}, curvedLines: { apply: true,  active: true,  monotonicFit: true } },
     grid: { hoverable: true, borderWidth: 1,  backgroundColor: { colors: ["#ffffff", "#fdf9f9"] }, borderColor: "#ff8839",},
     legend: { noColumns: 3, labelBoxBorderColor: "#ffff", position: "nw" }
@@ -492,7 +492,7 @@ var bat_voltage_dataset = [
 		$zone_row = mysqli_fetch_array($result);
 		$zone_name = $zone_row['name'];
 		$label = $zone_name ." - ID ".$node_id;
-		$query="SELECT bat_voltage, bat_level, `update`  FROM nodes_battery WHERE `update` >= last_day(now()) + interval 1 day - interval 3 MONTH AND bat_level is not NULL and node_id = '{$node_id}' GROUP BY YEAR(`update`), MONTH(`update`), DAY(`update`), HOUR(`UPDATE`) ORDER BY `update` ASC;";
+		$query="SELECT bat_voltage, bat_level, `update`  FROM nodes_battery WHERE `update` >= last_day(now()) + interval 1 day - interval 3 MONTH AND bat_level is not NULL and node_id = '{$node_id}' GROUP BY YEAR(`update`), MONTH(`update`), DAY(`update`) ORDER BY `update` ASC;";
         $result = $conn->query($query);
         // create array of pairs of x and y values for every zone
         $bat_level = array();
@@ -507,7 +507,7 @@ var bat_voltage_dataset = [
     }
 ?> ];
 var options_bat_volt = {
-	xaxis: { mode: "time", timeformat: "%b %Y"},
+	xaxis: { mode: "time", timezone: "browser", timeformat: "%b %Y"},
     series: { lines: { show: true, lineWidth: 1, fill: false}, curvedLines: { apply: true,  active: true,  monotonicFit: true } },
     grid: { hoverable: true, borderWidth: 1,  backgroundColor: { colors: ["#ffffff", "#fdf9f9"] }, borderColor: "#ff8839",},
     legend: { noColumns: 3, labelBoxBorderColor: "#ffff", position: "nw" }
