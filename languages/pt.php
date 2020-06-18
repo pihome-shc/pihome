@@ -349,4 +349,14 @@ $lang['notice_interval'] = "Intervalo de aviso";
 $lang['notice_interval_info'] = "Defina o intervalo de aviso em minutos.";
 $lang['node_id'] = "ID do nó";
 $lang['last_seen'] = "Visto pela última vez";
+
+$lang['confirmation'] = "Confirmação!";
+$lang['confirm_del_sensor'] = "Você está prestes a EXCLUIR este Sensores";
+$lang['confirm_del_controller'] = "Você está prestes a excluir um controlador NENHUM ativo!";
+$lang['confirm_del_controller_use'] = "Você está prestes a EXCLUIR um Controlador ATIVO por ";
+$lang['confirm_del_controller_use2'] = "Você está prestes a EXCLUIR um Controlador ATIVO";
+$lang['confirm_dell_active_zone_type'] = "Você está prestes a excluir um tipo de zona que está em uso";
+$lang['confirm_dell_de_active_zone_type'] = "Você está prestes a excluir um tipo de zona que não está em uso";
+$lang['confirm_dell_active_zone'] = "Você está prestes a excluir uma zona ativa";
+$lang['confirm_dell_de_active_zone'] = "Você está prestes a EXCLUIR UMA ZONA NENHUM ativa";
 ?>

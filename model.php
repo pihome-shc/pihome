@@ -391,7 +391,7 @@ while ($row = mysqli_fetch_assoc($results)) {
             <td><input id="boost_button_id'.$row["id"].'" type="text" class="pull-left text" style="border: none" name="button_id"  size="3" value="'.$row["boost_button_id"].'" placeholder="Button ID" required></td>
             <td><input id="boost_button_child_id'.$row["id"].'" type="text" class="pull-left text" style="border: none" name="button_child_id" size="3" value="'.$row["boost_button_child_id"].'" placeholder="Child ID" required></td>
 			<input type="hidden" id="zone_id'.$row["id"].'" name="zone_id" value="'.$row["zone_id"].'">
-            <td><a href="javascript:delete_boost('.$row["id"].');"><button class="btn btn-danger btn-xs" data-toggle="confirmation" data-title="ARE YOU SURE?" data-content="You are about to DELETE this BOOST Setting"><span class="glyphicon glyphicon-trash"></span></button> </a></td>
+            <td><a href="javascript:delete_boost('.$row["id"].');"><button class="btn btn-danger btn-xs" data-toggle="confirmation" data-title="'.$lang['confirmation'].'" data-content="You are about to DELETE this BOOST Setting"><span class="glyphicon glyphicon-trash"></span></button> </a></td>
         </tr>';
 
 }
@@ -573,9 +573,9 @@ while ($row = mysqli_fetch_assoc($results)) {
         $b_results = $conn->query($query);
         $rowcount=mysqli_num_rows($b_results);
         if($rowcount > 0) {
-                $content_msg="You are about to DELETE an ACTIVE Controller";
+                $content_msg=$lang['confirm_del_controller_use2'];
         } else {
-                $content_msg="You are about to DELETE a NONE active Controller";
+                $content_msg=$lang['confirm_del_controller'];
         }
 
     } else {
@@ -583,10 +583,10 @@ while ($row = mysqli_fetch_assoc($results)) {
         $z_results = $conn->query($query);
         $rowcount=mysqli_num_rows($z_results);
         if($rowcount > 0) {
-                $z_row = mysqli_fetch_assoc($z_results);
-                $content_msg="You are about to DELETE an ACTIVE Controller for ".$z_row["name"]." Zone";
+			$z_row = mysqli_fetch_assoc($z_results);
+			$content_msg=$lang['confirm_del_controller_use']." ".$z_row["name"]." ".$lang['zone'];
         } else {
-                $content_msg="You are about to DELETE a NONE active Controller";
+			$content_msg=$lang['confirm_del_controller'];
         }
     }
     echo '
@@ -595,7 +595,7 @@ while ($row = mysqli_fetch_assoc($results)) {
             <td>'.$row["node_id"].'</td>
             <td>'.$row["max_child_id"].'</td>
             <td>'.$row["name"].'</td>
-			<td><a href="javascript:delete_node('.$row["id"].');"><button class="btn btn-danger btn-xs" data-toggle="confirmation" data-title="ARE YOU SURE?" data-content="'.$content_msg.'"><span class="glyphicon glyphicon-trash"></span></button> </a></td>
+			<td><a href="javascript:delete_node('.$row["id"].');"><button class="btn btn-danger btn-xs" data-toggle="confirmation" data-title="'.$lang['confirmation'].'" data-content="'.$content_msg.'"><span class="glyphicon glyphicon-trash"></span></button> </a></td>
         </tr>';
 }
 echo '</table></div>
@@ -675,16 +675,16 @@ while ($row = mysqli_fetch_assoc($results)) {
     $t_results = $conn->query($query);
     $rowcount=mysqli_num_rows($t_results);
     if($rowcount > 0) {
-        $content_msg="You are about to DELETE a Zone Type Which Is In Use";
+        $content_msg=$lang['confirm_dell_active_zone_type'];
     } else {
-        $content_msg="You are about to DELETE a Zone Type Which Is NOT In Use";
+        $content_msg=$lang['confirm_dell_de_active_zone_type'];
     }
 
     echo '
         <tr>
             <td>'.$row["type"].'</td>
             <td>'.$lang['zone_category'.$row["category"]].'</td>
-            <td><a href="javascript:delete_zone_type('.$row["id"].');"><button class="btn btn-danger btn-xs" data-toggle="confirmation" data-title="ARE YOU SURE?" data-content="'.$content_msg.'"><span class="glyphicon glyphicon-trash"></span></button> </a></td>
+            <td><a href="javascript:delete_zone_type('.$row["id"].');"><button class="btn btn-danger btn-xs" data-toggle="confirmation" data-title="'.$lang['confirmation'].'" data-content="'.$content_msg.'"><span class="glyphicon glyphicon-trash"></span></button> </a></td>
         </tr>';
 }
 echo '</table></div>
@@ -744,20 +744,32 @@ echo '
             </div>
             <div class="modal-body">
 <p class="text-muted"> '.$lang['temperature_sensor_text'].' </p>';
-$query = "SELECT * FROM nodes where name = 'Temperature Sensor' ORDER BY node_id asc";
+$query = "SELECT * FROM nodes where name = 'Temperature Sensor' ORDER BY node_id asc;";
 $results = $conn->query($query);
 echo '	<div class=\"list-group\">';
 while ($row = mysqli_fetch_assoc($results)) {
 	$batquery = "select * from nodes_battery where node_id = {$row['node_id']} ORDER BY id desc limit 1;";
 	$batresults = $conn->query($batquery);
 	$brow = mysqli_fetch_array($batresults);
+	//check if sensors in use by any zone 
+	$query = "SELECT * FROM zone where sensor_id = {$row['id']} Limit 1;";
+	$zresult = $conn->query($query);
+	$rcount = mysqli_num_rows($zresult);
 	if ($row['ms_version'] > 0){
-		echo "<a href=\"#\" class=\"list-group-item\">
-		<i class=\"ionicons ion-thermometer red\"></i> ".$row['node_id']." - <i class=\"fa fa-battery-full\"></i> ".round($brow ['bat_level'],0)."% - ".$brow ['bat_voltage']."v
-		<span class=\"pull-right text-muted small\"><em>".$row['last_seen']."</em></span></a>"; 	
+		echo "<div class=\"list-group-item\">
+		<i class=\"ionicons ion-thermometer red\"></i> ".$row['node_id']." - <i class=\"fa fa-battery-full\"></i> ".round($brow ['bat_level'],0)."% - ".$brow ['bat_voltage']."
+		<span class=\"pull-right text-muted small\"><em>".$row['last_seen']."</em> ";
+		//if sensor in use disable delete button
+		if ($rcount > 0){
+			echo '<a href="javascript:delete_node('.$row["id"].');">&nbsp;&nbsp;<button class="btn btn-danger btn-xs disabled" data-toggle="confirmation" data-title="'.$lang['confirmation'].'" data-content="#"><span class="glyphicon glyphicon-trash"></span></button></a>';
+		//if sensors not in use by zone enable delete button
+		}else{ 
+			echo '<a href="javascript:delete_node('.$row["id"].');">&nbsp;&nbsp;<button class="btn btn-danger btn-xs" data-toggle="confirmation" data-title="'.$lang['confirmation'].'" data-content="'.$lang['confirm_del_sensor'].'"><span class="glyphicon glyphicon-trash"></span></button></a>';
+		}
+		echo "</span></div> "; 	
 	}else {
-		echo "<a href=\"#\" class=\"list-group-item\">
-		<i class=\"ionicons ion-thermometer red\"></i> ".$row['node_id']."<span class=\"pull-right text-muted small\"><em>".$row['last_seen']."</em></span></a>"; 
+		echo "<div class=\"list-group-item\">
+		<i class=\"ionicons ion-thermometer red\"></i> ".$row['node_id']."<span class=\"pull-right text-muted small\"><em>".$row['last_seen']."</em></span></div>"; 
 	}
 }
 echo '</div></div>
@@ -784,16 +796,16 @@ $results = $conn->query($query);
 echo '	<div class=\"list-group\">';
 while ($row = mysqli_fetch_assoc($results)) {
         if($row['status'] == 1) {
-                $content_msg="You are about to DELETE an ACTIVE ZONE";
+                $content_msg=$lang['confirm_dell_active_zone'];
         } else {
-                $content_msg="You are about to DELETE a NONE active ZONE";
+                $content_msg=$lang['confirm_dell_de_active_zone'];
         }
 	echo "<div class=\"list-group-item\">
 	<i class=\"glyphicon glyphicon-th-large orange\"></i> ".$row['name']."
 	<span class=\"pull-right \"><em>&nbsp;&nbsp;<small> ".$lang['max']." ".$row['max_c']."&deg; </em> - ".$lang['sensor'].": ".$row['sensors_id']." - ".$row['controller_type'].": ".$row['controler_id']."-".$row['controler_child_id']."</small></span> 
 	<br><span class=\"pull-right \"><small>
 	<a href=\"zone.php?id=".$row['id']."\" class=\"btn btn-default btn-xs login\"><span class=\"ionicons ion-edit\"></span></a>&nbsp;&nbsp;
-	<a href=\"javascript:delete_zone(".$row['id'].");\"><button class=\"btn btn-danger btn-xs\" data-toggle=\"confirmation\" data-title=\"ARE YOU SURE?\" data-content=\"$content_msg\"><span class=\"glyphicon glyphicon-trash\"></span></button></a>
+	<a href=\"javascript:delete_zone(".$row['id'].");\"><button class=\"btn btn-danger btn-xs\" data-toggle=\"confirmation\" data-title=".$lang['confirmation']." data-content=\"$content_msg\"><span class=\"glyphicon glyphicon-trash\"></span></button></a>
 	</small></span>
 	<br>
 	</div>";
@@ -1549,7 +1561,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	echo "<div href=\"settings.php?uid=".$row['id']."\"  class=\"list-group-item\"> 
     <i class=\"ionicons ion-person blue\"></i> ".$username."
     <span class=\"pull-right text-muted small\"><em>
-	<a href=\"javascript:del_user(".$row["id"].");\"><button class=\"btn btn-danger btn-xs\" data-toggle=\"confirmation\" data-title=\"ARE YOU SURE?\" data-content=\"$content_msg\"><span class=\"glyphicon glyphicon-trash\"></span></button> </a>
+	<a href=\"javascript:del_user(".$row["id"].");\"><button class=\"btn btn-danger btn-xs\" data-toggle=\"confirmation\" data-title=".$lang['confirmation']." data-content=\"$content_msg\"><span class=\"glyphicon glyphicon-trash\"></span></button> </a>
 	<a href=\"user_password.php?uid=".$row["id"]."\"><button class=\"btn btn-primary btn-xs\"><span class=\"fa fa-user fa-key\"></span></button> </a>
 	</em></span></div>";
 }
