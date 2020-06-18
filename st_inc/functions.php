@@ -393,7 +393,7 @@ function getIndicators($conn, $zone_mode, $zone_temp_target)
 		}
 	}
 	//running
-	else if($zone_mode_sub == 1){
+	else if($zone_mode_sub == 1 || $zone_mode_sub == 4){
 		$status='red';
 	}
 	//not running - deadband
@@ -469,7 +469,9 @@ function getIndicators($conn, $zone_mode, $zone_temp_target)
 			$shactive='ion-leaf';
 	               	$shcolor='green';
 		}
-		$target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';
+                if($zone_mode_sub <> 4){
+                        $target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';
+                }
 	}
 	//away
 	else if($zone_mode_main == 90){
