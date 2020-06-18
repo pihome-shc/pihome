@@ -364,3 +364,14 @@ $lang['node_child_id'] = "Nod Child ID";
 $lang['node_child_id_info'] = "Număr releu I2C sau număr GPIO WirringPi";
 $lang['node_id_info'] = "ID placă I2C sau 0 dacă doriți să utilizați Raspberry Pi GPIO";
 $lang['node_name_info'] = "Numele nodului reprezintă funcția Nodului pe care îl adăugați";
+
+$lang['confirmation'] = "Confirmare!";
+$lang['confirm_del_sensor'] = "Ești pe cale să ștergeți acesti senzori";
+$lang['confirm_del_controller'] = "Ești pe cale să ștergeți NICIOS un controler activ!";
+$lang['confirm_del_controller_use'] = "Ești pe cale să ștergeți un controlor ACTIVE pentru ";
+$lang['confirm_del_controller_use2'] = "Ești pe cale să ștergeți un controlor ACTIVE";
+$lang['confirm_dell_active_zone_type'] = "Ești pe cale să ștergeți un tip de zonă care este în uz";
+$lang['confirm_dell_de_active_zone_type'] = "Ești pe cale să ștergeți un tip de zonă care NU ESTE utilizat";
+$lang['confirm_dell_active_zone'] = "Ești pe cale să ștergeți o ZONĂ ACTIVĂ";
+$lang['confirm_dell_de_active_zone'] = "Ești pe cale să ștergeți o ZONE activă NICIODATĂ";
+?>
