@@ -570,7 +570,7 @@ while ($row = mysqli_fetch_assoc($results)) {
                                                         $stop_cause="Boost Finished";
                                                         if ($sch_status =='1') {
                                                                 $zone_status="1";
-                                                                $zone_mode = 81;
+                                                                $zone_mode = 114;
                                                                 $start_cause="Schedule Started";
                                                                 $expected_end_date_time=date('Y-m-d '.$sch_end_time.'');
                                                                 if ($zone_active_status == '1') {
@@ -643,7 +643,8 @@ while ($row = mysqli_fetch_assoc($results)) {
 		/*	0 - stopped (above cut out setpoint or not running in this mode)
 			1 - running 
 			2 - stopped (within deadband) 
-			3 - stopped (coop start waiting for boiler) */
+			3 - stopped (coop start waiting for boiler)
+			4 - manual operation */
 		$query = "UPDATE zone_current_state SET mode = {$zone_mode}, status = {$zone_status}, temp_reading = '{$zone_c}', temp_target = {$target_c},temp_cut_in = {$temp_cut_in}, temp_cut_out = {$temp_cut_out}, controler_fault = {$zone_ctr_fault}, controler_seen_time = '{$controler_seen}', sensor_fault  = {$zone_sensor_fault}, sensor_seen_time = '{$sensor_seen}', sensor_reading_time = '{$temp_reading_time}' WHERE id ={$zone_id} LIMIT 1;";
 		$conn->query($query);
 
