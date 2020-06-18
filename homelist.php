@@ -146,7 +146,7 @@ require_once(__DIR__.'/st_inc/functions.php');
                         //Left small circular icon/color status
                         echo '<small class="statuscircle"><i class="fa fa-circle fa-fw ' . $rval['status'] . '"></i></small>';
                         //Middle target temp
-                        echo '<small class="statusdegree">' . $target .'</small>';
+                        echo '<small class="statusdegree">' . $rval['target'] .'</small>';
                         //Right icon for what/why
                         echo '<small class="statuszoon"><i class="fa ' . $rval['shactive'] . ' ' . $rval['shcolor'] . ' fa-fw"></i></small>';
                         echo '</h3></button>';      //close out status and button
@@ -396,7 +396,7 @@ require_once(__DIR__.'/st_inc/functions.php');
                         //Left small circular icon/color status
                         echo '<small class="statuscircle"><i class="fa fa-circle fa-fw ' . $rval['status'] . '"></i></small>';
                         //Middle target temp
-                        echo '<small class="statusdegree">' . $target .'</small>';
+                        echo '<small class="statusdegree">' . $rval['target'] .'</small>';
                         //Right icon for what/why
                         echo '<small class="statuszoon"><i class="fa ' . $rval['shactive'] . ' ' . $rval['shcolor'] . ' fa-fw"></i></small>';
                         echo '</h3></button>';      //close out status and button
