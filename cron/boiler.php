@@ -574,6 +574,7 @@ while ($row = mysqli_fetch_assoc($results)) {
                                                                 $start_cause="Schedule Started";
                                                                 $expected_end_date_time=date('Y-m-d '.$sch_end_time.'');
                                                                 if ($zone_active_status == '1') {
+                                                                        $stop_cause="Manual Stop";
                                                                         $zone_status_prev = '0';
                                                                         $query = "UPDATE zone SET sync = '0', zone_status = '0' WHERE id = '{$zone_id}' LIMIT 1";
                                                                         $conn->query($query);
@@ -595,7 +596,7 @@ while ($row = mysqli_fetch_assoc($results)) {
                                                 $zone_mode = 40;
                                                 $stop_cause="Holiday Active";
                                         }
-                                        if ($sch_status=='0') {
+                                        if ($sch_status=='0' && $zone_active_status=='0') {
                                                 $zone_status="0";
                                                 $zone_mode = 0;
                                                 $stop_cause="No Schedule";
@@ -702,7 +703,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 		} else {
                         // Process Logs Category 1 and 2 logs if zone status has changed
                         // zone switching ON
-                        if($zone_status_prev == '0' &&  $zone_status == '1') {
+                        if($zone_status_prev == '0' &&  ($zone_status == '1' || $zone_active_status  == '1')) {
 				if($zone_mode == '111') {
                                 	$aoquery = "INSERT INTO `add_on_logs`(`sync`, `purge`, `start_datetime`, `start_cause`, `stop_datetime`, `stop_cause`, `expected_end_date_time`) VALUES ('0', '0', '{$date_time}', '{$start_cause}', NULL, NULL, NULL);";
 				} else {
