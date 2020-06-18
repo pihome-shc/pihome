@@ -410,4 +410,13 @@ $lang['away_fail'] = "Tabella Via Default fallita con errore: ";
 $lang['holidays_success'] = "Aggiunta tabella Vacanze correttamente.";
 $lang['holidays_fail'] = "Aggiunta tabella Vacanze fallita con errore: ";
 
+$lang['confirmation'] = "Conferma!";
+$lang['confirm_del_sensor'] = "Stai per eliminare questo sensore";
+$lang['confirm_del_controller'] = "Stai per eliminare un controller NESSUNO attivo!";
+$lang['confirm_del_controller_use'] = "Stai per ELIMINARE un controller ATTIVO per ";
+$lang['confirm_del_controller_use2'] = "Stai per ELIMINARE un controller ATTIVO";
+$lang['confirm_dell_active_zone_type'] = "Stai per eliminare un tipo di zona in uso";
+$lang['confirm_dell_de_active_zone_type'] = "Stai per eliminare un tipo di zona che NON è in uso";
+$lang['confirm_dell_active_zone'] = "Stai per eliminare una ZONA ATTIVA";
+$lang['confirm_dell_de_active_zone'] = "Stai per ELIMINARE UNA NESSUNA ZONA attiva";
 ?>
