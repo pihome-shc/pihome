@@ -665,6 +665,7 @@ CREATE TABLE IF NOT EXISTS `zone_current_state` (
   `sensor_fault` int(1),
   `sensor_seen_time` timestamp NULL,
   `sensor_reading_time` timestamp NULL,
+  `overrun` tinyint(1),
  PRIMARY KEY (`id`)
 ) ENGINE=MEMORY DEFAULT CHARSET=utf8;
 

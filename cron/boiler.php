@@ -117,6 +117,7 @@ $boiler_node_id = $row['node_id'];
 $boiler_node_child_id = $row['node_child_id'];
 $boiler_hysteresis_time = $row['hysteresis_time'];
 $boiler_max_operation_time = $row['max_operation_time'];
+$boiler_overrun_time = 1;
 
 //Get data from nodes table
 $query = "SELECT * FROM nodes WHERE node_id ='$boiler_node_id' AND status IS NOT NULL LIMIT 1;";
@@ -167,6 +168,7 @@ echo "--------------------------------------------------------------------------
 //following variable set to 0 on start for array index.
 $boiler_index = '0';
 $zone_index = '0';
+$command_index = '0';
 $current_time = date('H:i:s');
 
 //following variable set to current day of the week.
@@ -198,7 +200,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$result = $conn->query($query);
 	if (mysqli_num_rows($result)==0){
 	        //No record in zone_current_statw table, so add
-        	$query = "INSERT INTO zone_current_state VALUES({$zone_id}, 0, 0, 0, 0, 0, 0, 0,NULL ,0 ,NULL, NULL );";
+        	$query = "INSERT INTO zone_current_state VALUES({$zone_id}, 0, 0, 0, 0, 0, 0, 0,NULL ,0 ,NULL, NULL, 0 );";
 	        $conn->query($query);
 	}
 	//query to get zone previous running status
@@ -206,6 +208,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$result = $conn->query($query);
 	$zone_current_state = mysqli_fetch_array($result);
 	$zone_status_prev = $zone_current_state['status'];
+	$zone_overrun_prev = $zone_current_state['overrun'];
 
 	// process if a sensor is attached to this zone
 	if ($zone_category == 0 OR $zone_category == 1) {
@@ -665,33 +668,13 @@ while ($row = mysqli_fetch_assoc($results)) {
 		} else {
 			if ($zone_status=='1') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Start Cause: ".$start_cause."\033[0m \n";}
 			if ($zone_status=='0') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Stop Cause: ".$stop_cause."\033[0m \n";}		}
-		/***************************************************************************************
-		Zone Valve Wired to Raspberry Pi GPIO Section: Zone Valve Connected Raspberry Pi GPIO.
-		****************************************************************************************/
-		if ($zone_controller_type == 'GPIO'){
-			$relay_status = ($zone_status == '1') ? $relay_on : $relay_off;
-			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: GIOP Relay Status: \033[41m".$relay_status. "\033[0m (0=On, 1=Off) \n";
-			exec("python3 /var/www/cron/gpio/gpio3_relay.py ".$zone_controler_child_id." ".$relay_status);
-		}
 
-		/***************************************************************************************
-		Zone Valve Wired over I2C Interface Make sure you have i2c Interface enabled 
-		****************************************************************************************/
-		if ($zone_controller_type == 'I2C'){
-			//exec("python3 /var/www/cron/i2c/i2c_relay.py 50 ".$zone_gpio_pin." ".$zone_status);
-			exec("python3 /var/www/cron/i2c/i2c_relay.py ".$zone_controler_id." ".$zone_controler_child_id." ".$zone_status);
-			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Relay Broad: ".$zone_controler_id. " Relay No: ".$zone_controler_child_id." Status: ".$zone_status." \n";
-		}
+		//Pass data to zone commands loop
+		$zone_commands[$command_index] = (array('zone_id' =>$zone_id, 'zone_category' =>$zone_category, 'zone_controler_id' =>$zone_controler_id, 'zone_controler_child_id' =>$zone_controler_child_id, 'zone_status'=>$zone_status, 'zone_status_prev'=>$zone_status_prev, 'zone_overrun_prev'=>$zone_overrun_prev));
+		$command_index = $command_index+1;
 
-		/***************************************************************************************
-		Zone Valve Wireless Section: MySensors Wireless Relay module for your Zone Valve control.
-		****************************************************************************************/
-		if ($zone_controller_type == 'MySensor'){
-                        $zstatus = ($zone_status or $zone_active_status);
-			//update messages_out table with sent status to 0 and payload to as zone status.
-			$query = "UPDATE messages_out SET sent = '0', payload = '{$zone_status}' WHERE node_id ='$zone_controler_id' AND child_id = '$zone_controler_child_id' LIMIT 1;";
-			$conn->query($query);
-		}
+
+
                 //process Zone Cat 0 logs
                 if ($zone_category == 0){
                         //all zone status to boiler array and increment array index
@@ -738,6 +721,124 @@ while ($row = mysqli_fetch_assoc($results)) {
 		echo "---------------------------------------------------------------------------------------- \n";
 	} //end if($zone_status == 1)
 } //end of while loop
+
+
+
+//***************************************************************************************
+//Zone Commands loop
+//***************************************************************************************
+
+for ($row = 0; $row < count($zone_commands); $row++){
+
+		$zone_id = $zone_commands[$row]["zone_id"];
+		$zone_category = $zone_commands[$row]["zone_category"];
+	    $zone_controler_id = $zone_commands[$row]["zone_controler_id"];
+		$zone_controler_child_id = $zone_commands[$row]["zone_controler_child_id"];
+		$zone_status = $zone_commands[$row]["zone_status"];
+		$zone_status_prev = $zone_commands[$row]["zone_status_prev"];
+		$zone_overrun_prev = $zone_commands[$row]["zone_overrun_prev"];
+
+		//Zone category 0 and boiler is not requested calculate if overrun needed
+		if($zone_category==0 && !in_array("1", $boiler)) {
+			
+			//overrun time <0 - latch overrun for the zone zone untill next boiler start
+			if($boiler_overrun_time < 0){
+				$zone_overrun = (($zone_status_prev == 1)||($zone_overrun_prev == 1)) ? 1:0;
+
+			// overrun time = 0 - overrun not needed	 
+			}else if ($boiler_overrun_time == 0){
+				$zone_overrun = 0;
+
+			// overrun time > 0	
+			}else {
+				$now=strtotime(date('Y-m-d H:i:s'));
+				
+
+				//when switching off boiler
+				if($boiler_fire_status == 1) {
+					$overrun_end_time = $now + ($boiler_overrun_time * 60);
+					$zone_overrun = $zone_status_prev;
+				
+				//boiler was switched of previous script run
+				} else {
+					$overrun_end_time = strtotime( $boiler_stop_datetime ) + ($boiler_overrun_time * 60);
+					// if overrun flag was switched on when boiler was switching on and ovverrun did not pass keep overrun on
+					if(($now < $overrun_end_time)&&($zone_overrun_prev)){
+						$zone_overrun = 1;
+					}else {
+						$zone_overrun = 0;
+					}
+
+				}
+			}
+
+
+			
+
+		}else {
+				
+		//if zone is not category 0 or boiler is running overrun not needed
+			$zone_overrun = 0;
+
+		}
+
+
+		$zone_command = (($zone_status == 1) || ($zone_overrun == 1)) ? 1:0 ;
+
+		// update zone current state table
+		if($zone_overrun<>$zone_overrun_prev){
+			$query = "UPDATE zone_current_state SET overrun = {$zone_overrun} WHERE id ={$zone_id} LIMIT 1;";
+			$conn->query($query);
+		}
+
+
+		if($zone_overrun == 1){
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone ".$zone_id. " circulation pump overrun active. \n";
+			if ($boiler_overrun_time > 0) {
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Overrun end time ".date('Y-m-d H:i:s',$overrun_end_time). " \n";
+			} else{
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Overrun will end on the next boiler start. \n";
+			}
+		}
+
+		/***************************************************************************************
+		Zone Valve Wired to Raspberry Pi GPIO Section: Zone Valve Connected Raspberry Pi GPIO.
+		****************************************************************************************/
+		if ($zone_controller_type == 'GPIO'){
+
+			$relay_status = ($zone_command == '1') ? $relay_on : $relay_off;
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: GIOP Relay Status: \033[41m".$relay_status. "\033[0m (0=On, 1=Off) \n";
+			exec("python3 /var/www/cron/gpio/gpio3_relay.py ".$zone_controler_child_id." ".$relay_status);
+		}
+
+		/***************************************************************************************
+		Zone Valve Wired over I2C Interface Make sure you have i2c Interface enabled 
+		****************************************************************************************/
+		if ($zone_controller_type == 'I2C'){
+
+			exec("python3 /var/www/cron/i2c/i2c_relay.py ".$zone_controler_id." ".$zone_controler_child_id." ".$zone_command);
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Relay Broad: ".$zone_controler_id. " Relay No: ".$zone_controler_child_id." Status: ".$zone_command." \n";
+		}
+
+		/***************************************************************************************
+		Zone Valve Wireless Section: MySensors Wireless Relay module for your Zone Valve control.
+		****************************************************************************************/
+		if ($zone_controller_type == 'MySensor'){
+
+			//update messages_out table with sent status to 0 and payload to as zone status.
+			$query = "UPDATE messages_out SET sent = '0', payload = '{$zone_command}' WHERE node_id ='$zone_controler_id' AND child_id = '$zone_controler_child_id' LIMIT 1;";
+			$conn->query($query);
+		}
+
+
+
+
+}
+
+
+
+
+
 
 //For debug info only
 //print_r ($zone_log);
