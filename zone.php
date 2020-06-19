@@ -36,7 +36,7 @@ if (isset($_POST['submit'])) {
 	$zone_status = isset($_POST['zone_status']) ? $_POST['zone_status'] : "0";
 	$index_id = $_POST['index_id'];
 	$name = $_POST['name'];
-	$type = $_POST['type'];
+	$type = $_POST['selected_zone_type'];
 	$max_c = $_POST['max_c'];
 	$max_operation_time = $_POST['max_operation_time'];
 	$hysteresis_time = $_POST['hysteresis_time'];
@@ -52,12 +52,6 @@ if (isset($_POST['submit'])) {
 
 	$boiler = explode('-', $_POST['boiler_id'], 2);
 	$boiler_id = $boiler[0];
-
-	//query to search zone_type for the type matching the category
-        $query = "SELECT * FROM zone_type WHERE category = '{$type}' LIMIT 1;";
-        $result = $conn->query($query);
-        $found_product = mysqli_fetch_array($result);
-        $type = $found_product['type'];
 
 	//query to search node id for temperature sensors
 	if ($zone_category < 2) {
@@ -281,6 +275,7 @@ $new_index_id = $found_product['index_id']+1;
 
 <!-- Zone Type -->
 <input type="hidden" id="selected_zone_category" name="selected_zone_category" value="<?php echo $category?>"/>
+<input type="hidden" id="selected_zone_type" name="selected_zone_type" value="<?php echo $type?>"/>
 <div class="form-group" class="control-label"><label><?php echo $lang['zone_type']; ?></label> <small class="text-muted"><?php echo $lang['zone_type_info'];?></small>
 <select id="type" onchange=zone_category(this.options[this.selectedIndex].value) name="type" class="form-control select2" autocomplete="off" required>
 <?php if(isset($row['type'])) { echo '<option selected >'.$row['type'].'</option>'; } ?>
@@ -297,6 +292,9 @@ function zone_category(value)
 {
         var valuetext = value;
 	document.getElementById("selected_zone_category").value = value;
+        var e = document.getElementById("type");
+        var selected_type = e.options[e.selectedIndex].text;
+        document.getElementById("selected_zone_type").value = selected_type;
         switch (valuetext) {
                 case "0":
                         document.getElementById("max_c").style.display = 'block';
