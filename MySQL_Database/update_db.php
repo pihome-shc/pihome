@@ -189,6 +189,16 @@ if ($db_selected) {
 	//Update Version and build number 
 	$query = "UPDATE system SET version = '{$version}', build = '{$build}' LIMIT 1;";
 	$conn->query($query);
+	//Insert Zone Type 
+	$query = "INSERT INTO zone_type (type, category) SELECT * FROM (SELECT 'Heating', '0') AS tmp WHERE NOT EXISTS (SELECT type FROM zone_type WHERE type = 'Heating') LIMIT 1;";
+	$conn->query($query);
+	$query = "INSERT INTO zone_type (type, category) SELECT * FROM (SELECT 'Water', '0') AS tmp WHERE NOT EXISTS (SELECT type FROM zone_type WHERE type = 'Water') LIMIT 1;";
+	$conn->query($query);
+	$query = "INSERT INTO zone_type (type, category) SELECT * FROM (SELECT 'Immersion', '1') AS tmp WHERE NOT EXISTS (SELECT type FROM zone_type WHERE type = 'Immersion') LIMIT 1;";
+	$conn->query($query);
+	$query = "INSERT INTO zone_type (type, category) SELECT * FROM (SELECT 'Lamp', '2') AS tmp WHERE NOT EXISTS (SELECT type FROM zone_type WHERE type = 'Lamp') LIMIT 1;";
+	$conn->query($query);	
+	
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Update Version: \033[41m".$version."\033[0m \n";
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Update Build: \033[41m".$build."\033[0m \n";
 		
