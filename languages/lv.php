@@ -364,5 +364,13 @@ $lang['node_child_id_info'] = "I2C releja numurs vai WirringPi GPIO numurs";
 $lang['node_id_info'] = "I2C plates ID vai 0, ja vēlaties izmantot Raspberry Pi GPIO";
 $lang['node_name_info'] = "Mezgla nosaukums norāda pievienojamā mezgla funkciju";
 
-
+$lang['confirmation'] = "Apstiprinājums!";
+$lang['confirm_del_sensor'] = "Jūs gatavojaties izdzēst šos sensorus";
+$lang['confirm_del_controller'] = "Jūs gatavojaties izdzēst nevienu aktīvo kontrolieri!";
+$lang['confirm_del_controller_use'] = "Jūs gatavojaties izdzēst AKTĪVO kontrolieri ";
+$lang['confirm_del_controller_use2'] = "Jūs gatavojaties izdzēst aktīvo kontrolieri";
+$lang['confirm_dell_active_zone_type'] = "Jūs gatavojaties izdzēst izmantoto zonas tipu";
+$lang['confirm_dell_de_active_zone_type'] = "Jūs gatavojaties izdzēst zonas tipu, kuru nelietojat";
+$lang['confirm_dell_active_zone'] = "Jūs gatavojaties izdzēst aktīvo zonu";
+$lang['confirm_dell_de_active_zone'] = "Jūs gatavojaties izdzēst nevienu aktīvo zonu";
 ?>

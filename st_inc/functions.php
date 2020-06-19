@@ -380,7 +380,7 @@ function getIndicators($conn, $zone_mode, $zone_temp_target)
 	//not running - temperature reached or not running in this mode
 	if($zone_mode_sub == 0){
 		//fault or idle
-		if(($zone_mode_main == 0)||($zone_mode_main == 10)){
+		if(($zone_mode_main == 0)||($zone_mode_main == 10)||($zone_mode_main == 110)){
 			$status='';
 		}
 		//away, holidays or hysteresis
@@ -393,7 +393,7 @@ function getIndicators($conn, $zone_mode, $zone_temp_target)
 		}
 	}
 	//running
-	else if($zone_mode_sub == 1){
+	else if($zone_mode_sub == 1 || $zone_mode_sub == 4){
 		$status='red';
 	}
 	//not running - deadband
@@ -469,7 +469,7 @@ function getIndicators($conn, $zone_mode, $zone_temp_target)
 			$shactive='ion-leaf';
 	               	$shcolor='green';
 		}
-		$target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';
+                $target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';
 	}
 	//away
 	else if($zone_mode_main == 90){
@@ -483,6 +483,23 @@ function getIndicators($conn, $zone_mode, $zone_temp_target)
 		$shcolor='';
 		$target='';     //show no target temperature
 	}
+        //Add-On
+        else if($zone_mode_main == 110){
+                if($zone_mode_sub == 4){
+                        $shactive='ion-ios-clock-outline';
+                } else {
+                        $shactive='fa fa-power-off';
+                }
+                //add-on swtched OFF
+                if($zone_mode_sub == 0){
+                        $shcolor='black';
+                }
+                //add-on switched ON
+                else{
+                        $shcolor='green';
+                }
+                $target='';     //show no target temperature
+        }
 	//shouldn't get here
 	else {
 		$shactive='fa-question';

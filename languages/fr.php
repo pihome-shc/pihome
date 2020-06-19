@@ -366,4 +366,16 @@ $lang['notice_interval'] = "Intervalle de préavis";
 $lang['notice_interval_info'] = "Définir l'intervalle de préavis en minutes.";
 $lang['node_id'] = "ID de nœud";
 $lang['last_seen'] = "Dernière vue";
+
+$lang['confirmation'] = "Confirmation!";
+$lang['confirm_del_sensor'] = "Vous êtes sur le point de SUPPRIMER ces capteurs";
+$lang['confirm_del_controller'] = "Vous êtes sur le point de SUPPRIMER AUCUN contrôleur actif!";
+$lang['confirm_del_controller_use'] = "Vous êtes sur le point de SUPPRIMER un contrôleur ACTIVE pour ";
+$lang['confirm_del_controller_use2'] = "Vous êtes sur le point de SUPPRIMER un contrôleur ACTIVE";
+$lang['confirm_dell_active_zone_type'] = "Vous êtes sur le point de SUPPRIMER un type de zone en cours d'utilisation";
+$lang['confirm_dell_de_active_zone_type'] = "Vous êtes sur le point de SUPPRIMER un type de zone qui n'est PAS utilisé";
+$lang['confirm_dell_active_zone'] = "Vous êtes sur le point de SUPPRIMER une ZONE ACTIVE";
+$lang['confirm_dell_de_active_zone'] = "Vous êtes sur le point de SUPPRIMER UNE AUCUNE ZONE active
+
+";
 ?>

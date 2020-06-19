@@ -402,4 +402,14 @@ $lang['away_fail'] = "Away Table Default failed with error: ";
 $lang['holidays_success'] = "Holidays Table Default Added Successfully.";
 $lang['holidays_fail'] = "Holidays Table Default failed with error: ";
 
+$lang['confirmation'] = "Confirmation!";
+$lang['confirm_del_sensor'] = "You are about to DELETE this Sensors";
+$lang['confirm_del_controller'] = "You are about to DELETE a NONE active Controller!";
+$lang['confirm_del_controller_use'] = "You are about to DELETE an ACTIVE Controller for ";
+$lang['confirm_del_controller_use2'] = "You are about to DELETE an ACTIVE Controller";
+$lang['confirm_dell_active_zone_type'] = "You are about to DELETE a Zone Type Which Is In Use";
+$lang['confirm_dell_de_active_zone_type'] = "You are about to DELETE a Zone Type Which Is NOT In Use";
+$lang['confirm_dell_active_zone'] = "You are about to DELETE an ACTIVE ZONE";
+$lang['confirm_dell_de_active_zone'] = "You are about to DELETE a NONE active ZONE";
+
 ?>
