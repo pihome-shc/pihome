@@ -117,7 +117,7 @@ $boiler_node_id = $row['node_id'];
 $boiler_node_child_id = $row['node_child_id'];
 $boiler_hysteresis_time = $row['hysteresis_time'];
 $boiler_max_operation_time = $row['max_operation_time'];
-$boiler_overrun_time = -1;
+$boiler_overrun_time = 1;
 
 //Get data from nodes table
 $query = "SELECT * FROM nodes WHERE node_id ='$boiler_node_id' AND status IS NOT NULL LIMIT 1;";
