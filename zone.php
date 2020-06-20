@@ -298,7 +298,7 @@ function zone_category(value)
         switch (valuetext) {
                 case "0":
                         document.getElementById("max_c").style.display = 'block';
-                        document.getElementById("max_operation_time_label").style.visibility = 'visible';;
+                        document.getElementById("max_c_label").style.visibility = 'visible';;
                         document.getElementById("hysteresis_time").style.display = 'block';
                         document.getElementById("hysteresis_time_label").style.visibility = 'visible';;
                         document.getElementById("sp_deadband").style.display = 'block';
