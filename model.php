@@ -172,7 +172,7 @@ echo '
             </div>
             <div class="modal-body">
 <p class="text-muted">'.$lang['graph_settings_text'].'</p>';
-$query = "select * from zone_view where type = 'Heating' order by index_id asc";
+$query = "select * from zone_view where type = 'Heating'  OR category = 1 order by index_id asc";
 $results = $conn->query($query);
 echo '  <div class=\"list-group\">';
 while ($row = mysqli_fetch_assoc($results)) {

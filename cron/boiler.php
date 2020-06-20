@@ -698,9 +698,9 @@ while ($row = mysqli_fetch_assoc($results)) {
 
                                  //echo all zone and status
                                 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone ID: ".$zone_id." Status: ".$zone_status."\n";
-                                $zlquery = "INSERT INTO `zone_logs`(`sync`, `purge`, `zone_id`, `add_on_log_id`, `status`) VALUES ('0', '0', '{$zone_id}', '{$add_on_log_id}', '{$zone_status}');";
+                                $zlquery = "INSERT INTO `add_on_zone_logs`(`sync`, `purge`, `zone_id`, `add_on_log_id`, `status`) VALUES ('0', '0', '{$zone_id}', '{$add_on_log_id}', '{$zone_status}');";
                                 $zlresults = $conn->query($zlquery);
-                                if ($zlresults) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Log table updated successfully. \n";} else {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone log update failed... ".mysql_error(). " \n";}
+                                if ($zlresults) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Add-On Zone Log table updated successfully. \n";} else {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone log update failed... ".mysql_error(). " \n";}
                                 if ($result) {
                                         echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Add-On Log table added Successfully. \n";
                                 }else {
