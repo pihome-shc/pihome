@@ -213,7 +213,7 @@ if (isset($_POST['submit'])) {
 
 <!-- If the request is to EDIT, retrieve selected items from DB   -->
 <?php if ($id != 0) {
-	$query = "select * from zone where id = {$id} limit 1;";
+        $query = "select zone.*,zone_type.category from zone,zone_type where (zone.type = zone_type.type) and zone.id = {$id} limit 1;";
 	$result = $conn->query($query);
 	$row = mysqli_fetch_assoc($result);
 
@@ -274,8 +274,8 @@ $new_index_id = $found_product['index_id']+1;
 <div class="help-block with-errors"></div></div>
 
 <!-- Zone Type -->
-<input type="hidden" id="selected_zone_category" name="selected_zone_category" value="<?php echo $category?>"/>
-<input type="hidden" id="selected_zone_type" name="selected_zone_type" value="<?php echo $type?>"/>
+<input type="hidden" id="selected_zone_category" name="selected_zone_category" value="<?php if(isset($row['category'])) { echo $row['category']; } ?>"/>
+<input type="hidden" id="selected_zone_type" name="selected_zone_type" value="<?php if(isset($row['type'])) { echo $row['type']; } ?>"/>
 <div class="form-group" class="control-label"><label><?php echo $lang['zone_type']; ?></label> <small class="text-muted"><?php echo $lang['zone_type_info'];?></small>
 <select id="type" onchange=zone_category(this.options[this.selectedIndex].value) name="type" class="form-control select2" autocomplete="off" required>
 <?php if(isset($row['type'])) { echo '<option selected >'.$row['type'].'</option>'; } ?>
@@ -298,7 +298,7 @@ function zone_category(value)
         switch (valuetext) {
                 case "0":
                         document.getElementById("max_c").style.display = 'block';
-                        document.getElementById("max_operation_time_label").style.visibility = 'visible';;
+                        document.getElementById("max_c_label").style.visibility = 'visible';;
                         document.getElementById("hysteresis_time").style.display = 'block';
                         document.getElementById("hysteresis_time_label").style.visibility = 'visible';;
                         document.getElementById("sp_deadband").style.display = 'block';
@@ -379,10 +379,11 @@ function zone_category(value)
 <div class="form-group" class="control-label" id="sensor_id_label" style="display:block"><label><?php echo $lang['temp_sensor_id']; ?></label> <small class="text-muted"><?php echo $lang['zone_sensor_id_info'];?></small>
 <select id="sensor_id" onchange=SensorChildList(this.options[this.selectedIndex].value) name="sensor_id" class="form-control select2" data-error="<?php echo $lang['zone_temp_sensor_id_error']; ?>" autocomplete="off" required>
 <?php if(isset($rownode['node_id'])) { echo '<option selected >'.$rownode['node_id'].'</option>'; } ?>
-<?php  $query = "SELECT node_id, max_child_id FROM nodes where name = 'Temperature Sensor' ORDER BY node_id ASC;";
+<?php  $query = "SELECT node_id, name, max_child_id FROM nodes where name LIKE '%Sensor' ORDER BY node_id ASC;";
 $result = $conn->query($query);
 echo "<option></option>";
 while ($datarw=mysqli_fetch_array($result)) {
+        if(strpos($datarw['name'], 'Add-On') !== false) { $max_child_id = 0; } else { $max_child_id = $datarw['max_child_id']; }
 	echo "<option value=".$datarw['max_child_id'].">".$datarw['node_id']."</option>"; } ?>
 </select>
 <div class="help-block with-errors"></div></div>
@@ -425,7 +426,7 @@ for ($x = 0; $x <= $rownode['max_child_id']; $x++) {
 <div class="form-group" class="control-label"><label><?php echo $lang['zone_controller_id']; ?></label> <small class="text-muted"><?php echo $lang['zone_controler_id_info'];?></small>
 <select id="controler_id" onchange=ControlerChildList(this.options[this.selectedIndex].value) name="controler_id" class="form-control select2" data-error="<?php echo $lang['zone_controller_id_error']; ?>" autocomplete="off" required>
 <?php if(isset($rowcont['node_id'])) { echo '<option selected >'.$rowcont['type'].' - '.$rowcont['node_id'].'</option>'; } ?>
-<?php  $query = "SELECT node_id, type, max_child_id FROM nodes where name = 'Zone Controller Relay' OR name = 'Zone Controller' OR name = 'Relay Controller' OR name = 'GPIO Controller' OR name = 'I2C Controller' ORDER BY node_id ASC;";
+<?php  $query = "SELECT node_id, type, max_child_id FROM nodes where name LIKE '%Controller%'  ORDER BY node_id ASC;";
 $result = $conn->query($query);
 echo "<option></option>";
 while ($datarw=mysqli_fetch_array($result)) {
