@@ -383,6 +383,7 @@ function zone_category(value)
 $result = $conn->query($query);
 echo "<option></option>";
 while ($datarw=mysqli_fetch_array($result)) {
+        if(strpos($datarw['name'], 'Add-On') !== false) { $max_child_id = 0; } else { $max_child_id = $datarw['max_child_id']; }
 	echo "<option value=".$datarw['max_child_id'].">".$datarw['node_id']."</option>"; } ?>
 </select>
 <div class="help-block with-errors"></div></div>
