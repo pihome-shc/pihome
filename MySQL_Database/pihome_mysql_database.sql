@@ -43,6 +43,26 @@ CREATE TABLE IF NOT EXISTS `add_on_logs` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
+-- Dumping structure for table pihome.zone_logs
+DROP TABLE IF EXISTS `add_on_zone_logs`;
+CREATE TABLE IF NOT EXISTS `add_on_zone_logs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sync` tinyint(4) NOT NULL,
+  `purge` tinyint(4) NOT NULL COMMENT 'Mark For Deletion',
+  `zone_id` int(11),
+  `add_on_log_id` int(11),
+  `status` int(11),
+  PRIMARY KEY (`id`),
+  KEY `FK_add_on_zone_logs_zone` (`zone_id`),
+  KEY `FK_add_on_zone_logs_add_on_logs` (`add_on_log_id`),
+  CONSTRAINT `FK_add_on_zone_logs_add_on_logs` FOREIGN KEY (`add_on_log_id`) REFERENCES `add_on_logs` (`id`),
+  CONSTRAINT `FK_add_on_zone_logs_zone` FOREIGN KEY (`zone_id`) REFERENCES `zone` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+
+-- Dumping data for table pihome.zone_logs: ~0 rows (approximately)
+/*!40000 ALTER TABLE `add_on_zone_logs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `add_on_zone_logs` ENABLE KEYS */;
+
 -- Dumping structure for table pihome.away
 DROP TABLE IF EXISTS `away`;
 CREATE TABLE IF NOT EXISTS `away` (
@@ -681,7 +701,6 @@ CREATE TABLE IF NOT EXISTS `zone_logs` (
   `purge` tinyint(4) NOT NULL COMMENT 'Mark For Deletion',
   `zone_id` int(11),
   `boiler_log_id` int(11),
-  `add_on_log_id` int(11),
   `status` int(11),
   PRIMARY KEY (`id`),
   KEY `FK_zone_logs_zone` (`zone_id`),
