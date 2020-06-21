@@ -744,7 +744,7 @@ echo '
             </div>
             <div class="modal-body">
 <p class="text-muted"> '.$lang['temperature_sensor_text'].' </p>';
-$query = "SELECT * FROM nodes where name = 'Temperature Sensor' ORDER BY node_id asc;";
+$query = "SELECT * FROM nodes where name LIKE '%Sensor' ORDER BY node_id asc;";
 $results = $conn->query($query);
 echo '	<div class=\"list-group\">';
 while ($row = mysqli_fetch_assoc($results)) {
