@@ -128,7 +128,9 @@ require_once(__DIR__.'/st_inc/functions.php');
 			70 - override
 			80 - sheduled
 			90 - away
-			100 - hysteresis */
+			100 - hysteresis
+			110 - Add-On */
+			
 			$zone_mode_main=floor($zone_mode/10)*10;
 
 			//Zone sub mode - running/ stopped different types
