@@ -110,6 +110,8 @@ $lang['max_operation_time_info'] = "Continus Max Running Time of Boiler in minut
 $lang['boiler_info_text'] = "Boiler/Heat Shource Settings and how Boiler/Heat shource is intract with PiHome i.e Wirelss Controller or Connected to GPIO Pin";
 $lang['notice_interval'] = "Notice Interval";
 $lang['notice_interval_info'] = "Timeout for Boiler Controller in minutes Before Controller Marked Faulty";
+$lang['boiler_overrun'] = "Overrun";
+$lang['boiler_overrun_info'] = "Temps pour que la chaudière fasse circuler l'eau pour dissiper la chaleur résiduelle.";
 
 $lang['add_boost'] = "Add Boost";
 $lang['boost_time_info'] = "Maximum Boost Time in Minutes";

@@ -209,8 +209,8 @@ echo '
 				if ($ncount > 0){
 					$query = "SELECT * FROM boiler;";
 					$bresult = $conn->query($query);
-                                        $bcount = $bresult->num_rows;
-                                        if ($bcount > 0) { $brow = mysqli_fetch_array($bresult); }
+					$bcount = $bresult->num_rows;
+					if ($bcount > 0) { $brow = mysqli_fetch_array($bresult); }
 					echo '<p class="text-muted">'.$lang['boiler_info_text'].'</p>';
 
 					echo '
@@ -337,6 +337,26 @@ echo '
 	    					<div class="help-block with-errors">
 						</div>
 					</div>
+					
+					<div class="form-group" class="control-label"><label>'.$lang['boiler_overrun'].'</label> <small class="text-muted">'.$lang['boiler_overrun_info'].'</small>
+						<select class="form-control input-sm" type="text" id="overrun" name="overrun">
+						<option selected>'.$brow['overrun'].'</option>
+						<option value="0">0</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7">7</option>
+						<option value="8">8</option>
+						<option value="9">9</option>
+						</select>
+	    					<div class="help-block with-errors">
+						</div>
+					</div>
+					
+					
 					<!-- /.form-group -->
 					';
 				} else {

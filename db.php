@@ -470,6 +470,7 @@ if($what=="boiler_settings"){
 	$node_child_id = $_GET['node_child_id'];
 	$hysteresis_time = $_GET['hysteresis_time'];
 	$max_operation_time = $_GET['max_operation_time'];
+	$overrun = $_GET['overrun'];
 	if ($status=='true'){$status = '1';} else {$status = '0';}
 	
 	//Get id from nodes table
@@ -490,10 +491,10 @@ if($what=="boiler_settings"){
         $result = $conn->query($query);
         if (mysqli_num_rows($result)==0){
 		//No record in boiler table, so add
-		$query = "INSERT INTO `boiler` VALUES (1,0,0,1,1,'".$name."','".$row['id']."','".$node_child_id."','".$hysteresis_time."','".$max_operation_time."',now());";
+		$query = "INSERT INTO `boiler` VALUES (1,0,0,1,1,'".$name."','".$row['id']."','".$node_child_id."','".$hysteresis_time."','".$max_operation_time."','".$overrun."',now());";
 	} else {
 		//Update Boiler Setting 
-		$query = "UPDATE boiler SET status = '".$status."', name = '".$name."', node_id = '".$row['id']."', node_child_id = '".$node_child_id."', hysteresis_time = '".$hysteresis_time."', max_operation_time = '".$max_operation_time."' where ID = 1;";
+		$query = "UPDATE boiler SET status = '".$status."', name = '".$name."', node_id = '".$row['id']."', node_child_id = '".$node_child_id."', hysteresis_time = '".$hysteresis_time."', max_operation_time = '".$max_operation_time."', overrun = '".$overrun."' where ID = 1;";
 	}
 	if($conn->query($query)){
 		header('Content-type: application/json');

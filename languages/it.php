@@ -108,7 +108,8 @@ $lang['max_operation_time_info'] = "Tempo continuo Max di funzionamento della ca
 $lang['boiler_info_text'] = "Impostazioni caldaia e come la caldaia comunica con PiHome es. Controller Wirelss o connessa ai Pin Raspberry Pi GPIO.";
 $lang['notice_interval'] = "Intervallo notifica";
 $lang['notice_interval_info'] = "Timeout per controller caldaia, in minuti, prima di essere segnalato malfunzionamento.";
-
+$lang['boiler_overrun'] = "Overrun";
+$lang['boiler_overrun_info'] = "Tempo impiegato dalla caldaia per far circolare l'acqua per dissipare il calore residuo.";
 
 $lang['override'] = "Override";
 $lang['boost'] = "Boost";
