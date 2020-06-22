@@ -113,7 +113,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 			$temp_reading_time= $zone_current_state['sensor_reading_time'];
 
 			//query to get temperature from messages_in_view_24h table view
-			$query = "SELECT * FROM messages_in_view_24h WHERE node_id = '{$zone_sensor_id}' AND child_id = '{$zone_sensor_child_id}' ORDER BY datetime desc LIMIT 1;";
+                        $query = "SELECT * FROM messages_in WHERE node_id = '{$zone_sensor_id}' AND child_id = '{$zone_sensor_child_id}' ORDER BY id desc LIMIT 1;";
 			$result = $conn->query($query);
 			$sensor = mysqli_fetch_array($result);
 			$zone_c = $sensor['payload'];
