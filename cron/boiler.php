@@ -611,7 +611,8 @@ while ($row = mysqli_fetch_assoc($results)) {
                                 }
                         } // end process
                 } else {
-                        $zone_status="0";
+						$zone_status="0";
+						$zone_mode = 10;
                         $stop_cause="Zone fault";
                 }
 
