@@ -95,7 +95,7 @@ if (isset($_POST['submit'])) {
 	//check if Controller id already exist in message_out table
 	$query = "SELECT * FROM messages_out WHERE node_id = '{$controler}' AND child_id = '{$controler_child_id}' AND zone_id = '{$zone_id}' LIMIT 1;";
 	$result = $conn->query($query);
-	if ($result) {
+	if (!$result) {
 		//Add Zone to message out table at same time to send out instructions to controller for each zone.
 		if ($node_id !=0 OR $node_id !='0'){
 			$query = "INSERT INTO `messages_out` (`sync`, `purge`, `node_id`, `child_id`, `sub_type`, `ack`, `type`, `payload`, `sent`, `datetime`, `zone_id`) VALUES ('0', '0', '{$controler}','{$controler_child_id}', '1', '1', '2', '0', '0', '{$date_time}', '{$zone_id}');";
