@@ -153,10 +153,10 @@ require_once(__DIR__.'/st_inc/functions.php');
                         echo '<small class="statusdegree">' . $rval['target'] .'</small>';
                         //Right icon for what/why
                         echo '<small class="statuszoon"><i class="fa ' . $rval['shactive'] . ' ' . $rval['shcolor'] . ' fa-fw"></i></small>';
-			//Overrun Icon
-			if($overrun == 1) {
-				echo '<small class="statuszoon"><i class="fa ion-ios-play-outline orange fa-fw"></i></small>';
-			}						
+                        //Overrun Icon
+                        if($overrun == 1) {
+                            echo '<small class="statuszoon"><i class="fa ion-ios-play-outline orange fa-fw"></i></small>';
+                        }						
 			echo '</h3></button>';      //close out status and button
 
 			//Zone Schedule listing model
