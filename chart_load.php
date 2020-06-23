@@ -204,7 +204,7 @@ var options_two = {
 };
 
 $(document).ready(function () {
-	$.plot($("#graph1"), wdataset, options_two);
+	$.plot($("#graph2"), wdataset, options_two);
     $("#graph2").UseTooltip();
 });
 </script>	
