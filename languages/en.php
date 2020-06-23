@@ -90,7 +90,8 @@ $lang['max_operation_time_info'] = "Continuous Max Running Time of Boiler in min
 $lang['boiler_info_text'] = "Boiler Settings and how Boiler interact with PiHome i.e Wirelss Controller or Connected to your Raspberry Pi GPIO Pin.";
 $lang['notice_interval'] = "Notice Interval";
 $lang['notice_interval_info'] = "Timeout for Boiler Controller in minutes Before Controller Marked Faulty.";
-
+$lang['boiler_overrun'] = "Overrun";
+$lang['boiler_overrun_info'] = "Time for boiler to circulate the water to dissipate residual heat.";
 
 $lang['override'] = "Override";
 $lang['boost'] = "Boost";
