@@ -341,7 +341,8 @@ echo '
 					<div class="form-group" class="control-label"><label>'.$lang['boiler_overrun'].'</label> <small class="text-muted">'.$lang['boiler_overrun_info'].'</small>
 						<select class="form-control input-sm" type="text" id="overrun" name="overrun">
 						<option selected>'.$brow['overrun'].'</option>
-						<option value="0">0</option>
+						<option value="-1">Keep valve open until next boiler start</option>
+						<option value="0">Disable</option>
 						<option value="1">1</option>
 						<option value="2">2</option>
 						<option value="3">3</option>
