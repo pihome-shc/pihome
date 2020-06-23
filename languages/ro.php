@@ -90,7 +90,8 @@ $lang['max_operation_time_info'] = "Durata maximă de funcționare continuă a c
 $lang['boiler_info_text'] = "Setări ale centralei și modul în care centrala interacționează cu PiHome Ex: Controlerul Wireless sau conectat la Raspberry Pi GPIO.";
 $lang['notice_interval'] = "Interval de notificare";
 $lang['notice_interval_info'] = "Perioada inactivă (în minute) pentru controlerul centralei înainte ca acesta să fie marcat ca defect.";
-
+$lang['boiler_overrun'] = "Overrun";
+$lang['boiler_overrun_info'] = "Timpul cazanului să circule cu apa pentru a disipa căldura reziduală.";
 
 $lang['override'] = "Suprascriere";
 $lang['boost'] = "Stimulare";

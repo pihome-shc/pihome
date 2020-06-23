@@ -162,6 +162,7 @@ var idata="w=boiler_settings&o=update&status="+document.getElementById("checkbox
 	idata+="&node_child_id="+document.getElementById("node_child_id").value;
 	idata+="&hysteresis_time="+document.getElementById("hysteresis_time").value;
 	idata+="&max_operation_time="+document.getElementById("max_operation_time").value;
+	idata+="&overrun="+document.getElementById("overrun").value;
     idata+="&wid=0";
     $.get('db.php',idata)
     .done(function(odata){

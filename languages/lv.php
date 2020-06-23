@@ -91,7 +91,8 @@ $lang['max_operation_time_info'] = "Nepārtraukts katla maksimālais darbības l
 $lang['boiler_info_text'] = "Katla iestatījumi un tas, kā katls mijiedarbojas ar PiHome, piem., vai bezvadu kontrolieris savienots ar jūsu Raspberry Pi GPIO Pin.";
 $lang['notice_interval'] = "Paziņojuma intervāls";
 $lang['notice_interval_info'] = "Apkures katla regulatora noilgums minūtēs pirms kontrolieris atzīmēs kļūdu.";
-
+$lang['boiler_overrun'] = "Overrun";
+$lang['boiler_overrun_info'] = "Laiks katlam cirkulēt ūdenī, lai izkliedētu atlikušo siltumu.";
 
 $lang['override'] = "Ignorēt";
 $lang['boost'] = "Uzsildīšana";

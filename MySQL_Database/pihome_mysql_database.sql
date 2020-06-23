@@ -94,6 +94,7 @@ CREATE TABLE IF NOT EXISTS `boiler` (
   `node_child_id` int(11),
   `hysteresis_time` tinyint(4),
   `max_operation_time` tinyint(4),
+  `overrun` SMALLINT(6) NULL DEFAULT NULL,
   `datetime` timestamp NULL ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `FK_boiler_zone` (`node_id`),
