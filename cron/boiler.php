@@ -11,11 +11,11 @@ echo "  |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___| \n";
 echo " \033[0m \n";
 echo "     \033[45m S M A R T   H E A T I N G   C O N T R O L \033[0m \n";
 echo "\033[31m";
-echo "*******************************************************\n";
+echo "**********************************************************\n";
 echo "*   Boiler-On Script Version 0.53 Build Date 31/01/2018  *\n";
-echo "*   Update on 10/07/2019                              *\n";
-echo "*                                Have Fun - PiHome.eu *\n";
-echo "*******************************************************\n";
+echo "*   Update on 22/06/2020                                 *\n";
+echo "*                                Have Fun - PiHome.eu    *\n";
+echo "**********************************************************\n";
 echo " \033[0m \n";
 
 require_once(__DIR__.'../../st_inc/connection.php');
@@ -31,27 +31,27 @@ $relay_off = '1'; // GPIO value to write to turn off attached relay
 
 //Function to recursively check homebridge config.json
 function scanArrayRecursively($arr, $index) {
-    if ($arr) {
-        foreach ($arr as $key => $value) {
-            if (is_array($value)) {
-                scanArrayRecursively($value, $index);
-            } else {
-                if ($index == 'id') { // checking for [id] keys in config.json
-                    if ($key == $index) {
-                        if (strpos($value, 'switch') !== false) {
-                            array_push($GLOBALS['switches'], substr($value, 6));
-                        } elseif (strpos($value, 'sensor') !== false) {
-                            array_push($GLOBALS['sensors'], substr($value, 6));
-                        }
-                    }
-              } elseif ($index == 'platform') { // checking for [platform] keys in config.json
-                    if ($key == $index) {
-                        if (strpos($value, 'HttpWebHooks') !== false) { $GLOBALS['platform'] = 1; return; }
-                    }
-                }
-            }
-        }
-    }
+	if ($arr) {
+		foreach ($arr as $key => $value) {
+			if (is_array($value)) {
+				scanArrayRecursively($value, $index);
+			} else {
+				if ($index == 'id') { // checking for [id] keys in config.json
+					if ($key == $index) {
+						if (strpos($value, 'switch') !== false) {
+							array_push($GLOBALS['switches'], substr($value, 6));
+						} elseif (strpos($value, 'sensor') !== false) {
+							array_push($GLOBALS['sensors'], substr($value, 6));
+						}
+					}
+				} elseif ($index == 'platform') { // checking for [platform] keys in config.json
+					if ($key == $index) {
+						if (strpos($value, 'HttpWebHooks') !== false) { $GLOBALS['platform'] = 1; return; }
+					}
+				}
+			}
+		}
+	}
 }
 
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Script Started \n";
@@ -63,39 +63,40 @@ $platform = 0; // flag to indicate if webhooks plugin is present
 //check if homebridge service is running
 $rval=my_exec("/bin/systemctl status homebridge");
 if($rval['stdout']=='') {
-            $stat='Error';
+	$stat='Error';
 } else {
-        $stat='Status: Unknown';
-        $rval['stdout']=explode(PHP_EOL,$rval['stdout']);
-        foreach($rval['stdout'] as $line) {
-                if(strstr($line,'Loaded:')) {
-                        if(strstr($line,'disabled;')) {
-                                $stat='Status: Disabled';
-                        }
-                }
-                if(strstr($line,'Active:')) {
-                        if(strstr($line,'active (running)')) {
-                                $stat=trim($line);
-                                // homebridge service is running so check if config.json file exists
+	$stat='Status: Unknown';
+	$rval['stdout']=explode(PHP_EOL,$rval['stdout']);
+	foreach($rval['stdout'] as $line) {
+		if(strstr($line,'Loaded:')) {
+			if(strstr($line,'disabled;')) {
+				$stat='Status: Disabled';
+			}
+		}
+		if(strstr($line,'Active:')) {
+			if(strstr($line,'active (running)')) {
+				$stat=trim($line);
+				// homebridge service is running so check if config.json file exists
 				$path = exec('find /usr/ -name homebridge-http-webhooks'); // path to webhooks directory
 				$filename = '/var/lib/homebridge/config.json'; // path to config.json
 				if (file_exists($filename) and file_exists($path)) {
-                                        $string = file_get_contents($filename);
-                                        $json_data = json_decode($string, true);
-                                        // check if webhooks platform section is present in config.json
-                                        scanArrayRecursively($json_data, 'platform');
-                                        if ($platform  == 1) {
-                                                // webhooks plugin present so get zone ids for both switches and sensors in to arrarys
-                                                scanArrayRecursively($json_data, 'id');
-                                        }
-                                }
-                        } else if(strstr($line,'(dead)')) {
-                                $stat='Status: Dead';
-                        }
-                }
-        }
+					$string = file_get_contents($filename);
+					$json_data = json_decode($string, true);
+					// check if webhooks platform section is present in config.json
+					scanArrayRecursively($json_data, 'platform');
+					if ($platform  == 1) {
+						// webhooks plugin present so get zone ids for both switches and sensors in to arrarys
+						scanArrayRecursively($json_data, 'id');
+					}
+				}
+			} else if(strstr($line,'(dead)')) {
+				$stat='Status: Dead';
+			}
+		}
+	}
 }
-
+//Only for debouging
+/*
 $query = "select zone.id as tz_id, zone.name, zone.status as tz_status, zone.type, zone_type.category FROM zone, zone_type WHERE zone.type = zone_type.type AND status = 1 AND `purge`= 0 ORDER BY index_id asc; ";
 $results = $conn->query($query);
 while ($row = mysqli_fetch_assoc($results)) {
@@ -106,6 +107,7 @@ while ($row = mysqli_fetch_assoc($results)) {
     echo "Category ".$row['category']."\n";
     if ($row["category"] == 1 OR $row["category"] == 2) { echo "Found\n"; }
 }
+*/
 //query to check boiler status
 $query = "SELECT * FROM boiler_view LIMIT 1;";
 $result = $conn->query($query);
@@ -147,10 +149,10 @@ if ($rowcount > 0) {
 $query = "SELECT * FROM frost_protection ORDER BY id desc LIMIT 1;";
 $result = $conn->query($query);
 if (mysqli_num_rows($result)==0){
-        //No record in frost_protction table, so add
-        $frost_c = 5;
-        $query = "INSERT INTO frost_protection VALUES(1, 0, 0, '{$date_time}', '" . number_format($frost_c,1) . "');";
-        $conn->query($query);
+	//No record in frost_protction table, so add
+	$frost_c = 5;
+	$query = "INSERT INTO frost_protection VALUES(1, 0, 0, '{$date_time}', '" . number_format($frost_c,1) . "');";
+	$conn->query($query);
 } else {
 	$frost_q = mysqli_fetch_array($result);
 	$frost_c = $frost_q['temperature'];
@@ -164,7 +166,6 @@ $boiler_start_datetime = $row['start_datetime'];
 $boiler_stop_datetime = $row['stop_datetime'];
 $boiler_expoff_datetime = $row['expected_end_date_time'];
 
-echo "---------------------------------------------------------------------------------------- \n";
 //following variable set to 0 on start for array index.
 $boiler_index = '0';
 $zone_index = '0';
@@ -175,15 +176,16 @@ $current_time = date('H:i:s');
 $dow = idate('w');
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Day of the Week: \033[41m".$dow. "\033[0m \n";
 //echo $dow."\n";
+echo "---------------------------------------------------------------------------------------- \n";
 $query = "SELECT * FROM zone_view where status = 1 order by index_id asc;";
 $results = $conn->query($query);
 while ($row = mysqli_fetch_assoc($results)) {
 	$zone_status=$row['status'];
-        $zone_active_status = $row['zone_status'];
+	$zone_active_status = $row['zone_status'];
 	$zone_id=$row['id'];
 	$zone_name=$row['name'];
 	$zone_type=$row['type'];
-        $zone_category=$row['category'];
+	$zone_category=$row['category'];
 	$zone_max_c=$row['max_c'];
 	$zone_max_operation_time=$row['max_operation_time'];
 	$zone_hysteresis_time=$row['hysteresis_time'];
@@ -194,15 +196,15 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$zone_controler_id=$row['controler_id'];
 	$zone_controler_child_id=$row['controler_child_id'];
 
-
 	//query to check if zone_current_state record exists tor the zone
 	$query = "SELECT * FROM zone_current_state WHERE id = {$zone_id} LIMIT 1;";
 	$result = $conn->query($query);
 	if (mysqli_num_rows($result)==0){
-	        //No record in zone_current_statw table, so add
-        	$query = "INSERT INTO zone_current_state VALUES({$zone_id}, 0, 0, 0, 0, 0, 0, 0,NULL ,0 ,NULL, NULL, 0 );";
-	        $conn->query($query);
+		//No record in zone_current_statw table, so add
+		$query = "INSERT INTO zone_current_state VALUES({$zone_id}, 0, 0, 0, 0, 0, 0, 0,NULL ,0 ,NULL, NULL, 0 );";
+		$conn->query($query);
 	}
+	
 	//query to get zone previous running status
 	$query = "SELECT * FROM zone_current_state WHERE id = '{$zone_id}' LIMIT 1;";
 	$result = $conn->query($query);
@@ -254,35 +256,32 @@ while ($row = mysqli_fetch_assoc($results)) {
 			$sch_c = $schedule['temperature'];
 			$sch_coop = $schedule['coop'];
 
-
 			if ($schedule['holidays_id']>0) {
 				$sch_holidays = '1';
 			}else{
 				$sch_holidays = '0';
 			}
 		}
-
-                //Calculate zone fail
-                $zone_fault = 0;
+		//Calculate zone fail
+		$zone_fault = 0;
 		$zone_ctr_fault = 0;
 		$zone_sensor_fault = 0;
-                //Get data from nodes table
-                $query = "SELECT * FROM nodes WHERE node_id ='$zone_controler_id' AND status IS NOT NULL LIMIT 1;";
-                $result = $conn->query($query);
-                $controler_node = mysqli_fetch_array($result);
-                $controler_seen = $controler_node['last_seen'];
-                $controler_notice = $controler_node['notice_interval'];
-
-                if($controler_notice > 0){
-                        $now=strtotime(date('Y-m-d H:i:s'));
-                        $controler_seen_time = strtotime($controler_seen);
-                        if ($controler_seen_time  < ($now - ($controler_notice*60))){
-                                $zone_fault = 1;
+		//Get data from nodes table
+		$query = "SELECT * FROM nodes WHERE node_id ='$zone_controler_id' AND status IS NOT NULL LIMIT 1;";
+		$result = $conn->query($query);
+		$controler_node = mysqli_fetch_array($result);
+		$controler_seen = $controler_node['last_seen'];
+		$controler_notice = $controler_node['notice_interval'];
+		if($controler_notice > 0){
+			$now=strtotime(date('Y-m-d H:i:s'));
+			$controler_seen_time = strtotime($controler_seen);
+			if ($controler_seen_time  < ($now - ($controler_notice*60))){
+				$zone_fault = 1;
 				$zone_ctr_fault = 1;
-                                echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone valve communication timeout for This Zone. Node Last Seen: ".$controler_seen."\n";
-                        }
-                }
-
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone valve communication timeout for This Zone. Node Last Seen: ".$controler_seen."\n";
+			}
+		}
+		//Check Zone category 0 or 1
 		if ($zone_category == 0 OR $zone_category == 1) {
 			//query to check override status and get temperature from override table
 			$query = "SELECT * FROM override WHERE zone_id = {$zone_id} LIMIT 1;";
@@ -377,7 +376,6 @@ while ($row = mysqli_fetch_assoc($results)) {
 			$weather_fact = 0;
 			if ($weather_c <= 5 ) {$weather_fact = 0.3;} elseif ($weather_c <= 10 ) {$weather_fact = 0.4;} elseif ($weather_c <= 15 ) {$weather_fact = 0.5;} elseif ($weather_c <= 20 ) {$weather_fact = 0.6;} elseif ($weather_c <= 30 ) {$weather_fact = 0.7;}
 
-
 			//Following line to decide which temperature is target temperature
 			if ($boost_active=='1'){$target_c=$boost_c;} elseif ($night_climate_status =='1') {$target_c=$nc_min_c;} elseif($override_status=='1'){$target_c=$override_c;} elseif($override_status=='0'){$target_c=$sch_c;}
 
@@ -397,47 +395,49 @@ while ($row = mysqli_fetch_assoc($results)) {
 				}else{$hysteresis='0';}
 			}
 
-			//Get data from nodes table
+			//Check sensor notice interval and notice logic
 			$query = "SELECT * FROM nodes WHERE node_id ='$zone_sensor_id' AND status IS NOT NULL LIMIT 1;";
 			$result = $conn->query($query);
 			$sensor_node = mysqli_fetch_array($result);
 			$sensor_seen = $sensor_node['last_seen']; //not using this cause it updates on battery update
 			$sensor_notice = $sensor_node['notice_interval'];
-
-	                if($sensor_notice > 0) {
-        	                $now=strtotime(date('Y-m-d H:i:s'));
-                	        $sensor_seen_time = strtotime($temp_reading_time); //using time from messages_in
-                        	if ($sensor_seen_time  < ($now - ($sensor_notice*60))){
-                                	$zone_fault = 1;
+			if($sensor_notice > 0) {
+				$now=strtotime(date('Y-m-d H:i:s'));
+				$sensor_seen_time = strtotime($temp_reading_time); //using time from messages_in
+				if ($sensor_seen_time  < ($now - ($sensor_notice*60))){
+					$zone_fault = 1;
 					$zone_sensor_fault = 1;  
 					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Temperature sensor communication timeout for This Zone. Last temperature reading: ".$temp_reading_time."\n";
-        	                }
-                	}
-	                if($boiler_notice > 0){
-        	                $now=strtotime(date('Y-m-d H:i:s'));
-                	        $boiler_seen_time = strtotime($boiler_seen);
-                        	if ($boiler_seen_time  < ($now - ($boiler_notice*60))){
-                                	$zone_fault = 1;
-	                                echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler controler communication timeout. Boiler Last Seen: ".$boiler_seen."\n";
-        	                }
-                	}
-		} // end if
+				}
+			}
+			
+			//Check boiler controller notice interval and notice logic
+			if($boiler_notice > 0){
+				$now=strtotime(date('Y-m-d H:i:s'));
+				$boiler_seen_time = strtotime($boiler_seen);
+				if ($boiler_seen_time  < ($now - ($boiler_notice*60))){
+					$zone_fault = 1;
+					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler controler communication timeout. Boiler Last Seen: ".$boiler_seen."\n";
+				}
+			}
+		// end Check Zone category 0 or 1
+		} 
 
-                // check if webhooks plugin installed and if a switch is configured for this zone
-                if ($platform == 1 and in_array($row['id'], $switches)) {
-                        if (strcasecmp($boost_active,'1') == 0) {$boost_state = 'true';} else {$boost_state = 'false';}
-                        // get the current state of the switch
-                        $url = "http://127.0.0.1:51828/?accessoryId=switch" . $row['id'];
-                        $contents = file_get_contents($url);
-                        $contents = utf8_encode($contents);
-                        $resp = json_decode($contents, true);
-                        if ($resp['state']) {$state = 'true';} else {$state = 'false';}
-                        // update if the states do not match
-                        if ($state !=  $boost_state) {
-                                $url = $url . "&state=" . $boost_state;
-                                $contents = file_get_contents($url);
-                        }
-                }
+		// check if webhooks plugin installed and if a switch is configured for this zone
+		if ($platform == 1 and in_array($row['id'], $switches)) {
+			if (strcasecmp($boost_active,'1') == 0) {$boost_state = 'true';} else {$boost_state = 'false';}
+			// get the current state of the switch
+			$url = "http://127.0.0.1:51828/?accessoryId=switch" . $row['id'];
+			$contents = file_get_contents($url);
+			$contents = utf8_encode($contents);
+			$resp = json_decode($contents, true);
+			if ($resp['state']) {$state = 'true';} else {$state = 'false';}
+			// update if the states do not match
+			if ($state !=  $boost_state) {
+				$url = $url . "&state=" . $boost_state;
+				$contents = file_get_contents($url);
+			}
+		}
 
 		//initialize two variable
 		$start_cause ='';
@@ -455,8 +455,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 					$zone_mode = 22 - $zone_status_prev;
 					$start_cause="Frost Protection Deadband";
 					$stop_cause="Frost Protection Deadband";
-				}
-				elseif(($zone_c >= $frost_c) && ($zone_c < $zone_max_c) && ($hysteresis=='0')){
+				}elseif(($zone_c >= $frost_c) && ($zone_c < $zone_max_c) && ($hysteresis=='0')){
 					if ($away_status=='0'){
 						if (($holidays_status=='0') || ($sch_holidays=='1')) {
 							if($boost_status=='0'){
@@ -564,56 +563,57 @@ while ($row = mysqli_fetch_assoc($results)) {
 					$zone_mode = 100;
 					$stop_cause="Hysteresis active ";
 				}
-                       	} else { // end process Zone Category 0 and 1
-                                // process Zone Category 2
-                                if ($away_status=='0'){
-                                        if (($holidays_status=='0') || ($sch_holidays=='1')) {
-                                                if($boost_status=='0'){
-                                                        $zone_status="0";
-                                                        $stop_cause="Boost Finished";
-                                                        if ($sch_status =='1') {
-                                                                $zone_status="1";
-                                                                $zone_mode = 114;
-                                                                $start_cause="Schedule Started";
-                                                                $expected_end_date_time=date('Y-m-d '.$sch_end_time.'');
-                                                                if ($zone_active_status == '1') {
-                                                                        $stop_cause="Manual Stop";
-                                                                        $zone_status_prev = '0';
-                                                                        $query = "UPDATE zone SET sync = '0', zone_status = '0' WHERE id = '{$zone_id}' LIMIT 1";
-                                                                        $conn->query($query);
-                                                                }
-                                                        }
-                                                        if ($zone_active_status =='1') {
-                                                                $zone_status="1";
+			} else { // end process Zone Category 0 and 1
+				// process Zone Category 2
+				if ($away_status=='0'){
+					if (($holidays_status=='0') || ($sch_holidays=='1')) {
+						if($boost_status=='0'){
+							$zone_status="0";
+							$stop_cause="Boost Finished";
+							if ($sch_status =='1') {
+								$zone_status="1";
+								$zone_mode = 114;
+								$start_cause="Schedule Started";
+								$expected_end_date_time=date('Y-m-d '.$sch_end_time.'');
+								if ($zone_active_status == '1') {
+									$stop_cause="Manual Stop";
+									$zone_status_prev = '0';
+									$query = "UPDATE zone SET sync = '0', zone_status = '0' WHERE id = '{$zone_id}' LIMIT 1";
+									$conn->query($query);
+								}
+							}
+							if ($zone_active_status =='1') {
+								$zone_status="1";
 								$zone_mode = 111;
-                                                                $start_cause="Manual Start";
-                                                        }
-                                                } elseif ($boost_status=='1') {
-                                                        $zone_status="1";
-                                                        $zone_mode = 61;
-                                                        $start_cause="Boost Active";
-                                                        $expected_end_date_time=date('Y-m-d H:i:s', $boost_time);
-                                                }
-                                        } elseif (($holidays_status=='1') && ($sch_holidays=='0')){
-                                                $zone_status="0";
-                                                $zone_mode = 40;
-                                                $stop_cause="Holiday Active";
-                                        }
-                                        if ($sch_status=='0' && $zone_active_status=='0') {
-                                                $zone_status="0";
-                                                $zone_mode = 0;
-                                                $stop_cause="No Schedule";
-                                        }
-                                } elseif ($away_status=='1'){
-                                        $zone_status="0";
-                                        $zone_mode = 90;
-                                        $stop_cause="Away Active";
-                                }
-                        } // end process
-                } else {
-                        $zone_status="0";
-                        $stop_cause="Zone fault";
-                }
+								$start_cause="Manual Start";
+							}
+						} elseif ($boost_status=='1') {
+							$zone_status="1";
+							$zone_mode = 61;
+							$start_cause="Boost Active";
+							$expected_end_date_time=date('Y-m-d H:i:s', $boost_time);
+						}
+					} elseif (($holidays_status=='1') && ($sch_holidays=='0')){
+						$zone_status="0";
+						$zone_mode = 40;
+						$stop_cause="Holiday Active";
+					}
+					if ($sch_status=='0' && $zone_active_status=='0') {
+						$zone_status="0";
+						$zone_mode = 0;
+						$stop_cause="No Schedule";
+					}
+				} elseif ($away_status=='1'){
+					$zone_status="0";
+					$zone_mode = 90;
+					$stop_cause="Away Active";
+				}
+			} // end process
+		} else {
+			$zone_status="0";
+			$zone_mode = 10;
+			$stop_cause="Zone fault";
+		}
 
 		//Update temperature values fore zone current status table (frost protection and overtemperature)
 		if (floor($zone_mode/10) == 2 ) { $target_c= $frost_c;$temp_cut_in = $frost_c-$zone_sp_deadband; $temp_cut_out = $frost_c;}
@@ -621,13 +621,9 @@ while ($row = mysqli_fetch_assoc($results)) {
 		//reset if temperature control is not active
 		if ((floor($zone_mode/10) == 0 ) || (floor($zone_mode/10) == 1 ) || (floor($zone_mode/10) == 4 ) || (floor($zone_mode/10) == 9 )||(floor($zone_mode/10) == 10 ))  { $target_c= 0;$temp_cut_in = 0; $temp_cut_out = 0;}
 
-
-
-
 		//***************************************************************************************
 		//update zone_current_state table
 		//***************************************************************************************
-
 		//Zone Main Mode
 		/*	0 - idle
 			10 - fault
@@ -651,8 +647,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 		$query = "UPDATE zone_current_state SET mode = {$zone_mode}, status = {$zone_status}, temp_reading = '{$zone_c}', temp_target = {$target_c},temp_cut_in = {$temp_cut_in}, temp_cut_out = {$temp_cut_out}, controler_fault = {$zone_ctr_fault}, controler_seen_time = '{$controler_seen}', sensor_fault  = {$zone_sensor_fault}, sensor_seen_time = '{$sensor_seen}', sensor_reading_time = '{$temp_reading_time}' WHERE id ={$zone_id} LIMIT 1;";
 		$conn->query($query);
 
-
-                if ($zone_category == 0 OR $zone_category == 1) {
+		if ($zone_category == 0 OR $zone_category == 1) {
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: Sensor Reading     \033[41m".$zone_c."\033[0m \n";
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: Weather Factor     \033[41m".$weather_fact."\033[0m \n";
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: DeadBand           \033[41m".$zone_sp_deadband."\033[0m \n";
@@ -667,178 +662,142 @@ while ($row = mysqli_fetch_assoc($results)) {
 			if ($zone_status=='0') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Stop Cause: ".$stop_cause." - Target C:\033[41m".$target_c."\033[0m Zone C:\033[31m".$zone_c."\033[0m \n";}
 		} else {
 			if ($zone_status=='1') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Start Cause: ".$start_cause."\033[0m \n";}
-			if ($zone_status=='0') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Stop Cause: ".$stop_cause."\033[0m \n";}		}
+			if ($zone_status=='0') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Stop Cause: ".$stop_cause."\033[0m \n";}
+		}
 
 		//Pass data to zone commands loop
 		$zone_commands[$command_index] = (array('zone_id' =>$zone_id, 'zone_category' =>$zone_category, 'zone_controler_id' =>$zone_controler_id, 'zone_controler_child_id' =>$zone_controler_child_id, 'zone_status'=>$zone_status, 'zone_status_prev'=>$zone_status_prev, 'zone_overrun_prev'=>$zone_overrun_prev));
 		$command_index = $command_index+1;
-
-
-
-                //process Zone Cat 0 logs
-                if ($zone_category == 0){
-                        //all zone status to boiler array and increment array index
-                        $boiler[$boiler_index] = $zone_status;
-                        $boiler_index = $boiler_index+1;
-                        //all zone ids and status to multidimensional Array. and increment array index.
-                        $zone_log[$zone_index] = (array('zone_id' =>$zone_id, 'status'=>$zone_status));
-                        $zone_index = $zone_index+1;
-		//process Zone Cat 1 and 2 logs
+		//process Zone Cat 0 logs
+		if ($zone_category == 0){
+			//all zone status to boiler array and increment array index
+			$boiler[$boiler_index] = $zone_status;
+			$boiler_index = $boiler_index+1;
+			//all zone ids and status to multidimensional Array. and increment array index.
+			$zone_log[$zone_index] = (array('zone_id' =>$zone_id, 'status'=>$zone_status));
+			$zone_index = $zone_index+1;
+			//process Zone Cat 1 and 2 logs
 		} else {
-                        // Process Logs Category 1 and 2 logs if zone status has changed
-                        // zone switching ON
-                        if($zone_status_prev == '0' &&  ($zone_status == '1' || $zone_active_status  == '1')) {
+			// Process Logs Category 1 and 2 logs if zone status has changed
+			// zone switching ON
+			if($zone_status_prev == '0' &&  ($zone_status == '1' || $zone_active_status  == '1')) {
 				if($zone_mode == '111') {
-                                	$aoquery = "INSERT INTO `add_on_logs`(`sync`, `purge`, `start_datetime`, `start_cause`, `stop_datetime`, `stop_cause`, `expected_end_date_time`) VALUES ('0', '0', '{$date_time}', '{$start_cause}', NULL, NULL, NULL);";
+					$aoquery = "INSERT INTO `add_on_logs`(`sync`, `purge`, `start_datetime`, `start_cause`, `stop_datetime`, `stop_cause`, `expected_end_date_time`) VALUES ('0', '0', '{$date_time}', '{$start_cause}', NULL, NULL, NULL);";
 				} else {
 					$aoquery = "INSERT INTO `add_on_logs`(`sync`, `purge`, `start_datetime`, `start_cause`, `stop_datetime`, `stop_cause`, `expected_end_date_time`) VALUES ('0', '0', '{$date_time}', '{$start_cause}', NULL, NULL,'{$expected_end_date_time}');";
 				}
-                                $result = $conn->query($aoquery);
-                                $add_on_log_id = mysqli_insert_id($conn);
-
-                                 //echo all zone and status
-                                echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone ID: ".$zone_id." Status: ".$zone_status."\n";
-                                $zlquery = "INSERT INTO `add_on_zone_logs`(`sync`, `purge`, `zone_id`, `add_on_log_id`, `status`) VALUES ('0', '0', '{$zone_id}', '{$add_on_log_id}', '{$zone_status}');";
-                                $zlresults = $conn->query($zlquery);
-                                if ($zlresults) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Add-On Zone Log table updated successfully. \n";} else {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone log update failed... ".mysql_error(). " \n";}
-                                if ($result) {
-                                        echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Add-On Log table added Successfully. \n";
-                                }else {
-                                        echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Add-On Log table addition failed. \n";
-                                }
-                        // zone switching OFF
-                        } elseif ($zone_status_prev == '1' &&  $zone_status == '0') {
-                                $query = "UPDATE add_on_logs SET stop_datetime = '{$date_time}', stop_cause = '{$stop_cause}' ORDER BY id DESC LIMIT 1";
-                                $result = $conn->query($query);
-                                if ($result) {
-                                        echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Add-On Log table updated Successfully. \n";
-                                }else {
-                                        echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Add-On Log table update failed. \n";
-                                }
-                        }
-                } //end process Zone Cat 1 and 2 logs
-
+				$result = $conn->query($aoquery);
+				$add_on_log_id = mysqli_insert_id($conn);
+				
+				//echo all zone and status
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone ID: ".$zone_id." Status: ".$zone_status."\n";
+				$zlquery = "INSERT INTO `add_on_zone_logs`(`sync`, `purge`, `zone_id`, `add_on_log_id`, `status`) VALUES ('0', '0', '{$zone_id}', '{$add_on_log_id}', '{$zone_status}');";
+				$zlresults = $conn->query($zlquery);
+				if ($zlresults) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Add-On Zone Log table updated successfully. \n";} else {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone log update failed... ".mysql_error(). " \n";}
+				if ($result) {
+					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Add-On Log table added Successfully. \n";
+				}else {
+					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Add-On Log table addition failed. \n";
+				}
+			// zone switching OFF
+			} elseif ($zone_status_prev == '1' &&  $zone_status == '0') {
+				$query = "UPDATE add_on_logs SET stop_datetime = '{$date_time}', stop_cause = '{$stop_cause}' ORDER BY id DESC LIMIT 1";
+				$result = $conn->query($query);
+				if ($result) {
+					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Add-On Log table updated Successfully. \n";
+				}else {
+					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Add-On Log table update failed. \n";
+				}
+			}
+		} //end process Zone Cat 1 and 2 logs
 		echo "---------------------------------------------------------------------------------------- \n";
 	} //end if($zone_status == 1)
 } //end of while loop
 
-
-
 //***************************************************************************************
 //Zone Commands loop
 //***************************************************************************************
-
 for ($row = 0; $row < count($zone_commands); $row++){
-
-		$zone_id = $zone_commands[$row]["zone_id"];
-		$zone_category = $zone_commands[$row]["zone_category"];
-	    $zone_controler_id = $zone_commands[$row]["zone_controler_id"];
-		$zone_controler_child_id = $zone_commands[$row]["zone_controler_child_id"];
-		$zone_status = $zone_commands[$row]["zone_status"];
-		$zone_status_prev = $zone_commands[$row]["zone_status_prev"];
-		$zone_overrun_prev = $zone_commands[$row]["zone_overrun_prev"];
-
-		//Zone category 0 and boiler is not requested calculate if overrun needed
-		if($zone_category==0 && !in_array("1", $boiler)) {
-			
-			//overrun time <0 - latch overrun for the zone zone untill next boiler start
-			if($boiler_overrun_time < 0){
-				$zone_overrun = (($zone_status_prev == 1)||($zone_overrun_prev == 1)) ? 1:0;
-
-			// overrun time = 0 - overrun not needed	 
-			}else if ($boiler_overrun_time == 0){
-				$zone_overrun = 0;
-
-			// overrun time > 0	
-			}else {
-				$now=strtotime(date('Y-m-d H:i:s'));
-				
-
-				//when switching off boiler
-				if($boiler_fire_status == 1) {
-					$overrun_end_time = $now + ($boiler_overrun_time * 60);
-					$zone_overrun = $zone_status_prev;
-				
-				//boiler was switched of previous script run
-				} else {
-					$overrun_end_time = strtotime( $boiler_stop_datetime ) + ($boiler_overrun_time * 60);
-					// if overrun flag was switched on when boiler was switching on and ovverrun did not pass keep overrun on
-					if(($now < $overrun_end_time)&&($zone_overrun_prev)){
-						$zone_overrun = 1;
-					}else {
-						$zone_overrun = 0;
-					}
-
+	$zone_id = $zone_commands[$row]["zone_id"];
+	$zone_category = $zone_commands[$row]["zone_category"];
+	$zone_controler_id = $zone_commands[$row]["zone_controler_id"];
+	$zone_controler_child_id = $zone_commands[$row]["zone_controler_child_id"];
+	$zone_status = $zone_commands[$row]["zone_status"];
+	$zone_status_prev = $zone_commands[$row]["zone_status_prev"];
+	$zone_overrun_prev = $zone_commands[$row]["zone_overrun_prev"];
+	
+	//Zone category 0 and boiler is not requested calculate if overrun needed
+	if($zone_category==0 && !in_array("1", $boiler)) {
+		//overrun time <0 - latch overrun for the zone zone untill next boiler start
+		if($boiler_overrun_time < 0){
+			$zone_overrun = (($zone_status_prev == 1)||($zone_overrun_prev == 1)) ? 1:0;
+		// overrun time = 0 - overrun not needed	 
+		}else if ($boiler_overrun_time == 0){
+			$zone_overrun = 0;
+		// overrun time > 0	
+		}else {
+			$now=strtotime(date('Y-m-d H:i:s'));
+			//when switching off boiler
+			if($boiler_fire_status == 1) {
+				$overrun_end_time = $now + ($boiler_overrun_time * 60);
+				$zone_overrun = $zone_status_prev;
+			//boiler was switched of previous script run
+			} else {
+				$overrun_end_time = strtotime( $boiler_stop_datetime ) + ($boiler_overrun_time * 60);
+				// if overrun flag was switched on when boiler was switching on and ovverrun did not pass keep overrun on
+				if(($now < $overrun_end_time)&&($zone_overrun_prev)){
+					$zone_overrun = 1;
+				}else {
+					$zone_overrun = 0;
 				}
 			}
-
-
-			
-
-		}else {
-				
+		}
+	}else {
 		//if zone is not category 0 or boiler is running overrun not needed
-			$zone_overrun = 0;
-
+		$zone_overrun = 0;
+	}
+	$zone_command = (($zone_status == 1) || ($zone_overrun == 1)) ? 1:0 ;
+	
+	// update zone current state table
+	if($zone_overrun<>$zone_overrun_prev){
+		$query = "UPDATE zone_current_state SET overrun = {$zone_overrun} WHERE id ={$zone_id} LIMIT 1;";
+		$conn->query($query);
+	}
+	if($zone_overrun == 1){
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone ".$zone_id. " circulation pump overrun active. \n";
+		if ($boiler_overrun_time > 0) {
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Overrun end time ".date('Y-m-d H:i:s',$overrun_end_time). " \n";
+		} else{
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Overrun will end on the next boiler start. \n";
 		}
+	}
 
-
-		$zone_command = (($zone_status == 1) || ($zone_overrun == 1)) ? 1:0 ;
-
-		// update zone current state table
-		if($zone_overrun<>$zone_overrun_prev){
-			$query = "UPDATE zone_current_state SET overrun = {$zone_overrun} WHERE id ={$zone_id} LIMIT 1;";
-			$conn->query($query);
-		}
-
-
-		if($zone_overrun == 1){
-			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone ".$zone_id. " circulation pump overrun active. \n";
-			if ($boiler_overrun_time > 0) {
-				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Overrun end time ".date('Y-m-d H:i:s',$overrun_end_time). " \n";
-			} else{
-				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Overrun will end on the next boiler start. \n";
-			}
-		}
-
-		/***************************************************************************************
-		Zone Valve Wired to Raspberry Pi GPIO Section: Zone Valve Connected Raspberry Pi GPIO.
-		****************************************************************************************/
-		if ($zone_controller_type == 'GPIO'){
-
-			$relay_status = ($zone_command == '1') ? $relay_on : $relay_off;
-			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: GIOP Relay Status: \033[41m".$relay_status. "\033[0m (0=On, 1=Off) \n";
-			exec("python3 /var/www/cron/gpio/gpio3_relay.py ".$zone_controler_child_id." ".$relay_status);
-		}
-
-		/***************************************************************************************
-		Zone Valve Wired over I2C Interface Make sure you have i2c Interface enabled 
-		****************************************************************************************/
-		if ($zone_controller_type == 'I2C'){
-
-			exec("python3 /var/www/cron/i2c/i2c_relay.py ".$zone_controler_id." ".$zone_controler_child_id." ".$zone_command);
-			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Relay Broad: ".$zone_controler_id. " Relay No: ".$zone_controler_child_id." Status: ".$zone_command." \n";
-		}
-
-		/***************************************************************************************
-		Zone Valve Wireless Section: MySensors Wireless Relay module for your Zone Valve control.
-		****************************************************************************************/
-		if ($zone_controller_type == 'MySensor'){
-
-			//update messages_out table with sent status to 0 and payload to as zone status.
-			$query = "UPDATE messages_out SET sent = '0', payload = '{$zone_command}' WHERE node_id ='$zone_controler_id' AND child_id = '$zone_controler_child_id' LIMIT 1;";
-			$conn->query($query);
-		}
-
-
-
-
+	/***************************************************************************************
+	Zone Valve Wired to Raspberry Pi GPIO Section: Zone Valve Connected Raspberry Pi GPIO.
+	****************************************************************************************/
+	if ($zone_controller_type == 'GPIO'){
+		$relay_status = ($zone_command == '1') ? $relay_on : $relay_off;
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: GIOP Relay Status: \033[41m".$relay_status. "\033[0m (0=On, 1=Off) \n";
+		exec("python3 /var/www/cron/gpio/gpio3_relay.py ".$zone_controler_child_id." ".$relay_status);
+	}
+	
+	/***************************************************************************************
+	Zone Valve Wired over I2C Interface Make sure you have i2c Interface enabled 
+	****************************************************************************************/
+	if ($zone_controller_type == 'I2C'){
+		exec("python3 /var/www/cron/i2c/i2c_relay.py ".$zone_controler_id." ".$zone_controler_child_id." ".$zone_command);
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Relay Broad: ".$zone_controler_id. " Relay No: ".$zone_controler_child_id." Status: ".$zone_command." \n";
+	}
+	
+	/***************************************************************************************
+	Zone Valve Wireless Section: MySensors Wireless Relay module for your Zone Valve control.
+	****************************************************************************************/
+	if ($zone_controller_type == 'MySensor'){
+		//update messages_out table with sent status to 0 and payload to as zone status.
+		$query = "UPDATE messages_out SET sent = '0', payload = '{$zone_command}' WHERE node_id ='$zone_controler_id' AND child_id = '$zone_controler_child_id' LIMIT 1;";
+		$conn->query($query);
+	}
 }
-
-
-
-
-
 
 //For debug info only
 //print_r ($zone_log);
@@ -882,21 +841,19 @@ if (in_array("1", $boiler)) {
 		exec("python3 /var/www/cron/i2c/i2c_relay.py" .$boiler_node_id." ".$boiler_node_child_id." 1"); 
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler I2C Rrelay Board: \033[41m".$boiler_node_id."\033[0m Relay ID: \033[41m".$boiler_node_child_id."\033[0m \n";
 	}
-
 	//Update Boiler Status 
 	if ($boiler_fire_status != $new_boiler_status){
 		//insert date and time into boiler log table so we can record boiler start date and time.
 		$bsquery = "INSERT INTO `boiler_logs`(`sync`, `purge`, `start_datetime`, `start_cause`, `stop_datetime`, `stop_cause`, `expected_end_date_time`) VALUES ('0', '0', '{$date_time}', '{$start_cause}', NULL, NULL,'{$expected_end_date_time}');";
 		$result = $conn->query($bsquery);
 		$boiler_log_id = mysqli_insert_id($conn);
-
 		//echo all zone and status
 		for ($row = 0; $row < count($zone_log); $row++){
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone ID: ".$zone_log[$row]["zone_id"]." Status: ".$zone_log[$row]["status"]."\n";
 			$zlquery = "INSERT INTO `zone_logs`(`sync`, `purge`, `zone_id`, `boiler_log_id`, `status`) VALUES ('0', '0', '{$zone_log[$row]["zone_id"]}', '{$boiler_log_id}', '{$zone_log[$row]["status"]}');";
 			$zlresults = $conn->query($zlquery);
 			if ($zlresults) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Log table updated successfully. \n";} else {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone log update failed... ".mysql_error(). " \n";}
-			}
+		}
 		if ($result) {
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Log table added Successfully. \n";
 		}else {
