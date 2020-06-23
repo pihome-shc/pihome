@@ -157,7 +157,7 @@ require_once(__DIR__.'/st_inc/functions.php');
                         if($overrun == 1) {
                             echo '<small class="statuszoon"><i class="fa ion-ios-play-outline orange fa-fw"></i></small>';
                         }						
-			echo '</h3></button>';      //close out status and button
+                        echo '</h3></button>';      //close out status and button
 
 			//Zone Schedule listing model
 			echo '<div class="modal fade" id="'.$zone_type.''.$zone_id.'" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
