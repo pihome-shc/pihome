@@ -103,7 +103,7 @@ $("#schedulelist").load('schedulelist.php');
 $('#boostlist').load('boostlist.php');
 		
 //load charttlist.php 
-$('#chartlist').load('chartlist.php');
+$('#chart_dailyusage').load('daily_usage.php');
 
 //load holidayslist.php 
 $('#holidayslist').load('holidayslist.php');
@@ -165,7 +165,7 @@ if ($_SERVER['SCRIPT_NAME'] == '/scheduling.php'){
 <?php } ?>
 </script>
 
-<?php if ($_SERVER['REQUEST_URI'] == '/chart.php'){include("chartfooter.php");} ?>
+<?php if ($_SERVER['REQUEST_URI'] == '/chart.php'){include("chart_load.php");} ?>
 </body>
 </html>
 <?php if(isset($conn)) { $conn->close();} ?>
