@@ -111,6 +111,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 			$zone_sensor_fault = $zone_current_state['sensor_fault'];
 			$sensor_seen = $zone_current_state['sensor_seen_time'];
 			$temp_reading_time= $zone_current_state['sensor_reading_time'];
+			$overrun= $zone_current_state['overrun'];
 
 			//query to get temperature from messages_in_view_24h table view
                         $query = "SELECT * FROM messages_in WHERE node_id = '{$zone_sensor_id}' AND child_id = '{$zone_sensor_child_id}' ORDER BY id desc LIMIT 1;";
@@ -152,7 +153,11 @@ require_once(__DIR__.'/st_inc/functions.php');
                         echo '<small class="statusdegree">' . $rval['target'] .'</small>';
                         //Right icon for what/why
                         echo '<small class="statuszoon"><i class="fa ' . $rval['shactive'] . ' ' . $rval['shcolor'] . ' fa-fw"></i></small>';
-                        echo '</h3></button>';      //close out status and button
+						//Overrun Icon
+						if($overrun == 1) {
+							echo '<small class="statuszoon"><i class="fa ion-ios-play-outline orange fa-fw"></i></small>';
+						}						
+						echo '</h3></button>';      //close out status and button
 
 			//Zone Schedule listing model
 			echo '<div class="modal fade" id="'.$zone_type.''.$zone_id.'" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
