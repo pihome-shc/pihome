@@ -103,7 +103,7 @@ $("#schedulelist").load('schedulelist.php');
 $('#boostlist').load('boostlist.php');
 		
 //load charttlist.php 
-$('#chart_dailyusage').load('daily_usage.php');
+$('#chart_dailyusage').load('chart_dailyusage.php');
 
 //load holidayslist.php 
 $('#holidayslist').load('holidayslist.php');
