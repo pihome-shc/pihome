@@ -49,7 +49,7 @@ require_once(__DIR__.'/st_inc/functions.php');
         				<div class="tab-content">
             				<div class="tab-pane fade in active" id="temperature-pills"><br><?php include("chart_dailyusage.php"); ?></div>
             				<div class="tab-pane fade" id="boiler-pills"><br><?php include("chart_boilerlist.php"); ?></div>
-							<div class="tab-pane fade" id="month-pills"><br><?php include("chart_monthusage.php"); ?></div>
+							<div class="tab-pane fade" id="month-pills"><br><?php include("chart_monthlyusage.php"); ?></div>
 							<div class="tab-pane fade" id="battery-pills"><br><?php include("chart_batteryusage.php"); ?></div>
 	        			</div>
 				</div>
