@@ -19,6 +19,22 @@
 *************************************************************************"
 */
 
+// get weather and system temperatures
+$weather_c = array();
+$system_c = array();
+$query="select * from messages_in where datetime > DATE_SUB( NOW(), INTERVAL 24 HOUR)";
+$result = $conn->query($query);
+//create array of pairs of x and y values
+while ($row = mysqli_fetch_assoc($result)) {
+        $datetime = $row['datetime'];
+        $payload = $row['payload'];
+        if ($row['node_id'] == 0) {
+                $system_c[] = array(strtotime($datetime) * 1000, $payload);
+        } elseif ($row['node_id'] == 1) {
+                $weather_c[] = array(strtotime($datetime) * 1000, $payload);
+        }
+}
+
 // weather table to get sunrise and sun set time 
 $query="select * from weather";
 $result = $conn->query($query);
@@ -76,7 +92,7 @@ var dataset = [
         $zone_sensor_id=$row['sensors_id'];
 		$zone_sensor_child_id=$row['sensor_child_id'];
         
-        $query="select * from messages_in_view_24h where node_id = '{$zone_sensor_id}' AND child_id = '{$zone_sensor_child_id}';";
+        $query="select * from messages_in where node_id = '{$zone_sensor_id}' AND child_id = '{$zone_sensor_child_id}';";
         $result = $conn->query($query);
         // create array of pairs of x and y values for every zone
         $zone_temp = array();
@@ -151,7 +167,7 @@ var wdataset = [
         $zone_sensor_id=$row['sensors_id'];
 		$zone_sensor_child_id=$row['sensors_child_id'];
         
-        $query="select * from messages_in_view_24h where node_id = '{$zone_sensor_id}' AND child_id = '{$zone_sensor_child_id}';";
+        $query="select * from messages_in where node_id = '{$zone_sensor_id}' AND child_id = '{$zone_sensor_child_id}';";
         $result = $conn->query($query);
         // create array of pairs of x and y values for every zone
         $zone_temp = array();
@@ -188,8 +204,8 @@ var options_two = {
 };
 
 $(document).ready(function () {
-	$.plot($("#hot_water"), wdataset, options_two);
-    $("#hot_water").UseTooltip();
+	$.plot($("#graph2"), wdataset, options_two);
+    $("#graph2").UseTooltip();
 });
 </script>	
 
@@ -221,7 +237,7 @@ var options_three = {
     legend: { noColumns: 3, labelBoxBorderColor: "#ffff", position: "nw" }
 };
      
-$(document).ready(function () {$.plot($("#system_c"), dataset_hw, options_three);$("#system_c").UseTooltip();});
+$(document).ready(function () {$.plot($("#graph3"), dataset_hw, options_three);$("#graph3").UseTooltip();});
 var previousPoint = null, previousLabel = null;
 $.fn.UseTooltip = function () {
     $(this).bind("plothover", function (event, pos, item) {
