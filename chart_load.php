@@ -410,7 +410,7 @@ var bat_level_dataset = [
 		$zone_row = mysqli_fetch_array($result);
 		$zone_name = $zone_row['name'];
 		$label = $zone_name ." - ID ".$node_id;
-		$query="SELECT bat_voltage, bat_level, `update`  FROM nodes_battery WHERE `update` >= last_day(now()) + interval 1 day - interval 3 MONTH AND bat_level is not NULL and node_id = '{$node_id}' GROUP BY YEAR(`update`), MONTH(`update`), DAY(`update`) ORDER BY `update` ASC;";
+		$query="SELECT bat_voltage, bat_level, `update`  FROM nodes_battery WHERE `update` >= last_day(now()) + interval 1 day - interval 3 MONTH AND bat_level is not NULL and node_id = '{$node_id}' GROUP BY Week(`update`), Day(`update`) ORDER BY `update` ASC;";
         $result = $conn->query($query);
         // create array of pairs of x and y values for every zone
         $bat_level = array();
@@ -508,7 +508,7 @@ var bat_voltage_dataset = [
 		$zone_row = mysqli_fetch_array($result);
 		$zone_name = $zone_row['name'];
 		$label = $zone_name ." - ID ".$node_id;
-		$query="SELECT bat_voltage, bat_level, `update`  FROM nodes_battery WHERE `update` >= last_day(now()) + interval 1 day - interval 3 MONTH AND bat_level is not NULL and node_id = '{$node_id}' GROUP BY YEAR(`update`), MONTH(`update`), DAY(`update`) ORDER BY `update` ASC;";
+		$query="SELECT bat_voltage, bat_level, `update`  FROM nodes_battery WHERE `update` >= last_day(now()) + interval 1 day - interval 3 MONTH AND bat_level is not NULL and node_id = '{$node_id}' GROUP BY Week(`update`), Day(`update`) ORDER BY `update` ASC;";
         $result = $conn->query($query);
         // create array of pairs of x and y values for every zone
         $bat_level = array();
