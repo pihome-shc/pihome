@@ -24,7 +24,3 @@ echo "<h4>".$lang['graph_battery_usage']."</h4></p>".$lang['graph_battery_level_
 <div class="flot-chart">
    <div class="flot-chart-content" id="battery_level"></div>
 </div>
-<?php echo "</p>".$lang['battery_level_text']."</p>"; ?>
-<div class="flot-chart">
-   <div class="flot-chart-content" id="battery_voltage"></div>
-</div>

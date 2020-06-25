@@ -40,10 +40,10 @@ require_once(__DIR__.'/st_inc/functions.php');
  				<div class="panel-body">
                         		<!-- Nav tabs -->
 	        			<ul class="nav nav-pills">
-        	    			<button class="btn btn-default btn-circle active" href="#temperature-pills" data-toggle="tab"><i class="fa fa-bar-chart red"></i></i></button>
-							<button class="btn btn-default btn-circle" href="#boiler-pills" data-toggle="tab"><i class="glyphicon glyphicon-leaf green"></i></button>
-							<button class="btn btn-default btn-circle" href="#month-pills" data-toggle="tab"><i class="fa fa-area-chart blue"></i></button>
-							<button class="btn btn-default btn-circle" href="#battery-pills" data-toggle="tab"><i class="fa fa-battery-full green"></i></button>
+        	    			<button class="btn-lg btn-default btn-circle active" href="#temperature-pills" data-toggle="tab"><i class="fa fa-bar-chart red"></i></i></button>
+							<button class="btn-lg btn-default btn-circle" href="#boiler-pills" data-toggle="tab"><i class="glyphicon glyphicon-leaf green"></i></button>
+							<button class="btn-lg btn-default btn-circle" href="#month-pills" data-toggle="tab"><i class="fa fa-area-chart blue"></i></button>
+							<button class="btn-lg btn-default btn-circle" href="#battery-pills" data-toggle="tab"><i class="fa fa-battery-full green"></i></button>
         				</ul>
 	        			<!-- Tab panes -->
         				<div class="tab-content">
