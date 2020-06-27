@@ -231,6 +231,8 @@ $lang['graph_battery_level_text'] = "Battery level reported by temperature senos
 $lang['battery_level'] = "Battery Level";
 $lang['battery_voltage'] = "Battery Voltage";
 $lang['battery_level_text'] = "Battery voltage reported by temperature sensors";
+$lang['min_battery_level'] = "Min Level";
+$lang['battery_level_info'] = "Minimum Battery level for temperature sensors";
 
 
 $lang['user_change_password'] = "Change Password";
