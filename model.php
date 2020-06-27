@@ -1054,21 +1054,30 @@ $results = $conn->query($query);
 echo '<table>
     <tr>
         <th class="col-xs-1">'.$lang['node_id'].'</th>
-        <th class="col-xs-3">'.$lang['name'].'</th>
-        <th class="col-xs-4">'.$lang['last_seen'].'</th>
-        <th class="col-xs-5">'.$lang['notice_interval'].'
-	<span class="fa fa-info-circle fa-lg text-info" data-container="body" data-toggle="popover" data-placement="left" data-content="'.$lang['notice_interval_info'].'"</span>
-	</th>
+        <th class="col-xs-2">'.$lang['name'].'</th>
+        <th class="col-xs-3">'.$lang['last_seen'].'</th>
+        <th class="col-xs-3">'.$lang['notice_interval'].'
+        <span class="fa fa-info-circle fa-lg text-info" data-container="body" data-toggle="popover" data-placement="left" data-content="'.$lang['notice_interval_info'].'"</span></th>
+        <th class="col-xs-3">'.$lang['min_battery_level'].'
+        <span class="fa fa-info-circle fa-lg text-info" data-container="body" data-toggle="popover" data-placement="left" data-content="'.$lang['battery_level_info'].'"</span></th>
     </tr>';
 
 while ($row = mysqli_fetch_assoc($results)) {
+    $query = "SELECT * FROM nodes_battery where  node_id ='".$row['node_id']."'; ";
+    $result = $conn->query($query);
+    $count = $result->num_rows;
     echo '
         <tr>
             <td>'.$row['node_id'].'</td>
             <td>'.$row['name'].'</td>
             <td>'.$row['last_seen'].'</td>
-            <td><input id="'.$row["node_id"].'" type="value" class="form-control pull-right" style="border: none" name="notice_interval" value="'.$row["notice_interval"].'" placeholder="Notice Interval" required></td>
-        </tr>';
+            <td><input id="interval'.$row["node_id"].'" type="value" class="form-control pull-right" style="border: none" name="notice_interval" value="'.$row["notice_interval"].'" placeholder="Notice Interval" required></td>';
+	    if($count == 0) {
+	            echo '<td><input id="min_value'.$row["node_id"].'" type="value" class="form-control pull-right" style="border: none" name="min_value" value="N/A" readonly="readonly" placeholder="Min Value"></td>';
+	    } else {
+                    echo '<td><input id="min_value'.$row["node_id"].'" type="value" class="form-control pull-right" style="border: none" name="min_value" value="'.$row["min_value"].'" placeholder="Min Value"></td>';
+	    }
+        echo '</tr>';
 
 }
 
