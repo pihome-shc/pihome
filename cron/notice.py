@@ -125,7 +125,7 @@ print("------------------------------------------------------------------")
 
 #*************************************************************************************************************
 #Active Nodes Last Seen status and Battery Level
-print bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - Checking Node Communication"
+print(bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - Checking Node Communication")
 try:
 	con = mdb.connect(dbhost, dbuser, dbpass, dbname)
         cursorselect = con.cursor()
@@ -166,7 +166,7 @@ try:
 						cursorupdate.execute("UPDATE notice SET status = '0'") # so clear status to stop further emails
 				else : # new notification so add a new message to the notification table
 					cursorupdate.execute('INSERT INTO notice (sync, `purge`, datetime, message, status) VALUES(%s,%s,%s,%s,%s)', (0,0,datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),message,1))
-					print bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - " + name + " " + node_id + " - " + str(notice_interval) + " Minutes Ago."
+                                        print(bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - " + name + " - " + str(notice_interval) + " Minutes Ago.")
 
                   		cursorupdate.close()
                   		con.commit()
@@ -178,7 +178,7 @@ try:
                 		con.commit()
 
 			if min_value is not None: # This is a Battery Powered Node, so check battery status
-				print bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - Checking Battery Node - " + node_id + " Communication"
+				print(bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - Checking Battery Node - " + node_id + " Communication")
 				try:
 					cnx = mdb.connect(dbhost, dbuser, dbpass, dbname)
         				cursorselect = cnx.cursor()
@@ -215,7 +215,7 @@ try:
                                                 			cursorupdate.execute("UPDATE notice SET status = '0'") # so clear status to stop further emails
                                 			else : # new notification so add a new message to the notification table
                                         			cursorupdate.execute('INSERT INTO notice (sync, `purge`, datetime, message, status) VALUES(%s,%s,%s,%s,%s)', (0,0,datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),message,1))
-                                        			print bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - Battery Node - " + node_id + " Reported - " + str(2) + " Minutes Ago."
+                                        			print(bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - Battery Node - " + node_id + " Reported - " + str(2) + " Minutes Ago.")
 
                                 			cursorupdate.close()
                                 			con.commit()
@@ -247,7 +247,7 @@ try:
                                                                         cursorupdate.execute("UPDATE notice SET status = '0'") # so clear status to stop further emails
                                                         else : # new notification so add a new message to the notification table
                                                                 cursorupdate.execute('INSERT INTO notice (sync, `purge`, datetime, message, status) VALUES(%s,%s,%s,%s,%s)', (0,0,datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),message,1))
-                                                                print bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - Battery Node - " + node_id + " Level < " + str(min_level) + " %."
+                                                                print(bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - Battery Node - " + node_id + " Level < " + str(min_level) + " %.")
 
                                                         cursorupdate.close()
                                                         con.commit()
@@ -284,30 +284,30 @@ try:
                                                                 cursorupdate.execute("UPDATE notice SET status = '0'") # so clear status to stop further emails
                                                 else : # new notification so add a new message to the notification table
                                                         cursorupdate.execute('INSERT INTO notice (sync, `purge`, datetime, message, status) VALUES(%s,%s,%s,%s,%s)', (0,0,datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),message,1))
-                                                        print bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - Battery Node - " + node_id + " No Level Records Found."
+                                                        print(bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - Battery Node - " + node_id + " No Level Records Found.")
 
                                                 cursorupdate.close()
                                                 con.commit()
  
 				except mdb.Error, e:
-        				print "Error %d: %s" % (e.args[0], e.args[1])
+        				print("Error %d: %s" % (e.args[0], e.args[1]))
         				sys.exit(1)
 				finally:
         				if cnx:
                 				cnx.close()
 
-				print bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - Battery Node Check Finished"
+				print(bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - Battery Node Check Finished")
 
-except mdb.Error, e:
-        print "Error %d: %s" % (e.args[0], e.args[1])
+except mdb.Error as e:
+        print("Error %d: %s" % (e.args[0], e.args[1]))
         sys.exit(1)
 finally:
         if con:
                 con.close()
 
 
-print bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - Active Node Check Finished"
-print "------------------------------------------------------------------"
+print(bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - Active Node Check Finished")
+print("------------------------------------------------------------------")
 
 #*************************************************************************************************************
 # Check CPU Temperature from last one hour if it was over 50c
