@@ -233,21 +233,21 @@ try:
                                                 query = ("SELECT * FROM notice WHERE message = '" + message + "'")
                                                 cursorsel = con.cursor()
                                                 cursorsel.execute(query)
-                                                volts_to_index = dict(
+                                                level_to_index = dict(
                                                 (d[0], i)
                                                 for i, d
                                                 in enumerate(cursorsel.description)
                                                 )
                                                 messages = cursorsel.fetchone()
                                                 cursorsel.close()
-                                                if bat_level < min_level : # Active Sensor found where level is less than minimum
+                                                if bat_level < min_value : # Active Sensor found where level is less than minimum
                                                         cursorupdate = con.cursor()
                                                         if cursorsel.rowcount > 0 : # This message already exists
                                                                  if messages[name_to_index['status']] == 1 : # This node has already sent an email with this content
                                                                         cursorupdate.execute("UPDATE notice SET status = '0'") # so clear status to stop further emails
                                                         else : # new notification so add a new message to the notification table
                                                                 cursorupdate.execute('INSERT INTO notice (sync, `purge`, datetime, message, status) VALUES(%s,%s,%s,%s,%s)', (0,0,datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),message,1))
-                                                                print(bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - Battery Node - " + node_id + " Level < " + str(min_level) + " %.")
+                                                                print(bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - Battery Node - " + node_id + " Level < " + str(min_value) + " %.")
 
                                                         cursorupdate.close()
                                                         con.commit()
