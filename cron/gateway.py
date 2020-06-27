@@ -191,7 +191,7 @@ try:
 						if dbgLevel >= 2 and dbgMsgIn == 1:
 							print("1: Adding Node ID:",node_id, "MySensors Version:", payload)
 						timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-						cur.execute('INSERT INTO `nodes`(`sync`, `purge`, `type`, `node_id`, `max_child_id`, `name`, `last_seen`, `notice_interval`, `min_voltage`, `status`, `ms_version`, `sketch_version`, `repeater`) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', (0, 0, 'MySensor', node_id, 0, null_value, timestamp, 0, 0, 'Active', payload, null_value, 0))
+						cur.execute('INSERT INTO `nodes`(`sync`, `purge`, `type`, `node_id`, `max_child_id`, `name`, `last_seen`, `notice_interval`, `min_value`, `status`, `ms_version`, `sketch_version`, `repeater`) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', (0, 0, 'MySensor', node_id, 0, null_value, timestamp, 0, 0, 'Active', payload, null_value, 0))
 						con.commit()
 					else:
 						if dbgLevel >= 2 and dbgMsgIn == 1:
@@ -210,7 +210,7 @@ try:
 						if dbgLevel >= 2 and dbgMsgIn == 1:
 							print("1-B: Adding Node ID:",node_id, "MySensors Version:", payload)
 						timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-						cur.execute('INSERT INTO nodes(`sync`, `purge`, `type`, `node_id`, `max_child_id`, `name`, `last_seen`, `notice_interval`, `min_voltage`, `status`, `ms_version`, `sketch_version`, `repeater`) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', (0, 0, 'MySensor', node_id, 0, null_value, timestamp, 0, 0, 'Active', payload, null_value, 1))
+						cur.execute('INSERT INTO nodes(`sync`, `purge`, `type`, `node_id`, `max_child_id`, `name`, `last_seen`, `notice_interval`, `min_value`, `status`, `ms_version`, `sketch_version`, `repeater`) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', (0, 0, 'MySensor', node_id, 0, null_value, timestamp, 0, 0, 'Active', payload, null_value, 1))
 						con.commit()
 					else:
 						if dbgLevel >= 2 and dbgMsgIn == 1:

@@ -124,68 +124,190 @@ print(bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+
 print("------------------------------------------------------------------")
 
 #*************************************************************************************************************
-#Active Nodes Last Seen status
-print(bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - Checking Node Communication")
+#Active Nodes Last Seen status and Battery Level
+print bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - Checking Node Communication"
 try:
 	con = mdb.connect(dbhost, dbuser, dbpass, dbname)
-	cursorselect = con.cursor()
-	query = ("SELECT * FROM nodes WHERE status = 'Active';")
-	cursorselect.execute(query)
-	node_to_index = dict(
-	(d[0], i)
-	for i, d
-	in enumerate(cursorselect.description)
+        cursorselect = con.cursor()
+        query = ("SELECT * FROM nodes WHERE status = 'Active';")
+    	cursorselect.execute(query)
+	node_to_index = dict( 
+	(d[0], i) 
+	for i, d 
+	in enumerate(cursorselect.description) 
 	)
-	results =cursorselect.fetchall()
-	cursorselect.close()
-	if cursorselect.rowcount > 0 : # Some Active Nodes
-		for i in results :     # loop through active nodes
-			node_id = i[node_to_index['node_id']]
-			name = i[node_to_index['name']]
-			last_seen = i[node_to_index['last_seen']]
+     	results =cursorselect.fetchall()
+    	cursorselect.close()
+    	if cursorselect.rowcount > 0 : # Some Active Nodes
+      		for i in results :     # loop through active nodes
+                	node_id = i[node_to_index['node_id']]
+                	name = i[node_to_index['name']]
+                	last_seen = i[node_to_index['last_seen']]
 			notice_interval = i[node_to_index['notice_interval']]
-			timeDifference = (datetime.datetime.now() - last_seen)
-			time_difference_in_minutes = (timeDifference.days * 24 * 60) + (timeDifference.seconds/60)
+			min_value = i[node_to_index['min_value']]
+                        timeDifference = (datetime.datetime.now() - last_seen)
+                        time_difference_in_minutes = (timeDifference.days * 24 * 60) + (timeDifference.seconds/60)
 			message = name + " " + node_id + " last reported on " + str(last_seen)
 			# select any records in the notice table which match the current message
-			query = ("SELECT * FROM notice WHERE message = '" + message + "'")
+			query = ("SELECT * FROM notice WHERE message = '" + message + "'") 
 			cursorsel = con.cursor()
-			cursorsel.execute(query)
-			name_to_index = dict(
-			(d[0], i)
-			for i, d
-			in enumerate(cursorsel.description)
-			)
-			messages = cursorsel.fetchone()
+        		cursorsel.execute(query)
+        		name_to_index = dict(
+        		(d[0], i)
+        		for i, d
+        		in enumerate(cursorsel.description)
+        		)
+        		messages = cursorsel.fetchone() 
 			cursorsel.close()
-			if time_difference_in_minutes >= notice_interval : # Active Sensor found which has not reported in the last test interval
+                        if time_difference_in_minutes >= notice_interval : # Active Sensor found which has not reported in the last test interval
 				cursorupdate = con.cursor()
 				if cursorsel.rowcount > 0 : # This message already exists
 					if messages[name_to_index['status']] == 1 : # This node has already sent an email with this content
 						cursorupdate.execute("UPDATE notice SET status = '0'") # so clear status to stop further emails
 				else : # new notification so add a new message to the notification table
 					cursorupdate.execute('INSERT INTO notice (sync, `purge`, datetime, message, status) VALUES(%s,%s,%s,%s,%s)', (0,0,datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),message,1))
-					print(bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - " + name + " - " + str(notice_interval) + " Minutes Ago.")
+					print bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - " + name + " " + node_id + " - " + str(notice_interval) + " Minutes Ago."
 
-				cursorupdate.close()
-				con.commit()
+                  		cursorupdate.close()
+                  		con.commit()
 			else : # node has now reported so delete any 'notice' records
-				query = "DELETE FROM notice WHERE message LIKE '" + name +" " + str(node_id) + "%'"
-				cursordelete = con.cursor()
-				cursordelete.execute(query)
-				cursordelete.close()
-				con.commit()
+				query = "DELETE FROM notice WHERE message LIKE '" + name + " " + str(node_id) + "%'"
+                		cursordelete = con.cursor()
+                		cursordelete.execute(query)
+                		cursordelete.close()
+                		con.commit()
 
-except mdb.Error as e:
-        print("Error %d: %s" % (e.args[0], e.args[1]))
+			if min_value is not None: # This is a Battery Powered Node, so check battery status
+				print bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - Checking Battery Node - " + node_id + " Communication"
+				try:
+					cnx = mdb.connect(dbhost, dbuser, dbpass, dbname)
+        				cursorselect = cnx.cursor()
+        				query = ("SELECT * FROM `nodes_battery` WHERE `node_id` = " + node_id + " ORDER BY `update` DESC LIMIT 1;")
+        				cursorselect.execute(query)
+        				bat_node_to_index = dict(
+        				(d[0], i)
+        				for i, d
+        				in enumerate(cursorselect.description)
+        				)
+				        results =cursorselect.fetchone()
+        				cursorselect.close()
+        				if cursorselect.rowcount > 0 : # Battery Record Found
+						update = results[bat_node_to_index['update']]
+						bat_level = results[bat_node_to_index['bat_level']]
+                        			timeDifference = (datetime.datetime.now() - update)
+                        			time_difference_in_minutes = (timeDifference.days * 24 * 60) + (timeDifference.seconds/60)
+                        			message = "Battery Node " + node_id + " last reported on " + str(update)
+                        			# select any records in the notice table which match the current message
+                        			query = ("SELECT * FROM notice WHERE message = '" + message + "'")
+                        			cursorsel = con.cursor()
+                        			cursorsel.execute(query)
+                        			name_to_index = dict(
+                        			(d[0], i)
+                        			for i, d
+                        			in enumerate(cursorsel.description)
+                        			)
+                        			messages = cursorsel.fetchone()
+                        			cursorsel.close()
+                        			if time_difference_in_minutes >= int(BATTERY_NODE_INTERVAL) : # Active Sensor found which has not reported in the last test interval
+                                			cursorupdate = con.cursor()
+                                			if cursorsel.rowcount > 0 : # This message already exists
+                                        			if messages[name_to_index['status']] == 1 : # This node has already sent an email with this content
+                                                			cursorupdate.execute("UPDATE notice SET status = '0'") # so clear status to stop further emails
+                                			else : # new notification so add a new message to the notification table
+                                        			cursorupdate.execute('INSERT INTO notice (sync, `purge`, datetime, message, status) VALUES(%s,%s,%s,%s,%s)', (0,0,datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),message,1))
+                                        			print bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - Battery Node - " + node_id + " Reported - " + str(2) + " Minutes Ago."
+
+                                			cursorupdate.close()
+                                			con.commit()
+                        			else : # node has now reported so delete any 'notice' records
+                                			query = "DELETE FROM notice WHERE message LIKE 'Battery Node "  + str(node_id) + " last reported on%'"
+                                			cursordelete = con.cursor()
+                                			cursordelete.execute(query)
+                                			cursordelete.close()
+                                			con.commit()
+
+						# Check latest Battery Level
+						# ----------------------------
+                                                message = "Battery Node " + node_id + " Level < " + str(min_value) + " %"
+                                                # select any records in the notice table which match the current message
+                                                query = ("SELECT * FROM notice WHERE message = '" + message + "'")
+                                                cursorsel = con.cursor()
+                                                cursorsel.execute(query)
+                                                volts_to_index = dict(
+                                                (d[0], i)
+                                                for i, d
+                                                in enumerate(cursorsel.description)
+                                                )
+                                                messages = cursorsel.fetchone()
+                                                cursorsel.close()
+                                                if bat_level < min_level : # Active Sensor found where level is less than minimum
+                                                        cursorupdate = con.cursor()
+                                                        if cursorsel.rowcount > 0 : # This message already exists
+                                                                 if messages[name_to_index['status']] == 1 : # This node has already sent an email with this content
+                                                                        cursorupdate.execute("UPDATE notice SET status = '0'") # so clear status to stop further emails
+                                                        else : # new notification so add a new message to the notification table
+                                                                cursorupdate.execute('INSERT INTO notice (sync, `purge`, datetime, message, status) VALUES(%s,%s,%s,%s,%s)', (0,0,datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),message,1))
+                                                                print bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - Battery Node - " + node_id + " Level < " + str(min_level) + " %."
+
+                                                        cursorupdate.close()
+                                                        con.commit()
+                                                else : # node has now reported a sulitable level so delete any 'notice' records
+                                                        query = "DELETE FROM notice WHERE message LIKE 'Battery Node "  + str(node_id) + " Level <%'"
+                                                        cursordelete = con.cursor()
+                                                        cursordelete.execute(query)
+                                                        cursordelete.close()
+                                                        con.commit()
+
+						# Delete any No level found notices
+                                                query = "DELETE FROM notice WHERE message LIKE 'Battery Node "  + str(node_id) + " No Level Records%'"
+                                                cursordelete = con.cursor()
+                                                cursordelete.execute(query)
+                                                cursordelete.close()
+                                                con.commit()
+
+					else : # no battery records found
+                                        	message = "Battery Node " + node_id + " No Level Records Found"
+                                                # select any records in the notice table which match the current message
+                                                query = ("SELECT * FROM notice WHERE message = '" + message + "'")
+                                                cursorsel = con.cursor()
+                                                cursorsel.execute(query)
+                                                name_to_index = dict(
+                                                (d[0], i)
+                                                for i, d
+                                                in enumerate(cursorsel.description)
+                                                )
+                                                messages = cursorsel.fetchone()
+                                                cursorsel.close()
+                                                cursorupdate = con.cursor()
+                                                if cursorsel.rowcount > 0 : # This message already exists
+                                                        if messages[name_to_index['status']] == 1 : # This node has already sent an email with this content
+                                                                cursorupdate.execute("UPDATE notice SET status = '0'") # so clear status to stop further emails
+                                                else : # new notification so add a new message to the notification table
+                                                        cursorupdate.execute('INSERT INTO notice (sync, `purge`, datetime, message, status) VALUES(%s,%s,%s,%s,%s)', (0,0,datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),message,1))
+                                                        print bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - Battery Node - " + node_id + " No Level Records Found."
+
+                                                cursorupdate.close()
+                                                con.commit()
+ 
+				except mdb.Error, e:
+        				print "Error %d: %s" % (e.args[0], e.args[1])
+        				sys.exit(1)
+				finally:
+        				if cnx:
+                				cnx.close()
+
+				print bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - Battery Node Check Finished"
+
+except mdb.Error, e:
+        print "Error %d: %s" % (e.args[0], e.args[1])
         sys.exit(1)
 finally:
         if con:
                 con.close()
 
 
-print(bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - Active Node Check Finished")
-print("------------------------------------------------------------------")
+print bc.blu + (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + bc.wht+ " - Active Node Check Finished"
+print "------------------------------------------------------------------"
 
 #*************************************************************************************************************
 # Check CPU Temperature from last one hour if it was over 50c
