@@ -395,6 +395,16 @@ var options_bat = {
 
 $(document).ready(function () {$.plot($("#battery_level"), bat_level_dataset, options_bat);$("#battery_level").UseTooltipl();});
 var previousPoint = null, previousLabel = null;
+
+var weekday = new Array(7);
+weekday[0] = "Sunday";
+weekday[1] = "Monday";
+weekday[2] = "Tuesday";
+weekday[3] = "Wednesday";
+weekday[4] = "Thursday";
+weekday[5] = "Friday";
+weekday[6] = "Saturday";
+
 $.fn.UseTooltipl = function () {
     $(this).bind("plothover", function (event, pos, item) {
         if (item) {
@@ -409,7 +419,7 @@ $.fn.UseTooltipl = function () {
                 showTooltip(item.pageX,
                         item.pageY,
                         color,
-                        "<strong>" + item.series.label + "</strong> At: " + (new Date(x).getHours()<10?'0':'') + new Date(x).getHours() + ":"  + (new Date(x).getMinutes()<10?'0':'') + new Date(x).getMinutes() +"<br> <strong><?php echo $lang['battery_level']; ?>  : " + $.formatNumber(y, { format: "#,###", locale: "us" }) + "%</strong> ");
+                        "<strong>" + item.series.label + "</strong> At: " + weekday[new Date(x).getDay()] + " " + (new Date(x).getHours()<10?'0':'') + new Date(x).getHours() + ":"  + (new Date(x).getMinutes()<10?'0':'') + new Date(x).getMinutes() +"<br> <strong><?php echo $lang['battery_level']; ?>  : " + $.formatNumber(y, { format: "#,###", locale: "us" }) + "%</strong> ");
             }
         } else {
             $("#tooltip").remove();
