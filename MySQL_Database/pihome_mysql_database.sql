@@ -329,7 +329,7 @@ CREATE TABLE IF NOT EXISTS `nodes` (
   `name` char(50) CHARACTER SET utf8 COLLATE utf8_bin,
   `last_seen` timestamp NULL ON UPDATE current_timestamp(),
   `notice_interval` int(11) NOT NULL,
-  `min_voltage` decimal(10,2),
+  `min_value` int(11),
   `status` char(50) CHARACTER SET utf8 COLLATE utf8_bin,
   `ms_version` char(50) COLLATE utf16_bin,
   `sketch_version` char(50) COLLATE utf16_bin,
