@@ -233,7 +233,7 @@ try:
                                                 query = ("SELECT * FROM notice WHERE message = '" + message + "'")
                                                 cursorsel = con.cursor()
                                                 cursorsel.execute(query)
-                                                level_to_index = dict(
+                                                name_to_index = dict(
                                                 (d[0], i)
                                                 for i, d
                                                 in enumerate(cursorsel.description)
