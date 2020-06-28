@@ -218,6 +218,14 @@ try:
 						cur.execute('UPDATE nodes SET ms_version = %s where node_id = %s', (payload, node_id))
 						con.commit()
 
+                                # ..::Step One C::..
+                                # First time Node Comes online set the min_value.
+                                if (node_id != 0 and child_sensor_id != 255 and message_type == 1 and sub_type == 24):
+                                        if dbgLevel >= 2 and dbgMsgIn == 1:
+                                                print("4: Adding Node's min_value for Node ID:", node_id, " min_value:", payload)
+                                        cur.execute('UPDATE nodes SET min_value = %s where node_id = %s', (payload, node_id))
+                                        con.commit()
+
 				# ..::Step Two ::..
 				# Add Nodes Name i.e. Relay, Temperature Sensor etc. to Nodes Table.
 				if (child_sensor_id == 255 and message_type == 3 and sub_type == 11):
