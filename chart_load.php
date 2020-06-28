@@ -360,7 +360,7 @@ var bsave_minuts = <?php echo json_encode($bsave_minuts); ?>;
 // create battery usage dataset based on all available zones
 var bat_level_dataset = [
 <?php
-    $querya ="select * from nodes where `type` = 'MySensor' AND NAME LIKE '%Sensor';";
+    $querya ="select * from nodes where `type` = 'MySensor' AND NAME LIKE '%Sensor' AND `min_value` <> 0;";
     $resulta = $conn->query($querya);
     $counter = 0;
     $count = mysqli_num_rows($resulta) + 1;
