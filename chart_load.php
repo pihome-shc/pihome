@@ -1,13 +1,13 @@
-<?php 
+<?php
 /*
-   _____    _   _    _                             
-  |  __ \  (_) | |  | |                            
-  | |__) |  _  | |__| |   ___    _ __ ___     ___  
-  |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \ 
-  | |      | | | |  | | | (_) | | | | | | | |  __/ 
-  |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___| 
+   _____    _   _    _
+  |  __ \  (_) | |  | |
+  | |__) |  _  | |__| |   ___    _ __ ___     ___
+  |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \
+  | |      | | | |  | | | (_) | | | | | | | |  __/
+  |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___|
 
-     S M A R T   H E A T I N G   C O N T R O L 
+     S M A R T   H E A T I N G   C O N T R O L
 
 *************************************************************************"
 * PiHome is Raspberry Pi based Central Heating Control systems. It runs *"
@@ -18,10 +18,9 @@
 * WHAT YOU ARE DOING                                                    *"
 *************************************************************************"
 */
-
-// get weather and system temperatures
 $weather_c = array();
 $system_c = array();
+
 $query="select * from messages_in where datetime > DATE_SUB( NOW(), INTERVAL 24 HOUR)";
 $result = $conn->query($query);
 //create array of pairs of x and y values
@@ -35,7 +34,7 @@ while ($row = mysqli_fetch_assoc($result)) {
         }
 }
 
-// weather table to get sunrise and sun set time 
+// weather table to get sunrise and sun set time
 $query="select * from weather";
 $result = $conn->query($query);
 $weather_row = mysqli_fetch_array($result);
@@ -45,11 +44,67 @@ $sunset = $weather_row['sunset']* 1000 ;
 //date_sun_info ( int $time , float $latitude , float $longitude )
 //http://php.net/manual/en/function.date-sun-info.php
 
+// create datasets based on all available zones
+$querya ="select id, name, type from zone where graph_it = 1 order BY index_id asc;";
+$resulta = $conn->query($querya);
+$counter = 0;
+$count = mysqli_num_rows($resulta) + 1;
+$zones = '';
+$zonesw = '';
+while ($row = mysqli_fetch_assoc($resulta)) {
+        // grab the zone names to be displayed in the plot legend
+        $zone_name=$row['name'];
+	$zone_type=$row['type'];
+	$zone_id=$row['id'];
+	$query="select * from zone_graphs where zone_id = {$zone_id};";
+        $result = $conn->query($query);
+        // create array of pairs of x and y values for every zone
+        $zone_temp = array();
+        $water_temp = array();
+        while ($rowb = mysqli_fetch_assoc($result)) {
+		if($zone_type == 'Heating') {
+                        $zone_temp[] = array(strtotime($rowb['datetime']) * 1000, $rowb['payload']);
+                } elseif($zone_type == 'Water' || $zone_type == 'Immersion') {
+                        $water_temp[] = array(strtotime($rowb['datetime']) * 1000, $rowb['payload']);
+                }
+
+        }
+        // create dataset entry using distinct color based on zone index(to have the same color everytime chart is opened)
+	if($zone_type == 'Heating') {
+                $zones = $zones. "{label: \"".$zone_name."\", data: ".json_encode($zone_temp).", color: rainbow(".$count.",".++$counter.") }, \n";
+        } elseif($zone_type == 'Water' || $zone_type == 'Immersion') {
+                $zonesw = $zonesw. "{label: \"".$zone_name."\", data: ".json_encode($water_temp).", color: rainbow(".$count.",".++$counter.") }, \n";
+        }
+}
+// add outside weather temperature
+$zonesw = $zonesw."{label: \"".$lang['graph_outsie']."\", data: ".json_encode($weather_c).", color: rainbow(".$count.",".++$counter.") }, \n";
+
+//background-color for boiler on time
+$query="select start_datetime, stop_datetime, type from zone_log_view_24h where status= '1';";
+$results = $conn->query($query);
+$count=mysqli_num_rows($results);
+$warn1 = '';
+$warn2 = '';
+while ($row = mysqli_fetch_assoc($results)) {
+        if((--$count)==-1) break;
+        $boiler_start = strtotime($row['start_datetime']) * 1000;
+        if (is_null($row['stop_datetime'])) {
+                $boiler_stop = strtotime("now") * 1000;
+        } else {
+                $boiler_stop = strtotime($row['stop_datetime']) * 1000;
+        }
+        if($zone_type == 'Heating') {
+                $warn1 = $warn1."{ xaxis: { from: ".$boiler_start.", to: ".$boiler_stop." }, color: \"#ffe9dc\" },  \n" ;
+        } elseif($zone_type == 'Water' || $zone_type == 'Immersion') {
+                $warn2 = $warn2."{ xaxis: { from: ".$boiler_start.", to: ".$boiler_stop." }, color: \"#ffe9dc\" },  \n" ;
+        }
+}
+
 //only show on chart page footer  ?>
-<!--[if lte IE 8]><script src="js/plugins/flot/excanvas.min.js"></script><![endif]-->   
+<!--[if lte IE 8]><script src="js/plugins/flot/excanvas.min.js"></script><![endif]-->
 <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="/js/flot/excanvas.min.js"></script><![endif]-->
     <script type="text/javascript" src="js/plugins/flot/jquery.flot.min.js"></script>
-    <script type="text/javascript" src="js/plugins/flot/jshashtable-2.1.js"></script>    
+    <script type="text/javascript" src="js/plugins/flot/jshashtable-2.1.js"></script> 
     <script type="text/javascript" src="js/plugins/flot/jquery.numberformatter-1.2.3.min.js"></script>
     <script type="text/javascript" src="js/plugins/flot/jquery.flot.js"></script>
     <script type="text/javascript" src="js/plugins/flot/jquery.flot.time.js"></script>
@@ -60,7 +115,22 @@ $sunset = $weather_row['sunset']* 1000 ;
 	<script type="text/javascript" src="js/plugins/flot/curvedLines.js"></script>
 
 <script type="text/javascript">
-// distinct color implementation for plot lines 
+// Create datasets for zones, and zone markings
+var dataset = [ <?php echo $zones ?>];
+var wdataset = [ <?php echo $zonesw ?>];
+var markings = [ <?php echo $warn1 ?> ];
+var wmarkings = [ <?php echo $warn2 ?> ];
+var markings_boiler = [ <?php echo $warn1.$warn2 ?> ];
+// Create System Graphs
+var system_c = <?php echo json_encode($system_c); ?>;
+//var pi_box = <?php echo json_encode($pi_box); ?>;
+//var dataset_hw = [{label: "CPU  ", data: system_c, color: "#DE000F"},{label: "Pi Box  ", data: pi_box, color: "#7D0096"} ];
+//var dataset_hw = [{label: "CPU  ", data: system_c, color: "#DE000F"}, {label: "FLOW ", data: bflow_c, color: "#0077FF"}];
+var dataset_hw = [
+        {label: "<?php echo $lang['cpu']; ?>  ", data: system_c, color: "#0077FF"}
+];
+
+// distinct color implementation for plot lines
 function rainbow(numOfSteps, step) {
     var r, g, b;
     var h = step / numOfSteps;
@@ -69,60 +139,19 @@ function rainbow(numOfSteps, step) {
     var q = 1 - f;
     switch(i % 6){
         case 0: r = 1; g = f; b = 0; break;
-        case 1: r = q; g = 1; b = 0; break;
+        case 5: r = q; g = 1; b = 0; break;
         case 2: r = 0; g = 1; b = f; break;
         case 3: r = 0; g = q; b = 1; break;
         case 4: r = f; g = 0; b = 1; break;
-        case 5: r = 1; g = 0; b = q; break;
+        case 1: r = 1; g = 0; b = q; break;
     }
     var c = "#" + ("00" + (~ ~(r * 255)).toString(16)).slice(-2) + ("00" + (~ ~(g * 255)).toString(16)).slice(-2) + ("00" + (~ ~(b * 255)).toString(16)).slice(-2);
     return (c);
 }
 
-// create dataset based on all available zones
-var dataset = [
-<?php
-    $querya ="select * from zone_view where `type` = 'Heating'  AND `graph_it` order BY index_id asc;";
-    $resulta = $conn->query($querya);
-    $counter = 0;
-    $count = mysqli_num_rows($resulta) + 1;
-    while ($row = mysqli_fetch_assoc($resulta)) {
-        // grab the zone names to be displayed in the plot legend
-        $zone_name=$row['name'];
-        $zone_sensor_id=$row['sensors_id'];
-		$zone_sensor_child_id=$row['sensor_child_id'];
-        
-        $query="select * from messages_in where node_id = '{$zone_sensor_id}' AND child_id = '{$zone_sensor_child_id}';";
-        $result = $conn->query($query);
-        // create array of pairs of x and y values for every zone
-        $zone_temp = array();
-        while ($rowb = mysqli_fetch_assoc($result)) { 
-            $zone_temp[] = array(strtotime($rowb['datetime']) * 1000, $rowb['payload']);
-        }
-        // create dataset entry using distinct color based on zone index(to have the same color everytime chart is opened)
-        echo "{label: \"".$zone_name."\", data: ".json_encode($zone_temp).", color: rainbow(".$count.",".++$counter.") }, \n";
-    }
-    // add outside weather temperature
-    echo "{label: \"".$lang['graph_outsie']."\", data: ".json_encode($weather_c).", color: rainbow(".$count.",".++$counter.") }, \n";
-?> ];
-
-//background-color for boiler on time 
-var markings = [
-<?php
-$query="select start_datetime, stop_datetime from zone_log_view where (start_datetime > DATE_SUB( NOW(), INTERVAL 24 HOUR)) AND type='Heating' AND status= '1';";
-$results = $conn->query($query);
-$count=mysqli_num_rows($results); 
-while ($row = mysqli_fetch_assoc($results)) {
-if((--$count)==-1) break;
-	$boiler_start = strtotime($row['start_datetime']) * 1000;
-if (is_null($row['stop_datetime'])) {
-	$boiler_stop = strtotime("now") * 1000;
-} else {$boiler_stop = strtotime($row['stop_datetime']) * 1000;}
-	echo "{ xaxis: { from: ".$boiler_start.", to: ".$boiler_stop." }, color: \"#ffe9dc\" },  \n" ;
-} ?> ];
- 
+// Create Zone Graphs
 var options_one = {
-    xaxis: { mode: "time", timezone: "browser", timeformat: "%H:%M"},
+    xaxis: { mode: "time", timeformat: "%H:%M"},
     series: { lines: { show: true, lineWidth: 1, fill: false}, curvedLines: { apply: true,  active: true,  monotonicFit: true } },
     grid: { hoverable: true, borderWidth: 1,  backgroundColor: { colors: ["#ffffff", "#fdf9f9"] }, borderColor: "#ff8839", markings: markings,},
     legend: { noColumns: 3, labelBoxBorderColor: "#ffff", position: "nw" }
@@ -132,94 +161,29 @@ $(document).ready(function () {
 	$.plot($("#placeholder"), dataset, options_one);
     $("#placeholder").UseTooltip();
 });
-</script>	
 
-<script type="text/javascript">
-// create wdataset based on all available zones
-var wdataset = [
-<?php
-    $queryw ="select * from zone_view where `type` = 'Water' OR `type` = 'Immersion' order BY index_id asc;";
-    $resultw = $conn->query($queryw);
-    $counter = 0;
-    $count = mysqli_num_rows($resultw) + 1;
-    while ($row = mysqli_fetch_assoc($resultw)) {
-        // grab the zone names to be displayed in the plot legend
-        $zone_name=$row['name'];
-        $zone_sensor_id=$row['sensors_id'];
-		$zone_sensor_child_id=$row['sensors_child_id'];
-        
-        $query="select * from messages_in where node_id = '{$zone_sensor_id}' AND child_id = '{$zone_sensor_child_id}';";
-        $result = $conn->query($query);
-        // create array of pairs of x and y values for every zone
-        $zone_temp = array();
-        while ($rowb = mysqli_fetch_assoc($result)) { 
-            $zone_temp[] = array(strtotime($rowb['datetime']) * 1000, $rowb['payload']);
-        }
-        // create wdataset entry using distinct color based on zone index(to have the same color everytime chart is opened)
-        echo "{label: \"".$zone_name."\", data: ".json_encode($zone_temp).", color: rainbow(".$count.",".++$counter.") }, \n";
-    }
-    // add outside weather temperature
-    //echo "{label: \"".$lang['graph_outsie']."\", data: ".json_encode($weather_c).", color: rainbow(".$count.",".++$counter.") }, \n";
-?> ];
-
-//background-color for boiler on time 
-var wmarkings = [
-<?php
-$query="select start_datetime, stop_datetime from zone_log_view where (start_datetime > DATE_SUB( NOW(), INTERVAL 24 HOUR)) AND type='Water' OR `type` = 'Immersion' AND status= '1';";
-$results = $conn->query($query);
-$count=mysqli_num_rows($results); 
-while ($row = mysqli_fetch_assoc($results)) {
-if((--$count)==-1) break;
-	$boiler_start = strtotime($row['start_datetime']) * 1000;
-if (is_null($row['stop_datetime'])) {
-	$boiler_stop = strtotime("now") * 1000;
-} else {$boiler_stop = strtotime($row['stop_datetime']) * 1000;}
-	echo "{ xaxis: { from: ".$boiler_start.", to: ".$boiler_stop." }, color: \"#ffe9dc\" },  \n" ;
-} ?> ];
- 
+// Create Hot Water Graphs
 var options_two = {
-    xaxis: { mode: "time", timezone: "browser", timeformat: "%H:%M"},
+    xaxis: { mode: "time", timeformat: "%H:%M"},
     series: { lines: { show: true, lineWidth: 1, fill: false}, curvedLines: { apply: true,  active: true,  monotonicFit: true } },
     grid: { hoverable: true, borderWidth: 1,  backgroundColor: { colors: ["#ffffff", "#fdf9f9"] }, borderColor: "#ff8839", markings: wmarkings,},
     legend: { noColumns: 3, labelBoxBorderColor: "#ffff", position: "nw" }
 };
-
 $(document).ready(function () {
 	$.plot($("#graph2"), wdataset, options_two);
-    $("#graph2").UseTooltip();
+	$("#graph2").UseTooltip();
 });
-</script>	
-
-<script type="text/javascript">
-var system_c = <?php echo json_encode($system_c); ?>;
-//var pi_box = <?php echo json_encode($pi_box); ?>;
-//var dataset_hw = [{label: "CPU  ", data: system_c, color: "#DE000F"},{label: "Pi Box  ", data: pi_box, color: "#7D0096"} ];
-var dataset_hw = [{label: "<?php echo $lang['cpu']; ?> ", data: system_c, color: "#DE000F"}];
-
-//background-color for All boiler on time 
-var markings_boiler = [
-<?php
-$query="select start_datetime, stop_datetime from zone_log_view where (start_datetime > DATE_SUB( NOW(), INTERVAL 24 HOUR));";
-$results = $conn->query($query);
-$count=mysqli_num_rows($results); 
-while ($row = mysqli_fetch_assoc($results)) {
-	if((--$count)==-1) break;
-$boiler_start = strtotime($row['start_datetime']) * 1000;
-if (is_null($row['stop_datetime'])) {
-	$boiler_stop = strtotime("now") * 1000;
-} else {$boiler_stop = strtotime($row['stop_datetime']) * 1000;}
-	echo "{ xaxis: { from: ".$boiler_start.", to: ".$boiler_stop." }, color: \"#ffe9dc\" },  \n" ;
-} ?> ];
 
 var options_three = {
-    xaxis: { mode: "time", timezone: "browser", timeformat: "%H:%M"},
+    xaxis: { mode: "time", timeformat: "%H:%M"},
     series: { lines: { show: true, lineWidth: 1, fill: false}, curvedLines: { apply: true,  active: true,  monotonicFit: true } },
     grid: { hoverable: true, borderWidth: 1,  backgroundColor: { colors: ["#ffffff", "#fdf7f4"] }, borderColor: "#ff8839", markings: markings_boiler, },
     legend: { noColumns: 3, labelBoxBorderColor: "#ffff", position: "nw" }
 };
-     
+
 $(document).ready(function () {$.plot($("#graph3"), dataset_hw, options_three);$("#graph3").UseTooltip();});
 var previousPoint = null, previousLabel = null;
+
 $.fn.UseTooltip = function () {
     $(this).bind("plothover", function (event, pos, item) {
         if (item) {
@@ -230,7 +194,7 @@ $.fn.UseTooltip = function () {
                 $("#tooltip").remove();
                 var x = item.datapoint[0];
                 var y = item.datapoint[1];
-                var color = item.series.color;                        
+                var color = item.series.color;
                 showTooltip(item.pageX,
                         item.pageY,
                         color,
@@ -258,9 +222,8 @@ function showTooltip(x, y, color, contents) {
         opacity: 0.7
     }).appendTo("body").fadeIn(200);
 }
-</script>
 
-<script type="text/javascript">
+// Create Monthly Usage Graphs
 function getMonthName(numericMonth) {
     var monthArray = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     var alphaMonth = monthArray[numericMonth];
@@ -273,15 +236,6 @@ function convertToDate(timestamp) {
     var monthName = getMonthName(dateString);
     return monthName;
 }
-
-var total_minuts = <?php echo json_encode($total_minuts); ?>;
-var on_minuts = <?php echo json_encode($on_minuts); ?>;
-var save_minuts = <?php echo json_encode($save_minuts); ?>;
-
-var dataset_mu = [
-{label: "<?php echo $lang['graph_total_time']; ?>  ", data: total_minuts, color: "#DE000F"},
-{label: "<?php echo $lang['graph_consumed_time']; ?>   ", data: on_minuts, color: "#7D0096"}, 
-{label: "<?php echo $lang['graph_saved_time']; ?>   ", data: save_minuts, color: "#009604"} ];
 
 /*
 Timeformat specifiers
@@ -302,7 +256,7 @@ Timeformat specifiers
 %w: weekday as number (0-6, 0 being Sunday)
 */
 var options_four = {
-    xaxis: { mode: "time", timezone: "browser", timeformat: "%b %Y"},
+    xaxis: { mode: "time", timeformat: "%b %Y"},
 	//yaxis: {axisLabel: 'Hours', axisLabelPadding: 15 },
     series: { lines: { show: true, lineWidth: 1, fill: false}, curvedLines: { apply: true,  active: true,  monotonicFit: true } },
     grid: { hoverable: true, borderWidth: 1,  backgroundColor: { colors: ["#ffffff", "#fdf7f4"] }, borderColor: "#ff8839" },
@@ -322,9 +276,9 @@ $.fn.UseTooltipu = function () {
                 var z = convertToDate(item.datapoint[0]);
 				var x = item.datapoint[0];
                 var y = item.datapoint[1];
-                var color = item.series.color;                        
+                var color = item.series.color;
                 showTooltipu(item.pageX, item.pageY, color,
-                "<strong>" + item.series.label + " in " + z +" <strong><br><?php echo $lang['hours']; ?>  : " + $.formatNumber(y, { format: "#,###", locale: "us" }) + "</strong> ");                
+                "<strong>" + item.series.label + " in " + z +" <strong><br><?php echo $lang['hours']; ?> : " + $.formatNumber(y, { format: "#,###", locale: "us" }) + "</strong> ");
             }
         } else {
             $("#tooltip").remove();
@@ -349,17 +303,9 @@ function showTooltipu(x, y, color, contents) {
     }).appendTo("body").fadeIn(200);
 }
 
-</script>
-<script type="text/javascript">
-var btotal_minuts = <?php echo json_encode($btotal_minuts); ?>;
-var bon_minuts = <?php echo json_encode($bon_minuts); ?>;
-var bsave_minuts = <?php echo json_encode($bsave_minuts); ?>;
-</script>
-
-<script type="text/javascript">
-// create battery usage dataset based on all available zones
+// Create Battery Usage Graphs
 var options_bat = {
-	xaxis: { mode: "time", timezone: "browser", timeformat: "%b %Y"},
+	xaxis: { mode: "time", timeformat: "%b %Y"},
     series: { lines: { show: true, lineWidth: 1, fill: false}, curvedLines: { apply: true,  active: true,  monotonicFit: true } },
     grid: { hoverable: true, borderWidth: 1,  backgroundColor: { colors: ["#ffffff", "#fdf9f9"] }, borderColor: "#ff8839",},
     legend: { noColumns: 3, labelBoxBorderColor: "#ffff", position: "nw" }
@@ -367,7 +313,6 @@ var options_bat = {
 
 $(document).ready(function () {$.plot($("#battery_level"), bat_level_dataset, options_bat);$("#battery_level").UseTooltipl();});
 var previousPoint = null, previousLabel = null;
-
 var weekday = new Array(7);
 weekday[0] = "Sunday";
 weekday[1] = "Monday";
@@ -387,7 +332,7 @@ $.fn.UseTooltipl = function () {
                 $("#tooltip").remove();
                 var x = item.datapoint[0];
                 var y = item.datapoint[1];
-                var color = item.series.color;                        
+                var color = item.series.color;
                 showTooltip(item.pageX,
                         item.pageY,
                         color,
