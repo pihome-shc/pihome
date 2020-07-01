@@ -694,6 +694,24 @@ CREATE TABLE IF NOT EXISTS `zone_current_state` (
 /*!40000 ALTER TABLE `zone_current_state` DISABLE KEYS */;
 /*!40000 ALTER TABLE `zone_current_state` ENABLE KEYS */;
 
+-- Dumping structure for table pihome.zone_graphs
+DROP TABLE IF EXISTS `zone_graphs`;
+CREATE TABLE IF NOT EXISTS `zone_graphs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sync` tinyint(4) NOT NULL,
+  `purge` tinyint(4) NOT NULL COMMENT 'Mark For Deletion',
+  `zone_id` int(11),
+  `name` char(50) COLLATE utf8_bin,
+  `type` char(50) COLLATE utf8_bin,
+  `category` int(11),
+  `node_id` char(15) COLLATE utf16_bin,
+  `child_id` tinyint(4),
+  `sub_type` int(11),
+  `payload` decimal(10,2),
+  `datetime` timestamp NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+
 -- Dumping structure for table pihome.zone_logs
 DROP TABLE IF EXISTS `zone_logs`;
 CREATE TABLE IF NOT EXISTS `zone_logs` (
