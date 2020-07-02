@@ -275,6 +275,8 @@ try:
 								print("5a: Adding Temperature Reading to Graph Table From Node ID:", node_id, " Child Sensor ID:", child_sensor_id, " PayLoad:", payload)
 							cur.execute('INSERT INTO zone_graphs(`sync`, `purge`, `zone_id`, `name`, `type`, `category`, `node_id`,`child_id`, `sub_type`, `payload`, `datetime`) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)', (0,0,zone_id,name,type,category,node_id,child_sensor_id,sub_type,payload,timestamp))
 							con.commit()
+							cur.execute('DELETE FROM zone_graphs WHERE node_id = (%s) AND child_id = (%s) AND datetime < CURRENT_TIMESTAMP - INTERVAL 24 HOUR;', (node_id, child_sensor_id))
+							con.commit()
 
 				# ..::Step Six::..
 				# Add Battery Voltage Nodes Battery Table
