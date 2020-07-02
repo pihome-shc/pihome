@@ -45,16 +45,6 @@ if (isset($result)) {
 	echo mysql_error()."\n";
 }
 
-//Delete zone_graphs In Reocrds older then 1 Days.
-$query = "DELETE FROM zone_graphs WHERE `datetime` < CURRENT_TIMESTAMP - INTERVAL 24 HOUR;";
-$result = $conn->query($query);
-if (isset($result)) {
-        echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Graphs Records Delete from Tables \n";
-}else {
-        echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Graphs Records Delete from Tables Failed\n";
-        echo mysql_error()."\n";
-}
-
 //Delete Gateway Logs data older then 3 days. 
 $query = "DELETE FROM gateway_logs WHERE pid_datetime < DATE_SUB(curdate(), INTERVAL 3 DAY);";
 $result = $conn->query($query);
