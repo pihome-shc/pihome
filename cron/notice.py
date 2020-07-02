@@ -193,7 +193,7 @@ try:
         				cursorselect.close()
         				if cursorselect.rowcount > 0 : # Battery Record Found
 						update = results[bat_node_to_index['update']]
-						bat_level = results[bat_node_to_index['bat_level']]
+						bat_level = int(results[bat_node_to_index['bat_level']])
                         			timeDifference = (datetime.datetime.now() - update)
                         			time_difference_in_minutes = (timeDifference.days * 24 * 60) + (timeDifference.seconds/60)
                         			message = "Battery Node " + node_id + " last reported on " + str(update)
@@ -251,7 +251,7 @@ try:
 
                                                         cursorupdate.close()
                                                         con.commit()
-                                                else : # node has now reported a sulitable level so delete any 'notice' records
+                                                elif bat_level > min_value : # node has now reported a sulitable level so delete any 'notice' records
                                                         query = "DELETE FROM notice WHERE message LIKE 'Battery Node "  + str(node_id) + " Level <%'"
                                                         cursordelete = con.cursor()
                                                         cursordelete.execute(query)
