@@ -262,19 +262,19 @@ try:
 					cur.execute('UPDATE `nodes` SET `last_seen`=now(), `sync`=0  WHERE node_id = %s', [node_id])
 					con.commit()
                                         # Check is sensor is attached to a zone which is being graphed
-                                        cur.execute('SELECT * FROM `zone_view` where sensors_id = (%s) AND sensor_child_id = (%s) LIMIT 1;', (node_id, child_sensor_id))
-                                        results =cur.fetchone()
-                                        if cur.rowcount > 0:
-                                                zone_id = int(results[3])
-                                                name = results[5]
-                                                type = results[6]
-                                                category = int(results[7])
-                                                graph_it = int(results[8])
-                                                if category < 2 and graph_it == 1:
-                                                        if dbgLevel >= 2 and dbgMsgIn == 1:
-                                                                print("5a: Adding Temperature Reading to Graph Table From Node ID:", node_id, " Child Sensor ID:", child_sensor_id, " PayLoa$
-                                                        cur.execute('INSERT INTO zone_graphs(`sync`, `purge`, `zone_id`, `name`, `type`, `category`, `node_id`,`child_id`, `sub_type`, `payl$
-                                                        con.commit()
+					cur.execute('SELECT * FROM `zone_view` where sensors_id = (%s) AND sensor_child_id = (%s) LIMIT 1;', (node_id, child_sensor_id))
+					results =cur.fetchone()
+					if cur.rowcount > 0:
+						zone_id = int(results[3])
+						name = results[5]
+						type = results[6]
+						category = int(results[7])
+						graph_it = int(results[8])
+						if category < 2 and graph_it == 1:
+							if dbgLevel >= 2 and dbgMsgIn == 1:
+								print("5a: Adding Temperature Reading to Graph Table From Node ID:", node_id, " Child Sensor ID:", child_sensor_id, " PayLoad:", payload)
+							cur.execute('INSERT INTO zone_graphs(`sync`, `purge`, `zone_id`, `name`, `type`, `category`, `node_id`,`child_id`, `sub_type`, `payload`, `datetime`) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)', (0,0,zone_id,name,type,category,node_id,child_sensor_id,sub_type,payload,timestamp))
+							con.commit()
 
 				# ..::Step Six::..
 				# Add Battery Voltage Nodes Battery Table
