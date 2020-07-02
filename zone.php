@@ -76,8 +76,8 @@ if (isset($_POST['submit'])) {
 		$boost_button_id = $found_product['node_id'];
 	}
 
-    //Add or Edit Zone record to Zone Table
-        if ($zone_category == 0) {
+	//Add or Edit Zone record to Zone Table
+	if ($zone_category == 0) {
 		$query = "INSERT INTO `zone` (`id`, `sync`, `purge`, `status`, `index_id`, `name`, `type`, `model`, `graph_it`, `max_c`, `max_operation_time`, `hysteresis_time`, `sp_deadband`, `sensor_id`, `sensor_child_id`, `controler_id`, `controler_child_id`) VALUES ('{$id}', '0', '0', '{$zone_status}', '{$index_id}', '{$name}', '{$type}', 'NULL', '1', '{$max_c}', '{$max_operation_time}', '{$hysteresis_time}', '{$sp_deadband}', '{$sensor_id}', '{$sensor_child_id}', '{$controler_id}', '{$controler_child_id}') ON DUPLICATE KEY UPDATE status=VALUES(status), index_id=VALUES(index_id), name=VALUES(name), type=VALUES(type), max_c=VALUES(max_c), max_operation_time=VALUES(max_operation_time), hysteresis_time=VALUES(hysteresis_time), sp_deadband=VALUES(sp_deadband), sensor_id=VALUES(sensor_id), sensor_child_id=VALUES(sensor_child_id), controler_id=VALUES(controler_id), controler_child_id=VALUES(controler_child_id);";
 	} elseif ($zone_category == 1) {
 		$query = "INSERT INTO `zone` (`id`, `sync`, `purge`, `status`, `index_id`, `name`, `type`, `model`, `graph_it`, `max_c`, `max_operation_time`, `hysteresis_time`, `sp_deadband`, `sensor_id`, `sensor_child_id`, `controler_id`, `controler_child_id`) VALUES ('{$id}', '0', '0', '{$zone_status}', '{$index_id}', '{$name}', '{$type}', 'NULL', '1', '{$max_c}', '{$max_operation_time}', '{$hysteresis_time}', '{$sp_deadband}', '{$sensor_id}', '{$sensor_child_id}', '{$controler_id}', '{$controler_child_id}') ON DUPLICATE KEY UPDATE status=VALUES(status), index_id=VALUES(index_id), name=VALUES(name), type=VALUES(type), max_c=VALUES(max_c), max_operation_time=VALUES(max_operation_time), hysteresis_time=VALUES(hysteresis_time), sp_deadband=VALUES(sp_deadband), sensor_id=VALUES(sensor_id), sensor_child_id=VALUES(sensor_child_id), controler_id=VALUES(controler_id), controler_child_id=VALUES(controler_child_id);";
@@ -95,11 +95,10 @@ if (isset($_POST['submit'])) {
 	//check if Controller id already exist in message_out table
 	$query = "SELECT * FROM messages_out WHERE node_id = '{$controler}' AND child_id = '{$controler_child_id}' AND zone_id = '{$zone_id}' LIMIT 1;";
 	$result = $conn->query($query);
-	if (!$result) {
+	if (mysqli_num_rows($result) ==0){
 		//Add Zone to message out table at same time to send out instructions to controller for each zone.
 		if ($node_id !=0 OR $node_id !='0'){
 			$query = "INSERT INTO `messages_out` (`sync`, `purge`, `node_id`, `child_id`, `sub_type`, `ack`, `type`, `payload`, `sent`, `datetime`, `zone_id`) VALUES ('0', '0', '{$controler}','{$controler_child_id}', '1', '1', '2', '0', '0', '{$date_time}', '{$zone_id}');";
-			$result = $conn->query($query);
 			$result = $conn->query($query);
 			if ($result) {
 				$message_success .= "<p>".$lang['zone_controler_success']."</p>";
@@ -132,7 +131,7 @@ if (isset($_POST['submit'])) {
 		}
 	}
 
-        if ($zone_category < 2) {
+	if ($zone_category < 2) {
 		//Add or Edit Zone to override table at same time
 		if ($id==0){
 			$query = "INSERT INTO `override`(`sync`, `purge`, `status`, `zone_id`, `time`, `temperature`) VALUES ('0', '0', '0', '{$zone_id}', '{$date_time}', '{$max_c}');";
@@ -145,20 +144,20 @@ if (isset($_POST['submit'])) {
 		} else {
 			$error .= "<p>".$lang['zone_override_fail']."</p> <p>" .mysqli_error($conn). "</p>";
 		}
-
+	
 		//Add Zone to schedule_night_climat_zone table at same time
 		if ($id==0){
 			$query = "SELECT * FROM schedule_night_climate_time;";
-        		$result = $conn->query($query);
+				$result = $conn->query($query);
 			$nctcount = $result->num_rows;
-        		if ($nctcount == 0) {
+				if ($nctcount == 0) {
 				$query = "INSERT INTO `schedule_night_climate_time` VALUES (1,1,0,0,'18:00:00','23:30:00',0);";
-		        	$result = $conn->query($query);
-	        		if ($result) {
-        	        		$message_success .= "<p>".$lang['schedule_night_climate_time_success']."</p>";
-        			} else {
-                			$error .= "<p>".$lang['schedule_night_climate_time_fail']."</p> <p>" .mysqli_error($conn). "</p>";
-	        		}
+					$result = $conn->query($query);
+					if ($result) {
+							$message_success .= "<p>".$lang['schedule_night_climate_time_success']."</p>";
+					} else {
+							$error .= "<p>".$lang['schedule_night_climate_time_fail']."</p> <p>" .mysqli_error($conn). "</p>";
+					}
 			}
 			$query = "INSERT INTO `schedule_night_climat_zone` (`sync`, `purge`, `status`, `zone_id`, `schedule_night_climate_id`, `min_temperature`, `max_temperature`) VALUES ('0', '0', '0', '{$zone_id}', '1', '18','21');";
 			$result = $conn->query($query);
@@ -169,41 +168,40 @@ if (isset($_POST['submit'])) {
 			}
 		}
 	}
-        $date_time = date('Y-m-d H:i:s');
+	$date_time = date('Y-m-d H:i:s');
 	//query to check if default away record exists
-        $query = "SELECT * FROM away LIMIT 1;";
+	$query = "SELECT * FROM away LIMIT 1;";
 	$result = $conn->query($query);
-        $acount = $result->num_rows;
+	$acount = $result->num_rows;
 	if ($acount == 0) {
-                $query = "INSERT INTO `away` VALUES (1,0,0,0,'{$date_time}','{$date_time}',40, 4);";
-               	$result = $conn->query($query);
-	        if ($result) {
-                        $message_success .= "<p>".$lang['away_success']."</p>";
-               	} else {
-                       	$error .= "<p>".$lang['away_fail']."</p> <p>" .mysqli_error($conn). "</p>";
-	        }
-        }
+		$query = "INSERT INTO `away` VALUES (1,0,0,0,'{$date_time}','{$date_time}',40, 4);";
+		$result = $conn->query($query);
+		if ($result) {
+			$message_success .= "<p>".$lang['away_success']."</p>";
+		} else {
+			$error .= "<p>".$lang['away_fail']."</p> <p>" .mysqli_error($conn). "</p>";
+		}
+	}
 
 	//query to check if default holiday record exists
-        $query = "SELECT * FROM holidays LIMIT 1;";
+	$query = "SELECT * FROM holidays LIMIT 1;";
 	$result = $conn->query($query);
-        $hcount = $result->num_rows;
+	$hcount = $result->num_rows;
 	if ($hcount == 0) {
-                $query = "INSERT INTO `holidays` VALUES (1,0,0,0,'{$date_time}','{$date_time}');";
-               	$result = $conn->query($query);
-	        if ($result) {
-                        $message_success .= "<p>".$lang['holidays_success']."</p>";
-               	} else {
-                       	$error .= "<p>".$lang['holidays_fail']."</p> <p>" .mysqli_error($conn). "</p>";
-	        }
-        }
+		$query = "INSERT INTO `holidays` VALUES (1,0,0,0,'{$date_time}','{$date_time}');";
+		$result = $conn->query($query);
+		if ($result) {
+			$message_success .= "<p>".$lang['holidays_success']."</p>";
+		} else {
+			$error .= "<p>".$lang['holidays_fail']."</p> <p>" .mysqli_error($conn). "</p>";
+		}
+	}
 	$message_success .= "<p>".$lang['do_not_refresh']."</p>";
 	header("Refresh: 10; url=home.php");
 	// After update on all required tables, set $id to mysqli_insert_id.
 	if ($id==0){$id=$zone_id;}
 }
 ?>
-
 <!-- ### Visible Page ### -->
 <?php include("header.php");  ?>
 <?php include_once("notice.php"); ?>
