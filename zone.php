@@ -49,7 +49,8 @@ if (isset($_POST['submit'])) {
 	$boost_button_id = $_POST['boost_button_id'];
 	$boost_button_child_id = $_POST['boost_button_child_id'];
 	if ($_POST['zone_gpio'] == 0){$gpio_pin='0';} else {$gpio_pin = $_POST['zone_gpio'];}
-
+	$message_id =  $_POST['message_out_id'];
+	
 	$boiler = explode('-', $_POST['boiler_id'], 2);
 	$boiler_id = $boiler[0];
 
@@ -92,21 +93,27 @@ if (isset($_POST['submit'])) {
 		$error = "<p>".$lang['zone_record_fail']." </p> <p>" .mysqli_error($conn). "</p>";
 	}
 
-	//check if Controller id already exist in message_out table
-	$query = "SELECT * FROM messages_out WHERE node_id = '{$controler}' AND child_id = '{$controler_child_id}' AND zone_id = '{$zone_id}' LIMIT 1;";
-	$result = $conn->query($query);
-	if (mysqli_num_rows($result) ==0){
-		//Add Zone to message out table at same time to send out instructions to controller for each zone.
-		if ($node_id !=0 OR $node_id !='0'){
-			$query = "INSERT INTO `messages_out` (`sync`, `purge`, `node_id`, `child_id`, `sub_type`, `ack`, `type`, `payload`, `sent`, `datetime`, `zone_id`) VALUES ('0', '0', '{$controler}','{$controler_child_id}', '1', '1', '2', '0', '0', '{$date_time}', '{$zone_id}');";
-			$result = $conn->query($query);
-			if ($result) {
-				$message_success .= "<p>".$lang['zone_controler_success']."</p>";
-			} else {
-				$error .= "<p>".$lang['zone_controler_fail']."</p> <p>" .mysqli_error($conn). "</p>";
-			}
-		}
-	}
+        // if in add zone mode add to message_out table
+        if ($id==0){
+                //Add Zone to message out table at same time to send out instructions to controller for each zone.
+                if ($node_id !=0 OR $node_id !='0'){
+                        $query = "INSERT INTO `messages_out` (`sync`, `purge`, `node_id`, `child_id`, `sub_type`, `ack`, `type`, `payload`, `sent`, `datetime`, `zone_id`) VALUES ('0', '0',$
+                        $result = $conn->query($query);
+                        if ($result) {
+                                $message_success .= "<p>".$lang['zone_controler_success']."</p>";
+                        } else {
+                                $error .= "<p>".$lang['zone_controler_fail']."</p> <p>" .mysqli_error($conn). "</p>";
+                        }
+                }
+        } else {
+                $query = "UPDATE `messages_out` SET `node_id` = '{$controler}', `child_id` =  '{$controler_child_id}' WHERE `id` = '{$message_id}';";
+                $result = $conn->query($query);
+                if ($result) {
+                        $message_success .= "<p>".$lang['zone_controler_success']."</p>";
+                } else {
+                        $error .= "<p>".$lang['zone_controler_fail']."</p> <p>" .mysqli_error($conn). "</p>";
+                }
+        }
 
 	//If boost button console isnt installed and editing existing zone, then no need to add this to message_out
 	if ($boost_button_id != 0 && $id==0){
@@ -230,6 +237,10 @@ if (isset($_POST['submit'])) {
 	$query = "SELECT id, node_id, name FROM boiler WHERE id = '{$row['boiler_id']}' LIMIT 1;";
 	$result = $conn->query($query);
 	$rowboiler = mysqli_fetch_assoc($result);
+
+        $query = "SELECT id FROM messages_out WHERE node_id = '{$rowcont['node_id']}' AND child_id = '{$row['controler_child_id']}' AND zone_id  = {$id} LIMIT 1;";
+        $result = $conn->query($query);
+        $rowmount = mysqli_fetch_assoc($result);
 }
 ?>
 
@@ -250,6 +261,7 @@ if (isset($_POST['submit'])) {
 <form data-toggle="validator" role="form" method="post" action="<?php $_SERVER['PHP_SELF'];?>" id="form-join">
 
 <!-- Enable Zone -->
+<input type="hidden" id="message_out_id" name="message_out_id" value="<?php if(isset($rowmount['id'])) { echo $rowmount['id']; } ?>"/>
 <div class="checkbox checkbox-default checkbox-circle">
 <input id="checkbox0" class="styled" type="checkbox" name="zone_status" value="1" <?php $check = ($row['status'] == 1) ? 'checked' : ''; echo $check; ?>>>
 <label for="checkbox0"> <?php echo $lang['zone_enable']; ?> </label> <small class="text-muted"><?php echo $lang['zone_enable_info'];?></small>
