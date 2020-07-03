@@ -88,7 +88,11 @@ if (isset($_POST['submit'])) {
 	$result = $conn->query($query);
 	$zone_id = mysqli_insert_id($conn);
 	if ($result) {
-		$message_success = "<p>".$lang['zone_record_success']."</p>";
+                if ($id==0){
+                        $message_success = "<p>".$lang['zone_record_add_success']."</p>";
+                } else {
+                        $message_success = "<p>".$lang['zone_record_update_success']."</p>";
+                }
 	} else {
 		$error = "<p>".$lang['zone_record_fail']." </p> <p>" .mysqli_error($conn). "</p>";
 	}
@@ -100,18 +104,18 @@ if (isset($_POST['submit'])) {
                         $query = "INSERT INTO `messages_out` (`sync`, `purge`, `node_id`, `child_id`, `sub_type`, `ack`, `type`, `payload`, `sent`, `datetime`, `zone_id`) VALUES ('0', '0',$
                         $result = $conn->query($query);
                         if ($result) {
-                                $message_success .= "<p>".$lang['zone_controler_success']."</p>";
+                                $message_success .= "<p>".$lang['messages_out_add_success']."</p>";
                         } else {
-                                $error .= "<p>".$lang['zone_controler_fail']."</p> <p>" .mysqli_error($conn). "</p>";
+                                $error .= "<p>".$lang['messages_out_fail']."</p> <p>" .mysqli_error($conn). "</p>";
                         }
                 }
         } else {
                 $query = "UPDATE `messages_out` SET `node_id` = '{$controler}', `child_id` =  '{$controler_child_id}' WHERE `id` = '{$message_id}';";
                 $result = $conn->query($query);
                 if ($result) {
-                        $message_success .= "<p>".$lang['zone_controler_success']."</p>";
+                        $message_success .= "<p>".$lang['messages_out_update_success']."</p>";
                 } else {
-                        $error .= "<p>".$lang['zone_controler_fail']."</p> <p>" .mysqli_error($conn). "</p>";
+                        $error .= "<p>".$lang['messages_out_fail']."</p> <p>" .mysqli_error($conn). "</p>";
                 }
         }
 
