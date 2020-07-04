@@ -101,7 +101,7 @@ if (isset($_POST['submit'])) {
         if ($id==0){
                 //Add Zone to message out table at same time to send out instructions to controller for each zone.
                 if ($node_id !=0 OR $node_id !='0'){
-                        $query = "INSERT INTO `messages_out` (`sync`, `purge`, `node_id`, `child_id`, `sub_type`, `ack`, `type`, `payload`, `sent`, `datetime`, `zone_id`) VALUES ('0', '0',$
+                        $query = "INSERT INTO `messages_out` (`sync`, `purge`, `node_id`, `child_id`, `sub_type`, `ack`, `type`, `payload`, `sent`, `datetime`, `zone_id`) VALUES ('0', '0', '{$controler}','{$controler_child_id}', '1', '1', '2', '0', '0', '{$date_time}', '{$zone_id}');";
                         $result = $conn->query($query);
                         if ($result) {
                                 $message_success .= "<p>".$lang['messages_out_add_success']."</p>";
