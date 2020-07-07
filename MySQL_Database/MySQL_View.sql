@@ -57,6 +57,18 @@ LEFT join nodes skv on zone.sensor_id = skv.id
 LEFT join nodes skv_2 on zone.controler_id = skv_2.id
 where zone.`purge` = '0';
 
+-- Add-On Logs views
+Drop View if exists add_on_log_view;
+CREATE VIEW add_on_log_view AS
+select add_on_zone_logs.id, add_on_zone_logs.sync, add_on_zone_logs.zone_id, ztype.type,
+add_on_zone_logs.add_on_log_id, aost.start_datetime, aoet.stop_datetime, aoext.expected_end_date_time, add_on_zone_logs.status
+from add_on_zone_logs
+join zone ztype on add_on_zone_logs.zone_id = ztype.id
+join add_on_logs aost on add_on_zone_logs.add_on_log_id = aost.id
+join add_on_logs aoet on add_on_zone_logs.add_on_log_id = aoet.id
+join add_on_logs aoext on add_on_zone_logs.add_on_log_id = aoext.id
+order by id asc;
+
 -- Boiler View
 Drop View if exists boiler_view;
 CREATE VIEW boiler_view AS
