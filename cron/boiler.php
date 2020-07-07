@@ -666,7 +666,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 		}
 
 		//Pass data to zone commands loop
-		$zone_commands[$command_index] = (array('zone_id' =>$zone_id, 'zone_category' =>$zone_category, 'zone_controler_id' =>$zone_controler_id, 'zone_controler_child_id' =>$zone_controler_child_id, 'zone_status'=>$zone_status, 'zone_status_prev'=>$zone_status_prev, 'zone_overrun_prev'=>$zone_overrun_prev));
+		$zone_commands[$command_index] = (array('zone_id' =>$zone_id, 'zone_category' =>$zone_category, 'zone_controler_id' =>$zone_controler_id, 'zone_controler_child_id' =>$zone_controler_child_id, 'zone_controller_type' =>$zone_controller_type, 'zone_status'=>$zone_status, 'zone_status_prev'=>$zone_status_prev, 'zone_overrun_prev'=>$zone_overrun_prev));
 		$command_index = $command_index+1;
 		//process Zone Cat 0 logs
 		if ($zone_category == 0){
@@ -722,6 +722,7 @@ for ($row = 0; $row < count($zone_commands); $row++){
 	$zone_category = $zone_commands[$row]["zone_category"];
 	$zone_controler_id = $zone_commands[$row]["zone_controler_id"];
 	$zone_controler_child_id = $zone_commands[$row]["zone_controler_child_id"];
+	$zone_controller_type = $zone_commands[$row]["zone_controller_type"];
 	$zone_status = $zone_commands[$row]["zone_status"];
 	$zone_status_prev = $zone_commands[$row]["zone_status_prev"];
 	$zone_overrun_prev = $zone_commands[$row]["zone_overrun_prev"];
