@@ -549,7 +549,7 @@ echo '
             </div>
             <div class="modal-body">
 <p class="text-muted"> '.$lang['override_settings_text'].'</p>';
-$query = "SELECT * FROM override_view ORDER BY index_id asc";
+$query = "SELECT * FROM override_view WHERE category < 2 ORDER BY index_id asc";
 $results = $conn->query($query);
 echo '	<div class=\"list-group\">';
 while ($row = mysqli_fetch_assoc($results)) {
