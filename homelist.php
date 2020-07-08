@@ -139,7 +139,8 @@ require_once(__DIR__.'/st_inc/functions.php');
 			1 - running 
 			2 - stopped (within deadband) 
 			3 - stopped (coop start waiting for boiler) 
-			4 - manual operation */
+			4 - manual operation ON
+			5 - manual operation OFF */
 
    			echo '<button class="btn btn-default btn-circle btn-xxl mainbtn animated fadeIn" data-href="#" data-toggle="modal" data-target="#'.$zone_type.''.$zone_id.'" data-backdrop="static" data-keyboard="false">
 			<h3><small>'.$zone_name.'</small></h3>
