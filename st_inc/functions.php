@@ -451,12 +451,17 @@ function getIndicators($conn, $zone_mode, $zone_temp_target)
 		$shcolor='';
 		$target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';
 	}
-	//override
-	else if($zone_mode_main == 70){
-		$shactive='fa-refresh';
-		$shcolor='';
-		$target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';
-	}
+        //override
+        else if($zone_mode_main == 70){
+                $shactive='fa-refresh';
+                $shcolor='';
+                // category 2 zone in manual overrride mode
+                if($zone_mode_sub >= 4){
+                        $target='';     //show no target temperature
+                } else {
+                        $target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';
+                }
+        }
 	//sheduled
 	else if($zone_mode_main == 80){
 		//if not coop start waiting for boiler
