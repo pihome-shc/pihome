@@ -262,6 +262,23 @@ while ($row = mysqli_fetch_assoc($results)) {
 				$sch_holidays = '0';
 			}
 		}
+
+                // use the override table to enaable manual ON/OFF control during a running category 2 zone schedule
+                if ($zone_category == 2) {
+                        // get the current state of the add-on
+                        $query = "SELECT * FROM messages_out WHERE node_id = '{$zone_controler_id}' AND child_id = {$zone_controler_child_id} LIMIT 1;";
+                        $result = $conn->query($query);
+                        $add_on = mysqli_fetch_array($result);
+                        $add_on_state = intval($add_on['payload']);
+                        // if add-on is OFF and schedule is running then activate override
+                        if ($add_on_state == 0 and $zone_current_mode == 114) {
+                                $query = "UPDATE override SET status = 1, sync = '0' WHERE zone_id = {$zone_id};";
+                        } elseif ($sch_status == 0) { // clear override at the end of the schedule
+                                $query = "UPDATE override SET status = 0, sync = '0' WHERE zone_id = {$zone_id};";
+                        }
+                        $conn->query($query);
+                }
+		
 		//Calculate zone fail
 		$zone_fault = 0;
 		$zone_ctr_fault = 0;
@@ -582,11 +599,17 @@ while ($row = mysqli_fetch_assoc($results)) {
 									$conn->query($query);
 								}
 							}
-							if ($zone_active_status =='1') {
-								$zone_status="1";
-								$zone_mode = 111;
-								$start_cause="Manual Start";
-							}
+                                                        if (($sch_status =='1') && ($override_status=='1')){
+                                                                $zone_status = (($add_on_state == 1) || ($zone_active_status == 1)) ? 1:0 ;
+                                                                $zone_mode = 74 + $add_on_state;
+                                                                $start_cause="Manual Override Started";
+                                                                $expected_end_date_time=date('Y-m-d '.$sch_end_time.'');
+                                                        }
+                                                        elseif ($zone_active_status =='1') {
+                                                                $zone_status="1";
+                                                                $zone_mode = 111;
+                                                                $start_cause="Manual Start";
+                                                        }
 						} elseif ($boost_status=='1') {
 							$zone_status="1";
 							$zone_mode = 61;
@@ -643,7 +666,9 @@ while ($row = mysqli_fetch_assoc($results)) {
 			1 - running 
 			2 - stopped (within deadband) 
 			3 - stopped (coop start waiting for boiler)
-			4 - manual operation */
+			4 - manual operation ON
+			5 - manual operation OFF */
+
 		$query = "UPDATE zone_current_state SET mode = {$zone_mode}, status = {$zone_status}, temp_reading = '{$zone_c}', temp_target = {$target_c},temp_cut_in = {$temp_cut_in}, temp_cut_out = {$temp_cut_out}, controler_fault = {$zone_ctr_fault}, controler_seen_time = '{$controler_seen}', sensor_fault  = {$zone_sensor_fault}, sensor_seen_time = '{$sensor_seen}', sensor_reading_time = '{$temp_reading_time}' WHERE id ={$zone_id} LIMIT 1;";
 		$conn->query($query);
 
