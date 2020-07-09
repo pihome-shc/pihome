@@ -37,11 +37,12 @@ $query = "SELECT boost.id, boost.status, boost.zone_id, zone.index_id, boost.tim
 $results = $conn->query($query);
 while ($row = mysqli_fetch_assoc($results)) {
 	//query to search location device_id		
-	$query = "SELECT * FROM zone WHERE id = {$row['zone_id']} LIMIT 1";
+	$query = "SELECT * FROM zone_view WHERE id = {$row['zone_id']} LIMIT 1";
 	$result = $conn->query($query);
 	$pi_device = mysqli_fetch_array($result);
 	$device = $pi_device['name'];	
 	$type = $pi_device['type'];	
+        $category = $pi_device['category'];
 	$zone_status = $pi_device['status'];
 	if ($zone_status != 0) {
 		echo '
@@ -49,14 +50,23 @@ while ($row = mysqli_fetch_assoc($results)) {
 		<a href="javascript:active_boost('.$row["id"].');">
 		<span class="chat-img pull-left override">';
 		if($row["status"]=="0"){ $shactive="bluesch"; $status="Off"; }else{ $shactive="redsch"; $status="On"; }
-		echo '<div class="circle '. $shactive.'"><p class="schdegree">'.number_format(DispTemp($conn,$row["temperature"]),0).'&deg;</p></div>
-		</span></a>
-		<div class="chat-body clearfix" style="padding-top: 10px;">
-		<div class="header">';
+                if ($category == 2) {
+                        echo '<div class="circle '. $shactive.'"><p class="schdegree"></p></div>
+                        </span></a>
+                        <div class="chat-body clearfix">
+                        <div class="header">';
+                } else {
+                        echo '<div class="circle '. $shactive.'"><p class="schdegree">'.number_format(DispTemp($conn,$row["temperature"]),0).'&deg;</p></div>
+                        </span></a>
+                        <div class="chat-body clearfix">
+                        <div class="header">';
+                }
 		if($row["status"]=="0" && $type=="Heating"){ $pi_image = "radiator.png";  }
 		elseif($row["status"]=="0" && $type=="Water"){ $pi_image = "off_hot_water.png";  }
 		elseif($row["status"]=="1" && $type=="Heating"){ $pi_image = "radiator1.png";  }
 		elseif($row["status"]=="1" && $type=="Water"){ $pi_image = "hot_water.png"; }
+                elseif($row["status"]=="0" && $category == 2){ $pi_image = "icons8-light-off-30.png";  }
+                elseif($row["status"]=="1" && $category == 2){ $pi_image = "icons8-light-automation-30.png";  }
 		$phpdate = strtotime($row['time']);
 		$boost_time = $phpdate + ($row['minute'] * 60);
 		echo '<strong class="primary-font">&nbsp;&nbsp;'. $device.' </strong>
