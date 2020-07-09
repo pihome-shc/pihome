@@ -622,7 +622,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 						$zone_mode = 40;
 						$stop_cause="Holiday Active";
 					}
-					if ($sch_status=='0' && $zone_active_status=='0') {
+					if ($sch_status=='0' && $zone_active_status=='0' && $boost_status=='0') {
 						$zone_status="0";
 						$zone_mode = 0;
 						$stop_cause="No Schedule";
