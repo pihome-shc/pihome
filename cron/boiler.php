@@ -298,32 +298,61 @@ while ($row = mysqli_fetch_assoc($results)) {
 				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone valve communication timeout for This Zone. Node Last Seen: ".$controler_seen."\n";
 			}
 		}
+
+		//query to check override status and get temperature from override table
+		$query = "SELECT * FROM override WHERE zone_id = {$zone_id} LIMIT 1;";
+		$result = $conn->query($query);
+		if (mysqli_num_rows($result) != 0){
+			$override = mysqli_fetch_array($result);
+			$override_status = $override['status'];
+			$override_c = $override['temperature'];
+		}else {
+			$override_status = '0';
+		}
+		
+		//query to check boost status and get temperature from boost table
+		$query = "SELECT * FROM boost WHERE zone_id = {$zone_id} AND status = 1 LIMIT 1;";
+		$result = $conn->query($query);
+		if (mysqli_num_rows($result) != 0){
+			$boost = mysqli_fetch_array($result);
+			$boost_status = $boost['status'];
+			$boost_time = $boost['time'];
+			$boost_c = $boost['temperature'];
+			$boost_minute = $boost['minute'];
+		} else {
+			$boost_status = '0';
+		}
+
+		//check boost time is passed, if it passed then update db and set to boost status to 0
+		if ($boost_status=='1'){
+			$phpdate = strtotime( $boost_time );
+			$boost_time = $phpdate + ($boost_minute * 60);
+			$now=strtotime(date('Y-m-d H:i:s'));
+			if (($boost_time > $now) && ($boost_status=='1')){
+				$boost_active='1';
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boost is Active for This Zone \n";
+			}elseif (($boost_time < $now) && ($boost_status=='1')){
+				$boost_active='0';
+				//You can comment out if you dont have Boost Button Console installed.
+				$query = "SELECT * FROM boost WHERE zone_id ={$row['id']} AND status = '1';";
+				$bresults = $conn->query($query);
+				$brow = mysqli_fetch_assoc($bresults);
+				$brow['boost_button_id'];
+				$brow['boost_button_child_id'];
+				$query = "UPDATE messages_out SET payload = '{$boost_active}', sent = '0' WHERE zone_id = {$row['id']} AND node_id = {$brow['boost_button_id']} AND child_id = {$brow['boost_button_child_id']} LIMIT 1;";
+				$conn->query($query);
+				//update Boost Records in database
+				$query = "UPDATE boost SET status = '{$boost_active}', sync = '0' WHERE zone_id = {$row['id']};";
+				$conn->query($query);
+			}else {
+				$boost_active='0';
+			}
+		}else {
+			$boost_active='0';
+		}
+
 		//Check Zone category 0 or 1
 		if ($zone_category == 0 OR $zone_category == 1) {
-			//query to check override status and get temperature from override table
-			$query = "SELECT * FROM override WHERE zone_id = {$zone_id} LIMIT 1;";
-			$result = $conn->query($query);
-			if (mysqli_num_rows($result) != 0){
-				$override = mysqli_fetch_array($result);
-				$override_status = $override['status'];
-				$override_c = $override['temperature'];
-			}else {
-				$override_status = '0';
-			}
-
-			//query to check boost status and get temperature from boost table
-			$query = "SELECT * FROM boost WHERE zone_id = {$zone_id} AND status = 1 LIMIT 1;";
-			$result = $conn->query($query);
-			if (mysqli_num_rows($result) != 0){
-				$boost = mysqli_fetch_array($result);
-				$boost_status = $boost['status'];
-				$boost_time = $boost['time'];
-				$boost_c = $boost['temperature'];
-				$boost_minute = $boost['minute'];
-			} else {
-				$boost_status = '0';
-			}
-
 			//query to check night climate status and get temperature from night climate table
 			//$query = "select * from schedule_night_climat_zone_view WHERE zone_id = {$zone_id} LIMIT 1;";
 			$query = "SELECT * from schedule_night_climat_zone_view WHERE ((`end`>`start` AND CURTIME() between `start` AND `end`) OR (`end`<`start` AND CURTIME()<`end`) OR (`end`<`start` AND CURTIME()>`start`)) AND zone_id = {$zone_id} AND time_status = '1' AND tz_status = '1' AND (WeekDays & (1 << {$dow})) > 0 LIMIT 1;";
@@ -350,34 +379,6 @@ while ($row = mysqli_fetch_assoc($results)) {
 				}
 			}else {
 				$night_climate_status='0';
-			}
-
-			//check boost time is passed, if it passed then update db and set to boost status to 0
-			if ($boost_status=='1'){
-				$phpdate = strtotime( $boost_time );
-				$boost_time = $phpdate + ($boost_minute * 60);
-				$now=strtotime(date('Y-m-d H:i:s'));
-				if (($boost_time > $now) && ($boost_status=='1')){
-					$boost_active='1';
-					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boost is Active for This Zone \n";
-				}elseif (($boost_time < $now) && ($boost_status=='1')){
-					$boost_active='0';
-					//You can comment out if you dont have Boost Button Console installed.
-					$query = "SELECT * FROM boost WHERE zone_id ={$row['id']} AND status = '1';";
-					$bresults = $conn->query($query);
-					$brow = mysqli_fetch_assoc($bresults);
-					$brow['boost_button_id'];
-					$brow['boost_button_child_id'];
-					$query = "UPDATE messages_out SET payload = '{$boost_active}', sent = '0' WHERE zone_id = {$row['id']} AND node_id = {$brow['boost_button_id']} AND child_id = {$brow['boost_button_child_id']} LIMIT 1;";
-					$conn->query($query);
-					//update Boost Records in database
-					$query = "UPDATE boost SET status = '{$boost_active}', sync = '0' WHERE zone_id = {$row['id']};";
-					$conn->query($query);
-				}else {
-					$boost_active='0';
-				}
-			}else {
-				$boost_active='0';
 			}
 
 			//Get Weather Temperature
@@ -621,7 +622,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 						$zone_mode = 40;
 						$stop_cause="Holiday Active";
 					}
-					if ($sch_status=='0' && $zone_active_status=='0') {
+					if ($sch_status=='0' && $zone_active_status=='0' && $boost_status=='0') {
 						$zone_status="0";
 						$zone_mode = 0;
 						$stop_cause="No Schedule";
