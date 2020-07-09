@@ -82,11 +82,11 @@ where boiler.`purge` = '0';
 -- Boost View
 Drop View if exists boost_view;
 CREATE VIEW boost_view AS
-select boost.id, boost.`status`, boost.sync, boost.zone_id, zone_idx.index_id, zone.name, boost.temperature, boost.minute
+select boost.id, boost.`status`, boost.sync, boost.zone_id, zone_idx.index_id, zone_type.category, zone.name, boost.temperature, boost.minute, boost_button_id, boost_button_child_id
 from boost
 join zone on boost.zone_id = zone.id
-join zone zone_idx on boost.zone_id = zone_idx.id;
-
+join zone zone_idx on boost.zone_id = zone_idx.id
+join zone_type on zone_type.type = zone.type;
 
 -- Override View
 Drop View if exists override_view;
