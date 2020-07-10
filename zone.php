@@ -37,7 +37,7 @@ if (isset($_POST['submit'])) {
 	$index_id = $_POST['index_id'];
 	$name = $_POST['name'];
 	$type = $_POST['selected_zone_type'];
-	$max_c = $_POST['max_c'];
+        if($zone_category < 2) { $max_c = $_POST['max_c']; } else { $max_c = 0; }
 	$max_operation_time = $_POST['max_operation_time'];
 	$hysteresis_time = $_POST['hysteresis_time'];
 	$sp_deadband = $_POST['sp_deadband'];
@@ -142,20 +142,20 @@ if (isset($_POST['submit'])) {
 		}
 	}
 
-	if ($zone_category < 2) {
-		//Add or Edit Zone to override table at same time
-		if ($id==0){
-			$query = "INSERT INTO `override`(`sync`, `purge`, `status`, `zone_id`, `time`, `temperature`) VALUES ('0', '0', '0', '{$zone_id}', '{$date_time}', '{$max_c}');";
-		} else {
-			$query = "UPDATE override SET temperature='{$max_c}' WHERE zone_id='{$zone_id}';";
-		}
-		$result = $conn->query($query);
-		if ($result) {
-			$message_success .= "<p>".$lang['zone_override_success']."</p>";
-		} else {
-			$error .= "<p>".$lang['zone_override_fail']."</p> <p>" .mysqli_error($conn). "</p>";
-		}
+	//Add or Edit Zone to override table at same time
+	if ($id==0){
+		$query = "INSERT INTO `override`(`sync`, `purge`, `status`, `zone_id`, `time`, `temperature`) VALUES ('0', '0', '0', '{$zone_id}', '{$date_time}', '{$max_c}');";
+	} else {
+		$query = "UPDATE override SET temperature='{$max_c}' WHERE zone_id='{$zone_id}';";
+	}
+	$result = $conn->query($query);
+	if ($result) {
+		$message_success .= "<p>".$lang['zone_override_success']."</p>";
+	} else {
+		$error .= "<p>".$lang['zone_override_fail']."</p> <p>" .mysqli_error($conn). "</p>";
+	}
 	
+	if ($zone_category < 2) {
 		//Add Zone to schedule_night_climat_zone table at same time
 		if ($id==0){
 			$query = "SELECT * FROM schedule_night_climate_time;";
