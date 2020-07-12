@@ -355,7 +355,51 @@ try:
 					ntime = "UPDATE messages_out SET payload=%s, sent=%s WHERE node_id=%s AND child_id = %s"
 					#cur.execute(ntime, (nowtime, '0', node_id, child_sensor_id,))
 					#con.commit()
-
+				
+				# ..::Step Thirteen::.. 255;18;3;0;3;
+				# When Node is requesting ID
+				if (node_id != 0 and message_type == 3 and sub_type == 3): # best is to check node_id is 255 but i can not get to work with that. 
+					if dbgLevel >= 2 and dbgMsgIn == 1:
+						print("12: Node ID: ",node_id," Child ID: ", child_sensor_id," Requesting Node ID")
+					nowtime = time.strftime('%H:%M')
+					cur.execute('SELECT COUNT(*) FROM `node_id` where sent = 0') # MySQL query statemen
+					count = cur.fetchone()
+					count = count[0]
+					if count > 0:
+						cur.execute('SELECT * FROM `node_id` where sent = 0 Limit 1;') # MySQL query statement
+						node_row = cur.fetchone();
+						out_id = node_row[0]		#Record ID - only DB info
+						new_node_id = node_row[3]	# Node ID from Table
+						msg = str(node_id) 			#Broadcast Node ID
+						msg += ';' 					#Separator
+						msg += str(child_sensor_id) #Child ID of the Node.
+						msg += ';' 					#Separator
+						msg += str(3)
+						msg += ';' 					#Separator
+						msg += str(0)
+						msg += ';' 					#Separator
+						msg += str(4)
+						msg += ';' 					#Separator
+						msg += str(new_node_id) 	#Payload from DB
+						msg += ' \n'				#New line
+						if dbgLevel >= 3 and dbgMsgOut == 1:		
+							print("Full Message to Send:        ",msg.replace("\n","\\n")) #Print Full Message
+							print("Node ID:                     ",node_id)
+							print("Child Sensor ID:             ",child_sensor_id)
+							print("Command Type:                ",3)
+							print("Ack Req/Resp:                ",0)
+							print("Type:                        ",4)
+							print("Pay Load:                    ",new_node_id)
+						# node-id ; child-sensor-id ; command ; ack ; type ; payload \n
+						if gatewaytype == 'serial':
+							gw.write(msg.encode('utf-8')) # !!!! send it to serial (arduino attached to rPI by USB port)
+						else:
+							print('write')
+							gw.write(msg.encode('utf-8'))
+							cur.execute('UPDATE `node_id` set sent=1, `date_time`=now() where id=%s', [out_id]) #update DB so this message will not be processed in next loop
+							con.commit() #commit above
+					else:
+						print(bc.WARN +"All exiting IDs are assigned: " + bc.ENDC)
 		time.sleep(0.1)
 
 except configparser.Error as e:

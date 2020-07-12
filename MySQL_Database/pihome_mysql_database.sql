@@ -29,6 +29,18 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
+-- Dumping structure for table pihome.node_id
+DROP TABLE IF EXISTS `node_id`;
+CREATE TABLE IF NOT EXISTS `node_id` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sync` tinyint(4) DEFAULT NULL,
+  `purge` tinyint(4) DEFAULT NULL,
+  `node_id` int(11) DEFAULT NULL,
+  `sent` tinyint(4) DEFAULT NULL,
+  `date_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4;
+
 -- Dumping structure for table pihome.add_on_logs
 DROP TABLE IF EXISTS `add_on_logs`;
 CREATE TABLE IF NOT EXISTS `add_on_logs` (
