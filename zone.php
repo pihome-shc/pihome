@@ -321,12 +321,20 @@ function zone_category(value)
                         document.getElementById("sensor_id_label").style.visibility = 'visible';;
                         document.getElementById("sensor_child_id").style.display = 'block';
                         document.getElementById("sensor_child_id_label").style.visibility = 'visible';;
+                        document.getElementById("boiler_id").style.display = 'block';
+                        document.getElementById("boiler_id_label").style.visibility = 'visible';;
                         document.getElementById("boost_button_id").style.display = 'block';
                         document.getElementById("boost_button_id_label").style.visibility = 'visible';;
                         document.getElementById("boost_button_child_id").style.display = 'block';
                         document.getElementById("boost_button_child_id_label").style.visibility = 'visible';;
-                        document.getElementById("boiler_id").style.display = 'block';
-                        document.getElementById("boiler_id_label").style.visibility = 'visible';;
+                        document.getElementById("max_c").required = true;
+                        document.getElementById("hysteresis_time").required = true;
+                        document.getElementById("sp_deadband").required = true;
+                        document.getElementById("sensor_id").required = true;
+                        document.getElementById("sensor_child_id").required = true;
+                        document.getElementById("boost_button_id").required = true;
+                        document.getElementById("boost_button_child_id").required = true;
+                        document.getElementById("boiler_id").required = true;
                         break;
                 case "1":
                         document.getElementById("max_c").style.display = 'block';
@@ -339,12 +347,20 @@ function zone_category(value)
                         document.getElementById("sensor_id_label").style.visibility = 'visible';;
                         document.getElementById("sensor_child_id").style.display = 'block';
                         document.getElementById("sensor_child_id_label").style.visibility = 'visible';;
+                        document.getElementById("boiler_id").style.display = 'none';
+                        document.getElementById("boiler_id_label").style.visibility = 'hidden';;
                         document.getElementById("boost_button_id").style.display = 'block';
                         document.getElementById("boost_button_id_label").style.visibility = 'visible';;
                         document.getElementById("boost_button_child_id").style.display = 'block';
                         document.getElementById("boost_button_child_id_label").style.visibility = 'visible';;
-                        document.getElementById("boiler_id").style.display = 'none';
-                        document.getElementById("boiler_id_label").style.visibility = 'hidden';;
+                        document.getElementById("max_c").required = true;
+                        document.getElementById("hysteresis_time").required = true;
+                        document.getElementById("sp_deadband").required = true;
+                        document.getElementById("sensor_id").required = true;
+                        document.getElementById("sensor_child_id").required = true;
+                        document.getElementById("boost_button_id").required = true;
+                        document.getElementById("boost_button_child_id").required = true;
+                        document.getElementById("boiler_id").required = false;
                         break;
                 case "2":
                         document.getElementById("max_c").style.display = 'none';
@@ -357,12 +373,20 @@ function zone_category(value)
                         document.getElementById("sensor_id_label").style.visibility = 'hidden';;
                         document.getElementById("sensor_child_id").style.display = 'none';
                         document.getElementById("sensor_child_id_label").style.visibility = 'hidden';;
+                        document.getElementById("boiler_id").style.display = 'none';
+                        document.getElementById("boiler_id_label").style.visibility = 'hidden';;
                         document.getElementById("boost_button_id").style.display = 'none';
                         document.getElementById("boost_button_id_label").style.visibility = 'hidden';;
                         document.getElementById("boost_button_child_id").style.display = 'none';
                         document.getElementById("boost_button_child_id_label").style.visibility = 'hidden';;
-                        document.getElementById("boiler_id").style.display = 'none';
-                        document.getElementById("boiler_id_label").style.visibility = 'hidden';;
+                        document.getElementById("max_c").required = false;
+                        document.getElementById("hysteresis_time").required = false;
+                        document.getElementById("sp_deadband").required = false;
+                        document.getElementById("sensor_id").required = false;
+                        document.getElementById("sensor_child_id").required = false;
+                        document.getElementById("boost_button_id").required = false;
+                        document.getElementById("boost_button_child_id").required = false;
+                        document.getElementById("boiler_id").required = false;
                         break;
                 default:
         }
@@ -556,6 +580,12 @@ echo "<option>$boiler_id</option>";} ?>
                         <!-- /.panel-body -->
 						<div class="panel-footer">
 <?php
+if ($id != 0) {
+echo '<script type="text/javascript">',
+     'zone_category("'.$row['category'].'");',
+     '</script>'
+;
+}
 ShowWeather($conn);
 ?>
                             <div class="pull-right">
