@@ -198,7 +198,7 @@ if (!$db_selected) {
 		$query_system = str_replace("build_val",$build,$query_system);
 		$results = $conn->query($query_system);
 		if ($results) {
-				echo  "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Away Status Record Added \033[41mAway\033[0m Data  Succeeded \n";
+				echo  "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Away Status Record Added \033[41mAway\033[0m Data Succeeded \n";
 		} else {
 				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Away Status \033[41mAway\033[0m Data Failed \n";
 		}
@@ -206,12 +206,12 @@ if (!$db_selected) {
 		//Adding Raspberry pi GPIO 
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Adding Raspberry GPIO\n";
 		$datetime = date('Y-m-d H:i:s');
-		$query_system = "insert INTO `nodes` (`sync`, `purge`, `type`, node_id, `max_child_id`, `name`, `last_seen`, `notice_interval`, `min_voltage`, `status`, `ms_version`, `sketch_version`, `repeater`) VALUES (0, 0, 'GPIO', 0, 0, 'GPIO Controller', '$datetime', 0, '0.00', 'Active', 0, 0, 0);";
+		$query_system = "insert INTO `nodes` (`sync`, `purge`, `type`, node_id, `max_child_id`, `name`, `last_seen`, `notice_interval`, `min_value`, `status`, `ms_version`, `sketch_version`, `repeater`) VALUES (0, 0, 'GPIO', 0, 0, 'GPIO Controller', '$datetime', 0, '0', 'Active', 0, 0, 0);";
 		$query_system = str_replace("version_val",$version,$query_system);
 		$query_system = str_replace("build_val",$build,$query_system);
 		$results = $conn->query($query_system);
 		if ($results) {
-			echo  "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Raspberry Pi GPIO Added \033[41mGPIO\033[0m Data  Succeeded \n";
+			echo  "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Raspberry Pi GPIO Added \033[41mGPIO\033[0m Data Succeeded \n";
 			$node_id = $conn->insert_id;
 		} else {
 			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Raspberry Pi GPIO \033[41mGPIO\033[0m Data Failed \n";
@@ -220,12 +220,12 @@ if (!$db_selected) {
 		//Addming Boiler Record 
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Adding Raspberry GPIO\n";
 		$datetime = date('Y-m-d H:i:s');
-		$query_system = "insert INTO `boiler` (`sync`, `purge`, `status`, `fired_status`, `name`, `node_id`, `node_child_id`, `hysteresis_time`, `max_operation_time`, `datetime`) VALUES (0, 0, 1, 0, 'Gas Boiler', '$node_id', 0, 3, 60, '$datetime');";
+		$query_system = "insert INTO `boiler` (`sync`, `purge`, `status`, `fired_status`, `name`, `node_id`, `node_child_id`, `hysteresis_time`, `max_operation_time`, `overrun`, `datetime`) VALUES (0, 0, 1, 0, 'Gas Boiler', '$node_id', 0, 3, 60, 2, '$datetime');";
 		$query_system = str_replace("version_val",$version,$query_system);
 		$query_system = str_replace("build_val",$build,$query_system);
 		$results = $conn->query($query_system);
 		if ($results) {
-				echo  "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Record Added \033[41mBoiler\033[0m Data  Succeeded \n";
+				echo  "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Record Added \033[41mBoiler\033[0m Data Succeeded \n";
 		} else {
 				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Record \033[41mSBoiler\033[0m Data Failed \n";
 		}
@@ -233,12 +233,12 @@ if (!$db_selected) {
 		//Adding Zone Type Records 
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Adding Zone Type\n";
 		$datetime = date('Y-m-d H:i:s');
-		$query_zone_type = "insert INTO `zone_type` (`type`, `category`,) VALUES ('Heating', 0), ('Water', 0);";
+		$query_zone_type = "insert INTO `zone_type` (`type`, `category`) VALUES ('Heating', 0), ('Water', 0), ('Immersion', 1), ('Lamp', 2);";
 		$results = $conn->query($query_zone_type);
 		if ($results) {
-				echo  "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Type Records Added \033[41mZone Type\033[0m Data  Succeeded \n";
+				echo  "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Type Records Added \033[41mZone Type\033[0m Data Succeeded \n";
 		} else {
-				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Type Records \033[41mSZone Type\033[0m Data Failed \n";
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Type Records \033[41mZone Type\033[0m Data Failed \n";
 		}
 
 echo "---------------------------------------------------------------------------------------- \n";
