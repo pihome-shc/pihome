@@ -69,6 +69,21 @@ def insertDB(IDs, temperature):
 			print(bc.dtm + time.ctime() + bc.ENDC + ' - Sensors ID' + bc.grn, IDs[i], bc.ENDC + 'Temperature' + bc.grn, temperature[i], bc.ENDC)
 			cur.execute('INSERT INTO messages_in(`sync`, `purge`, `node_id`, `child_id`, `sub_type`, `payload`, `datetime`) VALUES(%s,%s,%s,%s,%s,%s,%s)', (0, 0, IDs[i], 0, 0, round(temperature[i],2), time.strftime("%Y-%m-%d %H:%M:%S")))
 			con.commit()
+			#Check is sensor is attached to a zone which is being graphed
+			cur.execute('SELECT * FROM `zone_view` where sensors_id = (%s) LIMIT 1;', [IDs[i]])
+			results =cur.fetchone()
+			if cur.rowcount > 0:
+				zone_id = int(results[3])
+				name = results[5]
+				type = results[6]
+				category = int(results[7])
+				graph_it = int(results[8])
+				if category < 2 and graph_it == 1:
+					print(bc.dtm + time.ctime() + bc.ENDC + ' - Adding Temperature Reading to Graph Table From Node ID:', IDs[i], ' PayLoad:', temperature[i])
+					cur.execute('INSERT INTO zone_graphs(`sync`, `purge`, `zone_id`, `name`, `type`, `category`, `node_id`,`child_id`, `sub_type`, `payload`, `datetime`) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)', (0,0,zone_id,name,type,category,IDs[i],0,0,round(temperature[i],2),time.strftime("%Y-%m-%d %H:%M:%S")))
+					con.commit()
+					cur.execute('DELETE FROM zone_graphs WHERE node_id = (%s) AND datetime < CURRENT_TIMESTAMP - INTERVAL 24 HOUR;', [IDs[i]])
+					con.commit()
 		con.close()
 	except mdb.Error as e:
 		logger.error(e)
