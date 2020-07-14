@@ -33,6 +33,14 @@ import MySQLdb as mdb, sys, serial, telnetlib, time, datetime
 import configparser, logging
 from datetime import datetime
 import struct
+import requests
+import socket, re
+
+# Get the local ip address
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.connect(('google.com', 0))
+ip = s.getsockname()[0]
+base_ip = re.search('^[\d]{1,3}.[\d]{1,3}.[\d]{1,3}.', ip)
 
 # Debug print to screen configuration
 dbgLevel = 3 	# 0-off, 1-info, 2-detailed, 3-all
@@ -103,6 +111,9 @@ try:
 			out_type = msg[7]  		#Type
 			out_payload = msg[8] 	#Payload to send out.
 			sent = msg[9] 			#Status of message either its sent or not. (1 for sent, 0 for not sent yet)
+			cur.execute('SELECT type FROM `nodes` where node_id = (%s)', (out_node_id, ))
+			nd = cur.fetchone();
+			node_type = nd[0]
 			if dbgLevel >= 1 and dbgMsgOut == 1: # Debug print to screen
 				print(bc.grn + "\nTotal Messages to Sent:      ",count, bc.ENDC) # Print how many Messages we have to send out.
 				print("Date & Time:                 ",time.ctime())
@@ -127,14 +138,31 @@ try:
 				print("Ack Req/Resp:                ",out_ack)
 				print("Type:                        ",out_type)
 				print("Pay Load:                    ",out_payload)
+				print("Node Type:                   ",node_type)
 			# node-id ; child-sensor-id ; command ; ack ; type ; payload \n
-			if gatewaytype == 'serial':
-				gw.write(msg.encode('utf-8')) # !!!! send it to serial (arduino attached to rPI by USB port)
+			if node_type.find("Virtual") == -1: # process normal node
+				if gatewaytype == 'serial':
+					gw.write(msg.encode('utf-8')) # !!!! send it to serial (arduino attached to rPI by USB port)
+				else:
+					print('write')
+					gw.write(msg.encode('utf-8'))
+				cur.execute('UPDATE `messages_out` set sent=1 where id=%s', [out_id]) #update DB so this message will not be processed in next loop
+				con.commit() #commit above
 			else:
-				print('write')
-				gw.write(msg.encode('utf-8'))
-			cur.execute('UPDATE `messages_out` set sent=1 where id=%s', [out_id]) #update DB so this message will not be processed in next loop
-			con.commit() #commit above
+				# process the Sonoff device HTTP action
+				url = 'http://' + base_ip.group(0) + str(out_child_id) + '/cm'
+				if out_payload.find('1') != -1:
+					myobj = {'cmnd': 'Power ON'}
+					test_str = 'ON'
+				else:
+					myobj = {'cmnd': 'Power OFF'}
+					test_str = 'OFF'
+
+				x = requests.post(url, data = myobj) # send request to Sonoff device
+				if x.status_code == 200:
+					if (x.json().get("POWER")).find(test_str) != -1: # clear send if response is okay
+						cur.execute('UPDATE `messages_out` set sent=1 where id=%s', [out_id])
+						con.commit() #commit above
 
 	## Incoming messages
 		if gatewaytype == 'serial':
@@ -355,10 +383,10 @@ try:
 					ntime = "UPDATE messages_out SET payload=%s, sent=%s WHERE node_id=%s AND child_id = %s"
 					#cur.execute(ntime, (nowtime, '0', node_id, child_sensor_id,))
 					#con.commit()
-				
+
 				# ..::Step Thirteen::.. 255;18;3;0;3;
 				# When Node is requesting ID
-				if (node_id != 0 and message_type == 3 and sub_type == 3): # best is to check node_id is 255 but i can not get to work with that. 
+				if (node_id != 0 and message_type == 3 and sub_type == 3): # best is to check node_id is 255 but i can not get to work with that.
 					if dbgLevel >= 2 and dbgMsgIn == 1:
 						print("12: Node ID: ",node_id," Child ID: ", child_sensor_id," Requesting Node ID")
 					nowtime = time.strftime('%H:%M')
@@ -382,7 +410,7 @@ try:
 						msg += ';' 					#Separator
 						msg += str(new_node_id) 	#Payload from DB
 						msg += ' \n'				#New line
-						if dbgLevel >= 3 and dbgMsgOut == 1:		
+						if dbgLevel >= 3 and dbgMsgOut == 1:
 							print("Full Message to Send:        ",msg.replace("\n","\\n")) #Print Full Message
 							print("Node ID:                     ",node_id)
 							print("Child Sensor ID:             ",child_sensor_id)
