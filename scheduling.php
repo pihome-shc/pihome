@@ -179,7 +179,7 @@ if (isset($_POST['submit'])) {
         $query = "select * from schedule_daily_time_zone_view where time_id = {$time_id}";
         $zoneresults = $conn->query($query);
 } else {
-        $query = "select zone.id as tz_id, zone.name as zone_name, zone.status as tz_status, zone.type, zone_type.category FROM zone, zone_type WHERE zone.type = zone_type.type AND status = 1 AND `purge`= 0 ORDER BY index_id asc;";
+        $query = "select zone.id as tz_id, zone.name as zone_name, zone.status as tz_status, zone.type, zone_type.category FROM zone, zone_type WHERE zone.type = zone_type.type AND status = 1 AND zone.`purge`= 0 ORDER BY index_id asc;";
 	$zoneresults = $conn->query($query);
 }
 ?>
@@ -306,7 +306,7 @@ if (isset($_POST['submit'])) {
 
 						<!-- Group Zone Settings -->
 						<?php
-                                                if ($row["category"] == 0 OR $row["category"] == 1) {
+						if ($row["category"] == 0 OR $row["category"] == 1) {
 							if($row['tz_status'] == 1 AND $time_id != 0){
 								//if($time_id != 0){
 								$style_text = "";
