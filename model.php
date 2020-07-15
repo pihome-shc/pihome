@@ -698,7 +698,7 @@ echo '<table class="table table-bordered">
         <th class="col-xs-1"></th>
     </tr>';
 
-$query = "SELECT * FROM zone_type;";
+$query = "SELECT * FROM zone_type where `purge`=0;";
 $results = $conn->query($query);
 while ($row = mysqli_fetch_assoc($results)) {
     $query = "SELECT * FROM `zone` WHERE `type` LIKE '".$row['type']."' LIMIT 1;";
