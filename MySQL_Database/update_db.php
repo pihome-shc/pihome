@@ -198,6 +198,8 @@ if ($db_selected) {
 	$conn->query($query);
 	$query = "INSERT INTO zone_type (type, category) SELECT * FROM (SELECT 'Lamp', '2') AS tmp WHERE NOT EXISTS (SELECT type FROM zone_type WHERE type = 'Lamp') LIMIT 1;";
 	$conn->query($query);	
+	$query = "UPDATE zone_type SET `purge` = '0', `sync`= '0' WHERE `purge` is Null;";
+	$conn->query($query);
 	
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Update Version: \033[41m".$version."\033[0m \n";
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Update Build: \033[41m".$build."\033[0m \n";
