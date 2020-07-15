@@ -80,7 +80,7 @@ while ($row = mysqli_fetch_assoc($resulta)) {
 $zonesw = $zonesw."{label: \"".$lang['graph_outsie']."\", data: ".json_encode($weather_c).", color: rainbow(".$count.",".++$counter.") }, \n";
 
 //background-color for boiler on time
-$query="select start_datetime, stop_datetime, type from zone_log_view_24h where status= '1';";
+$query="select start_datetime, stop_datetime, type from zone_log_view where status= '1' AND start_datetime > current_timestamp() - interval 24 hour;";
 $results = $conn->query($query);
 $count=mysqli_num_rows($results);
 $warn1 = '';
