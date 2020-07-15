@@ -298,7 +298,7 @@ if($what=="node"){
 		$node_name = $_GET['node_name'];
                 $notice_interval = $_GET['notice_interval'];
 		//Add record to Nodes table
-		$query = "INSERT INTO `nodes`(`sync`, `purge`, `type`, `node_id`, `max_child_id`, `name`, `last_seen`, `notice_interval`, `min_value`, `status`, `ms_version`, `sketch_version`, `repeater`) VALUES ('0', '0', '{$node_type}', '{$node_id}', '{$node_child_id}', '{$node_name}', '{$datetime}', '{$notice_interval}', '0', 'Active', '0', '0', '0')";
+		$query = "INSERT INTO `nodes`(`sync`, `purge`, `type`, `node_id`, `max_child_id`, `name`, `last_seen`, `notice_interval`, `min_voltage`, `status`, `ms_version`, `sketch_version`, `repeater`) VALUES ('0', '0', '{$node_type}', '{$node_id}', '{$node_child_id}', '{$node_name}', '{$datetime}', '{$notice_interval}', '0', 'Active', '0', '0', '0')";
 		if($conn->query($query)){
             		header('Content-type: application/json');
             		echo json_encode(array('Success'=>'Success','Query'=>$query));
@@ -313,35 +313,35 @@ if($what=="node"){
 
 //Zone Types
 if($what=="zone_type"){
-        if($opp=="delete"){
-                //Delete from Zone Type
-                $query = "DELETE FROM zone_type WHERE id = '".$wid."';";
-                $conn->query($query);
-                if($conn->query($query)){
-                        header('Content-type: application/json');
-                        echo json_encode(array('Success'=>'Success','Query'=>$query));
-                        return;
-                }else{
-                        header('Content-type: application/json');
-                        echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
-                        return;
-                }
-        }
-        if($opp=="add"){
-                $zone_type = $_GET['zone_type'];
-                $zone_category = $_GET['zone_category'];
-                //Add record to zone_type table
-                $query = "INSERT INTO `zone_type`(`type`, `category`) VALUES ('{$zone_type}', '{$zone_category}')";
-                if($conn->query($query)){
-                        header('Content-type: application/json');
-                        echo json_encode(array('Success'=>'Success','Query'=>$query));
-                        return;
-                }else{
-                        header('Content-type: application/json');
-                        echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
-                        return;
-                }
-        }
+	if($opp=="delete"){
+		//Delete from Zone Type
+		$query = "UPDATE zone_type SET zone_type.purge='1' WHERE id = '".$wid."'";
+		$conn->query($query);
+		if($conn->query($query)){
+			header('Content-type: application/json');
+			echo json_encode(array('Success'=>'Success','Query'=>$query));
+			return;
+		}else{
+			header('Content-type: application/json');
+			echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+			return;
+		}
+	}
+	if($opp=="add"){
+		$zone_type = $_GET['zone_type'];
+		$zone_category = $_GET['zone_category'];
+		//Add record to zone_type table
+		$query = "INSERT INTO `zone_type`(`type`, `category`) VALUES ('{$zone_type}', '{$zone_category}')";
+		if($conn->query($query)){
+			header('Content-type: application/json');
+			echo json_encode(array('Success'=>'Success','Query'=>$query));
+			return;
+		}else{
+			header('Content-type: application/json');
+			echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+			return;
+		}
+	}
 }
 
 //Away 
