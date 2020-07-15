@@ -748,6 +748,8 @@ CREATE TABLE IF NOT EXISTS `zone_logs` (
 DROP TABLE IF EXISTS `zone_type`;
 CREATE TABLE IF NOT EXISTS `zone_type` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sync` tinyint(4) NOT NULL,
+  `purge` tinyint(4) NOT NULL COMMENT 'Mark For Deletion',
   `type` char(50) COLLATE utf8_bin,
   `category` int(11),
   PRIMARY KEY (`id`)
