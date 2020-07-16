@@ -298,7 +298,7 @@ if($what=="node"){
 		$node_name = $_GET['node_name'];
                 $notice_interval = $_GET['notice_interval'];
 		//Add record to Nodes table
-		$query = "INSERT INTO `nodes`(`sync`, `purge`, `type`, `node_id`, `max_child_id`, `name`, `last_seen`, `notice_interval`, `min_voltage`, `status`, `ms_version`, `sketch_version`, `repeater`) VALUES ('0', '0', '{$node_type}', '{$node_id}', '{$node_child_id}', '{$node_name}', '{$datetime}', '{$notice_interval}', '0', 'Active', '0', '0', '0')";
+		$query = "INSERT INTO `nodes`(`sync`, `purge`, `type`, `node_id`, `max_child_id`, `name`, `last_seen`, `notice_interval`, `min_value`, `status`, `ms_version`, `sketch_version`, `repeater`) VALUES ('0', '0', '{$node_type}', '{$node_id}', '{$node_child_id}', '{$node_name}', '{$datetime}', '{$notice_interval}', '0', 'Active', '0', '0', '0')";
 		if($conn->query($query)){
             		header('Content-type: application/json');
             		echo json_encode(array('Success'=>'Success','Query'=>$query));
