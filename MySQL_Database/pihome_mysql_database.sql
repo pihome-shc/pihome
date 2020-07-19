@@ -709,7 +709,7 @@ CREATE TABLE IF NOT EXISTS `zone` (
 -- Dumping structure for table pihome.zone_current_state
 DROP TABLE IF EXISTS `zone_current_state`;
 CREATE TABLE IF NOT EXISTS `zone_current_state` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `sync` tinyint(4) NOT NULL,
   `purge` tinyint(4) NOT NULL,
   `zone_id` int(11) NOT NULL,
