@@ -423,7 +423,8 @@ var idata="w=setup_gateway&o=update&status="+document.getElementById("checkbox1"
 
 //update network settings
 function setup_network(){
-var idata="w=setup_network&o=update&n_int_num="+document.getElementById("n_int_num").value;
+var idata="w=setup_network&o=update&n_primary="+document.getElementById("n_primary").value;
+        idata+="&n_int_num="+document.getElementById("n_int_num").value;
         idata+="&n_int_type="+document.getElementById("n_int_type").value;
         idata+="&n_mac="+document.getElementById("n_mac").value;
         idata+="&n_hostname"+document.getElementById("n_hostname").value;
