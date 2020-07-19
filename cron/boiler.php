@@ -211,6 +211,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$zone_current_state = mysqli_fetch_array($result);
 	$zone_status_prev = $zone_current_state['status'];
 	$zone_overrun_prev = $zone_current_state['overrun'];
+        $zone_current_mode = $zone_current_state['mode'];
 
 	// process if a sensor is attached to this zone
 	if ($zone_category == 0 OR $zone_category == 1) {
@@ -740,9 +741,9 @@ while ($row = mysqli_fetch_assoc($results)) {
 	} //end if($zone_status == 1)
 } //end of while loop
 
-//***************************************************************************************
-//Zone Commands loop
-//***************************************************************************************
+/***************************************************************************************
+                                   Zone Commands loop
+ ***************************************************************************************/
 for ($row = 0; $row < count($zone_commands); $row++){
 	$zone_id = $zone_commands[$row]["zone_id"];
 	$zone_category = $zone_commands[$row]["zone_category"];
