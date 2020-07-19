@@ -329,6 +329,28 @@ ENGINE=InnoDB;
 /*!40000 ALTER TABLE `mqtt` DISABLE KEYS */;
 /*!40000 ALTER TABLE `mqtt` ENABLE KEYS */;
 
+-- Dumping structure for table pihome.network_settings
+DROP TABLE IF EXISTS `network_settings`;
+CREATE TABLE IF NOT EXISTS `network_settings` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sync` tinyint(4) NOT NULL,
+  `purge` tinyint(4) NOT NULL COMMENT 'Mark For Deletion',
+  `interface_num` tinyint(4),
+  `interface_type` char(50) COLLATE utf16_bin,
+  `mac_address` char(50) COLLATE utf16_bin,
+  `hostname` char(50) COLLATE utf16_bin,
+  `ip_address` char(50) COLLATE utf16_bin,
+  `gateway_address` char(50) COLLATE utf16_bin,
+  `net_mask` char(50) COLLATE utf16_bin,
+  `dns1_address` char(50) COLLATE utf16_bin,
+  `dns2_address` char(50) COLLATE utf16_bin,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+
+-- Dumping data for table pihome.network_settings: ~0 rows (approximately)
+/*!40000 ALTER TABLE `system` DISABLE KEYS */;
+/*!40000 ALTER TABLE `system` ENABLE KEYS */;
+
 -- Dumping structure for table pihome.nodes
 DROP TABLE IF EXISTS `nodes`;
 CREATE TABLE IF NOT EXISTS `nodes` (
