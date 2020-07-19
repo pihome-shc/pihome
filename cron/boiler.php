@@ -197,11 +197,11 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$zone_controler_child_id=$row['controler_child_id'];
 
 	//query to check if zone_current_state record exists tor the zone
-	$query = "SELECT * FROM zone_current_state WHERE id = {$zone_id} LIMIT 1;";
+	$query = "SELECT * FROM zone_current_state WHERE zone_id = {$zone_id} LIMIT 1;";
 	$result = $conn->query($query);
 	if (mysqli_num_rows($result)==0){
 		//No record in zone_current_statw table, so add
-		$query = "INSERT INTO zone_current_state VALUES({$zone_id}, 0, 0, 0, 0, 0, 0, 0,NULL ,0 ,NULL, NULL, 0 );";
+		$query = "INSERT INTO zone_current_state (`sync`, `purge`, `zone_id`, `mode`, `status`, `temp_reading`, `temp_target`, `temp_cut_in`, `temp_cut_out`, `controler_fault`, `controler_seen_time`, `sensor_fault`, `sensor_seen_time`, `sensor_reading_time`, `overrun`) VALUES(0, 0, '{$zone_id}', 0, 0, 0, 0, 0, 0, 0, NULL , 0, NULL, NULL, 0);";
 		$conn->query($query);
 	}
 	
@@ -211,7 +211,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$zone_current_state = mysqli_fetch_array($result);
 	$zone_status_prev = $zone_current_state['status'];
 	$zone_overrun_prev = $zone_current_state['overrun'];
-        $zone_current_mode = $zone_current_state['mode'];
+	$zone_current_mode = $zone_current_state['mode'];
 
 	// process if a sensor is attached to this zone
 	if ($zone_category == 0 OR $zone_category == 1) {
@@ -671,7 +671,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 			4 - manual operation ON
 			5 - manual operation OFF */
 
-		$query = "UPDATE zone_current_state SET mode = {$zone_mode}, status = {$zone_status}, temp_reading = '{$zone_c}', temp_target = {$target_c},temp_cut_in = {$temp_cut_in}, temp_cut_out = {$temp_cut_out}, controler_fault = {$zone_ctr_fault}, controler_seen_time = '{$controler_seen}', sensor_fault  = {$zone_sensor_fault}, sensor_seen_time = '{$sensor_seen}', sensor_reading_time = '{$temp_reading_time}' WHERE id ={$zone_id} LIMIT 1;";
+		$query = "UPDATE zone_current_state SET `sync` = 0, mode = {$zone_mode}, status = {$zone_status}, temp_reading = '{$zone_c}', temp_target = {$target_c},temp_cut_in = {$temp_cut_in}, temp_cut_out = {$temp_cut_out}, controler_fault = {$zone_ctr_fault}, controler_seen_time = '{$controler_seen}', sensor_fault  = {$zone_sensor_fault}, sensor_seen_time = '{$sensor_seen}', sensor_reading_time = '{$temp_reading_time}' WHERE id ={$zone_id} LIMIT 1;";
 		$conn->query($query);
 
 		if ($zone_category == 0 OR $zone_category == 1) {
@@ -708,7 +708,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 			// Process Logs Category 1 and 2 logs if zone status has changed
 			// zone switching ON
 			if($zone_status_prev == '0' &&  ($zone_status == '1' || $zone_active_status  == '1')) {
-				if($zone_mode == '111' || $zone_mode == '21') {
+				if($zone_mode == '111') {
 					$aoquery = "INSERT INTO `add_on_logs`(`sync`, `purge`, `start_datetime`, `start_cause`, `stop_datetime`, `stop_cause`, `expected_end_date_time`) VALUES ('0', '0', '{$date_time}', '{$start_cause}', NULL, NULL, NULL);";
 				} else {
 					$aoquery = "INSERT INTO `add_on_logs`(`sync`, `purge`, `start_datetime`, `start_cause`, `stop_datetime`, `stop_cause`, `expected_end_date_time`) VALUES ('0', '0', '{$date_time}', '{$start_cause}', NULL, NULL,'{$expected_end_date_time}');";
@@ -788,7 +788,7 @@ for ($row = 0; $row < count($zone_commands); $row++){
 	
 	// update zone current state table
 	if($zone_overrun<>$zone_overrun_prev){
-		$query = "UPDATE zone_current_state SET overrun = {$zone_overrun} WHERE id ={$zone_id} LIMIT 1;";
+		$query = "UPDATE zone_current_state SET `sync` = 0, overrun = {$zone_overrun} WHERE id ={$zone_id} LIMIT 1;";
 		$conn->query($query);
 	}
 	if($zone_overrun == 1){
@@ -872,11 +872,7 @@ if (in_array("1", $boiler)) {
 	//Update Boiler Status 
 	if ($boiler_fire_status != $new_boiler_status){
 		//insert date and time into boiler log table so we can record boiler start date and time.
-                if (isset($expected_end_date_time)) {
-			$bsquery = "INSERT INTO `boiler_logs`(`sync`, `purge`, `start_datetime`, `start_cause`, `stop_datetime`, `stop_cause`, `expected_end_date_time`) VALUES ('0', '0', '{$date_time}', '{$start_cause}', NULL, NULL,'{$expected_end_date_time}');";
-		} else {
-			$bsquery = "INSERT INTO `boiler_logs`(`sync`, `purge`, `start_datetime`, `start_cause`, `stop_datetime`, `stop_cause`, `expected_end_date_time`) VALUES ('0', '0', '{$date_time}', '{$start_cause}', NULL, NULL,NULL);";
-		}
+		$bsquery = "INSERT INTO `boiler_logs`(`sync`, `purge`, `start_datetime`, `start_cause`, `stop_datetime`, `stop_cause`, `expected_end_date_time`) VALUES ('0', '0', '{$date_time}', '{$start_cause}', NULL, NULL,'{$expected_end_date_time}');";
 		$result = $conn->query($bsquery);
 		$boiler_log_id = mysqli_insert_id($conn);
 		//echo all zone and status
