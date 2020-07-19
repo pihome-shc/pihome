@@ -197,7 +197,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$zone_controler_child_id=$row['controler_child_id'];
 
 	//query to check if zone_current_state record exists tor the zone
-	$query = "SELECT * FROM zone_current_state WHERE id = {$zone_id} LIMIT 1;";
+	$query = "SELECT * FROM zone_current_state WHERE zone_id = {$zone_id} LIMIT 1;";
 	$result = $conn->query($query);
 	if (mysqli_num_rows($result)==0){
 		//No record in zone_current_statw table, so add
@@ -671,7 +671,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 			4 - manual operation ON
 			5 - manual operation OFF */
 
-		$query = "UPDATE zone_current_state SET mode = {$zone_mode}, status = {$zone_status}, temp_reading = '{$zone_c}', temp_target = {$target_c},temp_cut_in = {$temp_cut_in}, temp_cut_out = {$temp_cut_out}, controler_fault = {$zone_ctr_fault}, controler_seen_time = '{$controler_seen}', sensor_fault  = {$zone_sensor_fault}, sensor_seen_time = '{$sensor_seen}', sensor_reading_time = '{$temp_reading_time}' WHERE id ={$zone_id} LIMIT 1;";
+		$query = "UPDATE zone_current_state SET mode = {$zone_mode}, status = {$zone_status}, temp_reading = '{$zone_c}', temp_target = {$target_c},temp_cut_in = {$temp_cut_in}, temp_cut_out = {$temp_cut_out}, controler_fault = {$zone_ctr_fault}, controler_seen_time = '{$controler_seen}', sensor_fault  = {$zone_sensor_fault}, sensor_seen_time = '{$sensor_seen}', sensor_reading_time = '{$temp_reading_time}' WHERE zone_id ={$zone_id} LIMIT 1;";
 		$conn->query($query);
 
 		if ($zone_category == 0 OR $zone_category == 1) {
@@ -788,7 +788,7 @@ for ($row = 0; $row < count($zone_commands); $row++){
 	
 	// update zone current state table
 	if($zone_overrun<>$zone_overrun_prev){
-		$query = "UPDATE zone_current_state SET overrun = {$zone_overrun} WHERE id ={$zone_id} LIMIT 1;";
+		$query = "UPDATE zone_current_state SET overrun = {$zone_overrun} WHERE zone_id ={$zone_id} LIMIT 1;";
 		$conn->query($query);
 	}
 	if($zone_overrun == 1){
