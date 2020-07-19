@@ -1087,6 +1087,7 @@ echo '
 function change(value){
         var jArray = <?php echo json_encode($rowArray); ?>;
         var valuetext = value;
+        document.getElementById("n_primary").value = jArray[value]['primary'];
         document.getElementById("n_mac").value = jArray[value]['mac_address'];
         document.getElementById("n_hostname").value = jArray[value]['hostname'];
         document.getElementById("n_ip").value = jArray[value]['ip_address'];
