@@ -419,4 +419,16 @@ $lang['confirm_dell_de_active_zone_type'] = "You are about to DELETE a Zone Type
 $lang['confirm_dell_active_zone'] = "You are about to DELETE an ACTIVE ZONE";
 $lang['confirm_dell_de_active_zone'] = "You are about to DELETE a NONE active ZONE";
 
+$lang['network'] = "Network";
+$lang['network_settings'] = "Network Settings";
+$lang['network_text'] = "Controller Network Configuration Parameters. ";
+$lang['network_interface'] = "Controller Network Interface";
+$lang['network_mac_address'] = "Controller MAC Address";
+$lang['network_hostname'] = "Controller Hostname";
+$lang['network_ip_address'] = "Controller IP Address";
+$lang['network_gateway_address'] = "Controller Gateway Address";
+$lang['network_net_mask'] = "Controller Net Mask";
+$lang['network_dns1_address'] = "Controller DNS1 Address";
+$lang['network_dns2_address'] = "Controller DNS2 Address";
+$lang['network_primary'] = "Controller Primary Interface";
 ?>
