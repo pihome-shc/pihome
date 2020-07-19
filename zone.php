@@ -32,12 +32,12 @@ if(isset($_GET['id'])) {
 }
 //Form submit
 if (isset($_POST['submit'])) {
-        $zone_category = $_POST['selected_zone_category'];
+	$zone_category = $_POST['selected_zone_category'];
 	$zone_status = isset($_POST['zone_status']) ? $_POST['zone_status'] : "0";
 	$index_id = $_POST['index_id'];
 	$name = $_POST['name'];
 	$type = $_POST['selected_zone_type'];
-        if($zone_category < 2) { $max_c = $_POST['max_c']; } else { $max_c = 0; }
+	if($zone_category < 2) { $max_c = $_POST['max_c']; } else { $max_c = 0; }
 	$max_operation_time = $_POST['max_operation_time'];
 	$hysteresis_time = $_POST['hysteresis_time'];
 	$sp_deadband = $_POST['sp_deadband'];
@@ -50,6 +50,8 @@ if (isset($_POST['submit'])) {
 	$boost_button_child_id = $_POST['boost_button_child_id'];
 	if ($_POST['zone_gpio'] == 0){$gpio_pin='0';} else {$gpio_pin = $_POST['zone_gpio'];}
 	$message_id =  $_POST['message_out_id'];
+	$sync = '0';
+	$purge= '0';
 	
 	$boiler = explode('-', $_POST['boiler_id'], 2);
 	$boiler_id = $boiler[0];
@@ -79,11 +81,11 @@ if (isset($_POST['submit'])) {
 
 	//Add or Edit Zone record to Zone Table
 	if ($zone_category == 0) {
-		$query = "INSERT INTO `zone` (`id`, `sync`, `purge`, `status`, `index_id`, `name`, `type`, `model`, `graph_it`, `max_c`, `max_operation_time`, `hysteresis_time`, `sp_deadband`, `sensor_id`, `sensor_child_id`, `controler_id`, `controler_child_id`) VALUES ('{$id}', '0', '0', '{$zone_status}', '{$index_id}', '{$name}', '{$type}', 'NULL', '1', '{$max_c}', '{$max_operation_time}', '{$hysteresis_time}', '{$sp_deadband}', '{$sensor_id}', '{$sensor_child_id}', '{$controler_id}', '{$controler_child_id}') ON DUPLICATE KEY UPDATE status=VALUES(status), index_id=VALUES(index_id), name=VALUES(name), type=VALUES(type), max_c=VALUES(max_c), max_operation_time=VALUES(max_operation_time), hysteresis_time=VALUES(hysteresis_time), sp_deadband=VALUES(sp_deadband), sensor_id=VALUES(sensor_id), sensor_child_id=VALUES(sensor_child_id), controler_id=VALUES(controler_id), controler_child_id=VALUES(controler_child_id);";
+		$query = "INSERT INTO `zone` (`id`, `sync`, `purge`, `status`, `index_id`, `name`, `type`, `model`, `graph_it`, `max_c`, `max_operation_time`, `hysteresis_time`, `sp_deadband`, `sensor_id`, `sensor_child_id`, `controler_id`, `controler_child_id`) VALUES ('{$id}', '{$sync}', '{$purge}', '{$zone_status}', '{$index_id}', '{$name}', '{$type}', 'NULL', '1', '{$max_c}', '{$max_operation_time}', '{$hysteresis_time}', '{$sp_deadband}', '{$sensor_id}', '{$sensor_child_id}', '{$controler_id}', '{$controler_child_id}') ON DUPLICATE KEY UPDATE sync=VALUES(sync), `purge`=VALUES(`purge`), status=VALUES(status), index_id=VALUES(index_id), name=VALUES(name), type=VALUES(type), max_c=VALUES(max_c), max_operation_time=VALUES(max_operation_time), hysteresis_time=VALUES(hysteresis_time), sp_deadband=VALUES(sp_deadband), sensor_id=VALUES(sensor_id), sensor_child_id=VALUES(sensor_child_id), controler_id=VALUES(controler_id), controler_child_id=VALUES(controler_child_id);";
 	} elseif ($zone_category == 1) {
-		$query = "INSERT INTO `zone` (`id`, `sync`, `purge`, `status`, `index_id`, `name`, `type`, `model`, `graph_it`, `max_c`, `max_operation_time`, `hysteresis_time`, `sp_deadband`, `sensor_id`, `sensor_child_id`, `controler_id`, `controler_child_id`) VALUES ('{$id}', '0', '0', '{$zone_status}', '{$index_id}', '{$name}', '{$type}', 'NULL', '1', '{$max_c}', '{$max_operation_time}', '{$hysteresis_time}', '{$sp_deadband}', '{$sensor_id}', '{$sensor_child_id}', '{$controler_id}', '{$controler_child_id}') ON DUPLICATE KEY UPDATE status=VALUES(status), index_id=VALUES(index_id), name=VALUES(name), type=VALUES(type), max_c=VALUES(max_c), max_operation_time=VALUES(max_operation_time), hysteresis_time=VALUES(hysteresis_time), sp_deadband=VALUES(sp_deadband), sensor_id=VALUES(sensor_id), sensor_child_id=VALUES(sensor_child_id), controler_id=VALUES(controler_id), controler_child_id=VALUES(controler_child_id);";
+		$query = "INSERT INTO `zone` (`id`, `sync`, `purge`, `status`, `index_id`, `name`, `type`, `model`, `graph_it`, `max_c`, `max_operation_time`, `hysteresis_time`, `sp_deadband`, `sensor_id`, `sensor_child_id`, `controler_id`, `controler_child_id`) VALUES ('{$id}', '{$sync}', '{$purge}', '{$zone_status}', '{$index_id}', '{$name}', '{$type}', 'NULL', '1', '{$max_c}', '{$max_operation_time}', '{$hysteresis_time}', '{$sp_deadband}', '{$sensor_id}', '{$sensor_child_id}', '{$controler_id}', '{$controler_child_id}') ON DUPLICATE KEY UPDATE sync=VALUES(sync), `purge`=VALUES(`purge`), status=VALUES(status), index_id=VALUES(index_id), name=VALUES(name), type=VALUES(type), max_c=VALUES(max_c), max_operation_time=VALUES(max_operation_time), hysteresis_time=VALUES(hysteresis_time), sp_deadband=VALUES(sp_deadband), sensor_id=VALUES(sensor_id), sensor_child_id=VALUES(sensor_child_id), controler_id=VALUES(controler_id), controler_child_id=VALUES(controler_child_id);";
 	} else {
-		$query = "INSERT INTO `zone` (`id`, `sync`, `purge`, `status`, `index_id`, `name`, `type`, `model`, `graph_it`, `max_operation_time`, `sp_deadband`, `controler_id`, `controler_child_id`) VALUES ('{$id}', '0', '0', '{$zone_status}', '{$index_id}', '{$name}', '{$type}', 'NULL', '1', '{$max_operation_time}', '0', '{$controler_id}', '{$controler_child_id}') ON DUPLICATE KEY UPDATE status=VALUES(status), index_id=VALUES(index_id), name=VALUES(name), type=VALUES(type), max_operation_time=VALUES(max_operation_time), sp_deadband=VALUES(sp_deadband), controler_id=VALUES(controler_id), controler_child_id=VALUES(controler_child_id);";
+		$query = "INSERT INTO `zone` (`id`, `sync`, `purge`, `status`, `index_id`, `name`, `type`, `model`, `graph_it`, `max_operation_time`, `sp_deadband`, `controler_id`, `controler_child_id`) VALUES ('{$id}', '{$sync}', '{$purge}', '{$zone_status}', '{$index_id}', '{$name}', '{$type}', 'NULL', '1', '{$max_operation_time}', '0', '{$controler_id}', '{$controler_child_id}') ON DUPLICATE KEY UPDATE sync=VALUES(sync), `purge`=VALUES(`purge`), status=VALUES(status), index_id=VALUES(index_id), name=VALUES(name), type=VALUES(type), max_operation_time=VALUES(max_operation_time), sp_deadband=VALUES(sp_deadband), controler_id=VALUES(controler_id), controler_child_id=VALUES(controler_child_id);";
 	}
 	$result = $conn->query($query);
 	$zone_id = mysqli_insert_id($conn);
@@ -146,7 +148,7 @@ if (isset($_POST['submit'])) {
 	if ($id==0){
 		$query = "INSERT INTO `override`(`sync`, `purge`, `status`, `zone_id`, `time`, `temperature`) VALUES ('0', '0', '0', '{$zone_id}', '{$date_time}', '{$max_c}');";
 	} else {
-		$query = "UPDATE override SET temperature='{$max_c}' WHERE zone_id='{$zone_id}';";
+		$query = "UPDATE override SET `sync` = 0, temperature='{$max_c}' WHERE zone_id='{$zone_id}';";
 	}
 	$result = $conn->query($query);
 	if ($result) {
@@ -162,7 +164,7 @@ if (isset($_POST['submit'])) {
 				$result = $conn->query($query);
 			$nctcount = $result->num_rows;
 				if ($nctcount == 0) {
-				$query = "INSERT INTO `schedule_night_climate_time` VALUES (1,1,0,0,'18:00:00','23:30:00',0);";
+				$query = "INSERT INTO `schedule_night_climate_time` VALUES (0,0,0,0,'18:00:00','23:30:00',0);";
 					$result = $conn->query($query);
 					if ($result) {
 							$message_success .= "<p>".$lang['schedule_night_climate_time_success']."</p>";
@@ -185,7 +187,7 @@ if (isset($_POST['submit'])) {
 	$result = $conn->query($query);
 	$acount = $result->num_rows;
 	if ($acount == 0) {
-		$query = "INSERT INTO `away` VALUES (1,0,0,0,'{$date_time}','{$date_time}',40, 4);";
+		$query = "INSERT INTO `away` VALUES (0,0,0,0,'{$date_time}','{$date_time}',40, 4);";
 		$result = $conn->query($query);
 		if ($result) {
 			$message_success .= "<p>".$lang['away_success']."</p>";
