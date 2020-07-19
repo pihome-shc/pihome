@@ -988,6 +988,132 @@ echo '
 <!-- /.modal fade -->
 ';
 
+//network settings model
+echo '
+<div class="modal fade" id="network_setting" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                <h5 class="modal-title">'.$lang['network_settings'].'</h5>
+            </div>
+            <div class="modal-body">';
+
+$query = "SELECT * FROM `network_settings` ORDER BY `id` ASC;";
+$result = $conn->query($query);
+
+$rowArray = array();
+
+while($row = mysqli_fetch_assoc($result)) {
+   $rowArray[] = $row;
+}
+
+echo '<p class="text-muted">'.$lang['network_text'].'</p>';
+echo '
+        <form data-toggle="validator" role="form" method="post" action="settings.php" id="form-join">
+
+        <input class="form-control input-sm" type="hidden" id="n_int_type" name="n_int_type" value="'.$rowArray[0]['interface_type'].'"/>
+        <div class="form-group" class="control-label"><label>'.$lang['network_interface'].'</label>
+                <select class="form-control input-sm" type="text" id="n_int_num" name="n_int_num" onchange=change(this.options[this.selectedIndex].value)>
+                <option value=0>wlan0</option>
+                <option value=1>wlan1</option>
+                <option value=2>eth0</option>
+                <option value=3>eth1</option>
+                </select>
+                <div class="help-block with-errors">
+                </div>
+        </div>
+        <div class="form-group" class="control-label"><label>'.$lang['network_primary'].'</label>
+                <select class="form-control input-sm" type="text" id="n_primary" name="n_primary">
+                <option value=0>No</option>
+                <option selected value=1>Yes</option>
+                </select>
+                <div class="help-block with-errors">
+                </div>
+        </div>
+        echo '<div class="form-group" class="control-label"><label>'.$lang['network_mac_address'].'</label>
+                <input class="form-control input-sm" type="text" id="n_mac" name="n_mac" value="'.$rowArray[0]['mac_address'].'" placeholder="MAC Address">
+                <div class="help-block with-errors">
+                </div>
+        </div>
+        <div class="form-group" class="control-label"><label>'.$lang['network_hostname'].'</label>
+                <input class="form-control input-sm" type="text" id="n_hostname" name="n_hostname" value="'.$rowArray[0]['hostname'].'" placeholder="Hostname">
+                <div class="help-block with-errors">
+                </div>
+        </div>
+        <div class="form-group" class="control-label"><label>'.$lang['network_ip_address'].'</label>
+                <input class="form-control input-sm" type="text" id="n_ip" name="n_ip" value="'.$rowArray[0]['ip_address'].'" placeholder="IP Address">
+                <div class="help-block with-errors">
+                </div>
+        </div>
+        <div class="form-group" class="control-label"><label>'.$lang['network_gateway_address'].'</label>
+                <input class="form-control input-sm" type="text" id="n_gateway" name="n_gateway" value="'.$rowArray[0]['gateway_address'].'" placeholder="Gateway Address">
+                <div class="help-block with-errors">
+                </div>
+        </div>
+        <div class="form-group" class="control-label"><label>'.$lang['network_net_mask'].'</label>
+                <input class="form-control input-sm" type="text" id="n_net_mask" name="n_net_mask" value="'.$rowArray[0]['net_mask'].'" placeholder="Net Mask">
+                <div class="help-block with-errors">
+                </div>
+        </div>
+        <div class="form-group" class="control-label"><label>'.$lang['network_dns1_address'].'</label>
+                <input class="form-control input-sm" type="text" id="n_dns1" name="n_dns1" value="'.$rowArray[0]['dns1_address'].'" placeholder="DNS1 Address">
+                <div class="help-block with-errors">
+                </div>
+        </div>
+        <div class="form-group" class="control-label"><label>'.$lang['network_dns2_address'].'</label>
+                <input class="form-control input-sm" type="text" id="n_dns2" name="n_dns2" value="'.$rowArray[0]['dns2_address'].'" placeholder="DNS2 Address">
+                <div class="help-block with-errors">
+                </div>
+        </div>
+
+        </div>
+        <!-- /.modal-body -->
+
+            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
+                                <input type="button" name="submit" value="Save" class="btn btn-default login btn-sm" onclick="setup_network()">
+            </div>
+            <!-- /.modal-footer -->
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal-fade -->
+';
+?>
+<script>
+function change(value){
+        var jArray = <?php echo json_encode($rowArray); ?>;
+        var valuetext = value;
+        document.getElementById("n_primary").value = jArray[value]['primary_interface'];
+        document.getElementById("n_mac").value = jArray[value]['mac_address'];
+        document.getElementById("n_hostname").value = jArray[value]['hostname'];
+        document.getElementById("n_ip").value = jArray[value]['ip_address'];
+        document.getElementById("n_gateway").value = jArray[value]['gateway_address'];
+        document.getElementById("n_net_mask").value = jArray[value]['net_mask'];
+        document.getElementById("n_dns1").value = jArray[value]['dns1_address'];
+        document.getElementById("n_dns2").value = jArray[value]['dns2_address'];
+        switch (value) {
+                case '0':
+                        document.getElementById("n_int_type").value = 'wlan0';
+                        break;
+                case '1':
+                        document.getElementById("n_int_type").value = 'wlan1';
+                        break;
+                case '2':
+                        document.getElementById("n_int_type").value = 'eth0';
+                        break;
+                case '3':
+                        document.getElementById("n_int_type").value = 'eth1';
+                        break;
+                default:
+        }
+}
+</script>
+<?php
+
 //email settings model
 echo '
 <div class="modal fade" id="email_setting" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

@@ -421,6 +421,34 @@ var idata="w=setup_gateway&o=update&status="+document.getElementById("checkbox1"
     });
 }
 
+//update network settings
+function setup_network(){
+var idata="w=setup_network&o=update&n_primary="+document.getElementById("n_primary").value;
+        idata+="&n_int_num="+document.getElementById("n_int_num").value;
+        idata+="&n_int_type="+document.getElementById("n_int_type").value;
+        idata+="&n_mac="+document.getElementById("n_mac").value;
+        idata+="&n_hostname"+document.getElementById("n_hostname").value;
+        idata+="&n_ip="+document.getElementById("n_ip").value;
+        idata+="&n_gateway="+document.getElementById("n_gateway").value;
+        idata+="&n_net_mask="+document.getElementById("n_net_mask").value;
+        idata+="&n_dns1="+document.getElementById("n_dns1").value;
+        idata+="&n_dns2="+document.getElementById("n_dns2").value;
+        idata+="&wid=0";
+    $.get('db.php',idata)
+    .done(function(odata){
+        if(odata.Success)
+            reload_page();
+        else
+            console.log(odata.Message);
+    })
+    .fail(function( jqXHR, textStatus, errorThrown ){
+        if(jqXHR==401 || jqXHR==403) return;
+        console.log("setup_network: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
+    })
+    .always(function() {
+    });
+}
+
 //update email 
 function setup_email(){
 var idata="w=setup_email&o=update&status="+document.getElementById("checkbox3").checked;

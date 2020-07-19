@@ -736,6 +736,40 @@ if($what=="setup_gateway"){
 }
 
 
+//network Settings
+if($what=="setup_network"){
+        $n_primary = $_GET['n_primary'];
+        $n_int_num = $_GET['n_int_num'];
+        $n_int_type = $_GET['n_int_type'];
+        $n_mac = $_GET['n_mac'];
+        $n_hostname = $_GET['n_hostname'];
+        $n_ip = $_GET['n_ip'];
+        $n_gateway = $_GET['n_gateway'];
+        $n_net_mask = $_GET['n_net_mask'];
+        $n_dns1 = $_GET['n_dns1'];
+        $n_dns2 = $_GET['n_dns2'];
+
+        //Check interface already exists in table
+        $query = "SELECT * FROM `network_settings` WHERE `interface_num` = '".$n_int_num."' LIMIT 1;";
+        $result = $conn->query($query);
+        if (mysqli_num_rows($result)==0){
+                //No record, so add
+                $query = "INSERT INTO `network_settings`(`sync`, `purge`, `primary_interface`, `interface_num`, `interface_type`, `mac_address`, `hostname`, `ip_address`, `gateway_address`, `net_mask`, `dns1_address`, `dns2_address`) VALUES (0,0,'".$n_primary."','".$n_int_num."','".$n_int_type."','".$n_mac."','".$n_hostname."','".$n_ip."','".$n_gateway."','".$n_net_mask."','".$n_dns1."','".$n_dns2."');";
+        } else {
+                //Update
+                $query = "UPDATE `network_settings` SET primary_interface = '".$n_primary."', interface_type = '".$n_int_type."', mac_address = '".$n_mac."', hostname = '".$n_hostname."', ip_address = '".$n_ip."', gateway_address = '".$n_gateway."', net_mask = '".$n_net_mask."', dns1_address = '".$n_dns1."', dns2_address = '".$n_dns2."' where interface_num = '".$n_int_num."';";
+        }
+        if($conn->query($query)){
+                header('Content-type: application/json');
+                echo json_encode(array('Success'=>'Success','Query'=>$query));
+                return;
+        }else{
+                header('Content-type: application/json');
+                echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+                return;
+        }
+}
+
 //Setup E-mail Setting
 if($what=="setup_email"){
 	$status = $_GET['status'];
