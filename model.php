@@ -1007,6 +1007,7 @@ $rowArray = array();
 while($row = mysqli_fetch_assoc($result)) {
    $rowArray[] = $row;
 }
+if (empty($rowArray[0]['interface_type'])) { $rowArray[0]['interface_type'] = 'wlan0'; }
 
 echo '<p class="text-muted">'.$lang['network_text'].'</p>';
 echo '
@@ -1015,7 +1016,7 @@ echo '
         <input class="form-control input-sm" type="hidden" id="n_int_type" name="n_int_type" value="'.$rowArray[0]['interface_type'].'"/>
         <div class="form-group" class="control-label"><label>'.$lang['network_interface'].'</label>
                 <select class="form-control input-sm" type="text" id="n_int_num" name="n_int_num" onchange=change(this.options[this.selectedIndex].value)>
-                <option value=0>wlan0</option>
+                <option selected value=0>wlan0</option>
                 <option value=1>wlan1</option>
                 <option value=2>eth0</option>
                 <option value=3>eth1</option>
