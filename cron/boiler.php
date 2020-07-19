@@ -201,7 +201,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$result = $conn->query($query);
 	if (mysqli_num_rows($result)==0){
 		//No record in zone_current_statw table, so add
-		$query = "INSERT INTO zone_current_state (`sync`, `purge`, `zone_id`, `mode`, `status`, `temp_reading`, `temp_target`, `temp_cut_in`, `temp_cut_out`, `controler_fault`, `controler_seen_time`, `sensor_fault`, `sensor_seen_time`, `sensor_reading_time`, `overrun`) VALUES(0, 0, '{$zone_id}', 0, 0, 0, 0, 0, 0, 0, NULL , 0, NULL, NULL, 0);";
+		$query = "INSERT INTO zone_current_state (id, `sync`, `purge`, `zone_id`, `mode`, `status`, `temp_reading`, `temp_target`, `temp_cut_in`, `temp_cut_out`, `controler_fault`, `controler_seen_time`, `sensor_fault`, `sensor_seen_time`, `sensor_reading_time`, `overrun`) VALUES('{$zone_id}', 0, 0, '{$zone_id}', 0, 0, 0, 0, 0, 0, 0, NULL , 0, NULL, NULL, 0);";
 		$conn->query($query);
 	}
 	
@@ -671,7 +671,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 			4 - manual operation ON
 			5 - manual operation OFF */
 
-		$query = "UPDATE zone_current_state SET `sync` = 0, mode = {$zone_mode}, status = {$zone_status}, temp_reading = '{$zone_c}', temp_target = {$target_c},temp_cut_in = {$temp_cut_in}, temp_cut_out = {$temp_cut_out}, controler_fault = {$zone_ctr_fault}, controler_seen_time = '{$controler_seen}', sensor_fault  = {$zone_sensor_fault}, sensor_seen_time = '{$sensor_seen}', sensor_reading_time = '{$temp_reading_time}' WHERE id ={$zone_id} LIMIT 1;";
+		$query = "UPDATE zone_current_state SET `sync` = 0, mode = {$zone_mode}, status = {$zone_status}, temp_reading = '{$zone_c}', temp_target = {$target_c},temp_cut_in = {$temp_cut_in}, temp_cut_out = {$temp_cut_out}, controler_fault = {$zone_ctr_fault}, controler_seen_time = '{$controler_seen}', sensor_fault  = {$zone_sensor_fault}, sensor_seen_time = '{$sensor_seen}', sensor_reading_time = '{$temp_reading_time}' WHERE zone_id ={$zone_id} LIMIT 1;";
 		$conn->query($query);
 
 		if ($zone_category == 0 OR $zone_category == 1) {
