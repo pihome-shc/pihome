@@ -710,6 +710,9 @@ CREATE TABLE IF NOT EXISTS `zone` (
 DROP TABLE IF EXISTS `zone_current_state`;
 CREATE TABLE IF NOT EXISTS `zone_current_state` (
   `id` int(11) NOT NULL,
+  `sync` tinyint(4) NOT NULL,
+  `purge` tinyint(4) NOT NULL,
+  `zone_id` int(11) NOT NULL,
   `mode` int(11),
   `status` tinyint(1),
   `temp_reading` decimal(4,1),
