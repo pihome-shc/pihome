@@ -1026,7 +1026,7 @@ echo '
         <div class="form-group" class="control-label"><label>'.$lang['network_primary'].'</label>
                 <select class="form-control input-sm" type="text" id="n_primary" name="n_primary">
                 <option value=0>No</option>
-                <option value=1>Yes</option>
+                <option selected value=1>Yes</option>
                 </select>
                 <div class="help-block with-errors">
                 </div>
@@ -1087,7 +1087,7 @@ echo '
 function change(value){
         var jArray = <?php echo json_encode($rowArray); ?>;
         var valuetext = value;
-        document.getElementById("n_primary").value = jArray[value]['primary'];
+        document.getElementById("n_primary").value = jArray[value]['primary_interface'];
         document.getElementById("n_mac").value = jArray[value]['mac_address'];
         document.getElementById("n_hostname").value = jArray[value]['hostname'];
         document.getElementById("n_ip").value = jArray[value]['ip_address'];
