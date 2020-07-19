@@ -335,7 +335,7 @@ CREATE TABLE IF NOT EXISTS `network_settings` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `sync` tinyint(4) NOT NULL,
   `purge` tinyint(4) NOT NULL COMMENT 'Mark For Deletion',
-  `primary` tinyint(4),
+  `primary_interface` tinyint(4),
   `interface_num` tinyint(4),
   `interface_type` char(50) COLLATE utf16_bin,
   `mac_address` char(50) COLLATE utf16_bin,
