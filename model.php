@@ -1022,8 +1022,15 @@ echo '
                 </select>
                 <div class="help-block with-errors">
                 </div>
-        </div>';
-
+        </div>
+        <div class="form-group" class="control-label"><label>'.$lang['network_primary'].'</label>
+                <select class="form-control input-sm" type="text" id="n_primary" name="n_primary">
+                <option value=0>No</option>
+                <option value=1>Yes</option>
+                </select>
+                <div class="help-block with-errors">
+                </div>
+        </div>
         echo '<div class="form-group" class="control-label"><label>'.$lang['network_mac_address'].'</label>
                 <input class="form-control input-sm" type="text" id="n_mac" name="n_mac" value="'.$rowArray[0]['mac_address'].'" placeholder="MAC Address">
                 <div class="help-block with-errors">
