@@ -166,6 +166,17 @@ $boiler_start_datetime = $row['start_datetime'];
 $boiler_stop_datetime = $row['stop_datetime'];
 $boiler_expoff_datetime = $row['expected_end_date_time'];
 
+//query to active network gateway address
+$query = "SELECT gateway_address FROM network_settings WHERE primary_interface = 1 LIMIT 1;";
+$result = $conn->query($query);
+$network = mysqli_fetch_array($result);
+if (mysqli_num_rows($result) > 0){
+        $n_gateway = $network['gateway_address'];
+        $base_addr = substr($n_gateway,0,strrpos($n_gateway,'.')+1);
+} else {
+        $base_addr = '000.000.000.000';
+}
+
 //following variable set to 0 on start for array index.
 $boiler_index = '0';
 $zone_index = '0';
@@ -264,6 +275,27 @@ while ($row = mysqli_fetch_assoc($results)) {
 			}
 		}
 
+		//Calculate zone fail
+		$zone_fault = 0;
+		$zone_ctr_fault = 0;
+		$zone_sensor_fault = 0;
+		//Get data from nodes table
+		$query = "SELECT * FROM nodes WHERE node_id ='$zone_controler_id' AND status IS NOT NULL LIMIT 1;";
+		$result = $conn->query($query);
+		$controler_node = mysqli_fetch_array($result);
+                $controler_type = $controler_node['type'];
+		$controler_seen = $controler_node['last_seen'];
+		$controler_notice = $controler_node['notice_interval'];
+		if($controler_notice > 0){
+			$now=strtotime(date('Y-m-d H:i:s'));
+			$controler_seen_time = strtotime($controler_seen);
+			if ($controler_seen_time  < ($now - ($controler_notice*60))){
+				$zone_fault = 1;
+				$zone_ctr_fault = 1;
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone valve communication timeout for This Zone. Node Last Seen: ".$controler_seen."\n";
+			}
+		}
+
                 // use the override table to enaable manual ON/OFF control during a running category 2 zone schedule
                 if ($zone_category == 2) {
                         // get the current state of the add-on
@@ -278,28 +310,30 @@ while ($row = mysqli_fetch_assoc($results)) {
                                 $query = "UPDATE override SET status = 0, sync = '0' WHERE zone_id = {$zone_id};";
                         }
                         $conn->query($query);
+
+                        // check is switch has manually changed the ON/OFF state
+                        if ($controler_type == 'Virtual') {
+                                $url = "http://".$base_addr.$zone_controler_child_id."/cm?cmnd=power";
+                                $contents = file_get_contents($url);
+                                $contents = utf8_encode($contents);
+                                $resp = json_decode($contents, true);
+                                if ($resp['POWER'] == 'ON') {$power_state = '1';} else {$power_state = '0';}
+                                // update if the power do not match
+                                if ($add_on_state !=  $power_state) {
+                                        $add_on_state =  $power_state;
+                                        $query = "UPDATE zone SET sync = '0', zone_status = '{$power_state}' WHERE id = '{$zone_id}' LIMIT 1";
+                                        $conn->query($query);
+
+                                        $query = "UPDATE messages_out SET payload = '{$power_state}' WHERE node_id = '{$zone_controler_id}' AND child_id = {$zone_controler_child_id};";
+                                        $conn->query($query);
+                                        if ($zone_current_mode == 114) {
+                                                $query = "UPDATE override SET status = 1, sync = '0' WHERE zone_id = {$zone_id};";
+                                                $conn->query($query);
+                                        }
+                                }
+                        }
                 }
 		
-		//Calculate zone fail
-		$zone_fault = 0;
-		$zone_ctr_fault = 0;
-		$zone_sensor_fault = 0;
-		//Get data from nodes table
-		$query = "SELECT * FROM nodes WHERE node_id ='$zone_controler_id' AND status IS NOT NULL LIMIT 1;";
-		$result = $conn->query($query);
-		$controler_node = mysqli_fetch_array($result);
-		$controler_seen = $controler_node['last_seen'];
-		$controler_notice = $controler_node['notice_interval'];
-		if($controler_notice > 0){
-			$now=strtotime(date('Y-m-d H:i:s'));
-			$controler_seen_time = strtotime($controler_seen);
-			if ($controler_seen_time  < ($now - ($controler_notice*60))){
-				$zone_fault = 1;
-				$zone_ctr_fault = 1;
-				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone valve communication timeout for This Zone. Node Last Seen: ".$controler_seen."\n";
-			}
-		}
-
 		//query to check override status and get temperature from override table
 		$query = "SELECT * FROM override WHERE zone_id = {$zone_id} LIMIT 1;";
 		$result = $conn->query($query);
