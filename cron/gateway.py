@@ -140,7 +140,7 @@ try:
 				print("Pay Load:                    ",out_payload)
 				print("Node Type:                   ",node_type)
 			# node-id ; child-sensor-id ; command ; ack ; type ; payload \n
-			if node_type.find("Virtual") == -1: # process normal node
+			if node_type.find("Tasmota") == -1: # process normal node
 				if gatewaytype == 'serial':
 					gw.write(msg.encode('utf-8')) # !!!! send it to serial (arduino attached to rPI by USB port)
 				else:
