@@ -97,7 +97,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 			$zone_controler_child_id=$row['controler_child_id'];
 
 			//query to get zone current state
-			$query = "SELECT * FROM zone_current_state WHERE id = '{$zone_id}' LIMIT 1;";
+			$query = "SELECT * FROM zone_current_state WHERE zone_id = '{$zone_id}' LIMIT 1;";
 			$result = $conn->query($query);
 			$zone_current_state = mysqli_fetch_array($result);
 			$zone_status = $zone_current_state['status'];
@@ -370,7 +370,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 		}	// end if boiler button
 
                 // Add-On buttons
-                $query = "SELECT zone.*, zone_type.category FROM zone, zone_type WHERE zone.type = zone_type.type AND zone.purge = 0 AND category = 2 ORDER BY index_id asc; ";
+                $query = "SELECT zone.*, zone_type.category FROM zone, zone_type WHERE zone.type = zone_type.type AND zone.purge = 0 AND category = 2 ORDER BY index_id asc;";
                 $results = $conn->query($query);
                 while ($row = mysqli_fetch_assoc($results)) {
                         //query to get on/off state from table with sensor id
@@ -379,7 +379,7 @@ require_once(__DIR__.'/st_inc/functions.php');
                         $state = mysqli_fetch_array($result);
                         $add_on_active = $state['payload'];
                         //query to get zone current state
-                        $query = "SELECT * FROM zone_current_state WHERE id =  '{$row['id']}' LIMIT 1;";
+                        $query = "SELECT * FROM zone_current_state WHERE zone_id =  '{$row['id']}' LIMIT 1;";
                         $result = $conn->query($query);
                         $zone_current_state = mysqli_fetch_array($result);
                         $zone_status = $zone_current_state['status'];
