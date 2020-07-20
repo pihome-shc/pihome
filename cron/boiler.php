@@ -652,7 +652,7 @@ while ($row = mysqli_fetch_assoc($results)) {
                                                         }
 						} elseif ($boost_status=='1') {
 							$zone_status="1";
-							$zone_mode = 61;
+							$zone_mode = 64;
 							$start_cause="Boost Active";
 							$expected_end_date_time=date('Y-m-d H:i:s', $boost_time);
 						}
