@@ -312,23 +312,27 @@ while ($row = mysqli_fetch_assoc($results)) {
                         $conn->query($query);
 
                         // check is switch has manually changed the ON/OFF state
-                        if ($controler_type == 'Virtual') {
-                                $url = "http://".$base_addr.$zone_controler_child_id."/cm?cmnd=power";
-                                $contents = file_get_contents($url);
-                                $contents = utf8_encode($contents);
-                                $resp = json_decode($contents, true);
-                                if ($resp['POWER'] == 'ON') {$power_state = '1';} else {$power_state = '0';}
-                                // update if the power do not match
-                                if ($add_on_state !=  $power_state) {
-                                        $add_on_state =  $power_state;
-                                        $query = "UPDATE zone SET sync = '0', zone_status = '{$power_state}' WHERE id = '{$zone_id}' LIMIT 1";
-                                        $conn->query($query);
+                        if ($controler_type == 'Tasmota') {
+                                if ($base_addr == '000.000.000.000') {
+                                        echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - NO Gateway Address is Set \n";
+                                } else {
+	                                $url = "http://".$base_addr.$zone_controler_child_id."/cm?cmnd=power";
+        	                        $contents = file_get_contents($url);
+                	                $contents = utf8_encode($contents);
+                        	        $resp = json_decode($contents, true);
+                                	if ($resp['POWER'] == 'ON') {$power_state = '1';} else {$power_state = '0';}
+	                                // update if the power do not match
+        	                        if ($add_on_state !=  $power_state) {
+                	                        $add_on_state =  $power_state;
+                        	                $query = "UPDATE zone SET sync = '0', zone_status = '{$power_state}' WHERE id = '{$zone_id}' LIMIT 1";
+                                	        $conn->query($query);
 
-                                        $query = "UPDATE messages_out SET payload = '{$power_state}' WHERE node_id = '{$zone_controler_id}' AND child_id = {$zone_controler_child_id};";
-                                        $conn->query($query);
-                                        if ($zone_current_mode == 114) {
-                                                $query = "UPDATE override SET status = 1, sync = '0' WHERE zone_id = {$zone_id};";
-                                                $conn->query($query);
+                                        	$query = "UPDATE messages_out SET payload = '{$power_state}' WHERE node_id = '{$zone_controler_id}' AND child_id = {$zone_controler_child_id};";
+ 	                                       $conn->query($query);
+        	                                if ($zone_current_mode == 114) {
+                	                                $query = "UPDATE override SET status = 1, sync = '0' WHERE zone_id = {$zone_id};";
+                        	                        $conn->query($query);
+						}
                                         }
                                 }
                         }
