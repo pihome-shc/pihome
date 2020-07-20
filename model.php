@@ -656,7 +656,7 @@ echo '<p class="text-muted">'.$lang['node_add_info_text'].'</p>
 	<select class="form-control input-sm" type="text" id="node_type" onchange=show_hide_devices() name="node_type">
 	<option value="I2C" selected="selected">I2C</option>
 	<option value="GPIO">GPIO</option>
-	<option value="Virtual">Virtual</option>
+        <option value="Tasmota">Tasmota</option>
 	</select>
     <div class="help-block with-errors"></div></div>
 
