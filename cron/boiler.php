@@ -858,7 +858,7 @@ for ($row = 0; $row < count($zone_commands); $row++){
 	/***************************************************************************************
 	Zone Valve Wireless Section: MySensors Wireless Relay module for your Zone Valve control.
 	****************************************************************************************/
-	if ($zone_controller_type == 'MySensor'){
+	if ($zone_controller_type == 'MySensor'|| $zone_controller_type == 'Tasmota'){
 		//update messages_out table with sent status to 0 and payload to as zone status.
 		$query = "UPDATE messages_out SET sent = '0', payload = '{$zone_command}' WHERE node_id ='$zone_controler_id' AND child_id = '$zone_controler_child_id' LIMIT 1;";
 		$conn->query($query);
