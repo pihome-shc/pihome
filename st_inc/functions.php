@@ -449,7 +449,11 @@ function getIndicators($conn, $zone_mode, $zone_temp_target)
 	else if($zone_mode_main == 60){
 		$shactive='fa-rocket';
 		$shcolor='';
-		$target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';
+                if($zone_mode_sub == 4){
+                        $target='';     //show no target temperature
+                } else {
+                        $target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';
+                }
 	}
         //override
         else if($zone_mode_main == 70){
