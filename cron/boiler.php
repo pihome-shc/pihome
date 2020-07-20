@@ -217,7 +217,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	}
 	
 	//query to get zone previous running status
-	$query = "SELECT * FROM zone_current_state WHERE id = '{$zone_id}' LIMIT 1;";
+	$query = "SELECT * FROM zone_current_state WHERE zone_id = '{$zone_id}' LIMIT 1;";
 	$result = $conn->query($query);
 	$zone_current_state = mysqli_fetch_array($result);
 	$zone_status_prev = $zone_current_state['status'];
