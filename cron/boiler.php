@@ -324,11 +324,12 @@ while ($row = mysqli_fetch_assoc($results)) {
 	                                // update if the power do not match
         	                        if ($add_on_state !=  $power_state) {
                 	                        $add_on_state =  $power_state;
+						$zone_active_status = $power_state;
                         	                $query = "UPDATE zone SET sync = '0', zone_status = '{$power_state}' WHERE id = '{$zone_id}' LIMIT 1";
                                 	        $conn->query($query);
 
                                         	$query = "UPDATE messages_out SET payload = '{$power_state}' WHERE node_id = '{$zone_controler_id}' AND child_id = {$zone_controler_child_id};";
- 	                                       $conn->query($query);
+ 	                                       	$conn->query($query);
         	                                if ($zone_current_mode == 114) {
                 	                                $query = "UPDATE override SET status = 1, sync = '0' WHERE zone_id = {$zone_id};";
                         	                        $conn->query($query);
