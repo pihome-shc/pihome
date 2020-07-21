@@ -447,5 +447,5 @@ except Exception as e:
 	con.close()
 finally:
 	print(infomsg)
-	logging.exception(e)
+	logging.exception(Exception)
 	sys.exit(1)
