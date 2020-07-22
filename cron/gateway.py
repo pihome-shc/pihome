@@ -151,11 +151,11 @@ try:
 			else:
 				# process the Sonoff device HTTP action
 				url = 'http://' + base_ip.group(0) + str(out_child_id) + '/cm'
-				if out_payload.find('1') != -1:
-					myobj = {'cmnd': 'Power ON'}
+				if out_payload.find('ON') != -1:
+					myobj = {'cmnd': str(out_payload)}
 					test_str = 'ON'
 				else:
-					myobj = {'cmnd': 'Power OFF'}
+					myobj = {'cmnd': str(out_payload)}
 					test_str = 'OFF'
 
 				x = requests.post(url, data = myobj) # send request to Sonoff device
