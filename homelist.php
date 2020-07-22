@@ -377,7 +377,12 @@ require_once(__DIR__.'/st_inc/functions.php');
                         $query = "SELECT * FROM messages_out WHERE zone_id = '{$row['id']}' LIMIT 1;";
                         $result = $conn->query($query);
                         $state = mysqli_fetch_array($result);
-                        $add_on_active = $state['payload'];
+                        $state = mysqli_fetch_array($result);
+                        if ($row['controller_type'] == 'Tasmota') {
+                                $add_on_active = ($state['payload'] == 'Power ON') ? '1':'0';
+                        } else {
+                                $add_on_active = $state['payload'];
+                        }
                         //query to get zone current state
                         $query = "SELECT * FROM zone_current_state WHERE zone_id =  '{$row['id']}' LIMIT 1;";
                         $result = $conn->query($query);
