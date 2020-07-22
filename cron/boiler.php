@@ -302,7 +302,11 @@ while ($row = mysqli_fetch_assoc($results)) {
                         $query = "SELECT * FROM messages_out WHERE node_id = '{$zone_controler_id}' AND child_id = {$zone_controler_child_id} LIMIT 1;";
                         $result = $conn->query($query);
                         $add_on = mysqli_fetch_array($result);
-                        $add_on_state = intval($add_on['payload']);
+                        if ($controler_type == 'Tasmota') {
+                                $add_on_state = ($add_on['payload'] == 'Power ON') ? 1:0;
+                        } else {
+                                $add_on_state = intval($add_on['payload']);
+                        }
                         // if add-on is OFF and schedule is running then activate override
                         if ($add_on_state == 0 and $zone_current_mode == 114) {
                                 $query = "UPDATE override SET status = 1, sync = '0' WHERE zone_id = {$zone_id};";
@@ -320,7 +324,13 @@ while ($row = mysqli_fetch_assoc($results)) {
         	                        $contents = file_get_contents($url);
                 	                $contents = utf8_encode($contents);
                         	        $resp = json_decode($contents, true);
-                                	if ($resp['POWER'] == 'ON') {$power_state = '1';} else {$power_state = '0';}
+                                        if ($resp['POWER'] == 'ON') {
+                                                $power_state = '1';
+                                                $add_on_msg = 'Power ON';
+                                        } else {
+                                                $power_state = '0';
+                                                $add_on_msg = 'Power OFF';
+                                        }
 	                                // update if the power do not match
         	                        if ($add_on_state !=  $power_state) {
                 	                        $add_on_state =  $power_state;
@@ -328,7 +338,7 @@ while ($row = mysqli_fetch_assoc($results)) {
                         	                $query = "UPDATE zone SET sync = '0', zone_status = '{$power_state}' WHERE id = '{$zone_id}' LIMIT 1";
                                 	        $conn->query($query);
 
-                                        	$query = "UPDATE messages_out SET payload = '{$power_state}' WHERE node_id = '{$zone_controler_id}' AND child_id = {$zone_controler_child_id};";
+                                        	$query = "UPDATE messages_out SET payload = '{$add_on_msg}' WHERE node_id = '{$zone_controler_id}' AND child_id = {$zone_controler_child_id};";
  	                                       	$conn->query($query);
         	                                if ($zone_current_mode == 114) {
                 	                                $query = "UPDATE override SET status = 1, sync = '0' WHERE zone_id = {$zone_id};";
@@ -864,6 +874,14 @@ for ($row = 0; $row < count($zone_commands); $row++){
 		$query = "UPDATE messages_out SET sent = '0', payload = '{$zone_command}' WHERE node_id ='$zone_controler_id' AND child_id = '$zone_controler_child_id' LIMIT 1;";
 		$conn->query($query);
 	}
+	/***************************************************************************************
+	Sonoff Switch Section: Tasmota WiFi Relay module for your Zone control.
+	****************************************************************************************/
+        if ($zone_controller_type == 'Tasmota'){
+                $add_on_msg = ($zone_command == '1') ? 'Power ON':'Power OFF';
+                $query = "UPDATE messages_out SET sent = '0', payload = '{$add_on_msg}' WHERE node_id ='$zone_controler_id' AND child_id = '$zone_controler_child_id' LIMIT 1;";
+                $conn->query($query);
+        }
 }
 
 //For debug info only
