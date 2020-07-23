@@ -582,3 +582,44 @@ function mqtt_delete(wid){
     .always(function() {
     });
 }
+
+//Add HTTP Message
+function add_http_msg(){
+var idata="w=http_msg&o=add";
+        idata+="&add_on_zone_name="+document.getElementById("add_on_zone_name").value;
+        idata+="&add_msg_type="+document.getElementById("add_msg_type").value;
+        idata+="&http_command="+document.getElementById("http_command").value;
+        idata+="&http_parameter="+document.getElementById("http_parameter").value;
+    idata+="&wid=0";
+    $.get('db.php',idata)
+    .done(function(odata){
+        if(odata.Success)
+            reload_page();
+        else
+            console.log(odata.Message);
+    })
+    .fail(function( jqXHR, textStatus, errorThrown ){
+        if(jqXHR==401 || jqXHR==403) return;
+        console.log("add_http_msg: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
+    })
+    .always(function() {
+    });
+}
+
+//Delete HTTP Message
+function delete_http_msg(wid){
+var idata="w=http_msg&o=delete&wid="+wid;
+    $.get('db.php',idata)
+    .done(function(odata){
+        if(odata.Success)
+            reload_page();
+        else
+            console.log(odata.Message);
+    })
+    .fail(function( jqXHR, textStatus, errorThrown ){
+        if(jqXHR==401 || jqXHR==403) return;
+        console.log("delete_http_msg: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
+    })
+    .always(function() {
+    });
+}
