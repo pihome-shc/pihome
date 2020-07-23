@@ -379,7 +379,10 @@ require_once(__DIR__.'/st_inc/functions.php');
                         $state = mysqli_fetch_array($result);
                         $state = mysqli_fetch_array($result);
                         if ($row['controller_type'] == 'Tasmota') {
-                                $add_on_active = ($state['payload'] == 'Power ON') ? '1':'0';
+                                $query = "SELECT * FROM http_messages WHERE zone_name = '{$row['name']}' AND message_type = 1 LIMIT 1;";
+                                $result = $conn->query($query);
+                                $http = mysqli_fetch_array($result);
+                                $add_on_active = ($state['payload'] == $http['command'].' '.$http['parameter']) ? '1':'0';
                         } else {
                                 $add_on_active = $state['payload'];
                         }

@@ -303,7 +303,10 @@ while ($row = mysqli_fetch_assoc($results)) {
                         $result = $conn->query($query);
                         $add_on = mysqli_fetch_array($result);
                         if ($controler_type == 'Tasmota') {
-                                $add_on_state = ($add_on['payload'] == 'Power ON') ? 1:0;
+                                $query = "SELECT * FROM http_messages WHERE zone_name = '{$row['name']}' AND message_type = 1 LIMIT 1;";
+                                $result = $conn->query($query);
+                                $http = mysqli_fetch_array($result);
+                                $add_on_state = ($add_on['payload'] == $http['command'].' '.$http['parameter']) ? 1:0;
                         } else {
                                 $add_on_state = intval($add_on['payload']);
                         }
@@ -324,13 +327,12 @@ while ($row = mysqli_fetch_assoc($results)) {
         	                        $contents = file_get_contents($url);
                 	                $contents = utf8_encode($contents);
                         	        $resp = json_decode($contents, true);
-                                        if ($resp['POWER'] == 'ON') {
+                                        if ($resp[strtoupper($http['command'])] == 'ON') {
                                                 $power_state = '1';
-                                                $add_on_msg = 'Power ON';
                                         } else {
                                                 $power_state = '0';
-                                                $add_on_msg = 'Power OFF';
                                         }
+                                        $add_on_msg = $http['command'].' '.$http['parameter'];
 	                                // update if the power do not match
         	                        if ($add_on_state !=  $power_state) {
                 	                        $add_on_state =  $power_state;
@@ -742,7 +744,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 		}
 
 		//Pass data to zone commands loop
-		$zone_commands[$command_index] = (array('zone_id' =>$zone_id, 'zone_category' =>$zone_category, 'zone_controler_id' =>$zone_controler_id, 'zone_controler_child_id' =>$zone_controler_child_id, 'zone_controller_type' =>$zone_controller_type, 'zone_status'=>$zone_status, 'zone_status_prev'=>$zone_status_prev, 'zone_overrun_prev'=>$zone_overrun_prev));
+		$zone_commands[$command_index] = (array('zone_id' =>$zone_id, 'zone_name' =>$zone_name, 'zone_category' =>$zone_category, 'zone_controler_id' =>$zone_controler_id, 'zone_controler_child_id' =>$zone_controler_child_id, 'zone_controller_type' =>$zone_controller_type, 'zone_status'=>$zone_status, 'zone_status_prev'=>$zone_status_prev, 'zone_overrun_prev'=>$zone_overrun_prev));
 		$command_index = $command_index+1;
 		//process Zone Cat 0 logs
 		if ($zone_category == 0){
@@ -797,6 +799,7 @@ for ($row = 0; $row < count($zone_commands); $row++){
 	$zone_id = $zone_commands[$row]["zone_id"];
 	$zone_category = $zone_commands[$row]["zone_category"];
 	$zone_controler_id = $zone_commands[$row]["zone_controler_id"];
+        $zone_name = $zone_commands[$row]["zone_name"];
 	$zone_controler_child_id = $zone_commands[$row]["zone_controler_child_id"];
 	$zone_controller_type = $zone_commands[$row]["zone_controller_type"];
 	$zone_status = $zone_commands[$row]["zone_status"];
@@ -878,7 +881,10 @@ for ($row = 0; $row < count($zone_commands); $row++){
 	Sonoff Switch Section: Tasmota WiFi Relay module for your Zone control.
 	****************************************************************************************/
         if ($zone_controller_type == 'Tasmota'){
-                $add_on_msg = ($zone_command == '1') ? 'Power ON':'Power OFF';
+                $query = "SELECT * FROM http_messages WHERE zone_name = '$zone_name' AND message_type = '$zone_command' LIMIT 1;";
+                $result = $conn->query($query);
+                $http = mysqli_fetch_array($result);
+                $add_on_msg = $http['command'].' '.$http['parameter'];
                 $query = "UPDATE messages_out SET sent = '0', payload = '{$add_on_msg}' WHERE node_id ='$zone_controler_id' AND child_id = '$zone_controler_child_id' LIMIT 1;";
                 $conn->query($query);
         }

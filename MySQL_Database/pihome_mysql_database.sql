@@ -269,6 +269,20 @@ CREATE TABLE IF NOT EXISTS `holidays` (
 /*!40000 ALTER TABLE `holidays` DISABLE KEYS */;
 /*!40000 ALTER TABLE `holidays` ENABLE KEYS */;
 
+-- Dumping structure for table pihome.http_messages
+DROP TABLE IF EXISTS `http_messages`;
+CREATE TABLE IF NOT EXISTS `http_messages` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sync` tinyint(4) NOT NULL,
+  `purge` tinyint(4) NOT NULL COMMENT 'Mark For Deletion',
+  `zone_name` char(50) COLLATE utf16_bin,
+  `node_id` char(50) COLLATE utf16_bin,
+  `message_type` char(50) COLLATE utf16_bin,
+  `command` char(50) COLLATE utf16_bin,
+  `parameter` char(50) COLLATE utf16_bin,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+
 -- Dumping structure for table pihome.messages_in
 DROP TABLE IF EXISTS `messages_in`;
 CREATE TABLE IF NOT EXISTS `messages_in` (
