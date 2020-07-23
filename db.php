@@ -263,6 +263,47 @@ if($what=="boost"){
 		}
 	}
 }
+
+//HTTP Messages
+if($what=="http_msg"){
+        if($opp=="delete"){
+                //get list of Boost console Id and Child ID
+                $query = "DELETE FROM `http_messages` WHERE id = '".$wid."';";
+                $conn->query($query);
+                if($conn->query($query)){
+                        header('Content-type: application/json');
+                        echo json_encode(array('Success'=>'Success','Query'=>$query));
+                        return;
+                }else{
+                        header('Content-type: application/json');
+                        echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+                        return;
+                }
+        }
+        if($opp=="add"){
+                $add_on_zone_name = $_GET['add_on_zone_name'];
+                $add_msg_type = $_GET['add_msg_type'];
+                $http_command = $_GET['http_command'];
+                $http_parameter = $_GET['http_parameter'];
+                $query = "SELECT controler_id FROM zone_view WHERE name = '".$add_on_zone_name."' LIMIT 1";
+                $results = $conn->query($query);
+                $row = mysqli_fetch_assoc($results);
+                $node_id = $row['controler_id'];
+
+                //Add record to http_messages table
+                $query = "INSERT INTO `http_messages`(`sync`, `purge`, `zone_name`, `node_id`, `message_type`, `command`, `parameter`) VALUES ('0', '0', '{$add_on_zone_name}', '{$node_id}', '{$add_msg_type}', '{$http_command}', '{$http_parameter}')";
+                if($conn->query($query)){
+                        header('Content-type: application/json');
+                        echo json_encode(array('Success'=>'Success','Query'=>$query));
+                        return;
+                }else{
+                        header('Content-type: application/json');
+                        echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+                        return;
+                }
+        }
+}
+
 //Nodes
 if($what=="node"){
 	if($opp=="delete"){
