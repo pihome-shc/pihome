@@ -151,16 +151,12 @@ try:
 			else:
 				# process the Sonoff device HTTP action
 				url = 'http://' + base_ip.group(0) + str(out_child_id) + '/cm'
-				if out_payload.find('ON') != -1:
-					myobj = {'cmnd': str(out_payload)}
-					test_str = 'ON'
-				else:
-					myobj = {'cmnd': str(out_payload)}
-					test_str = 'OFF'
-
+				cmd = out_payload.split(' ')[0].upper()
+				param = out_payload.split(' ')[1]
+				myobj = {'cmnd': str(out_payload)}
 				x = requests.post(url, data = myobj) # send request to Sonoff device
 				if x.status_code == 200:
-					if (x.json().get("POWER")).find(test_str) != -1: # clear send if response is okay
+					if x.json().get(cmd) == param: # clear send if response is okay
 						cur.execute('UPDATE `messages_out` set sent=1 where id=%s', [out_id])
 						con.commit() #commit above
 
