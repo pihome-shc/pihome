@@ -442,6 +442,7 @@ $lang['command'] = "Command";
 $lang['parameter'] = "Parameter";
 $lang['add_http_msg'] = "Add HTTP Msg";
 $lang['add_zone_name_info'] = "Select Zone using the Tasmota Controller";
+$lang['add_node_id_info'] = "Select Node using the Tasmota Controller";
 $lang['http_command'] = "HTTP Command";
 $lang['http_command_info'] = "HTTP Command to be Sent to the Tasmota Controller";
 $lang['http_parameter'] = "HTTP Parameter";

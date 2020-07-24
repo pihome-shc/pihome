@@ -281,14 +281,21 @@ if($what=="http_msg"){
                 }
         }
         if($opp=="add"){
-                $add_on_zone_name = $_GET['add_on_zone_name'];
+                $http_update_type = $_GET['http_update_type'];
+                $http_id = $_GET['http_id'];
                 $add_msg_type = $_GET['add_msg_type'];
                 $http_command = $_GET['http_command'];
                 $http_parameter = $_GET['http_parameter'];
-                $query = "SELECT controler_id FROM zone_view WHERE name = '".$add_on_zone_name."' LIMIT 1";
-                $results = $conn->query($query);
-                $row = mysqli_fetch_assoc($results);
-                $node_id = $row['controler_id'];
+                if ($http_update_type == 1) {
+                        $query = "SELECT controler_id FROM zone_view WHERE name = '".$add_on_zone_name."' LIMIT 1";
+                        $results = $conn->query($query);
+                        $row = mysqli_fetch_assoc($results);
+                        $node_id = $row['controler_id'];
+                        $add_on_zone_name = $http_id;
+                } else {
+                        $node_id = $http_id;
+                        $add_on_zone_name = "";
+                }
 
                 //Add record to http_messages table
                 $query = "INSERT INTO `http_messages`(`sync`, `purge`, `zone_name`, `node_id`, `message_type`, `command`, `parameter`) VALUES ('0', '0', '{$add_on_zone_name}', '{$node_id}', '{$add_msg_type}', '{$http_command}', '{$http_parameter}')";

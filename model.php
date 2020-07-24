@@ -1042,15 +1042,29 @@ echo '
                 <h5 class="modal-title">'.$lang['add_on_messages'].'</h5>
             </div>
             <div class="modal-body">';
-echo '<p class="text-muted">'.$lang['add_on_add_info_text'].'</p>
-
-        <form data-toggle="validator" role="form" method="post" action="settings.php" id="form-join">
-
-        <div class="form-group" class="control-label"><label>'.$lang['zone_name'].'</label> <small class="text-muted">'.$lang['add_zone_name_info'].'</small>
-        <select class="form-control input-sm" type="text" id="add_on_zone_name" name="add_on_zone_name">';
         $query = "SELECT `name` FROM `zone_view` WHERE `controller_type` = 'Tasmota' ORDER BY `name` ASC;";
         $result = $conn->query($query);
-        if ($result){
+        if ($result->num_rows == 0) {
+                $zone_http = 0;
+                $query = "SELECT `node_id` FROM `nodes` WHERE `type` = 'Tasmota' ORDER BY `node_id` ASC;";
+                $result = $conn->query($query);
+        } else {
+                $zone_http = 1;
+        }
+echo '<p class="text-muted">'.$lang['add_on_add_info_text'].'</p>
+        <form data-toggle="validator" role="form" method="post" action="settings.php" id="form-join">
+         <input class="form-control input-sm" type="hidden" id="http_update_type" name="http_update_type" value="'.$zone_http.'"/>';
+        if ($zone_http == 0) {
+        	echo '<div class="form-group" class="control-label" id="http_id_label" ><label>'.$lang['node_id'].'</label> <small class="text-muted">'.$lang['add_node_id_info'].'</small>';
+        } else {
+        	echo '<div class="form-group" class="control-label" id="http_id_label" ><label>'.$lang['zone_name'].'</label> <small class="text-muted">'.$lang['add_zone_name_info'].'</small>';
+        }
+        echo '<select class="form-control input-sm" type="text" id="http_id" name="http_id">';
+        if ($zone_http == 0) {
+                while ($nrow=mysqli_fetch_array($result)) {
+                        echo '<option value="'.$nrow['node_id'].'">'.$nrow['node_id'].'</option>';
+                }
+        } else {
                 while ($zrow=mysqli_fetch_array($result)) {
                         echo '<option value="'.$zrow['name'].'">'.$zrow['name'].'</option>';
                 }
