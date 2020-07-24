@@ -440,7 +440,8 @@ $lang['message_type'] = "Msg Type";
 $lang['message_type_info'] = "Use 0 for OFF Message or 1 for ON Message";
 $lang['command'] = "Command";
 $lang['parameter'] = "Parameter";
-$lang['add_http_msg'] = "Add HTTP Msg";
+$lang['zone_add_http_msg'] = "Add Zone HTTP Msg";
+$lang['node_add_http_msg'] = "Add Node HTTP Msg";
 $lang['add_zone_name_info'] = "Select Zone using the Tasmota Controller";
 $lang['add_node_id_info'] = "Select Node using the Tasmota Controller";
 $lang['http_command'] = "HTTP Command";
@@ -449,4 +450,5 @@ $lang['http_parameter'] = "HTTP Parameter";
 $lang['http_parameter_info'] = "HTTP Parameter to be sent with command to Tasmota Controller";
 $lang['add_on_messages'] = "Add HTTP Messages";
 $lang['add_on_add_info_text'] = "HTTP Messages to be to Sent and Received from Tasmota Controller";
+$lang['no_tasmota'] = "No Tasmota Controllers";
 ?>
