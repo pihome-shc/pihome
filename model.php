@@ -994,47 +994,107 @@ echo '
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                <h5 class="modal-title">'.$lang['add_on_settings'].'</h5>
-            </div>
-            <div class="modal-body">
-<p class="text-muted"> '.$lang['add_on_settings_text'].' </p>';
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>';
+                $query = "SELECT `name` FROM `zone_view` WHERE `controller_type` = 'Tasmota' ORDER BY `name` ASC;";
+                $zresult = $conn->query($query);
+                $zcount = $zresult->num_rows;
+                $query = "SELECT `node_id` FROM `nodes` WHERE `type` = 'Tasmota' ORDER BY `node_id` ASC;";
+                $nresult = $conn->query($query);
+                $ncount = $nresult->num_rows;
+                if ($zcount + $ncount == 0) {
+                        echo '<h5 class="modal-title">'.$lang['no_tasmota'].'</h5>';
+                } else {
+                        echo '<h5 class="modal-title">'.$lang['add_on_settings'].'</h5>';
+                }
+            echo '</div>
+            <div class="modal-body">';
 
-$query = "SELECT http_messages.*, nodes.type FROM http_messages, nodes WHERE http_messages.node_id = nodes.node_id;";
-$results = $conn->query($query);
-echo '<table class="table table-bordered">
-    <tr>
-        <th class="col-xs-2"><small>'.$lang['type'].'</small></th>
-        <th class="col-xs-3"><small>'.$lang['zone_name'].'</small></th>
-        <th class="col-xs-2"><small>'.$lang['message_type'].'</small></th>
-        <th class="col-xs-2"><small>'.$lang['command'].'</small></th>
-        <th class="col-xs-2"><small>'.$lang['parameter'].'</small></th>
-        <th class="col-xs-1"></th>
-    </tr>';
-while ($row = mysqli_fetch_assoc($results)) {
-    echo '
+if ($zcount + $ncount > 0) {
+        echo '<p class="text-muted"> '.$lang['add_on_settings_text'].' </p>';
+
+        $query = "SELECT http_messages.*, nodes.type FROM http_messages, nodes WHERE http_messages.node_id = nodes.node_id;";
+        $results = $conn->query($query);
+        echo '<table class="table table-bordered">
         <tr>
-            <td>'.$row["type"].'</td>
-            <td>'.$row["zone_name"].'</td>
-            <td>'.$row["message_type"].'</td>
-            <td>'.$row["command"].'</td>
-            <td>'.$row["parameter"].'</td>
-            <td><a href="javascript:delete_http_msg('.$row["id"].');"><button class="btn btn-danger btn-xs" data-toggle="confirmation" data-title="'.$lang['confirmation'].'" data-content="'.$content_msg.'"><span class="glyphicon glyphicon-trash"></span></button> </a></td>
+                <th class="col-xs-2"><small>'.$lang['type'].'</small></th>
+                <th class="col-xs-3"><small>'.$lang['zone_name'].'</small></th>
+                <th class="col-xs-2"><small>'.$lang['message_type'].'</small></th>
+                <th class="col-xs-2"><small>'.$lang['command'].'</small></th>
+                <th class="col-xs-2"><small>'.$lang['parameter'].'</small></th>
+                <th class="col-xs-1"></th>
         </tr>';
+        while ($row = mysqli_fetch_assoc($results)) {
+                echo '
+                        <tr>
+                        <td>'.$row["type"].'</td>
+                        <td>'.$row["zone_name"].'</td>
+                        <td>'.$row["message_type"].'</td>
+                        <td>'.$row["command"].'</td>
+                        <td>'.$row["parameter"].'</td>
+                        <td><a href="javascript:delete_http_msg('.$row["id"].');"><button class="btn btn-danger btn-xs" data-toggle="confirmation" data-title="'.$lang['confirmation'].'" data-content="'.$content_msg.'"><span class="glyphicon glyphicon-trash"></span></button> </a></td>
+                        </tr>';
+        }
 }
 echo '</table></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
-                <button type="button" class="btn btn-default login btn-sm" data-href="#" data-toggle="modal" data-target="#add_http_msg">'.$lang['add_http_msg'].'</button>
+                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>';
+                if ($zcount > 0) {
+			echo '<button type="button" class="btn btn-default login btn-sm" data-href="#" data-toggle="modal" data-target="#zone_add_http_msg">'.$lang['zone_add_http_msg'].'</button>';
+                }
+                if ($ncount > 0) {
+			echo '<button type="button" class="btn btn-default login btn-sm" data-href="#" data-toggle="modal" data-target="#node_add_http_msg">'.$lang['node_add_http_msg'].'</button>';
+                }
+            echo '</div>
+        </div>
+    </div>
+</div>';
+
+//Add New HTTP Message based on Zone Name
+echo '
+<div class="modal fade" id="zone_add_http_msg" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                <h5 class="modal-title">'.$lang['add_on_messages'].'</h5>
+            </div>
+            <div class="modal-body">';
+echo '<p class="text-muted">'.$lang['add_on_add_info_text'].'</p>
+        <form data-toggle="validator" role="form" method="post" action="settings.php" id="form-join">
+       	<div class="form-group" class="control-label"><label>'.$lang['zone_name'].'</label> <small class="text-muted">'.$lang['add_zone_name_info'].'</small>
+        <select class="form-control input-sm" type="text" id="http_id" name="http_id">';
+        while ($zrow=mysqli_fetch_array($zresult)) {
+        	echo '<option value="'.$zrow['name'].'">'.$zrow['name'].'</option>';
+        }
+        echo '</select>
+    	<div class="help-block with-errors"></div></div>
+
+	<div class="form-group" class="control-label"><label>'.$lang['message_type'].'</label> <small class="text-muted">'.$lang['message_type_info'].'</small>
+	<select <input class="form-control input-sm" type="text" id="add_msg_type" name="add_msg_type" value="" placeholder="'.$lang['message_type'].'">
+	<option selected value="0">0 </option>
+        <option value="1">1 </option>
+	</select>
+	<div class="help-block with-errors"></div></div>
+
+	<div class="form-group" class="control-label"><label>'.$lang['http_command'].'</label> <small class="text-muted">'.$lang['http_command_info'].'</small>
+	<input class="form-control input-sm" type="text" id="http_command" name="http_command" value="" placeholder="'.$lang['http_command'].'">
+	<div class="help-block with-errors"></div></div>
+
+        <div class="form-group" class="control-label"><label>'.$lang['http_parameter'].'</label> <small class="text-muted">'.$lang['http_parameter_info'].'</small>
+        <input class="form-control input-sm" type="text" id="http_parameter" name="http_parameter" value="" placeholder="'.$lang['http_parameter'].'">
+        <div class="help-block with-errors"></div></div>
+</div>
+            <div class="modal-footer">
+				<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
+                                <input type="button" name="submit" value="Save" class="btn btn-default login btn-sm" onclick="add_http_msg()">
             </div>
         </div>
     </div>
 </div>';
 
-
-//Add New HTTP Message
+//Add New HTTP Message based on Node ID
 echo '
-<div class="modal fade" id="add_http_msg" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="node_add_http_msg" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -1042,32 +1102,12 @@ echo '
                 <h5 class="modal-title">'.$lang['add_on_messages'].'</h5>
             </div>
             <div class="modal-body">';
-        $query = "SELECT `name` FROM `zone_view` WHERE `controller_type` = 'Tasmota' ORDER BY `name` ASC;";
-        $result = $conn->query($query);
-        if ($result->num_rows == 0) {
-                $zone_http = 0;
-                $query = "SELECT `node_id` FROM `nodes` WHERE `type` = 'Tasmota' ORDER BY `node_id` ASC;";
-                $result = $conn->query($query);
-        } else {
-                $zone_http = 1;
-        }
 echo '<p class="text-muted">'.$lang['add_on_add_info_text'].'</p>
         <form data-toggle="validator" role="form" method="post" action="settings.php" id="form-join">
-         <input class="form-control input-sm" type="hidden" id="http_update_type" name="http_update_type" value="'.$zone_http.'"/>';
-        if ($zone_http == 0) {
-        	echo '<div class="form-group" class="control-label" id="http_id_label" ><label>'.$lang['node_id'].'</label> <small class="text-muted">'.$lang['add_node_id_info'].'</small>';
-        } else {
-        	echo '<div class="form-group" class="control-label" id="http_id_label" ><label>'.$lang['zone_name'].'</label> <small class="text-muted">'.$lang['add_zone_name_info'].'</small>';
-        }
-        echo '<select class="form-control input-sm" type="text" id="http_id" name="http_id">';
-        if ($zone_http == 0) {
-                while ($nrow=mysqli_fetch_array($result)) {
-                        echo '<option value="'.$nrow['node_id'].'">'.$nrow['node_id'].'</option>';
-                }
-        } else {
-                while ($zrow=mysqli_fetch_array($result)) {
-                        echo '<option value="'.$zrow['name'].'">'.$zrow['name'].'</option>';
-                }
+        <div class="form-group" class="control-label"><label>'.$lang['node_id'].'</label> <small class="text-muted">'.$lang['add_node_id_info'].'</small>
+        <select class="form-control input-sm" type="text" id="http_id" name="http_id">';
+        while ($nrow=mysqli_fetch_array($nresult)) {
+                echo '<option value="'.$nrow['node_id'].'">'.$nrow['node_id'].'</option>';
         }
         echo '</select>
         <div class="help-block with-errors"></div></div>
@@ -1090,7 +1130,6 @@ echo '<p class="text-muted">'.$lang['add_on_add_info_text'].'</p>
             <div class="modal-footer">
                                 <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
                                 <input type="button" name="submit" value="Save" class="btn btn-default login btn-sm" onclick="add_http_msg()">
-
             </div>
         </div>
     </div>
