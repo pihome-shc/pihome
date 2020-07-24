@@ -586,7 +586,8 @@ function mqtt_delete(wid){
 //Add HTTP Message
 function add_http_msg(){
 var idata="w=http_msg&o=add";
-        idata+="&add_on_zone_name="+document.getElementById("add_on_zone_name").value;
+        idata+="&http_update_type="+document.getElementById("http_update_type").value;
+        idata+="&http_id="+document.getElementById("http_id").value;
         idata+="&add_msg_type="+document.getElementById("add_msg_type").value;
         idata+="&http_command="+document.getElementById("http_command").value;
         idata+="&http_parameter="+document.getElementById("http_parameter").value;
