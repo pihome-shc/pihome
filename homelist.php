@@ -370,9 +370,32 @@ require_once(__DIR__.'/st_inc/functions.php');
 		}	// end if boiler button
 
                 // Add-On buttons
+                //query to check holidays status
+                $query = "SELECT * FROM holidays WHERE NOW() between start_date_time AND end_date_time AND status = '1' LIMIT 1";
+                $result = $conn->query($query);
+                $rowcount=mysqli_num_rows($result);
+                if ($rowcount > 0) {
+                        $holidays = mysqli_fetch_array($result);
+                        $holidays_status = $holidays['status'];
+                }else {
+                        $holidays_status = 0;
+                }
                 $query = "SELECT zone.*, zone_type.category FROM zone, zone_type WHERE zone.type = zone_type.type AND zone.purge = 0 AND category = 2 ORDER BY index_id asc;";
                 $results = $conn->query($query);
                 while ($row = mysqli_fetch_assoc($results)) {
+                        //get the schedule status for this zone
+                        if($holidays_status == 0) {
+                                $query = "SELECT * FROM schedule_daily_time_zone_view WHERE ((`end`>`start` AND CURTIME() between `start` AND `end`) OR (`end`<`start` AND CURTIME()<`end`) OR (`end`<`start` AND CURTIME()>`start`)) AND zone_id = {$row['id']} AND time_status = '1' AND (WeekDays & (1 << {idate('w')})) > 0 AND holidays_id = 0 LIMIT 1;";
+                        } else {
+                                $query = "SELECT * FROM schedule_daily_time_zone_view WHERE ((`end`>`start` AND CURTIME() between `start` AND `end`) OR (`end`<`start` AND CURTIME()<`end`) OR (`end`<`start` AND CURTIME()>`start`)) AND zone_id = {$zone_id} AND time_status = '1' AND (WeekDays & (1 << {$dow})) > 0 AND holidays_id > 0 LIMIT 1;";
+                        }
+                        $result = $conn->query($query);
+                        if(mysqli_num_rows($result)<=0){
+                                $sch_status=0;
+                        }else{
+                                $schedule = mysqli_fetch_array($result);
+                                $sch_status = $schedule['tz_status'];
+                        }
                         //query to get on/off state from table with sensor id
                         $query = "SELECT * FROM messages_out WHERE zone_id = '{$row['id']}' LIMIT 1;";
                         $result = $conn->query($query);
@@ -409,7 +432,17 @@ require_once(__DIR__.'/st_inc/functions.php');
                         <h3 class="degre" ><i class="fa fa-lightbulb-o fa-1x '.$add_on_colour.'"></i></h3>
                         <h3 class="status">';
 
-                        $rval=getIndicators($conn, $zone_mode, $zone_temp_target);
+                        $add_on_mode = $zone_mode;
+                        if ($sch_status =='1' && $add_on_active == '0') {
+                                $add_on_mode = 74;
+                        } elseif ($sch_status =='1' && $add_on_active == '1') {
+                                $add_on_mode = 114;
+                        } elseif ($sch_status =='0' && $add_on_active == '0') {
+                                $add_on_mode = 0;
+                        } elseif ($sch_status =='0' && $add_on_active == '1') {
+                                $add_on_mode = 111;
+                        }
+                        $rval=getIndicators($conn, $add_on_mode, $zone_temp_target);
                         //Left small circular icon/color status
                         echo '<small class="statuscircle"><i class="fa fa-circle fa-fw ' . $rval['status'] . '"></i></small>';
                         //Middle target temp
