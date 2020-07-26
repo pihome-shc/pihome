@@ -380,7 +380,8 @@ require_once(__DIR__.'/st_inc/functions.php');
                 }else {
                         $holidays_status = 0;
                 }
-                $query = "SELECT zone.*, zone_type.category FROM zone, zone_type WHERE zone.type = zone_type.type AND zone.purge = 0 AND category = 2 ORDER BY index_id asc;";
+//                $query = "SELECT zone.*, zone_type.category FROM zone, zone_type WHERE zone.type = zone_type.type AND zone.purge = 0 AND category = 2 ORDER BY index_id asc;";
+		$query = "SELECT * FROM zone_view WHERE category = 2 ORDER BY index_id asc;";
                 $results = $conn->query($query);
                 while ($row = mysqli_fetch_assoc($results)) {
                         //get the schedule status for this zone
@@ -400,7 +401,6 @@ require_once(__DIR__.'/st_inc/functions.php');
                         $query = "SELECT * FROM messages_out WHERE zone_id = '{$row['id']}' LIMIT 1;";
                         $result = $conn->query($query);
                         $state = mysqli_fetch_array($result);
-                        $state = mysqli_fetch_array($result);
                         if ($row['controller_type'] == 'Tasmota') {
                                 $query = "SELECT * FROM http_messages WHERE zone_name = '{$row['name']}' AND message_type = 1 LIMIT 1;";
                                 $result = $conn->query($query);
@@ -413,17 +413,7 @@ require_once(__DIR__.'/st_inc/functions.php');
                         $query = "SELECT * FROM zone_current_state WHERE zone_id =  '{$row['id']}' LIMIT 1;";
                         $result = $conn->query($query);
                         $zone_current_state = mysqli_fetch_array($result);
-                        $zone_status = $zone_current_state['status'];
-                        $zone_mode = $zone_current_state['mode'];
-                        $zone_temp_reading = $zone_current_state['temp_reading'];
-                        $zone_temp_target = $zone_current_state['temp_target'];
-                        $zone_temp_cut_in = $zone_current_state['temp_cut_in'];
-                        $zone_temp_cut_out = $zone_current_state['temp_cut_out'];
-                        $zone_ctr_fault = $zone_current_state['controler_fault'];
-                        $controler_seen = $zone_current_state['controler_seen_time'];
-                        $zone_sensor_fault = $zone_current_state['sensor_fault'];
-                        $sensor_seen = $zone_current_state['sensor_seen_time'];
-                        $temp_reading_time= $zone_current_state['sensor_reading_time'];
+                        $$add_on_mode = $zone_current_state['mode'];
 
                         if ($add_on_active=='1'){$add_on_colour="orange";} elseif ($add_on_active=='0'){$add_on_colour="black";}
                         echo '<a href="javascript:active_add_on('.$row['id'].');">
@@ -432,7 +422,6 @@ require_once(__DIR__.'/st_inc/functions.php');
                         <h3 class="degre" ><i class="fa fa-lightbulb-o fa-1x '.$add_on_colour.'"></i></h3>
                         <h3 class="status">';
 
-                        $add_on_mode = $zone_mode;
                         if ($sch_status =='1' && $add_on_active == '0') {
                                 $add_on_mode = 74;
                         } elseif ($sch_status =='1' && $add_on_active == '1') {
