@@ -417,8 +417,27 @@ if($what=="add_on"){
                 $results = $conn->query($query);
                 $row = mysqli_fetch_assoc($results);
                 $da= $row['payload'];
-                if($da=="1"){ $set="0"; }else{ $set="1"; }
-                $query = "UPDATE messages_out SET payload = '{$set}', datetime = '{$time}', sent = '0' WHERE zone_id = '{$wid}' LIMIT 1";
+		$node_id = $row['node_id'];
+		$query = "SELECT type FROM nodes WHERE node_id = '{$node_id}' LIMIT 1";
+                $nresults = $conn->query($query);
+                $nrow = mysqli_fetch_assoc($nresults);
+		if ($nrow['type'] == 'Tasmota') {
+			if(explode(" ",$da)[1] == "ON"){ $message_type="0"; }else{ $message_type="1"; }
+			$query = "SELECT  command, parameter FROM http_messages WHERE node_id = '{$node_id}' AND message_type = '{$message_type}' LIMIT 1";
+			$hresults = $conn->query($query);
+			$hrow = mysqli_fetch_assoc($hresults);
+                        $set =  $message_type;
+                        $payload = $hrow['command']." ".$hrow['parameter'];
+		} else {
+                	if($da=="1"){ 
+				$set="0";
+				$payload = "0";
+			}else{
+				$set="1";
+                                $payload = "1";
+			}
+		}
+                $query = "UPDATE messages_out SET payload = '{$payload}', datetime = '{$time}', sent = '0' WHERE zone_id = '{$wid}' LIMIT 1";
                 if($conn->query($query)){
                         $update_error=0;
                 }else{
