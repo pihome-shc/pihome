@@ -102,3 +102,29 @@ join zone on nctz.zone_id = zone.id
 join zone zt on nctz.zone_id = zt.id
 join zone_type ztype on zone.type_id = ztype.id
 where nctz.`purge` = '0' order by zone.index_id;
+
+-- Add-On Logs views
+Drop View if exists add_on_log_view;
+CREATE VIEW add_on_log_view AS
+select add_on_zone_logs.id, add_on_zone_logs.sync, add_on_zone_logs.zone_id, ztype.type,
+add_on_zone_logs.add_on_log_id, aost.start_datetime, aoet.stop_datetime, aoext.expected_end_date_time, add_on_zone_logs.status
+from add_on_zone_logs
+join zone zt on add_on_zone_logs.zone_id = zt.id
+join add_on_logs aost on add_on_zone_logs.add_on_log_id = aost.id
+join add_on_logs aoet on add_on_zone_logs.add_on_log_id = aoet.id
+join add_on_logs aoext on add_on_zone_logs.add_on_log_id = aoext.id
+join zone_type ztype on zt.type_id = ztype.id
+order by id asc;
+
+-- Zone Logs views
+Drop View if exists zone_log_view;
+CREATE VIEW zone_log_view AS
+select zone_logs.id, zone_logs.sync, zone_logs.zone_id, ztype.type,
+zone_logs.boiler_log_id, blst.start_datetime, blet.stop_datetime, blext.expected_end_date_time, zone_logs.status
+from zone_logs
+join zone zt on zone_logs.zone_id = zt.id
+join boiler_logs blst on zone_logs.boiler_log_id = blst.id
+join boiler_logs blet on zone_logs.boiler_log_id = blet.id
+join boiler_logs blext on zone_logs.boiler_log_id = blext.id
+join zone_type ztype on zt.type_id = ztype.id
+order by id asc;
