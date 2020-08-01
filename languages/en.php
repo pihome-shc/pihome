@@ -201,6 +201,10 @@ $lang['zone_controler_child_id_info'] = "Zone controller relay number where zone
 $lang['zone_gpio_pin_info'] = "In case zone valve is controlled by RPI GPIO these are the physical header pin numbers for the GPIO used";
 $lang['zone_boost_info'] = "Boost console if you have any";
 $lang['zone_boost_button_info'] = "Boost button number if you have any";
+$lang['sensor_record_add_success'] = "Zone SensorRecord Added Successfully.";
+$lang['sensor_record_update_success'] = "Zone Sensor Record Updated Successfully.";
+$lang['sensor_record_fail'] = "Zone Sensor Record Add/Update Failed:";
+
 $lang['messages_out_add_success'] = "Messages Out Added Successfully.";
 $lang['messages_out_update_success'] = "Messages Out Updated Successfully.";
 $lang['messages_out_fail'] = "Messages Out Add/Update failed with error: ";
