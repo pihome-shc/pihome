@@ -702,9 +702,9 @@ CREATE TABLE IF NOT EXISTS `zone` (
   `controler_id` int(11),
   `controler_child_id` int(11),
   PRIMARY KEY (`id`),
-  KEY `FK_zone_nodes` (`sensor_id`),
+  KEY `FK_zone_type_id` (`type_id`),
   KEY `FK_zone_nodes_2` (`controler_id`),
-  CONSTRAINT `FK_zone_nodes` FOREIGN KEY (`sensor_id`) REFERENCES `nodes` (`id`),
+  CONSTRAINT `FK_zone_type_id` FOREIGN KEY (`type_id`) REFERENCES `zone_type` (`id`),
   CONSTRAINT `FK_zone_nodes_2` FOREIGN KEY (`controler_id`) REFERENCES `nodes` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
