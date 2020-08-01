@@ -1,4 +1,4 @@
-# Process to Migrate from Database Version 1.75 to Database 1.80
+# Process to Migrate from Database Version 1.75 to Database 1.76
 
 ## Changes
 The 'zone' table has been split in to two tables, 'zone' and 'zone_sensors'.
