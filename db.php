@@ -444,7 +444,7 @@ if($what=="add_on"){
                         $update_error=1;
                 }
 
-                $query = "UPDATE zone SET zone_status = '{$set}' WHERE id = '{$wid}' LIMIT 1";
+                $query = "UPDATE zone SET zone_state = '{$set}' WHERE id = '{$wid}' LIMIT 1";
                 if($conn->query($query)){
                         $update_error=0;
                 }else{
@@ -873,7 +873,7 @@ if($what=="setup_email"){
 
 //Setup Graph Setting
 if($what=="setup_graph"){
-        $sel_query = "select * from zone where type = 'Heating' order by index_id asc";
+        $sel_query = "select zone.* from zone, zone_type where (`zone_type`.id = `type_id`) AND `zone_type`.`type` = 'Heating' order by index_id asc;";
         $results = $conn->query($sel_query);
         while ($row = mysqli_fetch_assoc($results)) {
                 $checkbox = 'checkbox'.$row['id'];

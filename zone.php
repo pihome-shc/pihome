@@ -79,14 +79,14 @@ if (isset($_POST['submit'])) {
 		$boost_button_id = $found_product['node_id'];
 	}
 
-	//Add or Edit Zone record to Zone Table
-	if ($zone_category == 0) {
-		$query = "INSERT INTO `zone` (`id`, `sync`, `purge`, `status`, `index_id`, `name`, `type`, `model`, `graph_it`, `max_c`, `max_operation_time`, `hysteresis_time`, `sp_deadband`, `sensor_id`, `sensor_child_id`, `controler_id`, `controler_child_id`) VALUES ('{$id}', '{$sync}', '{$purge}', '{$zone_status}', '{$index_id}', '{$name}', '{$type}', 'NULL', '1', '{$max_c}', '{$max_operation_time}', '{$hysteresis_time}', '{$sp_deadband}', '{$sensor_id}', '{$sensor_child_id}', '{$controler_id}', '{$controler_child_id}') ON DUPLICATE KEY UPDATE sync=VALUES(sync), `purge`=VALUES(`purge`), status=VALUES(status), index_id=VALUES(index_id), name=VALUES(name), type=VALUES(type), max_c=VALUES(max_c), max_operation_time=VALUES(max_operation_time), hysteresis_time=VALUES(hysteresis_time), sp_deadband=VALUES(sp_deadband), sensor_id=VALUES(sensor_id), sensor_child_id=VALUES(sensor_child_id), controler_id=VALUES(controler_id), controler_child_id=VALUES(controler_child_id);";
-	} elseif ($zone_category == 1) {
-		$query = "INSERT INTO `zone` (`id`, `sync`, `purge`, `status`, `index_id`, `name`, `type`, `model`, `graph_it`, `max_c`, `max_operation_time`, `hysteresis_time`, `sp_deadband`, `sensor_id`, `sensor_child_id`, `controler_id`, `controler_child_id`) VALUES ('{$id}', '{$sync}', '{$purge}', '{$zone_status}', '{$index_id}', '{$name}', '{$type}', 'NULL', '1', '{$max_c}', '{$max_operation_time}', '{$hysteresis_time}', '{$sp_deadband}', '{$sensor_id}', '{$sensor_child_id}', '{$controler_id}', '{$controler_child_id}') ON DUPLICATE KEY UPDATE sync=VALUES(sync), `purge`=VALUES(`purge`), status=VALUES(status), index_id=VALUES(index_id), name=VALUES(name), type=VALUES(type), max_c=VALUES(max_c), max_operation_time=VALUES(max_operation_time), hysteresis_time=VALUES(hysteresis_time), sp_deadband=VALUES(sp_deadband), sensor_id=VALUES(sensor_id), sensor_child_id=VALUES(sensor_child_id), controler_id=VALUES(controler_id), controler_child_id=VALUES(controler_child_id);";
-	} else {
-		$query = "INSERT INTO `zone` (`id`, `sync`, `purge`, `status`, `index_id`, `name`, `type`, `model`, `graph_it`, `max_operation_time`, `sp_deadband`, `controler_id`, `controler_child_id`) VALUES ('{$id}', '{$sync}', '{$purge}', '{$zone_status}', '{$index_id}', '{$name}', '{$type}', 'NULL', '1', '{$max_operation_time}', '0', '{$controler_id}', '{$controler_child_id}') ON DUPLICATE KEY UPDATE sync=VALUES(sync), `purge`=VALUES(`purge`), status=VALUES(status), index_id=VALUES(index_id), name=VALUES(name), type=VALUES(type), max_operation_time=VALUES(max_operation_time), sp_deadband=VALUES(sp_deadband), controler_id=VALUES(controler_id), controler_child_id=VALUES(controler_child_id);";
-	}
+        //query to search type id for zone controller
+        $query = "SELECT id FROM zone_type WHERE type = '{$type}' LIMIT 1;";
+        $result = $conn->query($query);
+        $found_product = mysqli_fetch_array($result);
+        $type_id = $found_product['id'];
+
+	//Add or Edit Zone record to Zones Table
+	$query = "INSERT INTO `zone` (`id`, `sync`, `purge`, `status`, `zone_state`, `index_id`, `name`, `type_id`, `graph_it`, `controler_id`, `controler_child_id`) VALUES ('{$id}', '{$sync}', '{$purge}', '{$zone_status}', '0', '{$index_id}', '{$name}', '{$type_id}', '1', '{$controler_id}', '{$controler_child_id}') ON DUPLICATE KEY UPDATE sync=VALUES(sync), `purge`=VALUES(`purge`), status=VALUES(status), index_id=VALUES(index_id), name=VALUES(name), type_id=VALUES(type_id), controler_id=VALUES(controler_id), controler_child_id=VALUES(controler_child_id);";
 	$result = $conn->query($query);
 	$zone_id = mysqli_insert_id($conn);
 	if ($result) {
@@ -97,6 +97,21 @@ if (isset($_POST['submit'])) {
                 }
 	} else {
 		$error = "<p>".$lang['zone_record_fail']." </p> <p>" .mysqli_error($conn). "</p>";
+	}
+
+	if ($zone_category < 2) {
+		//Add or Edit Zone record to Zone_Sensor Table
+		$query = "INSERT INTO `zone_sensors` (`id`, `sync`, `purge`, `zone_id`, `max_c`, `max_operation_time`, `hysteresis_time`, `sp_deadband`, `sensor_id`, `sensor_child_id`) VALUES ('{$id}', '{$sync}', '{$purge}', '{$zone_id}','{$max_c}', '{$max_operation_time}', '{$hysteresis_time}', '{$sp_deadband}', '{$sensor_id}', '{$sensor_child_id}') ON DUPLICATE KEY UPDATE sync=VALUES(sync), `purge`=VALUES(`purge`), max_c=VALUES(max_c), max_operation_time=VALUES(max_operation_time), hysteresis_time=VALUES(hysteresis_time), sp_deadband=VALUES(sp_deadband), sensor_id=VALUES(sensor_id), sensor_child_id=VALUES(sensor_child_id);";
+        	$result = $conn->query($query);
+        	if ($result) {
+                	if ($id==0){
+                        	$message_success = "<p>".$lang['sensor_record_add_success']."</p>";
+	                } else {
+        	                $message_success = "<p>".$lang['sensor_record_update_success']."</p>";
+                	}
+	        } else {
+        	        $error = "<p>".$lang['sensor_record_fail']." </p> <p>" .mysqli_error($conn). "</p>";
+	        }
 	}
 
         // if in add zone mode add to message_out table
@@ -224,11 +239,15 @@ if (isset($_POST['submit'])) {
 
 <!-- If the request is to EDIT, retrieve selected items from DB   -->
 <?php if ($id != 0) {
-        $query = "select zone.*,zone_type.category from zone,zone_type where (zone.type = zone_type.type) and zone.id = {$id} limit 1;";
+        $query = "select zone.*,zone_type.category,zone_type.type from zone,zone_type where (zone.type_id = zone_type.id) and zone.id = {$id} limit 1;";
 	$result = $conn->query($query);
 	$row = mysqli_fetch_assoc($result);
 
-	$query = "SELECT * FROM nodes WHERE id = '{$row['sensor_id']}' LIMIT 1;";
+        $query = "SELECT * FROM zone_sensors WHERE zone_id = '{$row['id']}' LIMIT 1;";
+        $result = $conn->query($query);
+        $rowsensors = mysqli_fetch_assoc($result);
+
+	$query = "SELECT * FROM nodes WHERE id = '{$rowsensors['sensor_id']}' LIMIT 1;";
 	$result = $conn->query($query);
 	$rownode = mysqli_fetch_assoc($result);
 
@@ -454,7 +473,7 @@ function SensorChildList(value)
 <!-- Temperature Sensor Child ID -->
 <div class="form-group" class="control-label" id="sensor_child_id_label" style="display:block"><label><?php echo $lang['temp_sensor_child_id']; ?></label> <small class="text-muted"><?php echo $lang['zone_sensor_id_info'];?></small>
 <select id="sensor_child_id" name="sensor_child_id" class="form-control select2" data-error="<?php echo $lang['zone_temp_sensor_id_error']; ?>" autocomplete="off" required>
-<?php if(isset($row['sensor_child_id'])) { echo '<option selected >'.$row['sensor_child_id'].'</option>';
+<?php if(isset($rowsensors['sensor_child_id'])) { echo '<option selected >'.$rowsensors['sensor_child_id'].'</option>';
 for ($x = 0; $x <= $rownode['max_child_id']; $x++) {
         echo "<option value=".$x.">".$x."</option>";
         }
