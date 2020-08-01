@@ -192,7 +192,7 @@ $query = "SELECT * FROM zone_view where status = 1 order by index_id asc;";
 $results = $conn->query($query);
 while ($row = mysqli_fetch_assoc($results)) {
 	$zone_status=$row['status'];
-	$zone_active_status = $row['zone_status'];
+	$zone_active_status = $row['zone_state'];
 	$zone_id=$row['id'];
 	$zone_name=$row['name'];
 	$zone_type=$row['type'];
@@ -215,7 +215,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 		$query = "INSERT INTO zone_current_state (id, `sync`, `purge`, `zone_id`, `mode`, `status`, `temp_reading`, `temp_target`, `temp_cut_in`, `temp_cut_out`, `controler_fault`, `controler_seen_time`, `sensor_fault`, `sensor_seen_time`, `sensor_reading_time`, `overrun`) VALUES('{$zone_id}', 0, 0, '{$zone_id}', 0, 0, 0, 0, 0, 0, 0, NULL , 0, NULL, NULL, 0);";
 		$conn->query($query);
 	}
-	
+
 	//query to get zone previous running status
 	$query = "SELECT * FROM zone_current_state WHERE zone_id = '{$zone_id}' LIMIT 1;";
 	$result = $conn->query($query);
@@ -226,12 +226,28 @@ while ($row = mysqli_fetch_assoc($results)) {
 
 	// process if a sensor is attached to this zone
 	if ($zone_category == 0 OR $zone_category == 1) {
+		$query = "SELECT * FROM  zone_sensors WHERE zone_id = '{$zone_id}' LIMIT 1;";
+                $result = $conn->query($query);
+                $sensor = mysqli_fetch_array($result);
+	        $zone_max_c=$sensor['max_c'];
+        	$zone_max_operation_time=$sensor['max_operation_time'];
+	        $zone_hysteresis_time=$sensor['hysteresis_time'];
+        	$zone_sp_deadband=$sensor['sp_deadband'];
+	        $zone_sensor_id=$sensor['sensor_id'];
+        	$zone_sensor_child_id=$sensor['sensor_child_id'];
+
+                $query = "SELECT node_id FROM nodes WHERE id = '{$zone_sensor_id}' LIMIT 1;";
+                $result = $conn->query($query);
+                $nodes = mysqli_fetch_array($result);
+                $zone_node_id=$nodes['node_id'];
+
+
 		//query to get temperature from messages_in_view_24h table view
-		$query = "SELECT * FROM messages_in_view_24h WHERE node_id = '{$zone_sensor_id}' AND child_id = {$zone_sensor_child_id} ORDER BY datetime desc LIMIT 1;";
+		$query = "SELECT * FROM messages_in_view_24h WHERE node_id = '{$zone_node_id}' AND child_id = {$zone_sensor_child_id} ORDER BY datetime desc LIMIT 1;";
 		$result = $conn->query($query);
-		$sensor = mysqli_fetch_array($result);
-		$zone_c = $sensor['payload'];
-		$temp_reading_time = $sensor['datetime'];
+		$msg_out = mysqli_fetch_array($result);
+		$zone_c = $msg_out['payload'];
+		$temp_reading_time = $msg_out['datetime'];
 		// check if webhooks plugin installed and if a sensor is configured for this zone
 		if ($platform == 1 and in_array($row['id'], $sensors)) {
 			// get current temperature vale
@@ -246,550 +262,547 @@ while ($row = mysqli_fetch_assoc($results)) {
 			}
 		}
 	}
-        // only process active zones
-	if ($zone_status == 1) {
-		//Have to account for midnight rollover conditions
-		if($holidays_status == 0) {
-			$query = "SELECT * FROM schedule_daily_time_zone_view WHERE ((`end`>`start` AND CURTIME() between `start` AND `end`) OR (`end`<`start` AND CURTIME()<`end`) OR (`end`<`start` AND CURTIME()>`start`)) AND zone_id = {$zone_id} AND time_status = '1' AND (WeekDays & (1 << {$dow})) > 0 AND holidays_id = 0 LIMIT 1;";
+	//Have to account for midnight rollover conditions
+	if($holidays_status == 0) {
+		$query = "SELECT * FROM schedule_daily_time_zone_view WHERE ((`end`>`start` AND CURTIME() between `start` AND `end`) OR (`end`<`start` AND CURTIME()<`end`) OR (`end`<`start` AND CURTIME()>`start`)) AND zone_id = {$zone_id} AND time_status = '1' AND (WeekDays & (1 << {$dow})) > 0 AND holidays_id = 0 LIMIT 1;";
+	}else{
+		$query = "SELECT * FROM schedule_daily_time_zone_view WHERE ((`end`>`start` AND CURTIME() between `start` AND `end`) OR (`end`<`start` AND CURTIME()<`end`) OR (`end`<`start` AND CURTIME()>`start`)) AND zone_id = {$zone_id} AND time_status = '1' AND (WeekDays & (1 << {$dow})) > 0 AND holidays_id > 0 LIMIT 1;";
+	}
+	//echo $query . PHP_EOL;
+	$result = $conn->query($query);
+	if(mysqli_num_rows($result)<=0){
+		$sch_status=0;
+		$sch_c=0;
+		$sch_holidays = '0';
+	}else{
+		$schedule = mysqli_fetch_array($result);
+		$sch_status = $schedule['tz_status'];
+		$sch_start_time = $schedule['start'];
+		$sch_end_time = $schedule['end'];
+		$sch_c = $schedule['temperature'];
+		$sch_coop = $schedule['coop'];
+
+		if ($schedule['holidays_id']>0) {
+			$sch_holidays = '1';
 		}else{
-			$query = "SELECT * FROM schedule_daily_time_zone_view WHERE ((`end`>`start` AND CURTIME() between `start` AND `end`) OR (`end`<`start` AND CURTIME()<`end`) OR (`end`<`start` AND CURTIME()>`start`)) AND zone_id = {$zone_id} AND time_status = '1' AND (WeekDays & (1 << {$dow})) > 0 AND holidays_id > 0 LIMIT 1;";
-		}
-		//echo $query . PHP_EOL;
-		$result = $conn->query($query);
-		if(mysqli_num_rows($result)<=0){
-			$sch_status=0;
-			$sch_c=0;
 			$sch_holidays = '0';
-		}else{
-			$schedule = mysqli_fetch_array($result);
-			$sch_status = $schedule['tz_status'];
-			$sch_start_time = $schedule['start'];
-			$sch_end_time = $schedule['end'];
-			$sch_c = $schedule['temperature'];
-			$sch_coop = $schedule['coop'];
-
-			if ($schedule['holidays_id']>0) {
-				$sch_holidays = '1';
-			}else{
-				$sch_holidays = '0';
-			}
 		}
+	}
 
-		//Calculate zone fail
-		$zone_fault = 0;
-		$zone_ctr_fault = 0;
-		$zone_sensor_fault = 0;
-		//Get data from nodes table
-		$query = "SELECT * FROM nodes WHERE node_id ='$zone_controler_id' AND status IS NOT NULL LIMIT 1;";
-		$result = $conn->query($query);
-		$controler_node = mysqli_fetch_array($result);
-                $controler_type = $controler_node['type'];
-		$controler_seen = $controler_node['last_seen'];
-		$controler_notice = $controler_node['notice_interval'];
-		if($controler_notice > 0){
-			$now=strtotime(date('Y-m-d H:i:s'));
-			$controler_seen_time = strtotime($controler_seen);
-			if ($controler_seen_time  < ($now - ($controler_notice*60))){
-				$zone_fault = 1;
-				$zone_ctr_fault = 1;
-				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone valve communication timeout for This Zone. Node Last Seen: ".$controler_seen."\n";
-			}
+	//Calculate zone fail
+	$zone_fault = 0;
+	$zone_ctr_fault = 0;
+	$zone_sensor_fault = 0;
+	//Get data from nodes table
+	$query = "SELECT * FROM nodes WHERE node_id ='$zone_controler_id' AND status IS NOT NULL LIMIT 1;";
+	$result = $conn->query($query);
+	$controler_node = mysqli_fetch_array($result);
+        $controler_type = $controler_node['type'];
+	$controler_seen = $controler_node['last_seen'];
+	$controler_notice = $controler_node['notice_interval'];
+	if($controler_notice > 0){
+		$now=strtotime(date('Y-m-d H:i:s'));
+		$controler_seen_time = strtotime($controler_seen);
+		if ($controler_seen_time  < ($now - ($controler_notice*60))){
+			$zone_fault = 1;
+			$zone_ctr_fault = 1;
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone valve communication timeout for This Zone. Node Last Seen: ".$controler_seen."\n";
 		}
+	}
 
-                // use the override table to enaable manual ON/OFF control during a running category 2 zone schedule
-                if ($zone_category == 2) {
-                        // get the current state of the add-on
-                        $query = "SELECT * FROM messages_out WHERE node_id = '{$zone_controler_id}' AND child_id = {$zone_controler_child_id} LIMIT 1;";
+       	// use the override table to enaable manual ON/OFF control during a running category 2 zone schedule
+       	if ($zone_category == 2) {
+		// get the current state of the add-on
+                $query = "SELECT * FROM messages_out WHERE node_id = '{$zone_controler_id}' AND child_id = {$zone_controler_child_id} LIMIT 1;";
+                $result = $conn->query($query);
+                $add_on = mysqli_fetch_array($result);
+                if ($controler_type == 'Tasmota') {
+                	$query = "SELECT * FROM http_messages WHERE zone_name = '{$row['name']}' AND message_type = 1 LIMIT 1;";
                         $result = $conn->query($query);
-                        $add_on = mysqli_fetch_array($result);
-                        if ($controler_type == 'Tasmota') {
-                                $query = "SELECT * FROM http_messages WHERE zone_name = '{$row['name']}' AND message_type = 1 LIMIT 1;";
-                                $result = $conn->query($query);
-                                $http = mysqli_fetch_array($result);
-                                $add_on_state = ($add_on['payload'] == $http['command'].' '.$http['parameter']) ? 1:0;
+                        $http = mysqli_fetch_array($result);
+                        $add_on_state = ($add_on['payload'] == $http['command'].' '.$http['parameter']) ? 1:0;
+                } else {
+                        $add_on_state = intval($add_on['payload']);
+                }
+                // if add-on is OFF and schedule is running then activate override
+                if ($add_on_state == 0 and $zone_current_mode == 114) {
+                	$query = "UPDATE override SET status = 1, sync = '0' WHERE zone_id = {$zone_id};";
+                } elseif ($sch_status == 0) { // clear override at the end of the schedule
+                        $query = "UPDATE override SET status = 0, sync = '0' WHERE zone_id = {$zone_id};";
+                }
+                $conn->query($query);
+
+                // check is switch has manually changed the ON/OFF state
+                if ($controler_type == 'Tasmota') {
+                	if ($base_addr == '000.000.000.000') {
+                        	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - NO Gateway Address is Set \n";
                         } else {
-                                $add_on_state = intval($add_on['payload']);
-                        }
-                        // if add-on is OFF and schedule is running then activate override
-                        if ($add_on_state == 0 and $zone_current_mode == 114) {
-                                $query = "UPDATE override SET status = 1, sync = '0' WHERE zone_id = {$zone_id};";
-                        } elseif ($sch_status == 0) { // clear override at the end of the schedule
-                                $query = "UPDATE override SET status = 0, sync = '0' WHERE zone_id = {$zone_id};";
-                        }
-                        $conn->query($query);
-
-                        // check is switch has manually changed the ON/OFF state
-                        if ($controler_type == 'Tasmota') {
-                                if ($base_addr == '000.000.000.000') {
-                                        echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - NO Gateway Address is Set \n";
+	                        $url = "http://".$base_addr.$zone_controler_child_id."/cm?cmnd=power";
+        	                $contents = file_get_contents($url);
+                	        $contents = utf8_encode($contents);
+                        	$resp = json_decode($contents, true);
+                                if ($resp[strtoupper($http['command'])] == 'ON') {
+                                	$power_state = '1';
                                 } else {
-	                                $url = "http://".$base_addr.$zone_controler_child_id."/cm?cmnd=power";
-        	                        $contents = file_get_contents($url);
-                	                $contents = utf8_encode($contents);
-                        	        $resp = json_decode($contents, true);
-                                        if ($resp[strtoupper($http['command'])] == 'ON') {
-                                                $power_state = '1';
-                                        } else {
-                                                $power_state = '0';
-                                        }
-                                        $add_on_msg = $http['command'].' '.$http['parameter'];
-	                                // update if the power do not match
-        	                        if ($add_on_state !=  $power_state) {
-                	                        $add_on_state =  $power_state;
+                                        $power_state = '0';
+                                }
+                                $add_on_msg = $http['command'].' '.$http['parameter'];
+	                        // update if the power do not match
+        	                if ($add_on_state !=  $power_state) {
+                	        	$add_on_state =  $power_state;
+					if ($sch_status == 0) {
 						$zone_active_status = $power_state;
-                        	                $query = "UPDATE zone SET sync = '0', zone_status = '{$power_state}' WHERE id = '{$zone_id}' LIMIT 1";
-                                	        $conn->query($query);
-
-                                        	$query = "UPDATE messages_out SET payload = '{$add_on_msg}' WHERE node_id = '{$zone_controler_id}' AND child_id = {$zone_controler_child_id};";
- 	                                       	$conn->query($query);
-        	                                if ($zone_current_mode == 114) {
-                	                                $query = "UPDATE override SET status = 1, sync = '0' WHERE zone_id = {$zone_id};";
-                        	                        $conn->query($query);
-						}
-                                        }
+                        	               	$query = "UPDATE zone SET sync = '0', zone_state = '{$power_state}' WHERE id = '{$zone_id}' LIMIT 1";
+                                	       	$conn->query($query);
+					}
+                                        $query = "UPDATE messages_out SET payload = '{$add_on_msg}' WHERE node_id = '{$zone_controler_id}' AND child_id = {$zone_controler_child_id};";
+ 	                                $conn->query($query);
+        	                        if ($zone_current_mode == 114) {
+                	                	$query = "UPDATE override SET status = 1, sync = '0' WHERE zone_id = {$zone_id};";
+                        	                $conn->query($query);
+					}
                                 }
                         }
                 }
-		
-		//query to check override status and get temperature from override table
-		$query = "SELECT * FROM override WHERE zone_id = {$zone_id} LIMIT 1;";
-		$result = $conn->query($query);
-		if (mysqli_num_rows($result) != 0){
-			$override = mysqli_fetch_array($result);
-			$override_status = $override['status'];
-			$override_c = $override['temperature'];
-		}else {
-			$override_status = '0';
-		}
-		
-		//query to check boost status and get temperature from boost table
-		$query = "SELECT * FROM boost WHERE zone_id = {$zone_id} AND status = 1 LIMIT 1;";
-		$result = $conn->query($query);
-		if (mysqli_num_rows($result) != 0){
-			$boost = mysqli_fetch_array($result);
-			$boost_status = $boost['status'];
-			$boost_time = $boost['time'];
-			$boost_c = $boost['temperature'];
-			$boost_minute = $boost['minute'];
-		} else {
-			$boost_status = '0';
-		}
+	}
 
-		//check boost time is passed, if it passed then update db and set to boost status to 0
-		if ($boost_status=='1'){
-			$phpdate = strtotime( $boost_time );
-			$boost_time = $phpdate + ($boost_minute * 60);
-			$now=strtotime(date('Y-m-d H:i:s'));
-			if (($boost_time > $now) && ($boost_status=='1')){
-				$boost_active='1';
-				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boost is Active for This Zone \n";
-			}elseif (($boost_time < $now) && ($boost_status=='1')){
-				$boost_active='0';
-				//You can comment out if you dont have Boost Button Console installed.
-				$query = "SELECT * FROM boost WHERE zone_id ={$row['id']} AND status = '1';";
-				$bresults = $conn->query($query);
-				$brow = mysqli_fetch_assoc($bresults);
-				$brow['boost_button_id'];
-				$brow['boost_button_child_id'];
-				$query = "UPDATE messages_out SET payload = '{$boost_active}', sent = '0' WHERE zone_id = {$row['id']} AND node_id = {$brow['boost_button_id']} AND child_id = {$brow['boost_button_child_id']} LIMIT 1;";
-				$conn->query($query);
-				//update Boost Records in database
-				$query = "UPDATE boost SET status = '{$boost_active}', sync = '0' WHERE zone_id = {$row['id']};";
-				$conn->query($query);
-			}else {
-				$boost_active='0';
-			}
+	//query to check override status and get temperature from override table
+	$query = "SELECT * FROM override WHERE zone_id = {$zone_id} LIMIT 1;";
+	$result = $conn->query($query);
+	if (mysqli_num_rows($result) != 0){
+		$override = mysqli_fetch_array($result);
+		$override_status = $override['status'];
+		$override_c = $override['temperature'];
+	}else {
+		$override_status = '0';
+	}
+
+	//query to check boost status and get temperature from boost table
+	$query = "SELECT * FROM boost WHERE zone_id = {$zone_id} AND status = 1 LIMIT 1;";
+	$result = $conn->query($query);
+	if (mysqli_num_rows($result) != 0){
+		$boost = mysqli_fetch_array($result);
+		$boost_status = $boost['status'];
+		$boost_time = $boost['time'];
+		$boost_c = $boost['temperature'];
+		$boost_minute = $boost['minute'];
+	} else {
+		$boost_status = '0';
+	}
+
+	//check boost time is passed, if it passed then update db and set to boost status to 0
+	if ($boost_status=='1'){
+		$phpdate = strtotime( $boost_time );
+		$boost_time = $phpdate + ($boost_minute * 60);
+		$now=strtotime(date('Y-m-d H:i:s'));
+		if (($boost_time > $now) && ($boost_status=='1')){
+			$boost_active='1';
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boost is Active for This Zone \n";
+		}elseif (($boost_time < $now) && ($boost_status=='1')){
+			$boost_active='0';
+			//You can comment out if you dont have Boost Button Console installed.
+			$query = "SELECT * FROM boost WHERE zone_id ={$row['id']} AND status = '1';";
+			$bresults = $conn->query($query);
+			$brow = mysqli_fetch_assoc($bresults);
+			$brow['boost_button_id'];
+			$brow['boost_button_child_id'];
+			$query = "UPDATE messages_out SET payload = '{$boost_active}', sent = '0' WHERE zone_id = {$row['id']} AND node_id = {$brow['boost_button_id']} AND child_id = {$brow['boost_button_child_id']} LIMIT 1;";
+			$conn->query($query);
+			//update Boost Records in database
+			$query = "UPDATE boost SET status = '{$boost_active}', sync = '0' WHERE zone_id = {$row['id']};";
+			$conn->query($query);
 		}else {
 			$boost_active='0';
 		}
+	}else {
+		$boost_active='0';
+	}
 
-		//Check Zone category 0 or 1
-		if ($zone_category == 0 OR $zone_category == 1) {
-			//query to check night climate status and get temperature from night climate table
-			//$query = "select * from schedule_night_climat_zone_view WHERE zone_id = {$zone_id} LIMIT 1;";
-			$query = "SELECT * from schedule_night_climat_zone_view WHERE ((`end`>`start` AND CURTIME() between `start` AND `end`) OR (`end`<`start` AND CURTIME()<`end`) OR (`end`<`start` AND CURTIME()>`start`)) AND zone_id = {$zone_id} AND time_status = '1' AND tz_status = '1' AND (WeekDays & (1 << {$dow})) > 0 LIMIT 1;";
-			$result = $conn->query($query);
-			if (mysqli_num_rows($result) != 0){
-				$night_climate = mysqli_fetch_array($result);
-				$nc_time_status = $night_climate['time_status'];
-				$nc_zone_status = $night_climate['tz_status'];
-				$nc_zone_id = $night_climate['zone_id'];
-				$nc_start_time = $night_climate['start'];
-				$nc_end_time = $night_climate['end'];
-				$nc_min_c = $night_climate['min_temperature'];
-				$nc_max_c = $night_climate['max_temperature'];
-				$nc_weekday = $night_climate['WeekDays'] & (1 << $dow);
-				//night climate time to add 10 minuts for record purpose
-				$timestamp =strtotime(date('H:i:s')) + 60 *10;
-				$nc_end_time_rc = date('H:i:s', $timestamp);
-				$current_time = date('H:i:s');
-				if ((TimeIsBetweenTwoTimes($current_time, $nc_start_time, $nc_end_time)) && ($nc_time_status =='1') && ($nc_zone_status =='1') && ($nc_weekday > 0)) {
-					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Night Climate Enabled for This Zone \n";
-					$night_climate_status='1';
-				} else {
-					$night_climate_status='0';
-				}
-			}else {
+	//Check Zone category 0 or 1
+	if ($zone_category == 0 OR $zone_category == 1) {
+		//query to check night climate status and get temperature from night climate table
+		//$query = "select * from schedule_night_climat_zone_view WHERE zone_id = {$zone_id} LIMIT 1;";
+		$query = "SELECT * from schedule_night_climat_zone_view WHERE ((`end`>`start` AND CURTIME() between `start` AND `end`) OR (`end`<`start` AND CURTIME()<`end`) OR (`end`<`start` AND CURTIME()>`start`)) AND zone_id = {$zone_id} AND time_status = '1' AND tz_status = '1' AND (WeekDays & (1 << {$dow})) > 0 LIMIT 1;";
+		$result = $conn->query($query);
+		if (mysqli_num_rows($result) != 0){
+			$night_climate = mysqli_fetch_array($result);
+			$nc_time_status = $night_climate['time_status'];
+			$nc_zone_status = $night_climate['tz_status'];
+			$nc_zone_id = $night_climate['zone_id'];
+			$nc_start_time = $night_climate['start'];
+			$nc_end_time = $night_climate['end'];
+			$nc_min_c = $night_climate['min_temperature'];
+			$nc_max_c = $night_climate['max_temperature'];
+			$nc_weekday = $night_climate['WeekDays'] & (1 << $dow);
+			//night climate time to add 10 minuts for record purpose
+			$timestamp =strtotime(date('H:i:s')) + 60 *10;
+			$nc_end_time_rc = date('H:i:s', $timestamp);
+			$current_time = date('H:i:s');
+			if ((TimeIsBetweenTwoTimes($current_time, $nc_start_time, $nc_end_time)) && ($nc_time_status =='1') && ($nc_zone_status =='1') && ($nc_weekday > 0)) {
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Night Climate Enabled for This Zone \n";
+				$night_climate_status='1';
+			} else {
 				$night_climate_status='0';
 			}
+		}else {
+			$night_climate_status='0';
+		}
 
-			//Get Weather Temperature
-			$query = "SELECT * FROM messages_in WHERE node_id = '1' ORDER BY id desc LIMIT 1";
-			$result = $conn->query($query);
-			$weather_temp = mysqli_fetch_array($result);
-			$weather_c = $weather_temp['payload'];
-			//    1    00-05    0.3
-			//    2    06-10    0.4
-			//    3    11-15    0.5
-			//    4    16-20    0.6
-			//    5    21-30    0.7
-			$weather_fact = 0;
-			if ($weather_c <= 5 ) {$weather_fact = 0.3;} elseif ($weather_c <= 10 ) {$weather_fact = 0.4;} elseif ($weather_c <= 15 ) {$weather_fact = 0.5;} elseif ($weather_c <= 20 ) {$weather_fact = 0.6;} elseif ($weather_c <= 30 ) {$weather_fact = 0.7;}
+		//Get Weather Temperature
+		$query = "SELECT * FROM messages_in WHERE node_id = '1' ORDER BY id desc LIMIT 1";
+		$result = $conn->query($query);
+		$weather_temp = mysqli_fetch_array($result);
+		$weather_c = $weather_temp['payload'];
+		//    1    00-05    0.3
+		//    2    06-10    0.4
+		//    3    11-15    0.5
+		//    4    16-20    0.6
+		//    5    21-30    0.7
+		$weather_fact = 0;
+		if ($weather_c <= 5 ) {$weather_fact = 0.3;} elseif ($weather_c <= 10 ) {$weather_fact = 0.4;} elseif ($weather_c <= 15 ) {$weather_fact = 0.5;} elseif ($weather_c <= 20 ) {$weather_fact = 0.6;} elseif ($weather_c <= 30 ) {$weather_fact = 0.7;}
 
-			//Following line to decide which temperature is target temperature
-			if ($boost_active=='1'){$target_c=$boost_c;} elseif ($night_climate_status =='1') {$target_c=$nc_min_c;} elseif($override_status=='1'){$target_c=$override_c;} elseif($override_status=='0'){$target_c=$sch_c;}
+		//Following line to decide which temperature is target temperature
+		if ($boost_active=='1'){$target_c=$boost_c;} elseif ($night_climate_status =='1') {$target_c=$nc_min_c;} elseif($override_status=='1'){$target_c=$override_c;} elseif($override_status=='0'){$target_c=$sch_c;}
 
-			//calculate cutin/cut out temperatures
-			$temp_cut_in = $target_c - $weather_fact - $zone_sp_deadband;
-			$temp_cut_out = $target_c - $weather_fact;
+		//calculate cutin/cut out temperatures
+		$temp_cut_in = $target_c - $weather_fact - $zone_sp_deadband;
+		$temp_cut_out = $target_c - $weather_fact;
 
-			//check if hysteresis is passed its time or not
-			$hysteresis='0';
-			if (isset($boiler_stop_datetime)){
-				$boiler_time = strtotime( $boiler_stop_datetime );
-				$hysteresis_time = $boiler_time + ($boiler_hysteresis_time * 60);
-				$now=strtotime(date('Y-m-d H:i:s'));
-				if ($hysteresis_time > $now){
-					$hysteresis='1';
-					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Hysteresis time: ".date('Y-m-d H:i:s',$hysteresis_time)." \n";
-				}else{$hysteresis='0';}
-			}
+		//check if hysteresis is passed its time or not
+		$hysteresis='0';
+		if (isset($boiler_stop_datetime)){
+			$boiler_time = strtotime( $boiler_stop_datetime );
+			$hysteresis_time = $boiler_time + ($boiler_hysteresis_time * 60);
+			$now=strtotime(date('Y-m-d H:i:s'));
+			if ($hysteresis_time > $now){
+				$hysteresis='1';
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Hysteresis time: ".date('Y-m-d H:i:s',$hysteresis_time)." \n";
+			}else{$hysteresis='0';}
+		}
 
-			//Check sensor notice interval and notice logic
-			$query = "SELECT * FROM nodes WHERE node_id ='$zone_sensor_id' AND status IS NOT NULL LIMIT 1;";
-			$result = $conn->query($query);
-			$sensor_node = mysqli_fetch_array($result);
-			$sensor_seen = $sensor_node['last_seen']; //not using this cause it updates on battery update
-			$sensor_notice = $sensor_node['notice_interval'];
-			if($sensor_notice > 0) {
-				$now=strtotime(date('Y-m-d H:i:s'));
-				$sensor_seen_time = strtotime($temp_reading_time); //using time from messages_in
-				if ($sensor_seen_time  < ($now - ($sensor_notice*60))){
-					$zone_fault = 1;
-					$zone_sensor_fault = 1;  
-					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Temperature sensor communication timeout for This Zone. Last temperature reading: ".$temp_reading_time."\n";
-				}
-			}
-			
-			//Check boiler controller notice interval and notice logic
-			if($boiler_notice > 0){
-				$now=strtotime(date('Y-m-d H:i:s'));
-				$boiler_seen_time = strtotime($boiler_seen);
-				if ($boiler_seen_time  < ($now - ($boiler_notice*60))){
-					$zone_fault = 1;
-					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler controler communication timeout. Boiler Last Seen: ".$boiler_seen."\n";
-				}
-			}
-		// end Check Zone category 0 or 1
-		} 
-
-		// check if webhooks plugin installed and if a switch is configured for this zone
-		if ($platform == 1 and in_array($row['id'], $switches)) {
-			if (strcasecmp($boost_active,'1') == 0) {$boost_state = 'true';} else {$boost_state = 'false';}
-			// get the current state of the switch
-			$url = "http://127.0.0.1:51828/?accessoryId=switch" . $row['id'];
-			$contents = file_get_contents($url);
-			$contents = utf8_encode($contents);
-			$resp = json_decode($contents, true);
-			if ($resp['state']) {$state = 'true';} else {$state = 'false';}
-			// update if the states do not match
-			if ($state !=  $boost_state) {
-				$url = $url . "&state=" . $boost_state;
-				$contents = file_get_contents($url);
+		//Check sensor notice interval and notice logic
+		$query = "SELECT * FROM nodes WHERE id ='$zone_sensor_id' AND status IS NOT NULL LIMIT 1;";
+		$result = $conn->query($query);
+		$sensor_node = mysqli_fetch_array($result);
+		$sensor_seen = $sensor_node['last_seen']; //not using this cause it updates on battery update
+		$sensor_notice = $sensor_node['notice_interval'];
+		if($sensor_notice > 0) {
+			$now=strtotime(date('Y-m-d H:i:s'));
+			$sensor_seen_time = strtotime($temp_reading_time); //using time from messages_in
+			if ($sensor_seen_time  < ($now - ($sensor_notice*60))){
+				$zone_fault = 1;
+				$zone_sensor_fault = 1;  
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Temperature sensor communication timeout for This Zone. Last temperature reading: ".$temp_reading_time."\n";
 			}
 		}
 
-		//initialize two variable
-		$start_cause ='';
-		$stop_cause = '';
-		$zone_mode = 0;
-		if ($zone_fault == '0'){
-			if ($zone_category == 0 OR $zone_category == 1) {
-				if ($zone_c < $frost_c-$zone_sp_deadband){
-					$zone_status="1";
-					$zone_mode = 21;
-					$start_cause="Frost Protection";
-				}
-				elseif(($zone_c >= $frost_c-$zone_sp_deadband) && ($zone_c < $frost_c)){
-					$zone_status=$zone_status_prev;
-					$zone_mode = 22 - $zone_status_prev;
-					$start_cause="Frost Protection Deadband";
-					$stop_cause="Frost Protection Deadband";
-				}elseif(($zone_c >= $frost_c) && ($zone_c < $zone_max_c) && ($hysteresis=='0')){
-					if ($away_status=='0'){
-						if (($holidays_status=='0') || ($sch_holidays=='1')) {
-							if($boost_status=='0'){
-								$zone_status="0";
-								$stop_cause="Boost Finished";
-								if ($night_climate_status =='0') {
-									if (($sch_status =='1') && ($zone_c < $temp_cut_in)&&(($sch_coop == 0)||($boiler_fire_status == "1"))){
-										$zone_status="1";
-										$zone_mode = 81;
-										$start_cause="Schedule Started";
-										$expected_end_date_time=date('Y-m-d '.$sch_end_time.'');
-									}
-									if (($sch_status =='1') && ($zone_c < $temp_cut_in)&&($sch_coop == 1)&&($boiler_fire_status == "0")){
-										$zone_status="0";
-										$zone_mode = 83;
-										$stop_cause="Coop Start Schedule Waiting for Boiler Start";
-										$expected_end_date_time=date('Y-m-d '.$sch_end_time.'');
-									}
-									if (($sch_status =='1') && ($zone_c >= $temp_cut_in) && ($zone_c < $temp_cut_out)){
-										$zone_status=$zone_status_prev;
-										$zone_mode = 82 - $zone_status_prev;
-										$start_cause="Schedule Target Deadband";
-										$stop_cause="Schedule Target Deadband";
-									}
-									if (($sch_status =='1') && ($zone_c >= $temp_cut_out)){
-										$zone_status="0";
-										$zone_mode = 80;
-										$stop_cause="Schedule Target C Achieved";
-									}
-									if (($sch_status =='1') && ($override_status=='1') && ($zone_c < $temp_cut_in)){
-										$zone_status="1";
-										$zone_mode = 71;
-										$start_cause="Schedule Override Started";
-										$expected_end_date_time=date('Y-m-d '.$sch_end_time.'');
-									}
-									if (($sch_status =='1') && ($override_status=='1') && ($zone_c >= $temp_cut_in && ($zone_c < $temp_cut_out))){
-										$zone_status=$zone_status_prev;
-										$zone_mode = 72 - $zone_status_prev;
-										$start_cause="Schedule Override Target Deadband";
-										$stop_cause="Schedule Override Target Deadband";
-									}
-									if (($sch_status =='1') && ($override_status=='1') && ($zone_c >= $temp_cut_out)){
-										$zone_status="0";
-										$zone_mode = 70;
-										$stop_cause="Schedule Override Target C Achieved";
-									}
-									if (($sch_status =='0') &&($sch_holidays=='1')){
-										$zone_status="0";
-										$zone_mode = 40;
-										$stop_cause="Holidays - No Schedule";
-									}
-									if (($sch_status =='0') && ($sch_holidays=='0')) {
-										$zone_status="0";
-										$zone_mode = 0;
-										$stop_cause="No Schedule";
-									}
-								}elseif(($night_climate_status=='1') && ($zone_c < $temp_cut_in)){
-									$zone_status="1";
-									$zone_mode = 51;
-									$start_cause="Night Climate";
-									$expected_end_date_time=date('Y-m-d '.$nc_end_time_rc.'');
-								}elseif(($night_climate_status=='1') && ($zone_c >= $temp_cut_in) && ($zone_c < $temp_cut_out)){
-									$zone_status=$zone_status_prev;
-									$zone_mode = 52 - $zone_status_prev;
-									$start_cause="Night Climate Deadband";
-									$stop_cause="Night Climate Deadband";
-									$expected_end_date_time=date('Y-m-d '.$nc_end_time_rc.'');
-								}elseif(($night_climate_status=='1') && ($zone_c >= $temp_cut_out)){
-									$zone_status="0";
-									$zone_mode = 50;
-									$stop_cause="Night Climate C Reached";
-									$expected_end_date_time=date('Y-m-d '.$nc_end_time_rc.'');
-								}
-							}elseif (($boost_status=='1') && ($zone_c < $temp_cut_in)) {
-								$zone_status="1";
-								$zone_mode = 61;
-								$start_cause="Boost Active";
-								$expected_end_date_time=date('Y-m-d H:i:s', $boost_time);
-							}elseif (($boost_status=='1') && ($zone_c >= $temp_cut_in) && ($zone_c < $temp_cut_out)) {
-								$zone_status=$zone_status_prev;
-								$zone_mode = 62 - $zone_status_prev;
-								$start_cause="Boost Target Deadband";
-								$stop_cause="Boost Target Deadband";
-							}elseif (($boost_status=='1') && ($zone_c >= $temp_cut_out)) {
-								$zone_status="0";
-								$zone_mode = 60;
-								$stop_cause="Boost Target C Achived";
-							}
-						}elseif(($holidays_status=='1') && ($sch_holidays=='0')){
-							$zone_status="0";
-							$zone_mode = 40;
-							$stop_cause="Holiday Active";
-						}
-					}elseif($away_status=='1'){
-						$zone_status="0";
-						$zone_mode = 90;
-						$stop_cause="Away Active";
-					}
-				}elseif($zone_c >= $zone_max_c){
-					$zone_status="0";
-					$zone_mode = 30;
-					$stop_cause="Zone Reached its Max Temperature ".$zone_max_c;
-				} else {
-					$zone_status="0";
-					$zone_mode = 100;
-					$stop_cause="Hysteresis active ";
-				}
-			} else { // end process Zone Category 0 and 1
-				// process Zone Category 2
+		//Check boiler controller notice interval and notice logic
+		if($boiler_notice > 0){
+			$now=strtotime(date('Y-m-d H:i:s'));
+			$boiler_seen_time = strtotime($boiler_seen);
+			if ($boiler_seen_time  < ($now - ($boiler_notice*60))){
+				$zone_fault = 1;
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler controler communication timeout. Boiler Last Seen: ".$boiler_seen."\n";
+			}
+		}
+	// end Check Zone category 0 or 1
+	} 
+
+	// check if webhooks plugin installed and if a switch is configured for this zone
+	if ($platform == 1 and in_array($row['id'], $switches)) {
+		if (strcasecmp($boost_active,'1') == 0) {$boost_state = 'true';} else {$boost_state = 'false';}
+		// get the current state of the switch
+		$url = "http://127.0.0.1:51828/?accessoryId=switch" . $row['id'];
+		$contents = file_get_contents($url);
+		$contents = utf8_encode($contents);
+		$resp = json_decode($contents, true);
+		if ($resp['state']) {$state = 'true';} else {$state = 'false';}
+		// update if the states do not match
+		if ($state !=  $boost_state) {
+			$url = $url . "&state=" . $boost_state;
+			$contents = file_get_contents($url);
+		}
+	}
+
+	//initialize two variable
+	$start_cause ='';
+	$stop_cause = '';
+	$zone_mode = 0;
+	if ($zone_fault == '0'){
+		if ($zone_category == 0 OR $zone_category == 1) {
+			if ($zone_c < $frost_c-$zone_sp_deadband){
+				$zone_status="1";
+				$zone_mode = 21;
+				$start_cause="Frost Protection";
+			}
+			elseif(($zone_c >= $frost_c-$zone_sp_deadband) && ($zone_c < $frost_c)){
+				$zone_status=$zone_status_prev;
+				$zone_mode = 22 - $zone_status_prev;
+				$start_cause="Frost Protection Deadband";
+				$stop_cause="Frost Protection Deadband";
+			}elseif(($zone_c >= $frost_c) && ($zone_c < $zone_max_c) && ($hysteresis=='0')){
 				if ($away_status=='0'){
 					if (($holidays_status=='0') || ($sch_holidays=='1')) {
 						if($boost_status=='0'){
 							$zone_status="0";
 							$stop_cause="Boost Finished";
-							if ($sch_status =='1') {
-								$zone_status="1";
-								$zone_mode = 114;
-								$start_cause="Schedule Started";
-								$expected_end_date_time=date('Y-m-d '.$sch_end_time.'');
-								if ($zone_active_status == '1') {
-									$stop_cause="Manual Stop";
-									$zone_status_prev = '0';
-									$query = "UPDATE zone SET sync = '0', zone_status = '0' WHERE id = '{$zone_id}' LIMIT 1";
-									$conn->query($query);
+							if ($night_climate_status =='0') {
+								if (($sch_status =='1') && ($zone_c < $temp_cut_in)&&(($sch_coop == 0)||($boiler_fire_status == "1"))){
+									$zone_status="1";
+									$zone_mode = 81;
+									$start_cause="Schedule Started";
+									$expected_end_date_time=date('Y-m-d '.$sch_end_time.'');
 								}
+								if (($sch_status =='1') && ($zone_c < $temp_cut_in)&&($sch_coop == 1)&&($boiler_fire_status == "0")){
+									$zone_status="0";
+									$zone_mode = 83;
+									$stop_cause="Coop Start Schedule Waiting for Boiler Start";
+									$expected_end_date_time=date('Y-m-d '.$sch_end_time.'');
+								}
+								if (($sch_status =='1') && ($zone_c >= $temp_cut_in) && ($zone_c < $temp_cut_out)){
+									$zone_status=$zone_status_prev;
+									$zone_mode = 82 - $zone_status_prev;
+									$start_cause="Schedule Target Deadband";
+									$stop_cause="Schedule Target Deadband";
+								}
+								if (($sch_status =='1') && ($zone_c >= $temp_cut_out)){
+									$zone_status="0";
+									$zone_mode = 80;
+									$stop_cause="Schedule Target C Achieved";
+								}
+								if (($sch_status =='1') && ($override_status=='1') && ($zone_c < $temp_cut_in)){
+									$zone_status="1";
+									$zone_mode = 71;
+									$start_cause="Schedule Override Started";
+									$expected_end_date_time=date('Y-m-d '.$sch_end_time.'');
+								}
+								if (($sch_status =='1') && ($override_status=='1') && ($zone_c >= $temp_cut_in && ($zone_c < $temp_cut_out))){
+									$zone_status=$zone_status_prev;
+									$zone_mode = 72 - $zone_status_prev;
+									$start_cause="Schedule Override Target Deadband";
+									$stop_cause="Schedule Override Target Deadband";
+								}
+								if (($sch_status =='1') && ($override_status=='1') && ($zone_c >= $temp_cut_out)){
+									$zone_status="0";
+									$zone_mode = 70;
+									$stop_cause="Schedule Override Target C Achieved";
+								}
+								if (($sch_status =='0') &&($sch_holidays=='1')){
+									$zone_status="0";
+									$zone_mode = 40;
+									$stop_cause="Holidays - No Schedule";
+								}
+								if (($sch_status =='0') && ($sch_holidays=='0')) {
+									$zone_status="0";
+									$zone_mode = 0;
+									$stop_cause="No Schedule";
+								}
+							}elseif(($night_climate_status=='1') && ($zone_c < $temp_cut_in)){
+								$zone_status="1";
+								$zone_mode = 51;
+								$start_cause="Night Climate";
+								$expected_end_date_time=date('Y-m-d '.$nc_end_time_rc.'');
+							}elseif(($night_climate_status=='1') && ($zone_c >= $temp_cut_in) && ($zone_c < $temp_cut_out)){
+								$zone_status=$zone_status_prev;
+								$zone_mode = 52 - $zone_status_prev;
+								$start_cause="Night Climate Deadband";
+								$stop_cause="Night Climate Deadband";
+								$expected_end_date_time=date('Y-m-d '.$nc_end_time_rc.'');
+							}elseif(($night_climate_status=='1') && ($zone_c >= $temp_cut_out)){
+								$zone_status="0";
+								$zone_mode = 50;
+								$stop_cause="Night Climate C Reached";
+								$expected_end_date_time=date('Y-m-d '.$nc_end_time_rc.'');
 							}
-                                                        if (($sch_status =='1') && ($override_status=='1')){
-                                                                $zone_status = (($add_on_state == 1) || ($zone_active_status == 1)) ? 1:0 ;
-                                                                $zone_mode = 74 + $add_on_state;
-                                                                $start_cause="Manual Override Started";
-                                                                $expected_end_date_time=date('Y-m-d '.$sch_end_time.'');
-                                                        }
-                                                        elseif ($zone_active_status =='1') {
-                                                                $zone_status="1";
-                                                                $zone_mode = 111;
-                                                                $start_cause="Manual Start";
-                                                        }
-						} elseif ($boost_status=='1') {
+						}elseif (($boost_status=='1') && ($zone_c < $temp_cut_in)) {
 							$zone_status="1";
-							$zone_mode = 64;
+							$zone_mode = 61;
 							$start_cause="Boost Active";
 							$expected_end_date_time=date('Y-m-d H:i:s', $boost_time);
+						}elseif (($boost_status=='1') && ($zone_c >= $temp_cut_in) && ($zone_c < $temp_cut_out)) {
+							$zone_status=$zone_status_prev;
+							$zone_mode = 62 - $zone_status_prev;
+							$start_cause="Boost Target Deadband";
+							$stop_cause="Boost Target Deadband";
+						}elseif (($boost_status=='1') && ($zone_c >= $temp_cut_out)) {
+							$zone_status="0";
+							$zone_mode = 60;
+							$stop_cause="Boost Target C Achived";
 						}
-					} elseif (($holidays_status=='1') && ($sch_holidays=='0')){
+					}elseif(($holidays_status=='1') && ($sch_holidays=='0')){
 						$zone_status="0";
 						$zone_mode = 40;
 						$stop_cause="Holiday Active";
 					}
-					if ($sch_status=='0' && $zone_active_status=='0' && $boost_status=='0') {
-						$zone_status="0";
-						$zone_mode = 0;
-						$stop_cause="No Schedule";
-					}
-				} elseif ($away_status=='1'){
+				}elseif($away_status=='1'){
 					$zone_status="0";
 					$zone_mode = 90;
 					$stop_cause="Away Active";
 				}
-			} // end process
-		} else {
-			$zone_status="0";
-			$zone_mode = 10;
-			$stop_cause="Zone fault";
-		}
-
-		//Update temperature values fore zone current status table (frost protection and overtemperature)
-		if (floor($zone_mode/10) == 2 ) { $target_c= $frost_c;$temp_cut_in = $frost_c-$zone_sp_deadband; $temp_cut_out = $frost_c;}
-		if (floor($zone_mode/10) == 3 ) { $target_c= $zone_max_c;$temp_cut_in = 0; $temp_cut_out = 0;}
-		//reset if temperature control is not active
-		if ((floor($zone_mode/10) == 0 ) || (floor($zone_mode/10) == 1 ) || (floor($zone_mode/10) == 4 ) || (floor($zone_mode/10) == 9 )||(floor($zone_mode/10) == 10 ))  { $target_c= 0;$temp_cut_in = 0; $temp_cut_out = 0;}
-
-		//***************************************************************************************
-		//update zone_current_state table
-		//***************************************************************************************
-		//Zone Main Mode
-		/*	0 - idle
-			10 - fault
-			20 - frost
-			30 - overtemperature
-			40 - holiday
-			50 - nightclimate
-			60 - boost
-			70 - override
-			80 - sheduled
-			90 - away
-			100 - hysteresis 
-			110 - Add-On*/
-
-			//Zone sub mode - running/ stopped different types
-		/*	0 - stopped (above cut out setpoint or not running in this mode)
-			1 - running 
-			2 - stopped (within deadband) 
-			3 - stopped (coop start waiting for boiler)
-			4 - manual operation ON
-			5 - manual operation OFF */
-
-		$query = "UPDATE zone_current_state SET `sync` = 0, mode = {$zone_mode}, status = {$zone_status}, temp_reading = '{$zone_c}', temp_target = {$target_c},temp_cut_in = {$temp_cut_in}, temp_cut_out = {$temp_cut_out}, controler_fault = {$zone_ctr_fault}, controler_seen_time = '{$controler_seen}', sensor_fault  = {$zone_sensor_fault}, sensor_seen_time = '{$sensor_seen}', sensor_reading_time = '{$temp_reading_time}' WHERE zone_id ={$zone_id} LIMIT 1;";
-		$conn->query($query);
-
-		if ($zone_category == 0 OR $zone_category == 1) {
-			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: Sensor Reading     \033[41m".$zone_c."\033[0m \n";
-			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: Weather Factor     \033[41m".$weather_fact."\033[0m \n";
-			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: DeadBand           \033[41m".$zone_sp_deadband."\033[0m \n";
-			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: Cut In Temperature        \033[41m".$temp_cut_in."\033[0m \n";
-			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: Cut Out Temperature       \033[41m".$temp_cut_out."\033[0m \n";
-			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: Mode       \033[41m".$zone_mode."\033[0m \n";
-		}
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone ID: \033[41m".$zone_id. "\033[0m \n";
-		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Controller: \033[41m".$zone_controler_id."\033[0m Controller Child: \033[41m".$zone_controler_child_id."\033[0m Zone Status: \033[41m".$zone_status."\033[0m \n";
-		if ($zone_category == 0) {
-			if ($zone_status=='1') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Start Cause: ".$start_cause." - Target C:\033[41m".$target_c."\033[0m Zone C:\033[31m".$zone_c."\033[0m \n";}
-			if ($zone_status=='0') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Stop Cause: ".$stop_cause." - Target C:\033[41m".$target_c."\033[0m Zone C:\033[31m".$zone_c."\033[0m \n";}
-		} else {
-			if ($zone_status=='1') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Start Cause: ".$start_cause."\033[0m \n";}
-			if ($zone_status=='0') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Stop Cause: ".$stop_cause."\033[0m \n";}
-		}
-
-		//Pass data to zone commands loop
-		$zone_commands[$command_index] = (array('zone_id' =>$zone_id, 'zone_name' =>$zone_name, 'zone_category' =>$zone_category, 'zone_controler_id' =>$zone_controler_id, 'zone_controler_child_id' =>$zone_controler_child_id, 'zone_controller_type' =>$zone_controller_type, 'zone_status'=>$zone_status, 'zone_status_prev'=>$zone_status_prev, 'zone_overrun_prev'=>$zone_overrun_prev));
-		$command_index = $command_index+1;
-		//process Zone Cat 0 logs
-		if ($zone_category == 0){
-			//all zone status to boiler array and increment array index
-			$boiler[$boiler_index] = $zone_status;
-			$boiler_index = $boiler_index+1;
-			//all zone ids and status to multidimensional Array. and increment array index.
-			$zone_log[$zone_index] = (array('zone_id' =>$zone_id, 'status'=>$zone_status));
-			$zone_index = $zone_index+1;
-			//process Zone Cat 1 and 2 logs
-		} else {
-			// Process Logs Category 1 and 2 logs if zone status has changed
-			// zone switching ON
-			if($zone_status_prev == '0' &&  ($zone_status == '1' || $zone_active_status  == '1')) {
-				if($zone_mode == '111') {
-					$aoquery = "INSERT INTO `add_on_logs`(`sync`, `purge`, `start_datetime`, `start_cause`, `stop_datetime`, `stop_cause`, `expected_end_date_time`) VALUES ('0', '0', '{$date_time}', '{$start_cause}', NULL, NULL, NULL);";
-				} else {
-					$aoquery = "INSERT INTO `add_on_logs`(`sync`, `purge`, `start_datetime`, `start_cause`, `stop_datetime`, `stop_cause`, `expected_end_date_time`) VALUES ('0', '0', '{$date_time}', '{$start_cause}', NULL, NULL,'{$expected_end_date_time}');";
-				}
-				$result = $conn->query($aoquery);
-				$add_on_log_id = mysqli_insert_id($conn);
-				
-				//echo all zone and status
-				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone ID: ".$zone_id." Status: ".$zone_status."\n";
-				$zlquery = "INSERT INTO `add_on_zone_logs`(`sync`, `purge`, `zone_id`, `add_on_log_id`, `status`) VALUES ('0', '0', '{$zone_id}', '{$add_on_log_id}', '{$zone_status}');";
-				$zlresults = $conn->query($zlquery);
-				if ($zlresults) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Add-On Zone Log table updated successfully. \n";} else {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone log update failed... ".mysql_error(). " \n";}
-				if ($result) {
-					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Add-On Log table added Successfully. \n";
-				}else {
-					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Add-On Log table addition failed. \n";
-				}
-			// zone switching OFF
-			} elseif ($zone_status_prev == '1' &&  $zone_status == '0') {
-				$query = "UPDATE add_on_logs SET stop_datetime = '{$date_time}', stop_cause = '{$stop_cause}' ORDER BY id DESC LIMIT 1";
-				$result = $conn->query($query);
-				if ($result) {
-					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Add-On Log table updated Successfully. \n";
-				}else {
-					echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Add-On Log table update failed. \n";
-				}
+			}elseif($zone_c >= $zone_max_c){
+				$zone_status="0";
+				$zone_mode = 30;
+				$stop_cause="Zone Reached its Max Temperature ".$zone_max_c;
+			} else {
+				$zone_status="0";
+				$zone_mode = 100;
+				$stop_cause="Hysteresis active ";
 			}
-		} //end process Zone Cat 1 and 2 logs
-		echo "---------------------------------------------------------------------------------------- \n";
-	} //end if($zone_status == 1)
+		} else { // end process Zone Category 0 and 1
+			// process Zone Category 2
+			if ($away_status=='0'){
+				if (($holidays_status=='0') || ($sch_holidays=='1')) {
+					if($boost_status=='0'){
+						$zone_status="0";
+						$stop_cause="Boost Finished";
+						if ($sch_status =='1') {
+							$zone_status="1";
+							$zone_mode = 114;
+							$start_cause="Schedule Started";
+							$expected_end_date_time=date('Y-m-d '.$sch_end_time.'');
+							if ($zone_active_status == '1') {
+								$stop_cause="Manual Stop";
+								$zone_status_prev = '0';
+								$query = "UPDATE zone SET sync = '0', zone_state = '0' WHERE id = '{$zone_id}' LIMIT 1";
+								$conn->query($query);
+							}
+						}
+                                                if (($sch_status =='1') && ($override_status=='1')){
+	                                                $zone_status = (($add_on_state == 1) || ($zone_active_status == 1)) ? "1":"0" ;
+                                                        $zone_mode = 74 + $add_on_state;
+                                                        $start_cause="Manual Override Started";
+                                                	$expected_end_date_time=date('Y-m-d '.$sch_end_time.'');
+                                              	}
+                                        	elseif ($zone_active_status =='1') {
+                                                        $zone_status="1";
+                                                        $zone_mode = 111;
+                                                        $start_cause="Manual Start";
+                                                }
+					} elseif ($boost_status=='1') {
+						$zone_status="1";
+						$zone_mode = 64;
+						$start_cause="Boost Active";
+						$expected_end_date_time=date('Y-m-d H:i:s', $boost_time);
+					}
+				} elseif (($holidays_status=='1') && ($sch_holidays=='0')){
+					$zone_status="0";
+					$zone_mode = 40;
+					$stop_cause="Holiday Active";
+				}
+				if ($sch_status=='0' && $zone_active_status=='0' && $boost_status=='0') {
+					$zone_status="0";
+					$zone_mode = 0;
+					$stop_cause="No Schedule";
+				}
+			} elseif ($away_status=='1'){
+				$zone_status="0";
+				$zone_mode = 90;
+				$stop_cause="Away Active";
+			}
+		} // end process
+	} else {
+		$zone_status="0";
+		$zone_mode = 10;
+		$stop_cause="Zone fault";
+	}
+	//Update temperature values fore zone current status table (frost protection and overtemperature)
+	if (floor($zone_mode/10) == 2 ) { $target_c= $frost_c;$temp_cut_in = $frost_c-$zone_sp_deadband; $temp_cut_out = $frost_c;}
+	if (floor($zone_mode/10) == 3 ) { $target_c= $zone_max_c;$temp_cut_in = 0; $temp_cut_out = 0;}
+	//reset if temperature control is not active
+	if ((floor($zone_mode/10) == 0 ) || (floor($zone_mode/10) == 1 ) || (floor($zone_mode/10) == 4 ) || (floor($zone_mode/10) == 9 )||(floor($zone_mode/10) == 10 ))  { $target_c= 0;$temp_cut_in = 0; $temp_cut_out = 0;}
+
+	//***************************************************************************************
+	//update zone_current_state table
+	//***************************************************************************************
+	//Zone Main Mode
+	/*	0 - idle
+		10 - fault
+		20 - frost
+		30 - overtemperature
+		40 - holiday
+		50 - nightclimate
+		60 - boost
+		70 - override
+		80 - sheduled
+		90 - away
+		100 - hysteresis 
+		110 - Add-On*/
+
+		//Zone sub mode - running/ stopped different types
+	/*	0 - stopped (above cut out setpoint or not running in this mode)
+		1 - running 
+		2 - stopped (within deadband) 
+		3 - stopped (coop start waiting for boiler)
+		4 - manual operation ON
+		5 - manual operation OFF */
+
+	$query = "UPDATE zone_current_state SET `sync` = 0, mode = {$zone_mode}, status = {$zone_status}, temp_reading = '{$zone_c}', temp_target = {$target_c},temp_cut_in = {$temp_cut_in}, temp_cut_out = {$temp_cut_out}, controler_fault = {$zone_ctr_fault}, controler_seen_time = '{$controler_seen}', sensor_fault  = {$zone_sensor_fault}, sensor_seen_time = '{$sensor_seen}', sensor_reading_time = '{$temp_reading_time}' WHERE zone_id ={$zone_id} LIMIT 1;";
+	$conn->query($query);
+
+	if ($zone_category == 0 OR $zone_category == 1) {
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: Sensor Reading     \033[41m".$zone_c."\033[0m \n";
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: Weather Factor     \033[41m".$weather_fact."\033[0m \n";
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: DeadBand           \033[41m".$zone_sp_deadband."\033[0m \n";
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: Cut In Temperature        \033[41m".$temp_cut_in."\033[0m \n";
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: Cut Out Temperature       \033[41m".$temp_cut_out."\033[0m \n";
+		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: Mode       \033[41m".$zone_mode."\033[0m \n";
+	}
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone ID: \033[41m".$zone_id. "\033[0m \n";
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Controller: \033[41m".$zone_controler_id."\033[0m Controller Child: \033[41m".$zone_controler_child_id."\033[0m Zone Status: \033[41m".$zone_status."\033[0m \n";
+	if ($zone_category == 0) {
+		if ($zone_status=='1') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Start Cause: ".$start_cause." - Target C:\033[41m".$target_c."\033[0m Zone C:\033[31m".$zone_c."\033[0m \n";}
+		if ($zone_status=='0') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Stop Cause: ".$stop_cause." - Target C:\033[41m".$target_c."\033[0m Zone C:\033[31m".$zone_c."\033[0m \n";}
+	} else {
+		if ($zone_status=='1') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Start Cause: ".$start_cause."\033[0m \n";}
+		if ($zone_status=='0') {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone: ".$zone_name." Stop Cause: ".$stop_cause."\033[0m \n";}
+	}
+
+	//Pass data to zone commands loop
+	$zone_commands[$command_index] = (array('zone_id' =>$zone_id, 'zone_name' =>$zone_name, 'zone_category' =>$zone_category, 'zone_controler_id' =>$zone_controler_id, 'zone_controler_child_id' =>$zone_controler_child_id, 'zone_controller_type' =>$zone_controller_type, 'zone_status'=>$zone_status, 'zone_status_prev'=>$zone_status_prev, 'zone_overrun_prev'=>$zone_overrun_prev));
+	$command_index = $command_index+1;
+	//process Zone Cat 0 logs
+	if ($zone_category == 0){
+		//all zone status to boiler array and increment array index
+		$boiler[$boiler_index] = $zone_status;
+		$boiler_index = $boiler_index+1;
+		//all zone ids and status to multidimensional Array. and increment array index.
+		$zone_log[$zone_index] = (array('zone_id' =>$zone_id, 'status'=>$zone_status));
+		$zone_index = $zone_index+1;
+		//process Zone Cat 1 and 2 logs
+	} else {
+		// Process Logs Category 1 and 2 logs if zone status has changed
+		// zone switching ON
+		if($zone_status_prev == '0' &&  ($zone_status == '1' || $zone_active_status  == '1')) {
+			if($zone_mode == '111' || $zone_mode == '21') {
+				$aoquery = "INSERT INTO `add_on_logs`(`sync`, `purge`, `start_datetime`, `start_cause`, `stop_datetime`, `stop_cause`, `expected_end_date_time`) VALUES ('0', '0', '{$date_time}', '{$start_cause}', NULL, NULL, NULL);";
+			} else {
+				$aoquery = "INSERT INTO `add_on_logs`(`sync`, `purge`, `start_datetime`, `start_cause`, `stop_datetime`, `stop_cause`, `expected_end_date_time`) VALUES ('0', '0', '{$date_time}', '{$start_cause}', NULL, NULL,'{$expected_end_date_time}');";
+			}
+			$result = $conn->query($aoquery);
+			$add_on_log_id = mysqli_insert_id($conn);
+
+			//echo all zone and status
+			echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone ID: ".$zone_id." Status: ".$zone_status."\n";
+			$zlquery = "INSERT INTO `add_on_zone_logs`(`sync`, `purge`, `zone_id`, `add_on_log_id`, `status`) VALUES (0, 0, '{$zone_id}', '{$add_on_log_id}', '{$zone_status}');";
+			$zlresults = $conn->query($zlquery);
+			if ($zlresults) {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Add-On Zone Log table updated successfully. \n";} else {echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone log update failed... ".mysql_error(). " \n";}
+			if ($result) {
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Add-On Log table added Successfully. \n";
+			}else {
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Add-On Log table addition failed. \n";
+			}
+		// zone switching OFF
+		} elseif ($zone_status_prev == '1' &&  $zone_status == '0') {
+			$query = "UPDATE add_on_logs SET stop_datetime = '{$date_time}', stop_cause = '{$stop_cause}' ORDER BY id DESC LIMIT 1";
+			$result = $conn->query($query);
+			if ($result) {
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Add-On Log table updated Successfully. \n";
+			}else {
+				echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Add-On Log table update failed. \n";
+			}
+		}
+	} //end process Zone Cat 1 and 2 logs
+	echo "---------------------------------------------------------------------------------------- \n";
 } //end of while loop
 
 /***************************************************************************************
@@ -872,7 +885,7 @@ for ($row = 0; $row < count($zone_commands); $row++){
 	/***************************************************************************************
 	Zone Valve Wireless Section: MySensors Wireless Relay module for your Zone Valve control.
 	****************************************************************************************/
-	if ($zone_controller_type == 'MySensor'|| $zone_controller_type == 'Tasmota'){
+	if ($zone_controller_type == 'MySensor'){
 		//update messages_out table with sent status to 0 and payload to as zone status.
 		$query = "UPDATE messages_out SET sent = '0', payload = '{$zone_command}' WHERE node_id ='$zone_controler_id' AND child_id = '$zone_controler_child_id' LIMIT 1;";
 		$conn->query($query);
@@ -1044,3 +1057,4 @@ echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Script Ended \n";
 echo "\033[32m****************************************************************************************\033[0m  \n";
 if(isset($conn)) { $conn->close();}
 ?>
+
