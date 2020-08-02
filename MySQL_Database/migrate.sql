@@ -1,5 +1,6 @@
 ALTER TABLE `zone` DROP FOREIGN KEY IF EXISTS `FK_zone_nodes`;
 ALTER TABLE `zone` DROP FOREIGN KEY IF EXISTS `FK_zone_type`;
+ALTER TABLE `zone` DROP FOREIGN KEY IF EXISTS `FK_zone_boiler`;
 ALTER TABLE `zone` DROP COLUMN IF EXISTS `type`;
 ALTER TABLE `zone` DROP COLUMN IF EXISTS `model`;
 ALTER TABLE `zone` DROP COLUMN IF EXISTS `max_c`;
@@ -8,6 +9,8 @@ ALTER TABLE `zone` DROP COLUMN IF EXISTS `hysteresis_time`;
 ALTER TABLE `zone` DROP COLUMN IF EXISTS `sp_deadband`;
 ALTER TABLE `zone` DROP COLUMN IF EXISTS `sensor_id`;
 ALTER TABLE `zone` DROP COLUMN IF EXISTS `sensor_child_id`;
+ALTER TABLE `zone` DROP COLUMN IF EXISTS `boiler_id`;
+ALTER TABLE `zone` DROP COLUMN IF EXISTS `gpio_pin`;
 ALTER TABLE `zone` CHANGE COLUMN IF EXISTS `zone_status` `zone_state` tinyint(4);
 ALTER TABLE `zone` ADD COLUMN IF NOT EXISTS `zone_state` tinyint(4);
 ALTER TABLE `zone` ADD COLUMN `type_id` int(11);
