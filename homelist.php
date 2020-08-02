@@ -79,7 +79,7 @@ require_once(__DIR__.'/st_inc/functions.php');
   			}
 		}
 
-		$query = "SELECT zone.*, zone_type.type, zone_type.category FROM `zone`, `zone_type`  WHERE (`zone_type`.id = `type_id`) AND `zone`.`purge` = 0 AND `status` = 1 AND `category` < 2 order by index_id asc;";
+		$query = "SELECT zone.*, zone_type.type, zone_type.category FROM `zone`, `zone_type`  WHERE (`zone_type`.id = `type_id`) AND `zone`.`purge` = 0 AND `category` < 2 order by index_id asc;";
 		$results = $conn->query($query);
 		while ($row = mysqli_fetch_assoc($results)) {
 			$zone_id=$row['id'];
