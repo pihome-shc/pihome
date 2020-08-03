@@ -154,12 +154,12 @@ if ($db_selected) {
         $conn->query($query);
         $query = "ALTER TABLE `zone` CHANGE COLUMN IF EXISTS `zone_status` `zone_state` tinyint(4);";
         $conn->query($query);
-        $query = "ALTER TABLE `zone` ADD COLUMN IF NOT EXISTS `zone_state` tinyint(4);";
+        $query = "ALTER TABLE `zone` ADD COLUMN IF NOT EXISTS `zone_state` tinyint(4) AFTER `status`;";
         $conn->query($query);
-        $query = "ALTER TABLE `zone` ADD COLUMN IF NOT EXISTS `graph_it` tinyint(1);";
+        $query = "ALTER TABLE `zone` ADD COLUMN `type_id` int(11) AFTER `name`;";
         $conn->query($query);
-        $query = "ALTER TABLE `zone` ADD COLUMN `type_id` int(11);";
-	$conn->query($query);
+        $query = "ALTER TABLE `zone` ADD COLUMN IF NOT EXISTS `graph_it` tinyint(1) AFTER `type_id`;";
+        $conn->query($query);
       	$query = "ALTER TABLE `zone` ADD CONSTRAINT `FK_zone_type_id` FOREIGN KEY (`type_id`) REFERENCES `zone_type` (`id`);";
         $conn->query($query);
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Table Successfully Modified\n";
