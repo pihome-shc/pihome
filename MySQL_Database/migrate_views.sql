@@ -1,3 +1,65 @@
+-- Dumping structure for table pihome.add_on_logs
+CREATE TABLE IF NOT EXISTS `add_on_logs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sync` tinyint(4) NOT NULL,
+  `purge` tinyint(4) NOT NULL COMMENT 'Mark For Deletion',
+  `start_datetime` timestamp NULL,
+  `start_cause` char(50) COLLATE utf16_bin,
+  `stop_datetime` timestamp NULL,
+  `stop_cause` char(50) COLLATE utf16_bin,
+  `expected_end_date_time` timestamp NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+
+-- Dumping structure for table pihome.http_messages
+CREATE TABLE IF NOT EXISTS `http_messages` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sync` tinyint(4) NOT NULL,
+  `purge` tinyint(4) NOT NULL COMMENT 'Mark For Deletion',
+  `zone_name` char(50) COLLATE utf16_bin,
+  `node_id` char(50) COLLATE utf16_bin,
+  `message_type` char(50) COLLATE utf16_bin,
+  `command` char(50) COLLATE utf16_bin,
+  `parameter` char(50) COLLATE utf16_bin,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+
+-- Dumping structure for table pihome.zone_current_state
+CREATE TABLE IF NOT EXISTS `zone_current_state` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sync` tinyint(4) NOT NULL,
+  `purge` tinyint(4) NOT NULL,
+  `zone_id` int(11) NOT NULL,
+  `mode` int(11),
+  `status` tinyint(1),
+  `temp_reading` decimal(4,1),
+  `temp_target` decimal(4,1),
+  `temp_cut_in` decimal(4,1),
+  `temp_cut_out` decimal(4,1),
+  `controler_fault` int(1),
+  `controler_seen_time` timestamp NULL,
+  `sensor_fault` int(1),
+  `sensor_seen_time` timestamp NULL,
+  `sensor_reading_time` timestamp NULL,
+  `overrun` tinyint(1),
+ PRIMARY KEY (`id`)
+) ENGINE=MEMORY DEFAULT CHARSET=utf8;
+
+-- Dumping structure for table pihome.add_on_zone_logs
+CREATE TABLE IF NOT EXISTS `add_on_zone_logs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sync` tinyint(4) NOT NULL,
+  `purge` tinyint(4) NOT NULL COMMENT 'Mark For Deletion',
+  `zone_id` int(11),
+  `add_on_log_id` int(11),
+  `status` int(11),
+  PRIMARY KEY (`id`),
+  KEY `FK_add_on_zone_logs_zone` (`zone_id`),
+  KEY `FK_add_on_zone_logs_add_on_logs` (`add_on_log_id`),
+  CONSTRAINT `FK_add_on_zone_logs_add_on_logs` FOREIGN KEY (`add_on_log_id`) REFERENCES `add_on_logs` (`id`),
+  CONSTRAINT `FK_add_on_zone_logs_zone` FOREIGN KEY (`zone_id`) REFERENCES `zone` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
+
 -- Zones View version 2
 Drop View if exists zone_view;
 CREATE VIEW zone_view AS
