@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `add_on_logs` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
--- Dumping structure for table pihome.zone_logs
+-- Dumping structure for table pihome.add_on_zone_logs
 DROP TABLE IF EXISTS `add_on_zone_logs`;
 CREATE TABLE IF NOT EXISTS `add_on_zone_logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
