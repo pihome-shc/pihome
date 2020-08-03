@@ -79,18 +79,13 @@ require_once(__DIR__.'/st_inc/functions.php');
   			}
 		}
 
-		$query = "SELECT * FROM `zone_view` WHERE `category` < 2 ORDER BY index_id asc; ";
+		$query = "SELECT zone.*, zone_type.type, zone_type.category FROM `zone`, `zone_type`  WHERE (`zone_type`.id = `type_id`) AND `zone`.`purge` = 0 AND `category` < 2 order by index_id asc;";
 		$results = $conn->query($query);
 		while ($row = mysqli_fetch_assoc($results)) {
-			$zone_status=$row['status'];
 			$zone_id=$row['id'];
 			$zone_name=$row['name'];
 			$zone_type=$row['type'];
-			$zone_max_c=$row['max_c'];
-			$zone_max_operation_time=$row['max_operation_time'];
-			$zone_hysteresis_time=$row['hysteresis_time'];
-			$zone_sp_deadband=$row['sp_deadband'];
-			$zone_sensor_id=$row['sensors_id'];
+			$zone_sensor_id=$row['sensor_id'];
 			$zone_sensor_child_id=$row['sensor_child_id'];
 			$zone_controller_type=$row['controller_type'];
 			$zone_controler_id=$row['controler_id'];
@@ -100,7 +95,6 @@ require_once(__DIR__.'/st_inc/functions.php');
 			$query = "SELECT * FROM zone_current_state WHERE zone_id = '{$zone_id}' LIMIT 1;";
 			$result = $conn->query($query);
 			$zone_current_state = mysqli_fetch_array($result);
-			$zone_status = $zone_current_state['status'];
 			$zone_mode = $zone_current_state['mode'];	
 			$zone_temp_reading = $zone_current_state['temp_reading'];	
 			$zone_temp_target = $zone_current_state['temp_target'];
@@ -113,8 +107,21 @@ require_once(__DIR__.'/st_inc/functions.php');
 			$temp_reading_time= $zone_current_state['sensor_reading_time'];
 			$overrun= $zone_current_state['overrun'];
 
+			//get the sensor id
+	                $query = "SELECT * FROM zone_sensors WHERE zone_id = '{$zone_id}' LIMIT 1;";
+        	        $result = $conn->query($query);
+                	$sensor = mysqli_fetch_array($result);
+	                $zone_sensor_id=$sensor['sensor_id'];
+                	$zone_sensor_child_id=$sensor['sensor_child_id'];
+
+			//get the node id
+                	$query = "SELECT node_id FROM nodes WHERE id = '{$zone_sensor_id}' LIMIT 1;";
+                	$result = $conn->query($query);
+                	$nodes = mysqli_fetch_array($result);
+                	$zone_node_id=$nodes['node_id'];
+
 			//query to get temperature from messages_in_view_24h table view
-                        $query = "SELECT * FROM messages_in WHERE node_id = '{$zone_sensor_id}' AND child_id = '{$zone_sensor_child_id}' ORDER BY id desc LIMIT 1;";
+                        $query = "SELECT * FROM messages_in WHERE node_id = '{$zone_node_id}' AND child_id = '{$zone_sensor_child_id}' ORDER BY id desc LIMIT 1;";
 			$result = $conn->query($query);
 			$sensor = mysqli_fetch_array($result);
 			$zone_c = $sensor['payload'];
@@ -226,7 +233,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 											<i class="fa fa-clock-o fa-fw"></i> '.secondsToWords(($sensor_minutes)*60).' ago
 											</small>
 											<br><br>
-											<p>Sensor ID '.$zone_sensor_id.' last seen at '.$sensor_seen.' <br>Last Temperature reading received at '.$temp_reading_time.' </p>
+											<p>Sensor ID '.$zone_node_id.' last seen at '.$sensor_seen.' <br>Last Temperature reading received at '.$temp_reading_time.' </p>
 											<p class="text-info"> Heating system will resume for this zone its normal operation once this issue is fixed. </p>
 										</div>
 									</li>

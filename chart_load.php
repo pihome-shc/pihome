@@ -45,7 +45,7 @@ $sunset = $weather_row['sunset']* 1000 ;
 //http://php.net/manual/en/function.date-sun-info.php
 
 // create datasets based on all available zones
-$querya ="select id, name, type from zone where graph_it = 1 order BY index_id asc;";
+$querya ="select id, name, type from zone_view where graph_it = 1 order BY index_id asc;";
 $resulta = $conn->query($querya);
 $counter = 0;
 $count = mysqli_num_rows($resulta) + 1;

@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `add_on_logs` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
--- Dumping structure for table pihome.zone_logs
+-- Dumping structure for table pihome.add_on_zone_logs
 DROP TABLE IF EXISTS `add_on_zone_logs`;
 CREATE TABLE IF NOT EXISTS `add_on_zone_logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -694,25 +694,18 @@ CREATE TABLE IF NOT EXISTS `zone` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `sync` tinyint(4) NOT NULL,
   `purge` tinyint(4) NOT NULL COMMENT 'Mark For Deletion',
-  `status` tinyint(4),
+  `state` tinyint(4),
   `zone_status` tinyint(4),
   `index_id` tinyint(4),
   `name` char(50) COLLATE utf8_bin,
-  `type` char(50) COLLATE utf8_bin,
-  `model` char(50) COLLATE utf8_bin,
+  `type_id` int(11),
   `graph_it` tinyint(1) NOT NULL,
-  `max_c` tinyint(4),
-  `max_operation_time` tinyint(4),
-  `hysteresis_time` tinyint(4),
-  `sp_deadband` float NOT NULL,
-  `sensor_id` int(11),
-  `sensor_child_id` int(11),
   `controler_id` int(11),
   `controler_child_id` int(11),
   PRIMARY KEY (`id`),
-  KEY `FK_zone_nodes` (`sensor_id`),
+  KEY `FK_zone_type_id` (`type_id`),
   KEY `FK_zone_nodes_2` (`controler_id`),
-  CONSTRAINT `FK_zone_nodes` FOREIGN KEY (`sensor_id`) REFERENCES `nodes` (`id`),
+  CONSTRAINT `FK_zone_type_id` FOREIGN KEY (`type_id`) REFERENCES `zone_type` (`id`),
   CONSTRAINT `FK_zone_nodes_2` FOREIGN KEY (`controler_id`) REFERENCES `nodes` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
@@ -783,6 +776,26 @@ CREATE TABLE IF NOT EXISTS `zone_logs` (
 -- Dumping data for table pihome.zone_logs: ~0 rows (approximately)
 /*!40000 ALTER TABLE `zone_logs` DISABLE KEYS */;
 /*!40000 ALTER TABLE `zone_logs` ENABLE KEYS */;
+
+-- Dumping structure for table pihome.zone_sensor
+DROP TABLE IF EXISTS `zone_sensors`;
+CREATE TABLE IF NOT EXISTS `zone_sensors` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sync` tinyint(4) NOT NULL,
+  `purge` tinyint(4) NOT NULL COMMENT 'Mark For Deletion',
+  `zone_id` int(11),
+  `max_c` tinyint(4),
+  `max_operation_time` tinyint(4),
+  `hysteresis_time` tinyint(4),
+  `sp_deadband` float NOT NULL,
+  `sensor_id` int(11),
+  `sensor_child_id` int(11),
+  PRIMARY KEY (`id`),
+  KEY `FK_zone_sensors_nodes` (`sensor_id`),
+  KEY `FK_zone_sensors_zone` (`zone_id`),
+  CONSTRAINT `FK_zone_sensors_nodes` FOREIGN KEY (`sensor_id`) REFERENCES `nodes` (`id`),
+  CONSTRAINT `FK_zone_sensors_zone` FOREIGN KEY (`zone_id`) REFERENCES `zone` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- Dumping structure for table pihome.zone_type
 DROP TABLE IF EXISTS `zone_type`;

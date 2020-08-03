@@ -43,7 +43,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 	<div class="login-panel-foother">
 	<h6><?php echo settings($conn, 'name').' '.settings($conn, 'version')."&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;".$lang['build']." ".settings($conn, 'build'); ?>&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;<?php echo $lang['powerd_by_rpi']; ?></h6>
 	<br><br>
-	<h6><a style="color: #707070;" href="https://en.wikipedia.org/wiki/Dolphin" target="_blank" ><?php echo $lang['dedicated_to']; ?>: Dolphin</a></h6>
+	<h6><a style="color: #707070;" href="https://en.wikipedia.org/wiki/<?php echo substr($lang['dedicated_to'], strpos($lang['dedicated_to'], ":") + 2, strlen($lang['dedicated_to']) - strpos($lang['dedicated_to'], ":")); ?>" target="_blank" ><?php echo $lang['dedicated_to']; ?></a></h6>
 	</div>
 	</div>
 

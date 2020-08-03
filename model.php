@@ -701,7 +701,7 @@ echo '<table class="table table-bordered">
 $query = "SELECT * FROM zone_type where `purge`=0;";
 $results = $conn->query($query);
 while ($row = mysqli_fetch_assoc($results)) {
-    $query = "SELECT * FROM `zone` WHERE `type` LIKE '".$row['type']."' LIMIT 1;";
+    $query = "SELECT * FROM `zone` WHERE `type_id` = '".$row['id']."' LIMIT 1;";
     $t_results = $conn->query($query);
     $rowcount=mysqli_num_rows($t_results);
     if($rowcount > 0) {
@@ -782,7 +782,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 	$batresults = $conn->query($batquery);
 	$brow = mysqli_fetch_array($batresults);
 	//check if sensors in use by any zone 
-	$query = "SELECT * FROM zone where sensor_id = {$row['id']} Limit 1;";
+	$query = "SELECT * FROM zone_sensors where sensor_id = {$row['id']} Limit 1;";
 	$zresult = $conn->query($query);
 	$rcount = mysqli_num_rows($zresult);
 	echo "<div class=\"list-group-item\"><i class=\"ionicons ion-thermometer red\"></i> ".$row['node_id'];
