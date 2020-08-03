@@ -156,6 +156,8 @@ if ($db_selected) {
         $conn->query($query);
         $query = "ALTER TABLE `zone` ADD COLUMN IF NOT EXISTS `zone_state` tinyint(4);";
         $conn->query($query);
+        $query = "ALTER TABLE `zone` ADD COLUMN IF NOT EXISTS `graph_it` tinyint(1);";
+        $conn->query($query);
         $query = "ALTER TABLE `zone` ADD COLUMN `type_id` int(11);";
 	$conn->query($query);
       	$query = "ALTER TABLE `zone` ADD CONSTRAINT `FK_zone_type_id` FOREIGN KEY (`type_id`) REFERENCES `zone_type` (`id`);";
