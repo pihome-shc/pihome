@@ -21,6 +21,7 @@ echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiHome Database Migration Script
 $line = "--------------------------------------------------------------- \n";
 
 require_once(__DIR__.'/../st_inc/dbStruct.php');
+
 //Set php script execution time in seconds
 ini_set('max_execution_time', 400); 
 $date_time = date('Y-m-d H:i:s');
@@ -59,7 +60,6 @@ echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Checking if Database Exits \n";
 $db_selected = mysqli_select_db($conn, $dbname);
 if ($db_selected) {
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Database ".$dbname." Found \n";
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Checking GITHUB for Database Update \n";
 	// create an image of the currently installed database, without VIEWS
 	mysqli_select_db($conn, $dbname) or die('Error Selecting MySQL Database: ' . mysqli_error($conn));
         //dump all mysql database and save as sql file
@@ -83,6 +83,28 @@ if ($db_selected) {
                 }
 
 	}
+	// Create zone_type table with data if it does not exist
+        echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Adding zone_type Table.  \n";
+	$query = "ALTER TABLE `zone` DROP FOREIGN KEY IF EXISTS `FK_zone_type`;";
+	$conn->query($query);
+	$query = "DROP TABLE IF EXISTS `zone_type`;";
+        $conn->query($query);
+	$query = "CREATE TABLE IF NOT EXISTS `zone_type` (";
+	$query = $query."`id` int(11) NOT NULL AUTO_INCREMENT,";
+	$query = $query."`sync` tinyint(4) NOT NULL,";
+	$query = $query."`purge` tinyint(4) NOT NULL COMMENT 'Mark For Deletion',";
+	$query = $query."`type` char(50) COLLATE utf8_bin,";
+	$query = $query."`category` int(11),";
+	$query = $query."PRIMARY KEY (`id`)";
+	$query = $query.") ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
+        $conn->query($query);
+	$query = "/*!40000 ALTER TABLE `zone_type` DISABLE KEYS */;";
+        $conn->query($query);
+	$query = "REPLACE INTO `zone_type` (`sync`,  `purge`,  `type`, `category`) VALUES (0,0,'Heating',0),(0,0,'Hot Water',0),(0,0,'Lamp',2),(0,0,'Immersion',1);";
+        $conn->query($query);
+	$query = "/*!40000 ALTER TABLE `zone_type` ENABLE KEYS */;";
+        $conn->query($query);
+
 	// Save the current zone data to an array
 	$query = "SELECT `zone`.*, `zone_type`.`id` AS type_id, `zone_type`.`category` FROM `zone`, `zone_type` WHERE `zone`.`type` = `zone_type`.`type`";
         $results = $conn->query($query);
@@ -92,9 +114,101 @@ if ($db_selected) {
 	$arrayLength = count($zone_array);
 
 	//Apply the Migration SQL file
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Modifying Zone Table.  \n";
+
+        $query = "ALTER TABLE `zone` DROP FOREIGN KEY IF EXISTS `FK_zone_nodes`;";
+        $conn->query($query);
+        $query = "ALTER TABLE `zone` DROP FOREIGN KEY IF EXISTS `FK_zone_boiler`;";
+        $conn->query($query);
+        $query = "ALTER TABLE `zone` CHANGE COLUMN IF EXISTS `sync` `sync` tinyint(4) NOT NULL;";
+        $conn->query($query);
+        $query = "ALTER TABLE `zone` CHANGE COLUMN IF EXISTS `purge` `purge` tinyint(4)NOT NULL COMMENT 'Mark For Deletion';";
+        $conn->query($query);
+        $query = "ALTER TABLE `zone` CHANGE COLUMN IF EXISTS `status` `status` tinyint(4);";
+        $conn->query($query);
+        $query = "ALTER TABLE `zone` CHANGE COLUMN IF EXISTS `name` `name` char(50) COLLATE utf8_bin;";
+        $conn->query($query);
+        $query = "ALTER TABLE `zone` DROP COLUMN IF EXISTS `type`;";
+        $conn->query($query);
+        $query = "ALTER TABLE `zone` DROP COLUMN IF EXISTS `model`;";
+        $conn->query($query);
+        $query = "ALTER TABLE `zone` DROP COLUMN IF EXISTS `max_c`;";
+        $conn->query($query);
+        $query = "ALTER TABLE `zone` DROP COLUMN IF EXISTS `max_operation_time`;";
+        $conn->query($query);
+        $query = "ALTER TABLE `zone` DROP COLUMN IF EXISTS `hysteresis_time`;";
+        $conn->query($query);
+        $query = "ALTER TABLE `zone` DROP COLUMN IF EXISTS `sp_deadband`;";
+        $conn->query($query);
+        $query = "ALTER TABLE `zone` DROP COLUMN IF EXISTS `sensor_id`;";
+        $conn->query($query);
+        $query = "ALTER TABLE `zone` DROP COLUMN IF EXISTS `sensor_child_id`;";
+        $conn->query($query);
+        $query = "ALTER TABLE `zone` DROP COLUMN IF EXISTS `boiler_id`;";
+        $conn->query($query);
+        $query = "ALTER TABLE `zone` DROP COLUMN IF EXISTS `gpio_pin`;";
+        $conn->query($query);
+        $query = "ALTER TABLE `zone` CHANGE COLUMN IF EXISTS `controler_id` `controler_id` int(11);";
+        $conn->query($query);
+        $query = "ALTER TABLE `zone` CHANGE COLUMN IF EXISTS `controler_child_id` `controler_child_id` int(11);";
+        $conn->query($query);
+        $query = "ALTER TABLE `zone` CHANGE COLUMN IF EXISTS `zone_status` `zone_state` tinyint(4);";
+        $conn->query($query);
+        $query = "ALTER TABLE `zone` ADD COLUMN IF NOT EXISTS `zone_state` tinyint(4);";
+        $conn->query($query);
+        $query = "ALTER TABLE `zone` ADD COLUMN `type_id` int(11);";
+	$conn->query($query);
+      	$query = "ALTER TABLE `zone` ADD CONSTRAINT `FK_zone_type_id` FOREIGN KEY (`type_id`) REFERENCES `zone_type` (`id`);";
+        $conn->query($query);
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Table Successfully Modified\n";
+	// Update the zone table and populate the zone_sensors table
+        echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Importing the data to the zone_sensors Table and Updating the zone Table.  \n";
+
+	$query = "DROP TABLE IF EXISTS `zone_sensors`;";
+        $conn->query($query);
+        $query = "CREATE TABLE IF NOT EXISTS `zone_sensors` (";
+        $query =  $query."`id` int(11) NOT NULL AUTO_INCREMENT,";
+        $query =  $query."`sync` tinyint(4) NOT NULL,";
+        $query =  $query."`purge` tinyint(4) NOT NULL COMMENT 'Mark For Deletion',";
+        $query =  $query."`zone_id` int(11),";
+        $query =  $query."`max_c` tinyint(4),";
+        $query =  $query."`max_operation_time` tinyint(4),";
+        $query =  $query."`hysteresis_time` tinyint(4),";
+        $query =  $query."`sp_deadband` float NOT NULL,";
+        $query =  $query."`sensor_id` int(11),";
+        $query =  $query."`sensor_child_id` int(11),";
+        $query =  $query."PRIMARY KEY (`id`),";
+        $query =  $query."KEY `FK_zone_sensors_nodes` (`sensor_id`),";
+        $query =  $query."KEY `FK_zone_sensors_zone` (`zone_id`),";
+        $query =  $query."CONSTRAINT `FK_zone_sensors_nodes` FOREIGN KEY (`sensor_id`) REFERENCES `nodes` (`id`),";
+        $query =  $query."CONSTRAINT `FK_zone_sensors_zone` FOREIGN KEY (`zone_id`) REFERENCES `zone` (`id`)";
+        $query =  $query.") ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
+        $conn->query($query);
+
+        $row = 0;
+        while ($row < $arrayLength)
+        {
+        	$id = $zone_array[$row]['id'];
+                $type_id =$zone_array[$row]['type_id'];
+                $query = "UPDATE `zone` SET `type_id` = '{$type_id}' WHERE `id` = '{$id}';";
+                $result = $conn->query($query);
+                if ($zone_array[$row]['category'] < 2) {
+                        $max_c =$zone_array[$row]['max_c'];
+                        $max_operation_time =$zone_array[$row]['max_operation_time'];
+                        $hysteresis_time =$zone_array[$row]['hysteresis_time'];
+                        $sp_deadband =$zone_array[$row]['sp_deadband'];
+                        $sensor_id =$zone_array[$row]['sensor_id'];
+                        $sensor_child_id =$zone_array[$row]['sensor_child_id'];
+                        $query = "INSERT INTO `zone_sensors`(`sync`, `purge`, `zone_id`, `max_c`, `max_operation_time`, `hysteresis_time`, `sp_deadband`, `sensor_id`, `sensor_child_id`)  VALUES ('0', '0', '{$id}','{$max_c}','{$max_operation_time}','{$hysteresis_time}','{$sp_deadband}','{$sensor_id}','{$sensor_child_id}');";
+                        $result = $conn->query($query);
+                }
+            $row++;
+        }
+
+	//Apply the Migration Views file
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Importing Migration SQL View File to Database, This could take few minuts.  \n";
 	// Name of the file
-	$migratefilename = __DIR__.'/migrate.sql';
+	$migratefilename = __DIR__.'/migrate_views.sql';
 	// Select database
 	mysqli_select_db($conn, $dbname) or die('Error Selecting MySQL Database: ' . mysqli_error($conn));
 	// Temporary variable, used to store current query
@@ -117,28 +231,8 @@ if ($db_selected) {
 				$migratetempline = '';
 			}
 		}
-	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - DataBase File \033[41m".$migratefilename."\033[0m Imported Successfully \n";
-	// Update the zone table and populate the zone_sensors table
-        echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Importing the data to the zone_sensors Table and Updating the zone Table.  \n";
-        $row = 0;
-        while ($row < $arrayLength)
-        {
-        	$id = $zone_array[$row]['id'];
-                $type_id =$zone_array[$row]['type_id'];
-                $query = "UPDATE `zone` SET `type_id` = '{$type_id}' WHERE `id` = '{$id}';";
-                $result = $conn->query($query);
-                if ($zone_array[$row]['category'] < 2) {
-                        $max_c =$zone_array[$row]['max_c'];
-                        $max_operation_time =$zone_array[$row]['max_operation_time'];
-                        $hysteresis_time =$zone_array[$row]['hysteresis_time'];
-                        $sp_deadband =$zone_array[$row]['sp_deadband'];
-                        $sensor_id =$zone_array[$row]['sensor_id'];
-                        $sensor_child_id =$zone_array[$row]['sensor_child_id'];
-                        $query = "INSERT INTO `zone_sensors`(`sync`, `purge`, `zone_id`, `max_c`, `max_operation_time`, `hysteresis_time`, `sp_deadband`, `sensor_id`, `sensor_child_id`)  VALUES ('0', '0', '{$id}','{$max_c}','{$max_operation_time}','{$hysteresis_time}','{$sp_deadband}','{$sensor_id}','{$sensor_child_id}');";
-                        $result = $conn->query($query);
-                }
-            $row++;
-        }
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - DataBase Views File \033[41m".$migratefilename."\033[0m Imported Successfully \n";
+
         echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - DataBase Updated Successfully \n";
 
 if(isset($conn)) { $conn->close(); }
