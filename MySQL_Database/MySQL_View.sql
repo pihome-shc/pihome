@@ -20,13 +20,12 @@
 
 -- You Must create following View Talbes in MySQL for PiHome Smart Heating to work
 
-
 -- Schedule List with zone details view table version 1.x
 Drop View if exists schedule_daily_time_zone_view;
 CREATE VIEW schedule_daily_time_zone_view AS
 select ss.id as time_id, ss.status as time_status, sstart.start, send.end, sWeekDays.WeekDays,
 sdtz.sync as tz_sync, sdtz.id as tz_id, sdtz.status as tz_status,
-sdtz.zone_id, zone.index_id, zone.name as zone_name, zt.`type`, ztype.category, temperature, holidays_id , coop, ss.sch_name
+sdtz.zone_id, zone.index_id, zone.name as zone_name, ztype.`type`, ztype.category, temperature, holidays_id , coop, ss.sch_name
 from schedule_daily_time_zone sdtz
 join schedule_daily_time ss on sdtz.schedule_daily_time_id = ss.id
 join schedule_daily_time sstart on sdtz.schedule_daily_time_id = sstart.id
@@ -34,7 +33,7 @@ join schedule_daily_time send on sdtz.schedule_daily_time_id = send.id
 join schedule_daily_time sWeekDays on sdtz.schedule_daily_time_id = sWeekDays.id
 join zone on sdtz.zone_id = zone.id
 join zone zt on sdtz.zone_id = zt.id
-join zone_type ztype on zone.type = ztype.type
+join zone_type ztype on zone.type_id = ztype.id
 where sdtz.`purge` = '0' order by zone.index_id;
 
 -- Zones View version 2
@@ -80,7 +79,6 @@ join nodes on boiler.node_id = nodes.id
 join nodes ctype on boiler.node_id = ctype.id
 where boiler.`purge` = '0';
 
-
 -- Boost View
 Drop View if exists boost_view;
 CREATE VIEW boost_view AS
@@ -120,7 +118,6 @@ CREATE VIEW messages_in_view_24h AS
 select node_id, child_id, datetime, payload
 from messages_in
 where datetime > DATE_SUB( NOW(), INTERVAL 24 HOUR);
-
 
 -- Zone Logs views
 Drop View if exists zone_log_view;

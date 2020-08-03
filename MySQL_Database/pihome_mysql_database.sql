@@ -694,8 +694,8 @@ CREATE TABLE IF NOT EXISTS `zone` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `sync` tinyint(4) NOT NULL,
   `purge` tinyint(4) NOT NULL COMMENT 'Mark For Deletion',
-  `state` tinyint(4),
-  `zone_status` tinyint(4),
+  `status` tinyint(4),
+  `zone_state` tinyint(4),
   `index_id` tinyint(4),
   `name` char(50) COLLATE utf8_bin,
   `type_id` int(11),
@@ -703,10 +703,10 @@ CREATE TABLE IF NOT EXISTS `zone` (
   `controler_id` int(11),
   `controler_child_id` int(11),
   PRIMARY KEY (`id`),
-  KEY `FK_zone_type_id` (`type_id`),
   KEY `FK_zone_nodes_2` (`controler_id`),
-  CONSTRAINT `FK_zone_type_id` FOREIGN KEY (`type_id`) REFERENCES `zone_type` (`id`),
-  CONSTRAINT `FK_zone_nodes_2` FOREIGN KEY (`controler_id`) REFERENCES `nodes` (`id`)
+  KEY `FK_zone_type_id` (`type_id`),
+  CONSTRAINT `FK_zone_nodes_2` FOREIGN KEY (`controler_id`) REFERENCES `nodes` (`id`),
+  CONSTRAINT `FK_zone_type_id` FOREIGN KEY (`type_id`) REFERENCES `zone_type` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- Dumping data for table pihome.zone: ~3 rows (approximately)
