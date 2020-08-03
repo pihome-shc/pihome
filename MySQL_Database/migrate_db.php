@@ -106,7 +106,7 @@ if ($db_selected) {
         $conn->query($query);
 
 	// Save the current zone data to an array
-	$query = "SELECT `zone`.*, `zone_type`.`id` AS type_id, `zone_type`.`category` FROM `zone`, `zone_type` WHERE `zone`.`type` = `zone_type`.`type`";
+	$query = "SELECT `zone`.*, `zone_type`.`id` AS type_id, `zone_type`.`category` FROM `zone`, `zone_type` WHERE `zone_type`.`type` LIKE concat('%',`zone`.`type`)";
         $results = $conn->query($query);
 	while ($row = mysqli_fetch_assoc($results)) {
 		$zone_array[] = $row;
@@ -198,7 +198,11 @@ if ($db_selected) {
                         $max_c =$zone_array[$row]['max_c'];
                         $max_operation_time =$zone_array[$row]['max_operation_time'];
                         $hysteresis_time =$zone_array[$row]['hysteresis_time'];
-                        $sp_deadband =$zone_array[$row]['sp_deadband'];
+                        if (array_key_exists('sp_deadband',$zone_array[$row])) {
+                                $sp_deadband = $zone_array[$row]['sp_deadband'];
+                        } else {
+                                $sp_deadband = floatval('0.5');
+                        }
                         $sensor_id =$zone_array[$row]['sensor_id'];
                         $sensor_child_id =$zone_array[$row]['sensor_child_id'];
                         $query = "INSERT INTO `zone_sensors`(`sync`, `purge`, `zone_id`, `max_c`, `max_operation_time`, `hysteresis_time`, `sp_deadband`, `sensor_id`, `sensor_child_id`)  VALUES ('0', '0', '{$id}','{$max_c}','{$max_operation_time}','{$hysteresis_time}','{$sp_deadband}','{$sensor_id}','{$sensor_child_id}');";
