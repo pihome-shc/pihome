@@ -211,7 +211,11 @@ if ($db_selected) {
             $row++;
         }
 
-	//Apply the Migration Views file
+       // Fix for database ver 1.73
+        $query = "ALTER TABLE `schedule_night_climate_time` ADD COLUMN IF NOT EXISTS `WeekDays` smallint(6) NOT NULL;";
+        $conn->query($query);
+
+ 	//Apply the Migration Views file
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Importing Migration SQL View File to Database, This could take few minuts.  \n";
 	// Name of the file
 	$migratefilename = __DIR__.'/migrate_views.sql';
