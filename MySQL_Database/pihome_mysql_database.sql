@@ -699,6 +699,7 @@ CREATE TABLE IF NOT EXISTS `zone` (
   `index_id` tinyint(4),
   `name` char(50) COLLATE utf8_bin,
   `type_id` int(11),
+  `graph_it` tinyint(1) NOT NULL,
   `controler_id` int(11),
   `controler_child_id` int(11),
   PRIMARY KEY (`id`),
