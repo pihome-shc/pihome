@@ -281,12 +281,11 @@ if($what=="http_msg"){
                 }
         }
         if($opp=="add"){
-                $http_update_type = $_GET['http_update_type'];
                 $http_id = $_GET['http_id'];
                 $add_msg_type = $_GET['add_msg_type'];
                 $http_command = $_GET['http_command'];
                 $http_parameter = $_GET['http_parameter'];
-                if ($http_update_type == 1) {
+                if ($wid == 1) {
                         $query = "SELECT controler_id FROM zone_view WHERE name = '".$add_on_zone_name."' LIMIT 1";
                         $results = $conn->query($query);
                         $row = mysqli_fetch_assoc($results);
