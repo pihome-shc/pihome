@@ -420,7 +420,7 @@ require_once(__DIR__.'/st_inc/functions.php');
                         $query = "SELECT * FROM zone_current_state WHERE zone_id =  '{$row['id']}' LIMIT 1;";
                         $result = $conn->query($query);
                         $zone_current_state = mysqli_fetch_array($result);
-                        $$add_on_mode = $zone_current_state['mode'];
+                        $add_on_mode = $zone_current_state['mode'];
 
                         if ($add_on_active=='1'){$add_on_colour="orange";} elseif ($add_on_active=='0'){$add_on_colour="black";}
                         echo '<a href="javascript:active_add_on('.$row['id'].');">
