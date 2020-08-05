@@ -1062,7 +1062,7 @@ echo '
 echo '<p class="text-muted">'.$lang['add_on_add_info_text'].'</p>
         <form data-toggle="validator" role="form" method="post" action="settings.php" id="form-join">
        	<div class="form-group" class="control-label"><label>'.$lang['zone_name'].'</label> <small class="text-muted">'.$lang['add_zone_name_info'].'</small>
-        <select class="form-control input-sm" type="text" id="http_id" name="http_id">';
+        <select class="form-control input-sm" type="text" id="zone_http_id" name="zone_http_id">';
         while ($zrow=mysqli_fetch_array($zresult)) {
         	echo '<option value="'.$zrow['name'].'">'.$zrow['name'].'</option>';
         }
@@ -1070,23 +1070,23 @@ echo '<p class="text-muted">'.$lang['add_on_add_info_text'].'</p>
     	<div class="help-block with-errors"></div></div>
 
 	<div class="form-group" class="control-label"><label>'.$lang['message_type'].'</label> <small class="text-muted">'.$lang['message_type_info'].'</small>
-	<select <input class="form-control input-sm" type="text" id="add_msg_type" name="add_msg_type" value="" placeholder="'.$lang['message_type'].'">
+	<select <input class="form-control input-sm" type="text" id="zone_add_msg_type" name="zone_add_msg_type" value="" placeholder="'.$lang['message_type'].'">
 	<option selected value="0">0 </option>
         <option value="1">1 </option>
 	</select>
 	<div class="help-block with-errors"></div></div>
 
 	<div class="form-group" class="control-label"><label>'.$lang['http_command'].'</label> <small class="text-muted">'.$lang['http_command_info'].'</small>
-	<input class="form-control input-sm" type="text" id="http_command" name="http_command" value="" placeholder="'.$lang['http_command'].'">
+	<input class="form-control input-sm" type="text" id="zone_http_command" name="zone_http_command" value="" placeholder="'.$lang['http_command'].'">
 	<div class="help-block with-errors"></div></div>
 
         <div class="form-group" class="control-label"><label>'.$lang['http_parameter'].'</label> <small class="text-muted">'.$lang['http_parameter_info'].'</small>
-        <input class="form-control input-sm" type="text" id="http_parameter" name="http_parameter" value="" placeholder="'.$lang['http_parameter'].'">
+        <input class="form-control input-sm" type="text" id="zone_http_parameter" name="zone_http_parameter" value="" placeholder="'.$lang['http_parameter'].'">
         <div class="help-block with-errors"></div></div>
 </div>
             <div class="modal-footer">
 				<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
-                                <input type="button" name="submit" value="Save" class="btn btn-default login btn-sm" onclick="add_http_msg()">
+                                <input type="button" name="submit" value="Save" class="btn btn-default login btn-sm" onclick="add_zone_http_msg()">
             </div>
         </div>
     </div>
@@ -1105,7 +1105,7 @@ echo '
 echo '<p class="text-muted">'.$lang['add_on_add_info_text'].'</p>
         <form data-toggle="validator" role="form" method="post" action="settings.php" id="form-join">
         <div class="form-group" class="control-label"><label>'.$lang['node_id'].'</label> <small class="text-muted">'.$lang['add_node_id_info'].'</small>
-        <select class="form-control input-sm" type="text" id="http_id" name="http_id">';
+        <select class="form-control input-sm" type="text" id="node_http_id" name="node_http_id">';
         while ($nrow=mysqli_fetch_array($nresult)) {
                 echo '<option value="'.$nrow['node_id'].'">'.$nrow['node_id'].'</option>';
         }
@@ -1113,23 +1113,23 @@ echo '<p class="text-muted">'.$lang['add_on_add_info_text'].'</p>
         <div class="help-block with-errors"></div></div>
 
         <div class="form-group" class="control-label"><label>'.$lang['message_type'].'</label> <small class="text-muted">'.$lang['message_type_info'].'</small>
-        <select <input class="form-control input-sm" type="text" id="add_msg_type" name="add_msg_type" value="" placeholder="'.$lang['message_type'].'">
+        <select <input class="form-control input-sm" type="text" id="node_add_msg_type" name="node_add_msg_type" value="" placeholder="'.$lang['message_type'].'">
         <option selected value="0">0 </option>
         <option value="1">1 </option>
         </select>
         <div class="help-block with-errors"></div></div>
 
         <div class="form-group" class="control-label"><label>'.$lang['http_command'].'</label> <small class="text-muted">'.$lang['http_command_info'].'</small>
-        <input class="form-control input-sm" type="text" id="http_command" name="http_command" value="" placeholder="'.$lang['http_command'].'">
+        <input class="form-control input-sm" type="text" id="node_http_command" name="node_http_command" value="" placeholder="'.$lang['http_command'].'">
         <div class="help-block with-errors"></div></div>
 
         <div class="form-group" class="control-label"><label>'.$lang['http_parameter'].'</label> <small class="text-muted">'.$lang['http_parameter_info'].'</small>
-        <input class="form-control input-sm" type="text" id="http_parameter" name="http_parameter" value="" placeholder="'.$lang['http_parameter'].'">
+        <input class="form-control input-sm" type="text" id="node_http_parameter" name="node_http_parameter" value="" placeholder="'.$lang['http_parameter'].'">
         <div class="help-block with-errors"></div></div>
 </div>
             <div class="modal-footer">
                                 <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">'.$lang['close'].'</button>
-                                <input type="button" name="submit" value="Save" class="btn btn-default login btn-sm" onclick="add_http_msg()">
+                                <input type="button" name="submit" value="Save" class="btn btn-default login btn-sm" onclick="add_node_http_msg()">
             </div>
         </div>
     </div>

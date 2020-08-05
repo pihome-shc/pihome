@@ -583,14 +583,36 @@ function mqtt_delete(wid){
     });
 }
 
-//Add HTTP Message
-function add_http_msg(){
+//Add Zone HTTP Message
+function add_zone_http_msg(){
 var idata="w=http_msg&o=add";
-        idata+="&http_update_type="+document.getElementById("http_update_type").value;
-        idata+="&http_id="+document.getElementById("http_id").value;
-        idata+="&add_msg_type="+document.getElementById("add_msg_type").value;
-        idata+="&http_command="+document.getElementById("http_command").value;
-        idata+="&http_parameter="+document.getElementById("http_parameter").value;
+        idata+="&http_id="+document.getElementById("zone_http_id").value;
+        idata+="&add_msg_type="+document.getElementById("zone_add_msg_type").value;
+        idata+="&http_command="+document.getElementById("zone_http_command").value;
+        idata+="&http_parameter="+document.getElementById("zone_http_parameter").value;
+    idata+="&wid=1";
+    $.get('db.php',idata)
+    .done(function(odata){
+        if(odata.Success)
+            reload_page();
+        else
+            console.log(odata.Message);
+    })
+    .fail(function( jqXHR, textStatus, errorThrown ){
+        if(jqXHR==401 || jqXHR==403) return;
+        console.log("add_zone_http_msg: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
+    })
+    .always(function() {
+    });
+}
+
+//Add Node HTTP Message
+function add_node_http_msg(){
+var idata="w=http_msg&o=add";
+        idata+="&http_id="+document.getElementById("node_http_id").value;
+        idata+="&add_msg_type="+document.getElementById("node_add_msg_type").value;
+        idata+="&http_command="+document.getElementById("node_http_command").value;
+        idata+="&http_parameter="+document.getElementById("node_http_parameter").value;
     idata+="&wid=0";
     $.get('db.php',idata)
     .done(function(odata){
@@ -601,7 +623,7 @@ var idata="w=http_msg&o=add";
     })
     .fail(function( jqXHR, textStatus, errorThrown ){
         if(jqXHR==401 || jqXHR==403) return;
-        console.log("add_http_msg: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
+        console.log("add_node_http_msg: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
     })
     .always(function() {
     });
