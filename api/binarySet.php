@@ -67,7 +67,7 @@ if(isset($_GET['zonename'])) {
                                         $update = 1;
                                 }
 
-                                $query = "UPDATE zone SET zone_status = '{$status}' where name = '{$zonename}';";
+                                $query = "UPDATE zone SET zone_state = '{$status}' where name = '{$zonename}';";
                                 $conn->query($query);
                                 if($conn->query($query)){
                                         $update = 0;
