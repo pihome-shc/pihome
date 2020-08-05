@@ -105,7 +105,7 @@ require_once(__DIR__.'/st_inc/functions.php');
     <div id="wrapper">
         <!-- Navigation -->
         <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
-		<a class="navbar-brand" href="home.php"><img src="images/dolphin.png" width="32"></a>
+		<a class="navbar-brand" href="home.php"><img src="images/amur_leopard.png" width="42"></a>
             <!-- /.navbar-header -->
             <ul class="nav navbar-top-links navbar-right">
                <li class="dropdown">
