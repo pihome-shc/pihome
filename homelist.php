@@ -393,7 +393,7 @@ require_once(__DIR__.'/st_inc/functions.php');
                 while ($row = mysqli_fetch_assoc($results)) {
                         //get the schedule status for this zone
                         if($holidays_status == 0) {
-                                $query = "SELECT * FROM schedule_daily_time_zone_view WHERE ((`end`>`start` AND CURTIME() between `start` AND `end`) OR (`end`<`start` AND CURTIME()<`end`) OR (`end`<`start` AND CURTIME()>`start`)) AND zone_id = {$row['id']} AND time_status = '1' AND (WeekDays & (1 << {idate('w')})) > 0 AND holidays_id = 0 LIMIT 1;";
+                                $query = "SELECT * FROM schedule_daily_time_zone_view WHERE ((`end`>`start` AND CURTIME() between `start` AND `end`) OR (`end`<`start` AND CURTIME()<`end`) OR (`end`<`start` AND CURTIME()>`start`)) AND zone_id = {$row['id']} AND time_status = '1' AND (WeekDays & (1 << {$dow})) > 0 AND holidays_id = 0 LIMIT 1;";
                         } else {
                                 $query = "SELECT * FROM schedule_daily_time_zone_view WHERE ((`end`>`start` AND CURTIME() between `start` AND `end`) OR (`end`<`start` AND CURTIME()<`end`) OR (`end`<`start` AND CURTIME()>`start`)) AND zone_id = {$zone_id} AND time_status = '1' AND (WeekDays & (1 << {$dow})) > 0 AND holidays_id > 0 LIMIT 1;";
                         }
