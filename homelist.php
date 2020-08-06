@@ -85,6 +85,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 			$zone_id=$row['id'];
 			$zone_name=$row['name'];
 			$zone_type=$row['type'];
+                        $zone_category=$row['category'];
 			$zone_sensor_id=$row['sensor_id'];
 			$zone_sensor_child_id=$row['sensor_child_id'];
 			$zone_controller_type=$row['controller_type'];
@@ -240,7 +241,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 								</ul>';
 							}else{
 								//if temperature control active display cut in and cut out levels
-								if ((($zone_type == 'Heating' ) || ($zone_type == 'Water' )|| ($zone_type == 'Immersion' )) && (($zone_mode_main == 20 ) || ($zone_mode_main == 50 ) || ($zone_mode_main == 60 ) || ($zone_mode_main == 70 )||($zone_mode_main == 80 ))){
+								if (($zone_category <= 1) && (($zone_mode_main == 20 ) || ($zone_mode_main == 50 ) || ($zone_mode_main == 60 ) || ($zone_mode_main == 70 )||($zone_mode_main == 80 ))){
 									echo '<p>Cut In Temperature : '.$zone_temp_cut_in.'&degC</p>
 									<p>Cut Out Temperature : ' .$zone_temp_cut_out.'&degC</p>';
 								}
