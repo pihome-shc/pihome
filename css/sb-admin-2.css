@@ -995,3 +995,9 @@ padding-top: 0px;
 .panel-group {
     margin-bottom: 0px;
 }
+
+.sch_name{
+	float: left !important; 
+	margin-left: 38px; 
+	margin-top: -24px;
+}
