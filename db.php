@@ -436,14 +436,14 @@ if($what=="add_on"){
                                 $payload = "1";
 			}
 		}
-                $query = "UPDATE messages_out SET payload = '{$payload}', datetime = '{$time}', sent = '0' WHERE zone_id = '{$wid}' LIMIT 1";
+                $query = "UPDATE messages_out SET `sync` = 0, payload = '{$payload}', datetime = '{$time}', sent = '0' WHERE zone_id = '{$wid}' LIMIT 1";
                 if($conn->query($query)){
                         $update_error=0;
                 }else{
                         $update_error=1;
                 }
 
-                $query = "UPDATE zone SET zone_state = '{$set}' WHERE id = '{$wid}' LIMIT 1";
+                $query = "UPDATE zone SET `sync` = 0, zone_state = '{$set}' WHERE id = '{$wid}' LIMIT 1";
                 if($conn->query($query)){
                         $update_error=0;
                 }else{
