@@ -62,17 +62,17 @@ while ($row = mysqli_fetch_assoc($resulta)) {
         $zone_temp = array();
         $water_temp = array();
         while ($rowb = mysqli_fetch_assoc($result)) {
-		if($zone_type == 'Heating') {
+                if(strpos($zone_type, 'Heating') !== false) {
                         $zone_temp[] = array(strtotime($rowb['datetime']) * 1000, $rowb['payload']);
-                } elseif($zone_type == 'Water' || $zone_type == 'Immersion') {
+                } elseif((strpos($zone_type, 'Water') !== false) || (strpos($zone_type, 'Immersion') !== false)) {
                         $water_temp[] = array(strtotime($rowb['datetime']) * 1000, $rowb['payload']);
                 }
 
         }
         // create dataset entry using distinct color based on zone index(to have the same color everytime chart is opened)
-	if($zone_type == 'Heating') {
+        if(strpos($zone_type, 'Heating') !== false) {
                 $zones = $zones. "{label: \"".$zone_name."\", data: ".json_encode($zone_temp).", color: rainbow(".$count.",".++$counter.") }, \n";
-        } elseif($zone_type == 'Water' || $zone_type == 'Immersion') {
+        } elseif((strpos($zone_type, 'Water') !== false) || (strpos($zone_type, 'Immersion') !== false)) {
                 $zonesw = $zonesw. "{label: \"".$zone_name."\", data: ".json_encode($water_temp).", color: rainbow(".$count.",".++$counter.") }, \n";
         }
 }
@@ -93,9 +93,9 @@ while ($row = mysqli_fetch_assoc($results)) {
         } else {
                 $boiler_stop = strtotime($row['stop_datetime']) * 1000;
         }
-        if($zone_type == 'Heating') {
+        if(strpos($zone_type, 'Heating') !== false) {
                 $warn1 = $warn1."{ xaxis: { from: ".$boiler_start.", to: ".$boiler_stop." }, color: \"#ffe9dc\" },  \n" ;
-        } elseif($zone_type == 'Water' || $zone_type == 'Immersion') {
+        } elseif((strpos($zone_type, 'Water') !== false) || (strpos($zone_type, 'Immersion') !== false)) {
                 $warn2 = $warn2."{ xaxis: { from: ".$boiler_start.", to: ".$boiler_stop." }, color: \"#ffe9dc\" },  \n" ;
         }
 }
