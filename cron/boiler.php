@@ -230,7 +230,6 @@ while ($row = mysqli_fetch_assoc($results)) {
                 $result = $conn->query($query);
                 $sensor = mysqli_fetch_array($result);
 	        $zone_max_c=$sensor['max_c'];
-        	$zone_max_operation_time=$sensor['max_operation_time'];
 	        $zone_hysteresis_time=$sensor['hysteresis_time'];
         	$zone_sp_deadband=$sensor['sp_deadband'];
 	        $zone_sensor_id=$sensor['sensor_id'];
