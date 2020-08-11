@@ -134,8 +134,6 @@ if ($db_selected) {
         $conn->query($query);
         $query = "ALTER TABLE `zone` DROP COLUMN IF EXISTS `max_c`;";
         $conn->query($query);
-        $query = "ALTER TABLE `zone` DROP COLUMN IF EXISTS `max_operation_time`;";
-        $conn->query($query);
         $query = "ALTER TABLE `zone` DROP COLUMN IF EXISTS `hysteresis_time`;";
         $conn->query($query);
         $query = "ALTER TABLE `zone` DROP COLUMN IF EXISTS `sp_deadband`;";
@@ -174,7 +172,6 @@ if ($db_selected) {
         $query =  $query."`purge` tinyint(4) NOT NULL COMMENT 'Mark For Deletion',";
         $query =  $query."`zone_id` int(11),";
         $query =  $query."`max_c` tinyint(4),";
-        $query =  $query."`max_operation_time` tinyint(4),";
         $query =  $query."`hysteresis_time` tinyint(4),";
         $query =  $query."`sp_deadband` float NOT NULL,";
         $query =  $query."`sensor_id` int(11),";
