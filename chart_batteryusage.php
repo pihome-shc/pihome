@@ -24,10 +24,7 @@ echo "<h4>".$lang['graph_battery_usage']."</h4></p>".$lang['graph_battery_level_
 <div class="flot-chart">
    <div class="flot-chart-content" id="battery_level"></div>
 </div>
-<div class="flot-chart">
-   	<div class="flot-chart-content" id="battery_level"></div>
-</div>
-
+<br>
 <script type="text/javascript">
 // distinct color implementation for plot lines 
 function rainbow(numOfSteps, step) {
