@@ -86,7 +86,7 @@ if (isset($_POST['submit'])) {
         $type_id = $found_product['id'];
 
 	//Add or Edit Zone record to Zones Table
-	$query = "INSERT INTO `zone` (`id`, `sync`, `purge`, `status`, `zone_state`, `index_id`, `name`, `type_id`, `graph_it`, `controler_id`, `controler_child_id`, `max_operation_time`) VALUES ('{$id}', '{$sync}', '{$purge}', '{$zone_status}', '0', '{$index_id}', '{$name}', '{$type_id}', '1', '{$controler_id}', '{$controler_child_id}', '{$max_operation_time}') ON DUPLICATE KEY UPDATE sync=VALUES(sync), `purge`=VALUES(`purge`), status=VALUES(status), index_id=VALUES(index_id), name=VALUES(name), type_id=VALUES(type_id), controler_id=VALUES(controler_id), controler_child_id=VALUES(controler_child_id), max_operation_time=VALUES(max_operation_time);";
+	$query = "INSERT INTO `zone` (`id`, `sync`, `purge`, `status`, `zone_state`, `index_id`, `name`, `type_id`, `graph_it`, `controler_id`, `controler_child_id`) VALUES ('{$id}', '{$sync}', '{$purge}', '{$zone_status}', '0', '{$index_id}', '{$name}', '{$type_id}', '1', '{$controler_id}', '{$controler_child_id}') ON DUPLICATE KEY UPDATE sync=VALUES(sync), `purge`=VALUES(`purge`), status=VALUES(status), index_id=VALUES(index_id), name=VALUES(name), type_id=VALUES(type_id), controler_id=VALUES(controler_id), controler_child_id=VALUES(controler_child_id);";
 	$result = $conn->query($query);
 	$zone_id = mysqli_insert_id($conn);
 	if ($result) {
@@ -101,7 +101,7 @@ if (isset($_POST['submit'])) {
 
 	if ($zone_category < 2) {
 		//Add or Edit Zone record to Zone_Sensor Table
-		$query = "INSERT INTO `zone_sensors` (`id`, `sync`, `purge`, `zone_id`, `max_c`, `hysteresis_time`, `sp_deadband`, `sensor_id`, `sensor_child_id`) VALUES ('{$id}', '{$sync}', '{$purge}', '{$zone_id}','{$max_c}', '{$hysteresis_time}', '{$sp_deadband}', '{$sensor_id}', '{$sensor_child_id}') ON DUPLICATE KEY UPDATE sync=VALUES(sync), `purge`=VALUES(`purge`), max_c=VALUES(max_c), hysteresis_time=VALUES(hysteresis_time), sp_deadband=VALUES(sp_deadband), sensor_id=VALUES(sensor_id), sensor_child_id=VALUES(sensor_child_id);";
+		$query = "INSERT INTO `zone_sensors` (`id`, `sync`, `purge`, `zone_id`, `max_c`, `max_operation_time`, `hysteresis_time`, `sp_deadband`, `sensor_id`, `sensor_child_id`) VALUES ('{$id}', '{$sync}', '{$purge}', '{$zone_id}','{$max_c}', '{$max_operation_time}', '{$hysteresis_time}', '{$sp_deadband}', '{$sensor_id}', '{$sensor_child_id}') ON DUPLICATE KEY UPDATE sync=VALUES(sync), `purge`=VALUES(`purge`), max_c=VALUES(max_c), max_operation_time=VALUES(max_operation_time), hysteresis_time=VALUES(hysteresis_time), sp_deadband=VALUES(sp_deadband), sensor_id=VALUES(sensor_id), sensor_child_id=VALUES(sensor_child_id);";
         	$result = $conn->query($query);
         	if ($result) {
                 	if ($id==0){
@@ -416,22 +416,22 @@ function zone_category(value)
 
 <!-- Maximum Temperature -->
 <div class="form-group" class="control-label" id="max_c_label" style="display:block"><label><?php echo $lang['max_temperature']; ?></label> <small class="text-muted"><?php echo $lang['zone_max_temperature_info'];?></small>
-<input class="form-control" placeholder="<?php echo $lang['zone_max_temperature_help']; ?>" value="<?php if(isset($row['max_c'])) { echo $row['max_c']; } else {echo '25';}  ?>" id="max_c" name="max_c" data-error="<?php echo $lang['zone_max_temperature_error']; ?>"  autocomplete="off" required>
+<input class="form-control" placeholder="<?php echo $lang['zone_max_temperature_help']; ?>" value="<?php if(isset($rowsensors['max_c'])) { echo $rowsensors['max_c']; } else {echo '25';}  ?>" id="max_c" name="max_c" data-error="<?php echo $lang['zone_max_temperature_error']; ?>"  autocomplete="off" required>
 <div class="help-block with-errors"></div></div>
 
 <!-- Maximum Operation Time -->
 <div class="form-group" class="control-label" id="max_operation_time_label" style="display:block"><label><?php echo $lang['zone_max_operation_time']; ?></label> <small class="text-muted"><?php echo $lang['zone_max_operation_time_info'];?></small>
-<input class="form-control" placeholder="<?php echo $lang['zone_max_operation_time_help']; ?>" value="<?php if(isset($row['max_operation_time'])) { echo $row['max_operation_time']; } else {echo '60';}  ?>" id="max_operation_time" name="max_operation_time" data-error="<?php echo $lang['zone_max_operation_time_error']; ?>"  autocomplete="off" required>
+<input class="form-control" placeholder="<?php echo $lang['zone_max_operation_time_help']; ?>" value="<?php if(isset($rowsensors['max_operation_time'])) { echo $rowsensors['max_operation_time']; } else {echo '60';}  ?>" id="max_operation_time" name="max_operation_time" data-error="<?php echo $lang['zone_max_operation_time_error']; ?>"  autocomplete="off" required>
 <div class="help-block with-errors"></div></div>
 
 <!-- Hysteresis Time -->
 <div class="form-group" class="control-label" id="hysteresis_time_label" style="display:block"><label><?php echo $lang['hysteresis_time']; ?></label> <small class="text-muted"><?php echo $lang['zone_hysteresis_info'];?></small>
-<input class="form-control" placeholder="<?php echo $lang['zone_hysteresis_time_help']; ?>" value="<?php if(isset($row['hysteresis_time'])) { echo $row['hysteresis_time']; } else {echo '3';} ?>" id="hysteresis_time" name="hysteresis_time" data-error="<?php echo $lang['zone_hysteresis_time_error']; ?>"  autocomplete="off" required>
+<input class="form-control" placeholder="<?php echo $lang['zone_hysteresis_time_help']; ?>" value="<?php if(isset($rowsensors['hysteresis_time'])) { echo $rowsensors['hysteresis_time']; } else {echo '3';} ?>" id="hysteresis_time" name="hysteresis_time" data-error="<?php echo $lang['zone_hysteresis_time_error']; ?>"  autocomplete="off" required>
 <div class="help-block with-errors"></div></div>
 
 <!-- Temperature Setpoint Deadband -->
 <div class="form-group" class="control-label" id="sp_deadband_label" style="display:block"><label><?php echo $lang['zone_sp_deadband']; ?></label> <small class="text-muted"><?php echo $lang['zone_sp_deadband_info'];?></small>
-<input class="form-control" placeholder="<?php echo $lang['zone_sp_deadband_help']; ?>" value="<?php if(isset($row['sp_deadband'])) { echo $row['sp_deadband']; } else {echo '0.5';} ?>" id="sp_deadband" name="sp_deadband" data-error="<?php echo $lang['zone_sp_deadband_error'] ; ?>"  autocomplete="off" required>
+<input class="form-control" placeholder="<?php echo $lang['zone_sp_deadband_help']; ?>" value="<?php if(isset($rowsensors['sp_deadband'])) { echo $rowsensors['sp_deadband']; } else {echo '0.5';} ?>" id="sp_deadband" name="sp_deadband" data-error="<?php echo $lang['zone_sp_deadband_error'] ; ?>"  autocomplete="off" required>
 <div class="help-block with-errors"></div></div>
 
 <!-- Temperature Sensor ID -->
