@@ -816,7 +816,7 @@ echo '
             </div>
             <div class="modal-body">
 <p class="text-muted">'.$lang['zone_settings_text'].'</p>';
-$query = "select * from zone_view order by index_id asc";
+$query = "select * from zone order by index_id asc";
 $results = $conn->query($query);
 echo '	<div class=\"list-group\">';
 while ($row = mysqli_fetch_assoc($results)) {
@@ -826,14 +826,22 @@ while ($row = mysqli_fetch_assoc($results)) {
                 $content_msg=$lang['confirm_dell_de_active_zone'];
         }
 	echo "<div class=\"list-group-item\">
-	<i class=\"glyphicon glyphicon-th-large orange\"></i> ".$row['name']."
-	<span class=\"pull-right \"><em>&nbsp;&nbsp;<small> ".$lang['max']." ".$row['max_c']."&deg; </em> - ".$lang['sensor'].": ".$row['sensors_id']." - ".$row['controller_type'].": ".$row['controler_id']."-".$row['controler_child_id']."</small></span> 
-	<br><span class=\"pull-right \"><small>
-	<a href=\"zone.php?id=".$row['id']."\" class=\"btn btn-default btn-xs login\"><span class=\"ionicons ion-edit\"></span></a>&nbsp;&nbsp;
-	<a href=\"javascript:delete_zone(".$row['id'].");\"><button class=\"btn btn-danger btn-xs\" data-toggle=\"confirmation\" data-title=".$lang['confirmation']." data-content=\"$content_msg\"><span class=\"glyphicon glyphicon-trash\"></span></button></a>
-	</small></span>
-	<br>
-	</div>";
+        <i class=\"glyphicon glyphicon-th-large orange\"></i> ".$row['name']."";
+        $query = "select * from zone_view WHERE id = '{$row['id']}'order by index_id asc";
+        $vresult = $conn->query($query);
+        while ($vrow = mysqli_fetch_assoc($vresult)) {
+                if ($vrow['category'] == 2) {
+                        echo "<span class=\"pull-right \"><em>&nbsp;&nbsp;<small> ".$lang['controller'].": ".$vrow['controller_type'].": ".$vrow['controler_id']."-".$vrow['controler_child_id']."</small></span><br>";
+                } else {
+                        echo "<span class=\"pull-right \"><em>&nbsp;&nbsp;<small> ".$lang['max']." ".$vrow['max_c']."&deg; </em> - ".$lang['sensor'].": ".$vrow['sensors_id']." - ".$vrow['controller_type'].": ".$vrow['controler_id']."-".$vrow['controler_child_id']."</small></span><br>";
+                }
+        }
+        echo "<span class=\"pull-right \"><small>
+        <a href=\"zone.php?id=".$row['id']."\" class=\"btn btn-default btn-xs login\"><span class=\"ionicons ion-edit\"></span></a>&nbsp;&nbsp;
+        <a href=\"javascript:delete_zone(".$row['id'].");\"><button class=\"btn btn-danger btn-xs\" data-toggle=\"confirmation\" data-title=".$lang['confirmation']." data-content=\"$content_msg\"><span class=\"glyphicon glyphicon-trash\"></span></button></a>
+        </small></span>
+        <br>
+        </div>";
 }
 echo '
 </div></div>
