@@ -378,7 +378,7 @@ if($what=="zone_type"){
 		$zone_type = $_GET['zone_type'];
 		$zone_category = $_GET['zone_category'];
 		//Add record to zone_type table
-		$query = "INSERT INTO `zone_type`(`type`, `category`) VALUES ('{$zone_type}', '{$zone_category}')";
+                $query = "INSERT INTO `zone_type`(`sync`, `purge`, `type`, `category`) VALUES ('0', '0', '{$zone_type}', '{$zone_category}')";
 		if($conn->query($query)){
 			header('Content-type: application/json');
 			echo json_encode(array('Success'=>'Success','Query'=>$query));
