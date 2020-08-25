@@ -30,7 +30,7 @@ require_once(__DIR__.'../../st_inc/functions.php');
 
 if(isset($_GET['zonename'])) {
         $zonename = $_GET['zonename'];
-        $query = "SELECT controler_id, controler_child_id, zone_status FROM zone_view where name = '{$zonename}' LIMIT 1;";
+        $query = "SELECT controler_id, controler_child_id, zone_state FROM zone_view where name = '{$zonename}' LIMIT 1;";
         $results = $conn->query($query);
         $row = mysqli_fetch_assoc($results);
 	if(! $row) {
