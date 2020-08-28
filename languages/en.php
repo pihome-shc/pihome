@@ -13,6 +13,7 @@ $lang['lang_fr'] = "Français";
 $lang['lang_ro'] = "Română";
 $lang['lang_lv'] = "Latviešu";
 $lang['lang_it'] = "Italiano";
+$lang['lang_de'] = "German";
 
 $lang['start_time'] = "Start Time";
 $lang['end_time'] = "End Time";
