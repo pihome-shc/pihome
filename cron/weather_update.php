@@ -59,10 +59,10 @@ if ($row['openweather_api'] != NULL){
 			//the value returned in in Fahrenheit, but we store it in C, so convert.    
 			$weather_c=round(($weather_data['main']['temp']-32)*(5/9));
 		} else {
-			$weather_c=round($weather_data['main']['temp']);   //-272.15);
+			$weather_c=round($weather_data['main']['temp']);   // -272.15);
 		}
 		//$c  = $weather_data['main']['temp'];
-		$wind_speed    = round($weather_data['wind']['speed']);   //*1.609344, 2);
+		$wind_speed    = round($weather_data['wind']['speed']);   // *1.609344, 2);
 		$sunrise = $weather_data['sys']['sunrise'];
 		$sunset = $weather_data['sys']['sunset'];
 		$title = $weather_data['weather'][0]['main'];
