@@ -459,4 +459,7 @@ $lang['http_parameter_info'] = "HTTP-Parameter, der mit einem Befehl an Tasmota 
 $lang['add_on_messages'] = "HTTP-Nachrichten hinzufügen";
 $lang['add_on_add_info_text'] = "HTTP-Nachrichten, die vom Tasmota Controller gesendet und empfangen werden sollen";
 $lang['no_tasmota'] = "Keine Tasmota-Controller";
+
+$lang['sunset_enable'] = "Enable Sunset ";
+$lang['sunset_enable_info'] = "Enable Sunset Override for Start Time ";
 ?>
