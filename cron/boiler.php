@@ -271,7 +271,7 @@ while ($row = mysqli_fetch_assoc($results)) {
                         $enable_sunset = $sch_row['enable_sunset'];
                         $start_time = $sch_row['start'];
                         if ($enable_sunset == 1) {
-                                $query = "SELECT * FROM weather WHERE last_update > DATE_SUB( NOW(), INTERVAL 1 HOUR);";
+                                $query = "SELECT * FROM weather WHERE last_update > DATE_SUB( NOW(), INTERVAL 24 HOUR);";
                                 $result = $conn->query($query);
                                 $rowcount=mysqli_num_rows($result);
                                 if ($rowcount > 0) {

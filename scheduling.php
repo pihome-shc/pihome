@@ -39,7 +39,7 @@ if(isset($_GET['id'])) {
 }
 
 //check if weather api is active
-$query = "SELECT * FROM weather WHERE last_update > DATE_SUB( NOW(), INTERVAL 1 HOUR);";
+$query = "SELECT * FROM weather WHERE last_update > DATE_SUB( NOW(), INTERVAL 24 HOUR);";
 $result = $conn->query($query);
 $w_count=mysqli_num_rows($result);
 
