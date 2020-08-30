@@ -421,4 +421,7 @@ $lang['http_parameter_info'] = "HTTP Parameter to be sent with command to Tasmot
 $lang['add_on_messages'] = "Add HTTP Messages";
 $lang['add_on_add_info_text'] = "HTTP Messages to be to Sent and Received from Tasmota Controller";
 $lang['no_tasmota'] = "No Tasmota Controllers";
+
+$lang['sunset_enable'] = "Enable Sunset ";
+$lang['sunset_enable_info'] = "Enable Sunset Override for Start Time ";
 ?>

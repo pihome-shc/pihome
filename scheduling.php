@@ -37,6 +37,12 @@ if(isset($_GET['hol_id'])) {
 if(isset($_GET['id'])) {
 	$time_id = $_GET['id'];
 }
+
+//check if weather api is active
+$query = "SELECT * FROM weather WHERE last_update > DATE_SUB( NOW(), INTERVAL 1 HOUR);";
+$result = $conn->query($query);
+$w_count=mysqli_num_rows($result);
+
 //Form submit
 if (isset($_POST['submit'])) {
 	$sc_en = isset($_POST['sc_en']) ? $_POST['sc_en'] : "0";
@@ -118,7 +124,8 @@ if (isset($_POST['submit'])) {
 		}
         } else {
                 $sch_name = $_POST['sch_name'];
-		$query = "INSERT INTO `schedule_daily_time`(`id`, `sync`, `purge`, `status`, `start`, `end`, `WeekDays`, `sch_name`) VALUES ('{$time_id}','0', '0', '{$sc_en}', '{$start_time}','{$end_time}','{$mask}', '{$sch_name}') ON DUPLICATE KEY UPDATE sync = VALUES(sync),  status = VALUES(status), start = VALUES(start), end = VALUES(end), WeekDays = VALUES(WeekDays), sch_name=VALUES(sch_name);";
+                $enable_sunset = isset($_POST['enable_sunset']) ? $_POST['enable_sunset'] : "0";
+                $query = "INSERT INTO `schedule_daily_time`(`id`, `sync`, `purge`, `status`, `start`, `end`, `WeekDays`, `sch_name`, `enable_sunset`) VALUES ('{$time_id}','0', '0', '{$sc_en}', '{$start_time}','{$end_time}','{$mask}', '{$sch_name}', '{$enable_sunset}') ON DUPLICATE KEY UPDATE sync = VALUES(sync),  status = VALUES(status), start = VALUES(start), end = VALUES(end), WeekDays = VALUES(WeekDays), sch_name=VALUES(sch_name), enable_sunset=VALUES(enable_sunset);";
 		$result = $conn->query($query);
 		$schedule_daily_time_id = mysqli_insert_id($conn);
 
@@ -276,11 +283,18 @@ if (isset($_POST['submit'])) {
                         		</div>'; } ?>
 
 					<!-- Start Time -->
-					<div class="form-group" class="control-label"><label><?php echo $lang['start_time']; ?></label>
-						<input class="form-control input-sm" type="time" id="start_time" name="start_time" value="<?php echo $time_row["start"];?>" placeholder="Start Time" required>
-						<div class="help-block with-errors"></div>
-					</div>
-
+                                        <div class="form-group" class="control-label"><label><?php echo $lang['start_time']; ?></label>
+                                                <?php if($w_count > 0) { ?>
+                                                        <div class="checkbox checkbox-default checkbox-circle">
+                                                                <input id="checkbox8" class="styled" type="checkbox" name="enable_sunset" value="1" <?php $check = ($time_row['enable_sunset'] == 1) ? 'checked' : ''; echo $check; ?>>>
+                                                                <label for="checkbox8"> <?php echo $lang['sunset_enable']; ?> </label> <small class="text-muted"><?php echo $lang['sunset_enable_info'];?></small>
+                                                                <div class="help-block with-errors"></div>
+                                                        </div>
+                                                <?php }  ?>
+                                                <input class="form-control input-sm" type="time" id="start_time" name="start_time" value="<?php echo $time_row["start"];?>" placeholder="Start Time" required>
+                                                <div class="help-block with-errors"></div>
+                                        </div>
+						
 					<!-- End Time -->
 					<div class="form-group" class="control-label"><label><?php echo $lang['end_time']; ?></label>
 						<input class="form-control input-sm" type="time" id="end_time" name="end_time" value="<?php echo $time_row["end"];?>" placeholder="End Time" required>
