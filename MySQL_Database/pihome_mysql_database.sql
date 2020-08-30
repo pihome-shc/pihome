@@ -530,6 +530,7 @@ CREATE TABLE IF NOT EXISTS `schedule_daily_time` (
   `end` time,
   `WeekDays` smallint(6) NOT NULL,
   `sch_name` varchar(200) COLLATE utf16_bin,
+  `enable_sunset` tinyint(1),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
