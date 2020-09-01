@@ -265,20 +265,24 @@ while ($row = mysqli_fetch_assoc($results)) {
         if ($zone_status == 1) {
 		//Have to account for midnight rollover conditions
                 if ($zone_category == 2) { //Check if cat2 zone is using sunset for schedule start time
-                        $query = "SELECT start, enable_sunset FROM schedule_daily_time, schedule_daily_time_zone WHERE (schedule_daily_time_zone.schedule_daily_time_id = schedule_daily_time.id) AND zone_id = {$zone_id} LIMIT 1;";
+                        $query = "SELECT schedule_daily_time.start, schedule_daily_time_zone.sunset, schedule_daily_time_zone.sunset_offset FROM schedule_daily_time, schedule_daily_time_zone WHERE (schedule_daily_time_zone.schedule_daily_time_id = schedule_daily_time.id) AND zone_id = {$zone_id} LIMIT 1;";
                         $result = $conn->query($query);
                         $sch_row = mysqli_fetch_array($result);
-                        $enable_sunset = $sch_row['enable_sunset'];
+                        $sunset = $sch_row['sunset'];
                         $start_time = $sch_row['start'];
-                        if ($enable_sunset == 1) {
+                        $sunset_offset = $sch_row['sunset_offset'];
+                        if ($sunset == 1) {
                                 $query = "SELECT * FROM weather WHERE last_update > DATE_SUB( NOW(), INTERVAL 24 HOUR);";
                                 $result = $conn->query($query);
                                 $rowcount=mysqli_num_rows($result);
                                 if ($rowcount > 0) {
                                         $wrow = mysqli_fetch_array($result);
                                         if (date('H:i:s', $wrow['sunset']) < $start_time) {
-                                                $start_time = date('H:i:s', $wrow['sunset']);
-                                  	}
+                                                $sunset_time = date('H:i:s', $wrow['sunset']);
+                                                $start_time = strtotime($sunset_time);
+                                                $start_time = $start_time + ($sunset_offset * 60); //set to start $sunset_offset minutes before sunset
+                                                $start_time = date('H:i:s', $start_time);
+                                         }
                                 }
                         }
                         if($holidays_status == 0) {

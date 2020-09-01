@@ -125,7 +125,7 @@ if (isset($_POST['submit'])) {
         } else {
                 $sch_name = $_POST['sch_name'];
                 $enable_sunset = isset($_POST['enable_sunset']) ? $_POST['enable_sunset'] : "0";
-                $query = "INSERT INTO `schedule_daily_time`(`id`, `sync`, `purge`, `status`, `start`, `end`, `WeekDays`, `sch_name`, `enable_sunset`) VALUES ('{$time_id}','0', '0', '{$sc_en}', '{$start_time}','{$end_time}','{$mask}', '{$sch_name}', '{$enable_sunset}') ON DUPLICATE KEY UPDATE sync = VALUES(sync),  status = VALUES(status), start = VALUES(start), end = VALUES(end), WeekDays = VALUES(WeekDays), sch_name=VALUES(sch_name), enable_sunset=VALUES(enable_sunset);";
+                $query = "INSERT INTO `schedule_daily_time`(`id`, `sync`, `purge`, `status`, `start`, `end`, `WeekDays`, `sch_name`) VALUES ('{$time_id}','0', '0', '{$sc_en}', '{$start_time}','{$end_time}','{$mask}', '{$sch_name}') ON DUPLICATE KEY UPDATE sync = VALUES(sync),  status = VALUES(status), start = VALUES(start), end = VALUES(end), WeekDays = VALUES(WeekDays), sch_name=VALUES(sch_name);";
 		$result = $conn->query($query);
 		$schedule_daily_time_id = mysqli_insert_id($conn);
 
@@ -149,8 +149,10 @@ if (isset($_POST['submit'])) {
 			$status = isset($_POST['status'][$id]) ? $_POST['status'][$id] : "0";
 			$coop = isset($_POST['coop'][$id]) ? $_POST['coop'][$id] : "0";
 			$temp=TempToDB($conn,$_POST['temp'][$id]);
+                        $sunset = isset($_POST['sunset'][$id]) ? $_POST['sunset'][$id] : "0";
+                        $sunset_offset = intval($_POST['sunset_offset'][$id]);
 
-			$query = "INSERT INTO `schedule_daily_time_zone`(`id`, `sync`, `purge`, `status`, `schedule_daily_time_id`, `zone_id`, `temperature`, `holidays_id`, `coop`) VALUES ('{$tzid}', '0', '0', '{$status}', '{$schedule_daily_time_id}','{$zoneid}','".number_format($temp,1)."',{$holidays_id},{$coop}) ON DUPLICATE KEY UPDATE sync = VALUES(sync), status = VALUES(status), temperature = VALUES(temperature), coop = VALUES(coop);";
+			$query = "INSERT INTO `schedule_daily_time_zone`(`id`, `sync`, `purge`, `status`, `schedule_daily_time_id`, `zone_id`, `temperature`, `holidays_id`, `coop`, `sunset`, `sunset_offset`) VALUES ('{$tzid}', '0', '0', '{$status}', '{$schedule_daily_time_id}','{$zoneid}','".number_format($temp,1)."',{$holidays_id},{$coop},{$sunset},{$sunset_offset}) ON DUPLICATE KEY UPDATE sync = VALUES(sync), status = VALUES(status), temperature = VALUES(temperature), coop = VALUES(coop), sunset = VALUES(sunset), sunset_offset = VALUES(sunset_offset);";
 			$zoneresults = $conn->query($query);
 
 			if ($zoneresults) {
@@ -300,6 +302,8 @@ if (isset($_POST['submit'])) {
 						<input class="form-control input-sm" type="time" id="end_time" name="end_time" value="<?php echo $time_row["end"];?>" placeholder="End Time" required>
 						<div class="help-block with-errors"></div>
 					</div>
+						
+					<label><?php echo $lang['select_zone']; ?></label>
 					<?php
 					// Zone List Loop
 					while ($row = mysqli_fetch_assoc($zoneresults)) {
@@ -376,7 +380,36 @@ if (isset($_POST['submit'])) {
 								<!-- /.form-group -->
 							</div>
                                                         <!-- /.row -->
+                                                <?php } else {
+
+
+                                                        if($row['tz_status'] == 1 AND $time_id != 0){
+                                                                //if($time_id != 0){
+                                                                $style_text = "";
+                                                        }else{
+                                                                $style_text = "display:none !important;";
+                                                        }
+                                                         echo '<div id="'.$row["tz_id"].'" style="'.$style_text.'">
+                                                                <div class="form-group" class="control-label">';
+                                                                        if(!isset($_GET['nid'])) {
+                                                                                //<!-- Zone Sunset Enable Checkbox -->
+                                                                                if($time_id != 0){ $check = ($row['sunset'] == 1) ? 'checked' : ''; }
+                                                                                echo '<div class="checkbox checkbox-default  checkbox-circle">
+                                                                			<input id="sunset'.$row["tz_id"].'" class="styled" type="checkbox" name="sunset['.$row["tz_id"].']" value="1" '.$check.'>
+                                                                			<label for="sunset'.$row["tz_id"].'">'.$lang['sunset_enable'].'</label>
+											&nbsp;&nbsp;<input class="styled" type="text" id="sunset_offset['.$row["tz_id"].']" name="sunset_offset['.$row["tz_id"].']" style="width: 40px" value="'.$row["sunset_offset"].'"/>
+                                                                                        &nbsp;&nbsp;<img src="./images/sunset.png">
+                									<i class="fa fa-info-circle fa-lg text-info" data-container="body" data-toggle="popover" data-placement="right" data-content="'.$lang['sunset_enable_info'].'"></i>
+                                                                                        <div class="help-block with-errors"></div>
+                                                                                </div>';
+                                                                        }
+                                                                        ?>
+                                                                </div>
+                                                                <!-- /.form-group -->
+                                                        </div>
+                                                        <!-- /.row -->
                                                 <?php }
+
                                         }?> <!-- End of Zone List Loop  -->
                                         <br>
 					<!-- Buttons -->
