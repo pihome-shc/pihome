@@ -460,6 +460,7 @@ $lang['add_on_messages'] = "HTTP-Nachrichten hinzufügen";
 $lang['add_on_add_info_text'] = "HTTP-Nachrichten, die vom Tasmota Controller gesendet und empfangen werden sollen";
 $lang['no_tasmota'] = "Keine Tasmota-Controller";
 
-$lang['sunset_enable'] = "Enable Sunset ";
-$lang['sunset_enable_info'] = "Enable Sunset Override for Start Time ";
+$lang['sunset_enable'] = "Enable Sunset & Set Offset in Minutes ";
+$lang['sunset_enable_info'] = "Enable Sunset Override for Start Time with an Offset in minutes eg -30 is 30 minutes before sunset";
+$lang['select_zone'] = "Select Zone/s";
 ?>
