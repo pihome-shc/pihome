@@ -530,7 +530,6 @@ CREATE TABLE IF NOT EXISTS `schedule_daily_time` (
   `end` time,
   `WeekDays` smallint(6) NOT NULL,
   `sch_name` varchar(200) COLLATE utf16_bin,
-  `enable_sunset` tinyint(1),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
@@ -550,6 +549,8 @@ CREATE TABLE IF NOT EXISTS `schedule_daily_time_zone` (
   `temperature` float NOT NULL,
   `holidays_id` int(11),
   `coop` tinyint(4) NOT NULL,
+  `sunset` tinyint(1),
+  `sunset_offset` int(11),
   PRIMARY KEY (`id`),
   KEY `FK_schedule_daily_time_zone_schedule_daily_time` (`schedule_daily_time_id`),
   KEY `FK_schedule_daily_time_zone_zone` (`zone_id`),
