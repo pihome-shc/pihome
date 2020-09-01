@@ -464,6 +464,7 @@ $lang['add_on_messages'] = "Add HTTP Messages";
 $lang['add_on_add_info_text'] = "HTTP Messages to be to Sent and Received from Tasmota Controller";
 $lang['no_tasmota'] = "No Tasmota Controllers";
 
-$lang['sunset_enable'] = "Enable Sunset ";
-$lang['sunset_enable_info'] = "Enable Sunset Override for Start Time ";
+$lang['sunset_enable'] = "Enable Sunset & Set Offset in Minutes ";
+$lang['sunset_enable_info'] = "Enable Sunset Override for Start Time with an Offset in minutes eg -30 is 30 minutes before sunset";
+$lang['select_zone'] = "Select Zone/s";
 ?>
