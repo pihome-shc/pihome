@@ -25,7 +25,7 @@ require_once(__DIR__.'../../st_inc/functions.php');
 ini_set('max_execution_time', 40);
 $date_time = date('Y-m-d H:i:s');
 
-//check if system in test mode
+//set to display debug messages if called with any parameter
 if(isset($argv[1])) { $debug_msg = 1; } else { $debug_msg = 0; }
 
 //GPIO Value for SainSmart Relay Board to turn on  or off
