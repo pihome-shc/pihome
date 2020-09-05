@@ -267,7 +267,7 @@ while ($row = mysqli_fetch_assoc($results)) {
         if ($zone_status == 1) {
                 //Have to account for midnight rollover conditions
                 if ($zone_category == 2) { //Check if using sunset for schedule start time
-                        $query = "SELECT schedule_daily_time.start, schedule_daily_time_zone.sunset, schedule_daily_time_zone.sunset_offset FROM schedule_daily_time, schedule_daily_time_zo$
+                        $query = "SELECT schedule_daily_time.start, schedule_daily_time_zone.sunset, schedule_daily_time_zone.sunset_offset FROM schedule_daily_time, schedule_daily_time_zone WHERE (schedule_daily_time_zone.schedule_daily_time_id = schedule_daily_time.id) AND zone_id = {$zone_id} LIMIT 1;";
                         $result = $conn->query($query);
                         $sch_row = mysqli_fetch_array($result);
                         $sunset = $sch_row['sunset'];
