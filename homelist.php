@@ -96,10 +96,10 @@ require_once(__DIR__.'/st_inc/functions.php');
 			$query = "SELECT * FROM zone_current_state WHERE zone_id = '{$zone_id}' LIMIT 1;";
 			$result = $conn->query($query);
 			$zone_current_state = mysqli_fetch_array($result);
-			$zone_mode = $zone_current_state['mode'];	
-			$zone_temp_reading = $zone_current_state['temp_reading'];	
+			$zone_mode = $zone_current_state['mode'];
+			$zone_temp_reading = $zone_current_state['temp_reading'];
 			$zone_temp_target = $zone_current_state['temp_target'];
-			$zone_temp_cut_in = $zone_current_state['temp_cut_in']; 
+			$zone_temp_cut_in = $zone_current_state['temp_cut_in'];
 			$zone_temp_cut_out = $zone_current_state['temp_cut_out'];
 			$zone_ctr_fault = $zone_current_state['controler_fault'];
 			$controler_seen = $zone_current_state['controler_seen_time'];
@@ -139,14 +139,14 @@ require_once(__DIR__.'/st_inc/functions.php');
 			90 - away
 			100 - hysteresis
 			110 - Add-On */
-			
+
 			$zone_mode_main=floor($zone_mode/10)*10;
 
 			//Zone sub mode - running/ stopped different types
 		/*	0 - stopped (above cut out setpoint or not running in this mode)
-			1 - running 
-			2 - stopped (within deadband) 
-			3 - stopped (coop start waiting for boiler) 
+			1 - running
+			2 - stopped (within deadband)
+			3 - stopped (coop start waiting for boiler)
 			4 - manual operation ON
 			5 - manual operation OFF */
 
@@ -165,7 +165,7 @@ require_once(__DIR__.'/st_inc/functions.php');
                         //Overrun Icon
                         if($overrun == 1) {
                             echo '<small class="statuszoon"><i class="fa ion-ios-play-outline orange fa-fw"></i></small>';
-                        }						
+                        }
                         echo '</h3></button>';      //close out status and button
 
 			//Zone Schedule listing model
@@ -247,7 +247,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 								}
 								//display coop start info
 								if($zone_mode_sub == 3){
-									echo '<p>Coop Start Schedule - Waiting for boiler start.</p>';	
+									echo '<p>Coop Start Schedule - Waiting for boiler start.</p>';
 								}
 								$squery = "SELECT * FROM schedule_daily_time_zone_view where zone_id ='{$zone_id}' AND tz_status = 1 AND time_status = '1' AND (WeekDays & (1 << {$dow})) > 0 ORDER BY start asc";
 								$sresults = $conn->query($squery);
@@ -388,8 +388,7 @@ require_once(__DIR__.'/st_inc/functions.php');
                 }else {
                         $holidays_status = 0;
                 }
-//                $query = "SELECT zone.*, zone_type.category FROM zone, zone_type WHERE zone.type = zone_type.type AND zone.purge = 0 AND category = 2 ORDER BY index_id asc;";
-		$query = "SELECT * FROM zone_view WHERE category = 2 ORDER BY index_id asc;";
+                $query = "SELECT zone.*, zone_type.category FROM zone, zone_type WHERE zone.type_id = zone_type.id AND zone.purge = 0 AND category = 2 ORDER BY index_id asc;";
                 $results = $conn->query($query);
                 while ($row = mysqli_fetch_assoc($results)) {
                         //get the schedule status for this zone
@@ -405,18 +404,10 @@ require_once(__DIR__.'/st_inc/functions.php');
                                 $schedule = mysqli_fetch_array($result);
                                 $sch_status = $schedule['tz_status'];
                         }
-                        //query to get on/off state from table with sensor id
-                        $query = "SELECT * FROM messages_out WHERE zone_id = '{$row['id']}' LIMIT 1;";
-                        $result = $conn->query($query);
-                        $state = mysqli_fetch_array($result);
-                        if ($row['controller_type'] == 'Tasmota') {
-                                $query = "SELECT * FROM http_messages WHERE zone_name = '{$row['name']}' AND message_type = 1 LIMIT 1;";
-                                $result = $conn->query($query);
-                                $http = mysqli_fetch_array($result);
-                                $add_on_active = ($state['payload'] == $http['command'].' '.$http['parameter']) ? '1':'0';
-                        } else {
-                                $add_on_active = $state['payload'];
-                        }
+
+                        //set current zone state
+                        $add_on_active = $row['zone_state'];
+
                         //query to get zone current state
                         $query = "SELECT * FROM zone_current_state WHERE zone_id =  '{$row['id']}' LIMIT 1;";
                         $result = $conn->query($query);
@@ -424,19 +415,19 @@ require_once(__DIR__.'/st_inc/functions.php');
                         $add_on_mode = $zone_current_state['mode'];
 
                         if ($add_on_active=='1'){$add_on_colour="orange";} elseif ($add_on_active=='0'){$add_on_colour="black";}
-                        echo '<a href="javascript:active_add_on('.$row['id'].');">
+                        echo '<a href="javascript:update_add_on('.$row['id'].');">
                         <button type="button" class="btn btn-default btn-circle btn-xxl mainbtn">
                         <h3 class="buttontop"><small>'.$row['name'].'</small></h3>
                         <h3 class="degre" ><i class="fa fa-lightbulb-o fa-1x '.$add_on_colour.'"></i></h3>
                         <h3 class="status">';
 
-                        if ($sch_status =='1' && $add_on_active == '0') {
+                        if ($sch_status =='1' && $add_on_active == 0) {
                                 $add_on_mode = 74;
-                        } elseif ($sch_status =='1' && $add_on_active == '1') {
+                        } elseif ($sch_status =='1' && $add_on_active == 1) {
                                 $add_on_mode = 114;
-                        } elseif ($sch_status =='0' && $add_on_active == '0') {
+                        } elseif ($sch_status =='0' && $add_on_active == 0) {
                                 $add_on_mode = 0;
-                        } elseif ($sch_status =='0' && $add_on_active == '1') {
+                        } elseif ($sch_status =='0' && $add_on_active == 1) {
                                 $add_on_mode = 111;
                         }
                         $rval=getIndicators($conn, $add_on_mode, $zone_temp_target);
@@ -449,7 +440,8 @@ require_once(__DIR__.'/st_inc/functions.php');
                         echo '</h3></button>';      //close out status and button
 
                 }
-		?>
+                echo '<input type="hidden" id="sch_active" name="sch_active" value="'.$sch_status.'"/>';
+                ?>
 		<!-- One touch buttons -->
 		<div id="collapseone" class="panel-collapse collapse animated fadeIn">
 			<?php
@@ -476,7 +468,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 			<h3 class="degre" ><i class="fa fa-rocket fa-1x"></i></h3>
 			<h3 class="status"><small class="statuscircle"><i class="fa fa-circle fa-fw '.$boost_status.'"></i></small>
 			</h3></button></a>';
-			
+
 			//query to check night climate
 			$query = "SELECT * FROM schedule_night_climate_time WHERE id = 1";
 			$results = $conn->query($query);
@@ -500,7 +492,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 			<h3 class="degre" ><i class="fa fa-sign-out fa-1x"></i></h3>
 			<h3 class="status"><small class="statuscircle"><i class="fa fa-circle fa-fw '.$awaystatus.'"></i></small>
 			</h3></button></a>';
-			
+
 			//query to check holidays status
 			$query = "SELECT status FROM holidays WHERE NOW() between start_date_time AND end_date_time AND status = '1' LIMIT 1";
 			$result = $conn->query($query);
