@@ -1,13 +1,13 @@
 <?php
 /*
-   _____    _   _    _                             
-  |  __ \  (_) | |  | |                            
-  | |__) |  _  | |__| |   ___    _ __ ___     ___  
-  |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \ 
-  | |      | | | |  | | | (_) | | | | | | | |  __/ 
-  |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___| 
+   _____    _   _    _
+  |  __ \  (_) | |  | |
+  | |__) |  _  | |__| |   ___    _ __ ___     ___
+  |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \
+  | |      | | | |  | | | (_) | | | | | | | |  __/
+  |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___|
 
-     S M A R T   H E A T I N G   C O N T R O L 
+     S M A R T   H E A T I N G   C O N T R O L
 
 *************************************************************************"
 * PiHome is Raspberry Pi based Central Heating Control systems. It runs *"
@@ -22,16 +22,16 @@
 require_once(__DIR__.'/connection.php');
 
 // Time Zone Settings for PHP
-//date_default_timezone_set("Europe/Dublin"); // You can set Timezone Manually and uncomment this line and comment out following line 
+//date_default_timezone_set("Europe/Dublin"); // You can set Timezone Manually and uncomment this line and comment out following line
 date_default_timezone_set(settings($conn, 'timezone'));
 
-// this function is deprecated --- prepare mysql statement 
+// this function is deprecated --- prepare mysql statement
 function mysqli_prep($value) {
 	$magic_quotes_active = get_magic_quotes_gpc();
 	$new_enough_php = function_exists("mysqli_real_escape_string");
 	//if php 4.3.0 or highre
 	if($new_enough_php) {
-		//undo magic quotes effect so that real escape sting can do the work	
+		//undo magic quotes effect so that real escape sting can do the work
 		if($magic_quotes_active) { $value = stripslashes($value); }
 		$value = mysqli_real_escape_string($value);
 	} else {		//before php 4.3.0
@@ -39,7 +39,7 @@ function mysqli_prep($value) {
 		if(!$magic_quotes_active) { $value = addslashes($value); }
 		// if magic quotes are on then slashes already exist
 	}
-	return $value;	
+	return $value;
 }
 
 function redirect_to($location = NULL) {
@@ -49,16 +49,16 @@ function redirect_to($location = NULL) {
 	}
 }
 
-function getWeather() 
-  {    
+function getWeather()
+  {
         $file = "./weather_current.json";
         if(file_exists($file))
         {
-            $json = file_get_contents($file);            
+            $json = file_get_contents($file);
             $weather_data = json_decode($json, true);
             $arr['temp_kelvin']  = $weather_data['main']['temp'];
             $arr['wind_mps']     = $weather_data['wind']['speed'];
-            $arr['temp_celsius'] = round($weather_data['main']['temp']-272.15); 
+            $arr['temp_celsius'] = round($weather_data['main']['temp']-272.15);
             $arr['wind_kms']     = round($weather_data['wind']['speed']*1.609344, 2);
             $arr['sunrise']      = $weather_data['sys']['sunrise'];
             $arr['sunset']       = $weather_data['sys']['sunset'];
@@ -89,9 +89,9 @@ function ShowWeather($conn)
 {
     $query="select * from weather";
     $result = $conn->query($query);
-    $weather = mysqli_fetch_array($result);    
+    $weather = mysqli_fetch_array($result);
     $c_f = settings($conn, 'c_f');
-    
+
     echo 'Outside: ' .DispTemp($conn,$weather['c']). '&deg;&nbsp;';
     if($c_f==1 || $c_f=='1')
         echo 'F';
@@ -102,7 +102,7 @@ function ShowWeather($conn)
         echo '<span><img border="0" width="24" src="' . $Img . '" title="' . $weather['title'] . ' - ' . $weather['description'] . '"></span>';
     echo '<span>' . $weather['title'] . ' - ' . $weather['description'] . '</span>';
 }
-  
+
 //ref: http://stackoverflow.com/questions/14721443/php-convert-seconds-into-mmddhhmmss
 // Prefix single-digit values with a zero.
 function ensure2Digit($number) {
@@ -113,7 +113,7 @@ function ensure2Digit($number) {
 }
 
 
-//function to check if night climate time 
+//function to check if night climate time
 //ref: http://blog.yiannistaos.com/php-check-if-time-is-between-two-times-regardless-of-date/
 function TimeIsBetweenTwoTimes($from, $till, $input) {
     $f = DateTime::createFromFormat('H:i:s', $from);
@@ -123,7 +123,7 @@ function TimeIsBetweenTwoTimes($from, $till, $input) {
 	return ($f <= $i && $i <= $t) || ($f <= $i->modify('+1 day') && $i <= $t);
 }
 
-// Convert seconds into months, days, hours, minutes, and seconds in number formate i.e 00:01:18:11:32 
+// Convert seconds into months, days, hours, minutes, and seconds in number formate i.e 00:01:18:11:32
 function secondsToTime($ss) {
     $s = ensure2Digit($ss%60);
     $m = ensure2Digit(floor(($ss%3600)/60));
@@ -134,7 +134,7 @@ function secondsToTime($ss) {
     return "$M:$d:$h:$m:$s";
 }
 
-// Convert seconds into months, days, hours, minutes, and second ie. 1 days 18 hours 11 minutes 32 seconds 
+// Convert seconds into months, days, hours, minutes, and second ie. 1 days 18 hours 11 minutes 32 seconds
 function secondsToWords($seconds)
 {
     $ret = "";
@@ -174,7 +174,7 @@ function searchArray($search, $array) {
     return false;
 }
 
-// Return realy ip address of visitor 
+// Return realy ip address of visitor
 function get_real_ip() {
     if (isset($_SERVER["HTTP_CLIENT_IP"])){return $_SERVER["HTTP_CLIENT_IP"];}
     elseif (isset($_SERVER["HTTP_X_FORWARDED_FOR"])){return $_SERVER["HTTP_X_FORWARDED_FOR"];}
@@ -192,9 +192,9 @@ function settings($db, $svalue){
 	if ($row = mysqli_fetch_array($result))
     {
         if(isset($row[$svalue]))
-            $rValue = $row[$svalue];        
+            $rValue = $row[$svalue];
     }
-	return $rValue;	
+	return $rValue;
 }
 
 // Return MySensors Logs from gateway_log function
@@ -215,9 +215,9 @@ function gw($db, $value){
 	return $rValue;
 }
 
-//get contents of and url 
+//get contents of and url
 function url_get_contents ($Url) {
-    if (!function_exists('curl_init')){ 
+    if (!function_exists('curl_init')){
         die('CURL is not installed!');
     }
     $ch = curl_init();
@@ -232,7 +232,7 @@ function url_get_contents ($Url) {
 //Return Unique ID for Record Purpose
 function UniqueMachineID($salt) {
 	//$salt = exec ("cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2");
-	$uuid = exec("sudo blkid -o value -s UUID");  
+	$uuid = exec("sudo blkid -o value -s UUID");
 	return md5($salt.md5($uuid));
 }
 
@@ -268,7 +268,7 @@ function get_current_url($strip = true) {
 /**
 * DispTemp
 *
-* Convert the temp, if necessary, to Fahrenheit. 
+* Convert the temp, if necessary, to Fahrenheit.
 *   All database records are expected to be in Celsius.
 *
 * @param object $conn
@@ -291,7 +291,7 @@ function DispTemp($conn,$C)
 /**
 * TempToDB
 *
-* Convert the temp from the UI, either C or F, to Celsius for storage. 
+* Convert the temp from the UI, either C or F, to Celsius for storage.
 *   All database records are expected to be in Celsius.
 *
 * @param object $conn
@@ -384,7 +384,7 @@ function getIndicators($conn, $zone_mode, $zone_temp_target)
 			$status='';
 		}
 		//away, holidays or hysteresis
-		else if(($zone_mode_main == 40)||($zone_mode_main == 90)||($zone_mode_main == 100)){ 
+		else if(($zone_mode_main == 40)||($zone_mode_main == 90)||($zone_mode_main == 100)){
 			$status='blue';
 		}
 		//all other modes
@@ -398,11 +398,11 @@ function getIndicators($conn, $zone_mode, $zone_temp_target)
 	}
 	//not running - deadband
 	else if($zone_mode_sub == 2){
-		$status='blueinfo';  
+		$status='blueinfo';
 						}
 	//not running - coop start waiting for boiler
 	else if($zone_mode_sub == 3){
-		$status='blueinfo';  
+		$status='blueinfo';
 	}
 
 	/****************************************************** */
@@ -431,7 +431,7 @@ function getIndicators($conn, $zone_mode, $zone_temp_target)
 	else if($zone_mode_main == 30){
 		$shactive='ion-thermometer';
 		$shcolor='red';
-		$target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';   
+		$target=number_format(DispTemp($conn,$zone_temp_target),1) . '&deg;';
 	}
 	//holiday
 	else if($zone_mode_main == 40){
@@ -522,4 +522,25 @@ function getIndicators($conn, $zone_mode, $zone_temp_target)
        		'target'=>$target
        	);
 }
+
+function graph_color($numOfSteps, $step) {
+    $red = 0;
+    $green = 0;
+    $blue = 0;
+    $h = $step / $numOfSteps;
+    $i = floor($h * 6);
+    $f = $h * 6 - $i;
+    $q = 1 - $f;
+    switch($i % 6){
+        case 0: $red = 1; $green = $f; $blue = 0; break;
+        case 5: $red = $q; $green = 1; $blue = 0; break;
+        case 2: $red = 0; $green = 1; $blue = $f; break;
+        case 3: $red = 0; $green = $q; $blue = 1; break;
+        case 4: $red = $f; $green = 0; $blue = 1; break;
+        case 1: $red = 1; $green = 0; $blue = $q; break;
+    }
+    $color = '#'.sprintf('%02X', $red*255).sprintf('%02X', $green*255).sprintf('%02X', $blue*255);
+    return ($color);
+}
+
 ?>
