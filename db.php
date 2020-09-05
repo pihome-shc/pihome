@@ -410,44 +410,67 @@ if($what=="away"){
 
 //add_on
 if($what=="add_on"){
-        if($opp=="active"){
+        if($opp=="update"){
+                $sch_active = $_GET['sch_active'];
                 $time = date("Y-m-d H:i:s");
-                $query = "SELECT * FROM messages_out WHERE zone_id = '{$wid}' LIMIT 1";
+                $query = "SELECT zone_state FROM zone WHERE id = '{$wid}' LIMIT 1";
                 $results = $conn->query($query);
-                $row = mysqli_fetch_assoc($results);
-                $da= $row['payload'];
-		$node_id = $row['node_id'];
-		$query = "SELECT type FROM nodes WHERE node_id = '{$node_id}' LIMIT 1";
-                $nresults = $conn->query($query);
-                $nrow = mysqli_fetch_assoc($nresults);
-		if ($nrow['type'] == 'Tasmota') {
-			if(explode(" ",$da)[1] == "ON"){ $message_type="0"; }else{ $message_type="1"; }
-			$query = "SELECT  command, parameter FROM http_messages WHERE node_id = '{$node_id}' AND message_type = '{$message_type}' LIMIT 1";
-			$hresults = $conn->query($query);
-			$hrow = mysqli_fetch_assoc($hresults);
-                        $set =  $message_type;
-                        $payload = $hrow['command']." ".$hrow['parameter'];
-		} else {
-                	if($da=="1"){ 
-				$set="0";
-				$payload = "0";
-			}else{
-				$set="1";
-                                $payload = "1";
-			}
-		}
-                $query = "UPDATE messages_out SET `sync` = 0, payload = '{$payload}', datetime = '{$time}', sent = '0' WHERE zone_id = '{$wid}' LIMIT 1";
+                $zrow = mysqli_fetch_assoc($results);
+                $da= $zrow['zone_state'];
+
+                $query = "SELECT * FROM messages_out WHERE zone_id = '{$wid}'";
+                $results = $conn->query($query);
+                while ($row = mysqli_fetch_assoc($results)) {
+                        $id= $row['id'];
+                        $node_id = $row['node_id'];
+                        $query = "SELECT type FROM nodes WHERE node_id = '{$node_id}' LIMIT 1";
+                        $nresults = $conn->query($query);
+                        $nrow = mysqli_fetch_assoc($nresults);
+                        if ($nrow['type'] == 'Tasmota') {
+                                if($da == "1"){ $message_type="0"; }else{ $message_type="1"; }
+                                $query = "SELECT  command, parameter FROM http_messages WHERE node_id = '{$node_id}' AND message_type = '{$message_type}' LIMIT 1;";
+                                $hresults = $conn->query($query);
+                                $hrow = mysqli_fetch_assoc($hresults);
+                                $set =  $message_type;
+                                $payload = $hrow['command']." ".$hrow['parameter'];
+                        } else {
+                                if($da=="1"){
+                                        $set="0";
+                                        $payload = "0";
+                                }else{
+                                        $set="1";
+                                        $payload = "1";
+                                }
+                        }
+                        $query = "UPDATE messages_out SET payload = '{$payload}', datetime = '{$time}', sent = '0' WHERE id = '{$id}';";
+                        if($conn->query($query)){
+                                $update_error=0;
+                        }else{
+                                $update_error=1;
+                        }
+
+                        $query = "UPDATE zone_controllers SET state = '{$set}' WHERE zone_id = '{$wid}';";
+                        if($conn->query($query)){
+                                $update_error=0;
+                        }else{
+                                $update_error=1;
+                        }
+                }
+
+                $query = "UPDATE zone SET zone_state = '{$set}' WHERE id = '{$wid}' LIMIT 1;";
                 if($conn->query($query)){
                         $update_error=0;
                 }else{
                         $update_error=1;
                 }
 
-                $query = "UPDATE zone SET `sync` = 0, zone_state = '{$set}' WHERE id = '{$wid}' LIMIT 1";
-                if($conn->query($query)){
-                        $update_error=0;
-                }else{
-                        $update_error=1;
+                if($sch_active == "1") {
+                        $query = "UPDATE override SET status = '{$da}' WHERE zone_id = '{$wid}' LIMIT 1;";
+                        if($conn->query($query)){
+                                $update_error=0;
+                        }else{
+                                $update_error=1;
+                        }
                 }
 
                 if($update_error==0){
