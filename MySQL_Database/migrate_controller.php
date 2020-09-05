@@ -151,7 +151,11 @@ if ($db_selected) {
                 }
         echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - DataBase Views File \033[41m".$migratefilename."\033[0m Imported Successfully \n";
 
-        echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - DataBase Updated Successfully \n";
+	//Update Version and build number 
+	$query = "UPDATE system SET version = '{$version}', build = '{$build}' LIMIT 1;";
+	$conn->query($query);
+
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - DataBase Updated Successfully \n";
 }
 if(isset($conn)) { $conn->close(); }
 ?>
