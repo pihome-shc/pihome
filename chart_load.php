@@ -45,10 +45,8 @@ $sunset = $weather_row['sunset']* 1000 ;
 //http://php.net/manual/en/function.date-sun-info.php
 
 // create datasets based on all available zones
-$querya ="select id, name, type from zone_view where graph_it = 1 order BY index_id asc;";
+$querya ="select id, name, type, sensors_id, sensor_child_id from zone_view where graph_it = 1 order BY index_id asc;";
 $resulta = $conn->query($querya);
-$counter = 0;
-$count = mysqli_num_rows($resulta) + 1;
 $zones = '';
 $zonesw = '';
 while ($row = mysqli_fetch_assoc($resulta)) {
@@ -56,6 +54,7 @@ while ($row = mysqli_fetch_assoc($resulta)) {
         $zone_name=$row['name'];
 	$zone_type=$row['type'];
 	$zone_id=$row['id'];
+  $graph_id = $row['sensors_id'].".".$row['sensor_child_id'];
 	$query="select * from zone_graphs where zone_id = {$zone_id};";
         $result = $conn->query($query);
         // create array of pairs of x and y values for every zone
@@ -71,13 +70,13 @@ while ($row = mysqli_fetch_assoc($resulta)) {
         }
         // create dataset entry using distinct color based on zone index(to have the same color everytime chart is opened)
         if(strpos($zone_type, 'Heating') !== false) {
-                $zones = $zones. "{label: \"".$zone_name."\", data: ".json_encode($zone_temp).", color: rainbow(".$count.",".++$counter.") }, \n";
+                $zones = $zones. "{label: \"".$zone_name."\", data: ".json_encode($zone_temp).", color: '".$sensor_color[$graph_id]."'}, \n";
         } elseif((strpos($zone_type, 'Water') !== false) || (strpos($zone_type, 'Immersion') !== false)) {
-                $zonesw = $zonesw. "{label: \"".$zone_name."\", data: ".json_encode($water_temp).", color: rainbow(".$count.",".++$counter.") }, \n";
+                $zonesw = $zonesw. "{label: \"".$zone_name."\", data: ".json_encode($water_temp).", color: '".$sensor_color[$graph_id]."'}, \n";
         }
 }
 // add outside weather temperature
-$zonesw = $zonesw."{label: \"".$lang['graph_outsie']."\", data: ".json_encode($weather_c).", color: rainbow(".$count.",".++$counter.") }, \n";
+$zonesw = $zonesw."{label: \"".$lang['graph_outsie']."\", data: ".json_encode($weather_c).", color: '".graph_color($count, ++$counter)."'}, \n";
 
 //background-color for boiler on time
 $query="select start_datetime, stop_datetime, type from zone_log_view where status= '1' AND start_datetime > current_timestamp() - interval 24 hour;";
@@ -104,7 +103,7 @@ while ($row = mysqli_fetch_assoc($results)) {
 <!--[if lte IE 8]><script src="js/plugins/flot/excanvas.min.js"></script><![endif]-->
 <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="/js/flot/excanvas.min.js"></script><![endif]-->
     <script type="text/javascript" src="js/plugins/flot/jquery.flot.min.js"></script>
-    <script type="text/javascript" src="js/plugins/flot/jshashtable-2.1.js"></script> 
+    <script type="text/javascript" src="js/plugins/flot/jshashtable-2.1.js"></script>
     <script type="text/javascript" src="js/plugins/flot/jquery.numberformatter-1.2.3.min.js"></script>
     <script type="text/javascript" src="js/plugins/flot/jquery.flot.js"></script>
     <script type="text/javascript" src="js/plugins/flot/jquery.flot.time.js"></script>
@@ -129,25 +128,6 @@ var system_c = <?php echo json_encode($system_c); ?>;
 var dataset_hw = [
         {label: "<?php echo $lang['cpu']; ?>  ", data: system_c, color: "#0077FF"}
 ];
-
-// distinct color implementation for plot lines
-function rainbow(numOfSteps, step) {
-    var r, g, b;
-    var h = step / numOfSteps;
-    var i = ~~(h * 6);
-    var f = h * 6 - i;
-    var q = 1 - f;
-    switch(i % 6){
-        case 0: r = 1; g = f; b = 0; break;
-        case 5: r = q; g = 1; b = 0; break;
-        case 2: r = 0; g = 1; b = f; break;
-        case 3: r = 0; g = q; b = 1; break;
-        case 4: r = f; g = 0; b = 1; break;
-        case 1: r = 1; g = 0; b = q; break;
-    }
-    var c = "#" + ("00" + (~ ~(r * 255)).toString(16)).slice(-2) + ("00" + (~ ~(g * 255)).toString(16)).slice(-2) + ("00" + (~ ~(b * 255)).toString(16)).slice(-2);
-    return (c);
-}
 
 // Create Zone Graphs
 var options_one = {
@@ -206,7 +186,7 @@ $.fn.UseTooltip = function () {
         }
     });
 };
- 
+
 function showTooltip(x, y, color, contents) {
     $('<div id="tooltip">' + contents + '</div>').css({
         position: 'absolute',
@@ -286,7 +266,7 @@ $.fn.UseTooltipu = function () {
         }
     });
 };
- 
+
 function showTooltipu(x, y, color, contents) {
     $('<div id="tooltip">' + contents + '</div>').css({
         position: 'absolute',
