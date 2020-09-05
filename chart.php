@@ -1,13 +1,13 @@
-<?php 
+<?php
 /*
-   _____    _   _    _                             
-  |  __ \  (_) | |  | |                            
-  | |__) |  _  | |__| |   ___    _ __ ___     ___  
-  |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \ 
-  | |      | | | |  | | | (_) | | | | | | | |  __/ 
-  |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___| 
+   _____    _   _    _
+  |  __ \  (_) | |  | |
+  | |__) |  _  | |__| |   ___    _ __ ___     ___
+  |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \
+  | |      | | | |  | | | (_) | | | | | | | |  __/
+  |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___|
 
-     S M A R T   H E A T I N G   C O N T R O L 
+     S M A R T   H E A T I N G   C O N T R O L
 
 *************************************************************************"
 * PiHome is Raspberry Pi based Central Heating Control systems. It runs *"
@@ -19,10 +19,21 @@
 *************************************************************************"
 */
 
-require_once(__DIR__.'/st_inc/session.php'); 
+require_once(__DIR__.'/st_inc/session.php');
 confirm_logged_in();
 require_once(__DIR__.'/st_inc/connection.php');
 require_once(__DIR__.'/st_inc/functions.php');
+
+//create array of colours for the graphs
+$query ="SELECT nodes.node_id, zone_sensors.sensor_child_id FROM nodes, zone_sensors WHERE nodes.id = zone_sensors.sensor_id ORDER BY node_id ASC;";
+$result = $conn->query($query);
+$counter = 0;
+$count = mysqli_num_rows($result) + 2; //extra space made for system temperature graph
+$sensor_color = array();
+while ($row = mysqli_fetch_assoc($result)) {
+        $graph_id = $row['node_id'].".".$row['sensor_child_id'];
+        $sensor_color[$graph_id] = graph_color($count, ++$counter);
+}
 ?>
 <?php include("header.php"); ?>
 <div id="page-wrapper">
@@ -31,9 +42,9 @@ require_once(__DIR__.'/st_inc/functions.php');
         	<div class="col-lg-12">
 			<div class="panel panel-primary">
                         	<div class="panel-heading">
-                            		<i class="fa fa-bar-chart fa-fw"></i> <?php echo $lang['graph']; ?>   
-						<div class="pull-right"> 
-							<div class="btn-group"><?php echo date("H:i"); ?></div> 
+                            		<i class="fa fa-bar-chart fa-fw"></i> <?php echo $lang['graph']; ?>
+						<div class="pull-right">
+							<div class="btn-group"><?php echo date("H:i"); ?></div>
 					</div>
         	                </div>
                 	        <!-- /.panel-heading -->
@@ -55,7 +66,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 				</div>
         		        <!-- /.panel-body -->
 				<div class="panel-footer">
-					<?php 
+					<?php
 					ShowWeather($conn);
 					?>
 	        	        </div>

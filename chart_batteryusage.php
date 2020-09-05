@@ -1,13 +1,13 @@
-<?php 
+<?php
 /*
-   _____    _   _    _                             
-  |  __ \  (_) | |  | |                            
-  | |__) |  _  | |__| |   ___    _ __ ___     ___  
-  |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \ 
-  | |      | | | |  | | | (_) | | | | | | | |  __/ 
-  |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___| 
+   _____    _   _    _
+  |  __ \  (_) | |  | |
+  | |__) |  _  | |__| |   ___    _ __ ___     ___
+  |  ___/  | | |  __  |  / _ \  | |_  \_ \   / _ \
+  | |      | | | |  | | | (_) | | | | | | | |  __/
+  |_|      |_| |_|  |_|  \___/  |_| |_| |_|  \___|
 
-     S M A R T   H E A T I N G   C O N T R O L 
+     S M A R T   H E A T I N G   C O N T R O L
 
 *************************************************************************"
 * PiHome is Raspberry Pi based Central Heating Control systems. It runs *"
@@ -26,25 +26,6 @@ echo "<h4>".$lang['graph_battery_usage']."</h4></p>".$lang['graph_battery_level_
 </div>
 <br>
 <script type="text/javascript">
-// distinct color implementation for plot lines 
-function rainbow(numOfSteps, step) {
-    var r, g, b;
-    var h = step / numOfSteps;
-    var i = ~~(h * 6);
-    var f = h * 6 - i;
-    var q = 1 - f;
-    switch(i % 6){
-        case 0: r = 1; g = f; b = 0; break;
-        case 1: r = q; g = 1; b = 0; break;
-        case 2: r = 0; g = 1; b = f; break;
-        case 3: r = 0; g = q; b = 1; break;
-        case 4: r = f; g = 0; b = 1; break;
-        case 5: r = 1; g = 0; b = q; break;
-    }
-    var c = "#" + ("00" + (~ ~(r * 255)).toString(16)).slice(-2) + ("00" + (~ ~(g * 255)).toString(16)).slice(-2) + ("00" + (~ ~(b * 255)).toString(16)).slice(-2);
-    return (c);
-}
-
 // create battery usage dataset based on all available zones
 var bat_level_dataset = [
 <?php
@@ -60,15 +41,16 @@ var bat_level_dataset = [
 		$zone_row = mysqli_fetch_array($resultz);
 		$zone_name = $zone_row['name'];
 		$label = $zone_name ." - ID ".$node_id;
+    $graph_id = $node_id.".0"; //assume battery node colour same as child_id = 0
 		$query="SELECT bat_voltage, bat_level, `update`  FROM nodes_battery WHERE `update` >= last_day(now()) + interval 1 day - interval 3 MONTH AND bat_level is not NULL and node_id = '{$node_id}' GROUP BY Week(`update`), Day(`update`) ORDER BY `update` ASC;";
         	$result = $conn->query($query);
         	// create array of pairs of x and y values for every zone
         	$bat_level = array();
-        	while ($rowb = mysqli_fetch_assoc($result)) { 
+        	while ($rowb = mysqli_fetch_assoc($result)) {
             		$bat_level[] = array(strtotime($rowb['update']) * 1000, $rowb['bat_level']);
         	}
         	// create dataset entry using distinct color based on zone index(to have the same color everytime chart is opened)
-        	echo "{label: \"".$label."\", data: ".json_encode($bat_level).", color: rainbow(".$count.",".++$counter.") }, \n";
+        	echo "{label: \"".$label."\", data: ".json_encode($bat_level).", color: '".$sensor_color[$graph_id]."'}, \n";
     }
 ?> ];
 </script>
