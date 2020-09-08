@@ -550,6 +550,24 @@ if($what=="lang"){
 	}
 }
 
+//update user email address
+if($what=="user_email"){
+        if($opp=="update"){
+                $email_add = $_GET['email_add'];
+                $user_id = $_SESSION['user_id'];
+                $query = "UPDATE `user` SET `email`= '{$email_add}' WHERE id = '{$user_id}';";
+                if($conn->query($query)){
+                        header('Content-type: application/json');
+                        echo json_encode(array('Success'=>'Success','Query'=>$query));
+                        return;
+                }else{
+                        header('Content-type: application/json');
+                        echo json_encode(array('Message'=>'Database query failed.\r\nQuery=' . $query));
+                return;
+                }
+        }
+}
+
 //Boiler Settings
 if($what=="boiler_settings"){
 	$datetime = date("Y-m-d H:i:s");
