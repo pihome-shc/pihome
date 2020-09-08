@@ -660,3 +660,24 @@ var idata="w=http_msg&o=delete&wid="+wid;
     .always(function() {
     });
 }
+
+//update user email address
+function update_email(){
+    var idata="w=user_email&o=update";
+    idata+="&email_add="+document.getElementById("email_add").value;
+    idata+="&wid=0";
+    $.get('db.php',idata)
+    .done(function(odata){
+        if(odata.Success)
+            reload_page();
+        else
+            console.log(odata.Message);
+    })
+    .fail(function( jqXHR, textStatus, errorThrown ){
+        if(jqXHR==401 || jqXHR==403) return;
+        console.log("update_email: Error.\r\n\r\njqXHR: "+jqXHR+"\r\n\r\ntextStatus: "+textStatus+"\r\n\r\nerrorThrown:"+errorThrown);
+    })
+    .always(function() {
+    });
+}
+
