@@ -124,7 +124,6 @@ if (isset($_POST['submit'])) {
 		}
         } else {
                 $sch_name = $_POST['sch_name'];
-                $enable_sunset = isset($_POST['enable_sunset']) ? $_POST['enable_sunset'] : "0";
                 $query = "INSERT INTO `schedule_daily_time`(`id`, `sync`, `purge`, `status`, `start`, `end`, `WeekDays`, `sch_name`) VALUES ('{$time_id}','0', '0', '{$sc_en}', '{$start_time}','{$end_time}','{$mask}', '{$sch_name}') ON DUPLICATE KEY UPDATE sync = VALUES(sync),  status = VALUES(status), start = VALUES(start), end = VALUES(end), WeekDays = VALUES(WeekDays), sch_name=VALUES(sch_name);";
 		$result = $conn->query($query);
 		$schedule_daily_time_id = mysqli_insert_id($conn);
@@ -286,14 +285,7 @@ if (isset($_POST['submit'])) {
 
 					<!-- Start Time -->
                                         <div class="form-group" class="control-label"><label><?php echo $lang['start_time']; ?></label>
-                                                <?php if($w_count > 0) { ?>
-                                                        <div class="checkbox checkbox-default checkbox-circle">
-                                                                <input id="checkbox8" class="styled" type="checkbox" name="enable_sunset" value="1" <?php $check = ($time_row['enable_sunset'] == 1) ? 'checked' : ''; echo $check; ?>>>
-                                                                <label for="checkbox8"> <?php echo $lang['sunset_enable']; ?> </label> <small class="text-muted"><?php echo $lang['sunset_enable_info'];?></small>
-                                                                <div class="help-block with-errors"></div>
-                                                        </div>
-                                                <?php }  ?>
-                                                <input class="form-control input-sm" type="time" id="start_time" name="start_time" value="<?php echo $time_row["start"];?>" placeholder="Start Time" required>
+                        			<input class="form-control input-sm" type="time" id="start_time" name="start_time" value="<?php echo $time_row["start"];?>" placeholder="Start Time" required>
                                                 <div class="help-block with-errors"></div>
                                         </div>
 						
