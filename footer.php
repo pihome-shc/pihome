@@ -230,6 +230,33 @@ if ($_SERVER['SCRIPT_NAME'] == '/scheduling.php'){
 </script>
 
 <?php if ($_SERVER['REQUEST_URI'] == '/chart.php'){include("chart_load.php");} ?>
+
+<?php
+//Function to check if email address is valid
+function checkEmail($email) {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                return false;
+        } else {
+                return true;
+        }
+}
+
+//Set user id from user session variable
+$user_id = $_SESSION['user_id'];
+$query = "select * from user where id = '{$user_id}' LIMIT 1;";
+$result = $conn->query($query);
+$user_row = mysqli_fetch_array($result);
+$email = $user_row['email'];
+//Check if email address exit
+if (!checkEmail($email)){
+        echo "
+                <script>
+                        $(document).ready(function(){
+                        $(\"#user_email_Modal\").modal('show');
+                        });
+                </script>";
+}?>
+
 </body>
 </html>
 <?php if(isset($conn)) { $conn->close();} ?>
