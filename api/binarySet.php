@@ -30,66 +30,88 @@ require_once(__DIR__.'../../st_inc/functions.php');
 
 if(isset($_GET['zonename'])) {
         $zonename = $_GET['zonename'];
-        $query = "SELECT controler_id, controler_child_id, zone_state FROM zone_view where name = '{$zonename}' LIMIT 1;";
+        $query = "SELECT zone_controllers.`controler_id`, zone_controllers.`controler_child_id`, zone.`name`, zone.`zone_state` FROM `zone_controllers`, `zone` WHERE (zone.id = zone_controllers.zone_id) AND name = '{$zonename}';";
         $results = $conn->query($query);
-        $row = mysqli_fetch_assoc($results);
-	if(! $row) {
+	if(mysqli_num_rows($results) == 0) {
 	        http_response_code(400);
         	echo json_encode(array("success" => False, "state" => "No record found."));
 	} else {
-	        $controler_id=$row['controler_id'];
-                $controler_child_id=$row['controler_child_id'];
-                if(isset($_GET['state'])) {
-			switch ($_GET['state']) {
-    				case 'true':
-        				$status = 1;
-        				break;
-    				case 'false':
-        				$status = 0;
-				        break;
-                                case '1':
-                                        $status = 1;
-                                        break;
- 				case '0':
-				        $status = 0;
-				        break;
-				default:
-	                                http_response_code(400);
-        	                        echo json_encode(array("success" => False, "state" => "'state' parameter not correctly set."));
-					$status = -1;
-			}
-			if($status == 0 or $status == 1) {
-                                $query = "UPDATE messages_out SET payload = '{$status}', sent = 0 where node_id = '{$controler_id}' AND child_id = '{$controler_child_id}';";
-                                $conn->query($query);
-                                if($conn->query($query)){
-                                        $update = 0;
-                                } else {
-                                        $update = 1;
-                                }
+		while ($row = mysqli_fetch_assoc($results)) {
+		        $controler_id=$row['controler_id'];
+        	        $controler_child_id=$row['controler_child_id'];
+			$query = "SELECT node_id, type FROM nodes WHERE id = '{$controler_id}' LIMIT 1;";
+			$result = $conn->query($query);
+			$node = mysqli_fetch_array($result);
+                        $controler_node_id=$node['node_id'];
+			$type = $node['type'];
+	                if(isset($_GET['state'])) {
+				switch ($_GET['state']) {
+    					case 'true':
+        					$status = 1;
+						$http_status = 'Power ON';
+        					break;
+	    				case 'false':
+        					$status = 0;
+						$http_status = 'Power OFF';
+					        break;
+                                	case '1':
+                                        	$status = 1;
+						$http_status = 'Power ON';
+        	                                break;
+ 					case '0':
+					        $status = 0;
+						$http_status = 'Power OFF';
+				        	break;
+					default:
+		                                http_response_code(400);
+        		                        echo json_encode(array("success" => False, "state" => "'state' parameter not correctly set."));
+						$status = -1;
+				}
+				if($status == 0 or $status == 1) {
+					if (strpos($type, 'Tasmota') !== false) {
+						$query = "UPDATE messages_out SET payload = '{$http_status}', sent = 0 where node_id = '{$controler_node_id}' AND child_id = '{$controler_child_id}';";
+					} else {
+        					$query = "UPDATE messages_out SET payload = '{$status}', sent = 0 where node_id = '{$controler_node_id}' AND child_id = '{$controler_child_id}';";
+					}
+			        	$conn->query($query);
+        				if($conn->query($query)){
+						$update = 0;
+		        		} else {
+                                        	$update = 1;
+			        	}
 
-                                $query = "UPDATE zone SET zone_state = '{$status}' where name = '{$zonename}';";
-                                $conn->query($query);
-                                if($conn->query($query)){
-                                        $update = 0;
-                                } else {
-                                        $update = 1;
-                                }
+                                        $query = "UPDATE zone_controllers SET state = '{$status}' WHERE controler_id = '{$controler_id}';";
+                                        if($conn->query($query)){
+                                                $update_error=0;
+                                        }else{
+                                                $update_error=1;
+                                        }
 
-                                if($update == 0){
-                                        http_response_code(200);
-                                        if($status == 1) {$status = True;} else {$status = False;}
-                                        echo json_encode(array("success" => True, "state" => $status));
-                                } else {
-                                        http_response_code(400);
-                                        echo json_encode(array("success" => False, "state" => "Update Database error."));
-                                }
+        	                        $query = "UPDATE zone SET zone_state = '{$status}' where name = '{$zonename}';";
+                	                $conn->query($query);
+                        	        if($conn->query($query)){
+                                	        $update = 0;
+	                                } else {
+        	                                $update = 1;
+                	                }
+
+                        	        if($update == 0){
+                                	        http_response_code(200);
+                                        	if($status == 1) {$status = True;} else {$status = False;}
+	                                        echo json_encode(array("success" => True, "state" => $status));
+        	                        } else {
+                	                        http_response_code(400);
+                        	                echo json_encode(array("success" => False, "state" => "Update messages_out record error."));
+                                	}
+
+				}
+			} else {
+        			http_response_code(200);
+                        	if($row['zone_state'] == 1) {$status = True; $on_off = 'on';} else {$status = False; $on_off = 'off';}
+	                        echo json_encode(array("success" => True, "state" => $status, "state_str" => $on_off));
 			}
-		} else {
-        		http_response_code(200);
-                        if($row['status'] == 1) {$status = True; $on_off = 'on';} else {$status = False; $on_off = 'off';}
-                        echo json_encode(array("success" => True, "state" => $status, "state_str" => $on_off));
-		}
-	}
+		} //end while ($row = mysqli_fetch_assoc($results))
+	} //end if(mysqli_num_rows($results) == 0)
 } else {
         http_response_code(400);
         echo json_encode(array("success" => False, "state" => "Data is incomplete."));

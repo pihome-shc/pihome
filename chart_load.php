@@ -86,6 +86,7 @@ $warn1 = '';
 $warn2 = '';
 while ($row = mysqli_fetch_assoc($results)) {
         if((--$count)==-1) break;
+        $zone_type=$row['type'];
         $boiler_start = strtotime($row['start_datetime']) * 1000;
         if (is_null($row['stop_datetime'])) {
                 $boiler_stop = strtotime("now") * 1000;

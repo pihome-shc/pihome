@@ -608,7 +608,7 @@ while ($row = mysqli_fetch_assoc($results)) {
         }
 
     } else {
-        $query = "SELECT * FROM zone where controler_id = {$row['id']} LIMIT 1;";
+        $query = "SELECT zone.name, zone_controllers.* FROM zone, zone_controllers where (zone_id = zone.id) AND zone_controllers.controler_id  = {$row['id']} LIMIT 1;";
         $z_results = $conn->query($query);
         $rowcount=mysqli_num_rows($z_results);
         if($rowcount > 0) {

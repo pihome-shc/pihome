@@ -1001,3 +1001,7 @@ padding-top: 0px;
 	margin-left: 38px; 
 	margin-top: -24px;
 }
+
+.modal-header .close {
+  display:none;
+}

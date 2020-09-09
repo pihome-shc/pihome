@@ -159,6 +159,33 @@ require_once(__DIR__.'/st_inc/functions.php');
                 <!-- /.dropdown -->
             </ul>
         </nav>
+<?php
+$user_id = $_SESSION['user_id'];
+$query = "select * from user where id = '{$user_id}' LIMIT 1;";
+$result = $conn->query($query);
+$row = mysqli_fetch_array($result);
+$fullname = $row['fullname'];
+?>
+<div id="user_email_Modal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Missing e-mail address!!!</h4>
+            </div>
+            <div class="modal-body">
+                        <p>Thank you for using PiHome Smart Heating. Looks like your email address is missing from the system, please enter valid e-mail address to get the latest PiHome updates straight in to your inbox.</p>
+                <form>
+                    <div class="form-group" class="control-label"><label>Enter a correctly formatted Email Address for user - '<?php echo $fullname ?>'</label>
+                        <input type="email" id="email_add" class="form-control" placeholder="Email Address">
+                    </div>
+                        <input type="submit" name="submit" value="<?php echo $lang['save']; ?>" class="btn btn-default btn-sm" onclick="update_email()">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?php 
 $query="select * from weather;";
 $result=$conn->query($query);

@@ -206,6 +206,9 @@ $lang['zone_boost_button_info'] = "Boost-Button Nummer, falls vorhanden";
 $lang['sensor_record_add_success'] = "Zonensensordatensatz erfolgreich hinzugefügt.";
 $lang['sensor_record_update_success'] = "Zonensensordatensatz erfolgreich aktualisiert.";
 $lang['sensor_record_fail'] = "Hinzufügen/Aktualisieren des Zonensensordatensatzes fehlgeschlagen:";
+$lang['controller_record_add_success'] = "Zone ControllerRecord Added Successfully.";
+$lang['controller_record_update_success'] = "Zone Controller Record Updated Successfully.";
+$lang['controller_record_fail'] = "Zone Controller Record Add/Update Failed:";
 
 $lang['messages_out_add_success'] = "Nachrichten wurden erfolgreich hinzugefügt.";
 $lang['messages_out_update_success'] = "Nachrichten wurden erfolgreich aktualisiert.";
