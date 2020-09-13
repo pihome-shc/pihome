@@ -50,6 +50,14 @@ echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Schedule Night Cliate Zone Recor
 $query = "DELETE FROM zone_logs WHERE `purge`= '1';";
 $conn->query($query);
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Logs Record Purged in Local Database \n";
+//Delete All Zone Sensors records
+$query = "DELETE FROM zone_sensors WHERE `purge`= '1';";
+$conn->query($query);
+echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Sensors Record Purged in Local Database \n";
+//Delete All Zone Controllers records
+$query = "DELETE FROM zone_controllers WHERE `purge`= '1';";
+$conn->query($query);
+echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Controllers Record Purged in Local Database \n";
 //Delete Zone record
 $query = "DELETE FROM zone WHERE `purge`= '1' LIMIT 1;";
 $conn->query($query);
