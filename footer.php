@@ -148,7 +148,7 @@ $(document).ready(function(){
  });
 <?php } ?>
 
-<?php if ($_SERVER['REQUEST_URI'] == '/settings.php'){ ?>
+<?php if (strtok($_SERVER["REQUEST_URI"], '?') == '/settings.php'){ ?>
 //load settingslist
 $(document).ready(function(){
 	$.get('settingslist.php', function(output) {
