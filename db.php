@@ -55,6 +55,13 @@ if(($what=="zone") && ($opp=="delete")){
 	$query = "UPDATE zone_logs SET zone_logs.purge='1' WHERE zone_id = '".$wid."'";
 	$conn->query($query);
 	
+        //Delete Zone Sensors record
+        $query = "UPDATE zone_sensors SET zone_sensors.purge='1' WHERE zone_id = '".$wid."'";
+        $conn->query($query);
+        //Delete Zone Controller record
+        $query = "UPDATE zone_controllers SET zone_controllers.purge='1' WHERE zone_id = '".$wid."'";
+        $conn->query($query);
+
 	//Delete Zone record
 	$query = "UPDATE zone SET zone.purge='1', zone.sync='0' WHERE id = '".$wid."'";
 	$conn->query($query);
