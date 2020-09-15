@@ -319,7 +319,7 @@ if (isset($_POST['submit'])) {
                    <div class="panel panel-primary">
                         <div class="panel-heading">
 							<?php if ($id != 0) { echo $lang['zone_edit'] . ": " . $row['name']; }else{
-                            echo "<i class=\"fa fa-plus fa-1x\"></i>" . $lang['zone_add'];} ?>
+                            echo "<i class=\"fa fa-plus fa-1x\"></i>" ." ". $lang['zone_add'];} ?>
 						<div class="pull-right"> <div class="btn-group"><?php echo date("H:i"); ?></div> </div>
                         </div>
                         <!-- /.panel-heading -->
