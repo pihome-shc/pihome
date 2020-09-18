@@ -205,6 +205,7 @@ while ($row = mysqli_fetch_assoc($results)) {
         $query = "SELECT zone_controllers.id AS zc_id, nodes.node_id AS controler_id, zone_controllers.controler_child_id, zone_controllers.state, zone_controllers.current_state, nodes.type  FROM  zone_controllers,nodes WHERE (zone_controllers.controler_id = nodes.id) AND zone_id = '$zone_id';";
         $cresult = $conn->query($query);
         $index = 0;
+        $zone_controllers=[];
         while ($crow = mysqli_fetch_assoc($cresult)) {
                 $zone_controllers[$index] = array('zc_id' =>$crow['zc_id'], 'controler_id' =>$crow['controler_id'], 'controler_child_id' =>$crow['controler_child_id'], 'zone_controller_state' =>$crow['state'], 'zone_controller_current_state' =>$crow['current_state'], 'zone_controller_type' =>$crow['type'], 'manual_button_override' >=0);
                 $index = $index + 1;
