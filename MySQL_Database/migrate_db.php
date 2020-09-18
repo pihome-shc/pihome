@@ -193,7 +193,7 @@ if ($db_selected) {
                 $result = $conn->query($query);
                 if ($zone_array[$row]['category'] < 2) {
                         $max_c =$zone_array[$row]['max_c'];
-                         $hysteresis_time =$zone_array[$row]['hysteresis_time'];
+                        $hysteresis_time =$zone_array[$row]['hysteresis_time'];
                         if (array_key_exists('sp_deadband',$zone_array[$row])) {
                                 $sp_deadband = $zone_array[$row]['sp_deadband'];
                         } else {
@@ -201,7 +201,7 @@ if ($db_selected) {
                         }
                         $sensor_id =$zone_array[$row]['sensor_id'];
                         $sensor_child_id =$zone_array[$row]['sensor_child_id'];
-                        $query = "INSERT INTO `zone_sensors`(`sync`, `purge`, `zone_id`, `max_c`, `hysteresis_time`, `sp_deadband`, `sensor_id`, `sensor_child_id`)  VALUES ('0', '0', '{$id}','{$max_c}','{$max_operation_time}','{$hysteresis_time}','{$sp_deadband}','{$sensor_id}','{$sensor_child_id}');";
+                        $query = "INSERT INTO `zone_sensors`(`sync`, `purge`, `zone_id`, `max_c`, `hysteresis_time`, `sp_deadband`, `sensor_id`, `sensor_child_id`)  VALUES ('0', '0', '{$id}','{$max_c}','{$hysteresis_time}','{$sp_deadband}','{$sensor_id}','{$sensor_child_id}');";
                         $result = $conn->query($query);
                 }
             $row++;
