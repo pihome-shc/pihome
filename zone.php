@@ -153,7 +153,11 @@ if (isset($_POST['submit'])) {
 
 	if ($zone_category < 2) {
 		//Add or Edit Zone record to Zone_Sensor Table
-		$query = "INSERT INTO `zone_sensors` (`id`, `sync`, `purge`, `zone_id`, `max_c`, `hysteresis_time`, `sp_deadband`, `sensor_id`, `sensor_child_id`) VALUES ('{$id}', '{$sync}', '{$purge}', '{$zone_id}', '{$max_c}', '{$hysteresis_time}', '{$sp_deadband}', '{$sensor_id}', '{$sensor_child_id}') ON DUPLICATE KEY UPDATE sync=VALUES(sync), `purge`=VALUES(`purge`), max_c=VALUES(max_c), hysteresis_time=VALUES(hysteresis_time), sp_deadband=VALUES(sp_deadband), sensor_id=VALUES(sensor_id), sensor_child_id=VALUES(sensor_child_id);";
+                if ($id==0){
+                        $query = "INSERT INTO `zone_sensors` (`id`, `sync`, `purge`, `zone_id`, `max_c`, `hysteresis_time`, `sp_deadband`, `sensor_id`, `sensor_child_id`) VALUES ('{$id}', '{$sync}', '{$purge}', '{$zone_id}', '{$max_c}', '{$hysteresis_time}', '{$sp_deadband}', '{$sensor_id}', '{$sensor_child_id}');";
+                } else {
+                        $query = "UPDATE `zone_sensors` SET `sync` = 0, `max_c` ='{$max_c}', `hysteresis_time` = '{$hysteresis_time}', `sp_deadband` = '{$sp_deadband}', `sensor_id` = '{$sensor_id}', `sensor_child_id` = '{$sensor_child_id}' WHERE zone_id='{$id}';";
+                }
         	$result = $conn->query($query);
         	if ($result) {
                 	if ($id==0){
