@@ -60,6 +60,29 @@ echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Checking if Database Exits \n";
 $db_selected = mysqli_select_db($conn, $dbname);
 if ($db_selected) {
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Database ".$dbname." Found \n";
+        // create an image of the currently installed database, without VIEWS
+        mysqli_select_db($conn, $dbname) or die('Error Selecting MySQL Database: ' . mysqli_error($conn));
+        //dump all mysql database and save as sql file
+        echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Creating Dump File for Exiting Database. \n";
+        $dumpfname = $dbname . "_" . date("Y-m-d_H-i-s").".sql";
+        $command = "mysqldump --host=$hostname --user=$dbusername ";
+        if ($dbpassword)
+                $command.= "--password=". $dbpassword ." ";
+                $command.= $dbname;
+                $command.= " > " . $dumpfname;
+                system($command);
+                // compress sql file and unlink (delete) sql file after creating zip file.
+                $zipfname = $dbname . "_" . date("Y-m-d_H-i-s").".zip";
+                echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Compressing Database Dump File \033[41m".$dumpfname."\033[0m \n";
+                $zip = new ZipArchive();
+                if($zip->open($zipfname,ZIPARCHIVE::CREATE)){
+                        $zip->addFile($dumpfname,$dumpfname);
+                        $zip->close();
+                        unlink($dumpfname);
+                        echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Compressed Database Dump File \033[41m".$zipfname."\033[0m \n";
+                }
+
+        }
 	// Save the current zone data to an array
 	$query = "SELECT * FROM `zone`";
         $results = $conn->query($query);
