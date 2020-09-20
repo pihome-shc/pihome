@@ -86,11 +86,14 @@ require_once(__DIR__.'/st_inc/functions.php');
 			$zone_name=$row['name'];
 			$zone_type=$row['type'];
                         $zone_category=$row['category'];
-			$zone_sensor_id=$row['sensor_id'];
-			$zone_sensor_child_id=$row['sensor_child_id'];
 			$zone_controller_type=$row['controller_type'];
-			$zone_controler_id=$row['controler_id'];
-			$zone_controler_child_id=$row['controler_child_id'];
+
+                        //query to get the zone controller info
+                        $query = "SELECT * FROM zone_controllers WHERE zone_id = '{$zone_id}' LIMIT 1;";
+                        $result = $conn->query($query);
+                        $zone_controllers = mysqli_fetch_array($result);
+                        $zone_controler_id=$zone_controllers['controler_id'];
+                        $zone_controler_child_id=$zone_controllers['controler_child_id'];
 
 			//query to get zone current state
 			$query = "SELECT * FROM zone_current_state WHERE zone_id = '{$zone_id}' LIMIT 1;";
