@@ -102,7 +102,7 @@ if ($db_selected) {
                 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Creating Dump File for Exiting Database. \n";
                 $dumpfname = $dbname . "_" . date("Y-m-d_H-i-s").".sql";
                 $command = "mysqldump --ignore-table=$dbname.backup --add-drop-table --host=$hostname --user=$dbusername ";
-                if ($dbpassword)
+                if ($dbpassword) {
                 $command.= "--password=". $dbpassword ." ";
                         $command.= $dbname;
                         $command.= " > " . $dumpfname;
@@ -117,7 +117,7 @@ if ($db_selected) {
                                 unlink($dumpfname);
                                 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Compressed Database Dump File \033[41m".$zipfname."\033[0m \n";
                         }
-
+		}
 		// get the new version and build values
 		//$ver =substr($struct2, strpos($struct2, 'PiHome - Smart Heating Control') + 34, 4);
 		//$build =substr($struct2, strpos($struct2, 'PiHome - Smart Heating Control') + 42, 6);
