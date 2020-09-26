@@ -132,7 +132,7 @@ var dataset_hw = [
 
 // Create Zone Graphs
 var options_one = {
-    xaxis: { mode: "time", timeformat: "%H:%M"},
+    xaxis: { mode: "time", timezone: "browser", timeformat: "%H:%M"},
     series: { lines: { show: true, lineWidth: 1, fill: false}, curvedLines: { apply: true,  active: true,  monotonicFit: true } },
     grid: { hoverable: true, borderWidth: 1,  backgroundColor: { colors: ["#ffffff", "#fdf9f9"] }, borderColor: "#ff8839", markings: markings,},
     legend: { noColumns: 3, labelBoxBorderColor: "#ffff", position: "nw" }
@@ -145,7 +145,7 @@ $(document).ready(function () {
 
 // Create Hot Water Graphs
 var options_two = {
-    xaxis: { mode: "time", timeformat: "%H:%M"},
+    xaxis: { mode: "time", timezone: "browser", timeformat: "%H:%M"},
     series: { lines: { show: true, lineWidth: 1, fill: false}, curvedLines: { apply: true,  active: true,  monotonicFit: true } },
     grid: { hoverable: true, borderWidth: 1,  backgroundColor: { colors: ["#ffffff", "#fdf9f9"] }, borderColor: "#ff8839", markings: wmarkings,},
     legend: { noColumns: 3, labelBoxBorderColor: "#ffff", position: "nw" }
@@ -156,7 +156,7 @@ $(document).ready(function () {
 });
 
 var options_three = {
-    xaxis: { mode: "time", timeformat: "%H:%M"},
+    xaxis: { mode: "time", timezone: "browser", timeformat: "%H:%M"},
     series: { lines: { show: true, lineWidth: 1, fill: false}, curvedLines: { apply: true,  active: true,  monotonicFit: true } },
     grid: { hoverable: true, borderWidth: 1,  backgroundColor: { colors: ["#ffffff", "#fdf7f4"] }, borderColor: "#ff8839", markings: markings_boiler, },
     legend: { noColumns: 3, labelBoxBorderColor: "#ffff", position: "nw" }
