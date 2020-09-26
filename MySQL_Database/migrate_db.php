@@ -66,7 +66,7 @@ if ($db_selected) {
         echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Creating Dump File for Exiting Database. \n";
         $dumpfname = $dbname . "_" . date("Y-m-d_H-i-s").".sql";
         $command = "mysqldump --host=$hostname --user=$dbusername ";
-        if ($dbpassword)
+        if ($dbpassword) {
         	$command.= "--password=". $dbpassword ." ";
 	        $command.= $dbname;
                 $command.= " > " . $dumpfname;
@@ -240,6 +240,6 @@ if ($db_selected) {
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - DataBase Views File \033[41m".$migratefilename."\033[0m Imported Successfully \n";
 
         echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - DataBase Updated Successfully \n";
-
+	}
 if(isset($conn)) { $conn->close(); }
 ?>
