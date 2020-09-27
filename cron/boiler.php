@@ -1010,9 +1010,9 @@ if (in_array("1", $boiler)) {
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Node ID: \033[41m".$boiler_node_id."\033[0m Child ID: \033[41m".$boiler_node_child_id."\033[0m \n";
 	}
 
-	/***************************************************************************************
-	Boiler Wired to Raspberry Pi GPIO Section: Make sure you have WiringPi installed.
-	****************************************************************************************/
+	/*****************************************
+	Boiler Wired to Raspberry Pi GPIO Section.
+	******************************************/
 	if ($boiler_controller_type == 'GPIO'){
 		exec("python3 /var/www/cron/gpio/gpio3_relay.py " .$boiler_node_child_id ." ".$relay_on );
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler GIOP: \033[41m".$boiler_node_child_id. "\033[0m Status: \033[41m".$relay_on."\033[0m (".$relay_on."=On, ".$relay_off."=Off) \n";
@@ -1068,9 +1068,9 @@ if (in_array("1", $boiler)) {
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler Node ID: \033[41m".$boiler_node_id."\033[0m Child ID: \033[41m".$boiler_node_child_id."\033[0m \n";
 	}
 
-	/***************************************************************************************
-	Boiler Wired to Raspberry Pi GPIO Section: Make sure you have WiringPi installed.
-	****************************************************************************************/
+	/*****************************************
+	Boiler Wired to Raspberry Pi GPIO Section.
+	******************************************/
 	if ($boiler_controller_type == 'GPIO'){
 		exec("python3 /var/www/cron/gpio/gpio3_relay.py " .$boiler_node_child_id ." ".$relay_off );
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Boiler GIOP: \033[41m".$boiler_node_child_id. "\033[0m Status: \033[41m".$relay_off."\033[0m (".$relay_on."=On, ".$relay_off."=Off) \n";
