@@ -69,10 +69,15 @@ try:
 	cur = con.cursor()
 	cur.execute('SELECT * FROM gateway where status = 1 order by id asc limit 1')
 	row = cur.fetchone();
-	gatewaytype = row[4]		# serial/wifi
-	gatewaylocation = row[5]	# ip address or serial port of your MySensors gateway
-	gatewayport = row[6]		# UDP port or bound rate for MySensors gateway
-	gatewaytimeout = int(row[7])		# Connection timeout in Seconds
+	gateway_to_index = dict(
+	(d[0], i)
+	for i, d
+	in enumerate(cur.description)
+	)
+	gatewaytype = row[gateway_to_index['type']]                             # serial/wifi
+	gatewaylocation = row[gateway_to_index['location']]                     # ip address or serial port of your MySensors gateway
+	gatewayport = row[gateway_to_index['port']]                             # UDP port or bound rate for MySensors gateway
+	gatewaytimeout = int(row[gateway_to_index['timout']])                   # Connection timeout in Seconds
 
 	if gatewaytype == 'serial':
 		# ps. you can troubleshoot with "screen"
@@ -103,17 +108,27 @@ try:
 		if count > 0: #If greater then 0 then we have something to send out.
 			cur.execute('SELECT * FROM `messages_out` where sent = 0') #grab all messages that where not send yet (sent ==0)
 			msg = cur.fetchone(); 	#Grab first record and build a message: if you change table fields order you need to change following lines as well.
-			out_id = int(msg[0]) 	#Record ID - only DB info,
-			out_node_id = msg[3] 	#Node ID
-			out_child_id = msg[4] 	#Child ID of the node where sensor/relay is attached.
-			out_sub_type = msg[5] 	#Command Type
-			out_ack = msg[6] 		#Ack req/resp
-			out_type = msg[7]  		#Type
-			out_payload = msg[8] 	#Payload to send out.
-			sent = msg[9] 			#Status of message either its sent or not. (1 for sent, 0 for not sent yet)
+			msg_to_index = dict(
+			(d[0], i)
+			for i, d
+			in enumerate(cur.description)
+			)
+			out_id = int(msg[msg_to_index['id']])                   #Record ID - only DB info,
+			out_node_id = msg[msg_to_index['node_id']]              #Node ID
+			out_child_id = msg[msg_to_index['child_id']]            #Child ID of the node where sensor/relay is attached.
+			out_sub_type = msg[msg_to_index['sub_type']]            #Command Type
+			out_ack = msg[msg_to_index['ack']]                      #Ack req/resp
+			out_type = msg[msg_to_index['type']]                    #Type
+			out_payload = msg[msg_to_index['payload']]              #Payload to send out.
+			sent = msg[msg_to_index['sent']]                        #Status of message either its sent or not. (1 for sent, 0 for not sent yet)
 			cur.execute('SELECT type FROM `nodes` where node_id = (%s)', (out_node_id, ))
 			nd = cur.fetchone();
-			node_type = nd[0]
+			node_to_index = dict(
+			(d[0], i)
+			for i, d
+			in enumerate(cur.description)
+			)
+			node_type = nd[node_to_index['type']]
 			if dbgLevel >= 1 and dbgMsgOut == 1: # Debug print to screen
 				print(bc.grn + "\nTotal Messages to Sent:      ",count, bc.ENDC) # Print how many Messages we have to send out.
 				print("Date & Time:                 ",time.ctime())
@@ -397,8 +412,13 @@ try:
 					if count > 0:
 						cur.execute('SELECT * FROM `node_id` where sent = 0 Limit 1;') # MySQL query statement
 						node_row = cur.fetchone();
-						out_id = node_row[0]		#Record ID - only DB info
-						new_node_id = node_row[3]	# Node ID from Table
+						node_id_to_index = dict(
+						(d[0], i)
+						for i, d
+						in enumerate(cur.description)
+						)
+						out_id = node_row[node_id_to_index['id']]                #Record ID - only DB info
+						new_node_id = node_row[node_id_to_index['node_id']]        # Node ID from Table
 						msg = str(node_id) 			#Broadcast Node ID
 						msg += ';' 					#Separator
 						msg += str(child_sensor_id) #Child ID of the Node.
