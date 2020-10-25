@@ -187,7 +187,7 @@ if (isset($_POST['submit'])) {
         $query = "select * from schedule_daily_time_zone_view where time_id = {$time_id}";
         $zoneresults = $conn->query($query);
 } else {
-        $query = "select zone.id as tz_id, zone.name as zone_name, zone.status as tz_status, zone_type.type, zone_type.category FROM zone, zone_type WHERE zone.type_id = zone_type.id AND status = 1 AND zone.`purge`= 0 ORDER BY index_id asc;";
+        $query = "select zone.id as tz_id, zone.name as zone_name, zone.status as tz_status, zone_type.type, zone_type.category, zone_sensors.max_c FROM zone, zone_type, zone_sensors WHERE (zone.type_id = zone_type.id) AND (zone.id = zone_sensors.zone_id) AND status = 1 AND zone.`purge`= 0 ORDER BY index_id asc;";
 	$zoneresults = $conn->query($query);
 }
 ?>
@@ -329,17 +329,14 @@ if (isset($_POST['submit'])) {
 									$c_f = settings($conn, 'c_f');
     									if(($c_f==1 || $c_f=='1') AND ($row["type"]=='Heating')) {
 										$min = 50;
-										$max = 85;
 									}elseif (($c_f==1 || $c_f=='1') AND ($row["type"]=='Water' OR $row["type"]=='Immersion')) {
 										$min = 50;
-										$max = 170;
 									}elseif (($c_f==0 || $c_f=='0') AND ($row["type"]=='Heating')) {
 										$min = 10;
-										$max = 30;
 									}elseif (($c_f==0 || $c_f=='0') AND ($row["type"]=='Water' OR $row["type"]=='Immersion')) {
 										$min = 10;
-										$max = 80;
 									}
+									$max = $row['max_c'];
         								if(!isset($_GET['nid'])) {
 										//<!-- Zone Coop Enable Checkbox -->
 								        	if($time_id != 0){ $check = ($row['coop'] == 1) ? 'checked' : ''; }

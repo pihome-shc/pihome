@@ -144,6 +144,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 			110 - Add-On */
 
 			$zone_mode_main=floor($zone_mode/10)*10;
+			$zone_mode_sub=floor($zone_mode%10);
 
 			//Zone sub mode - running/ stopped different types
 		/*	0 - stopped (above cut out setpoint or not running in this mode)

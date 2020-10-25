@@ -82,20 +82,23 @@ if($what=="holidays"){
 	}elseif ($opp=="delete") {
 		$query = "SELECT * FROM schedule_daily_time_zone WHERE holidays_id = '".$wid."'";
 		$results = $conn->query($query);
-		while ($row = mysqli_fetch_assoc($results)) {
-			$hid = $row['schedule_daily_time_id'];
-			$schedule_time[$sch_time_index] = $hid;
-			$sch_time_index = $sch_time_index+1;
-		}
-		$query = "UPDATE holidays SET holidays.purge = '1', WHERE id = '".$wid."'";
-		$conn->query($query);
-		$query = "UPDATE schedule_daily_time_zone SET schedule_daily_time_zone.purge = '1' WHERE holidays_id = '".$wid."';";
-		$conn->query($query);
-		for ($x = 0; $x <= $sch_time_index; $x++) {
-			$query = "UPDATE schedule_daily_time set schedule_daily_time.purge = '1' WHERE id = '".$schedule_time[$x]."';";
-			$conn->query($query);
-		}
-	}
+                $hcount = $results->num_rows;
+                if ($hcount == 0) {
+                        while ($row = mysqli_fetch_assoc($results)) {
+                                $hid = $row['schedule_daily_time_id'];
+                                $schedule_time[$sch_time_index] = $hid;
+                                $sch_time_index = $sch_time_index+1;
+                        }
+                        $query = "UPDATE schedule_daily_time_zone SET schedule_daily_time_zone.purge = '1' WHERE holidays_id = '".$wid."';";
+                        $conn->query($query);
+                        for ($x = 0; $x <= $sch_time_index; $x++) {
+                                $query = "UPDATE schedule_daily_time set schedule_daily_time.purge = '1' WHERE id = '".$schedule_time[$x]."';";
+                                $conn->query($query);
+                        }
+                }
+                $query = "DELETE FROM holidays WHERE id = '".$wid."'";
+                $conn->query($query);
+        }
 }
 
 //Users accounts
