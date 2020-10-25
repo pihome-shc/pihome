@@ -55,6 +55,17 @@ if (isset($result)) {
 	echo mysql_error()."\n";
 }
 
+//Delete Zone Graphs data older then 1 days. 
+$query = "DELETE FROM zone_graphs WHERE datetime < DATE_SUB(curdate(), INTERVAL 1 DAY);";
+$result = $conn->query($query);
+if (isset($result)) {
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Graphs Records Delete from Tables \n"; 
+}else {
+	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Graphs Records Delete from Tables Failed\n";
+	echo mysql_error()."\n";
+}
+
+
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Database Cleanup Script Ended \n"; 
 echo "\033[32m**************************************************************\033[0m  \n";
 if(isset($conn)) { $conn->close();}
