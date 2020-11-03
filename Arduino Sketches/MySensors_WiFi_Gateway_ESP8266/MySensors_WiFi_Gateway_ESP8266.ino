@@ -12,78 +12,11 @@
 // *                                          Have Fun - PiHome.eu *
 // *****************************************************************
 
-
-/**
- * The MySensors Arduino library handles the wireless radio link and protocol
- * between your home built sensors/actuators and HA controller of choice.
- * The sensors forms a self healing radio network with optional repeaters. Each
- * repeater and gateway builds a routing tables in EEPROM which keeps track of the
- * network topology allowing messages to be routed to nodes.
- *
- * Created by Henrik Ekblad <henrik.ekblad@mysensors.org>
- * Copyright (C) 2013-2015 Sensnology AB
- * Full contributor list: https://github.com/mysensors/Arduino/graphs/contributors
- *
- * Documentation: http://www.mysensors.org
- * Support Forum: http://forum.mysensors.org
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2 as published by the Free Software Foundation.
- *
- *******************************
- *
- * REVISION HISTORY
- * Version 1.0 - Henrik EKblad
- * Contribution by a-lurker and Anticimex,
- * Contribution by Norbert Truchsess <norbert.truchsess@t-online.de>
- * Contribution by Ivo Pullens (ESP8266 support)
- *
- * DESCRIPTION
- * The EthernetGateway sends data received from sensors to the WiFi link.
- * The gateway also accepts input on ethernet interface, which is then sent out to the radio network.
- *
- * VERA CONFIGURATION:
- * Enter "ip-number:port" in the ip-field of the Arduino GW device. This will temporarily override any serial configuration for the Vera plugin.
- * E.g. If you want to use the defualt values in this sketch enter: 192.168.178.66:5003
- *
- * LED purposes:
- * - To use the feature, uncomment any of the MY_DEFAULT_xx_LED_PINs in your sketch, only the LEDs that is defined is used.
- * - RX (green) - blink fast on radio message recieved. In inclusion mode will blink fast only on presentation recieved
- * - TX (yellow) - blink fast on radio message transmitted. In inclusion mode will blink slowly
- * - ERR (red) - fast blink on error during transmission error or recieve crc error
- *
- * See http://www.mysensors.org/build/esp8266_gateway for wiring instructions.
- * nRF24L01+  ESP8266
- * VCC        VCC
- * CE         GPIO4
- * CSN/CS     GPIO15
- * SCK        GPIO14
- * MISO       GPIO12
- * MOSI       GPIO13
- * GND        GND
- *
- * Not all ESP8266 modules have all pins available on their external interface.
- * This code has been tested on an ESP-12 module.
- * The ESP8266 requires a certain pin configuration to download code, and another one to run code:
- * - Connect REST (reset) via 10K pullup resistor to VCC, and via switch to GND ('reset switch')
- * - Connect GPIO15 via 10K pulldown resistor to GND
- * - Connect CH_PD via 10K resistor to VCC
- * - Connect GPIO2 via 10K resistor to VCC
- * - Connect GPIO0 via 10K resistor to VCC, and via switch to GND ('bootload switch')
- *
-  * Inclusion mode button:
- * - Connect GPIO5 via switch to GND ('inclusion switch')
- *
- * Hardware SHA204 signing is currently not supported!
- *
- * Make sure to fill in your ssid and WiFi password below for ssid & pass.
- */
-
-
-
 // Enable debug prints to serial monitor
 #define MY_DEBUG
+
+//Define Sketch Version 
+#define SKETCH_VERSION "0.2"
 
 // Use a bit lower baudrate for serial prints on ESP8266 than default in MyConfig.h
 #define MY_BAUD_RATE 9600
@@ -91,90 +24,46 @@
 // Enables and select radio type (if attached)
 #define MY_RADIO_NRF24
 //#define MY_RADIO_RFM69
-//#define MY_RADIO_RFM95
 
-//NRF Radio Related Custom Configuration. 
 #define MY_RF24_PA_LEVEL RF24_PA_MAX
 //#define MY_DEBUG_VERBOSE_RF24
 
 // RF channel for the sensor net, 0-127
-#define MY_RF24_CHANNEL	91
+#define MY_RF24_CHANNEL 91
+
 //RF24_250KBPS for 250kbs, RF24_1MBPS for 1Mbps, or RF24_2MBPS for 2Mbps
-#define RF24_DATARATE 	   RF24_250KBPS
+#define MY_RF24_DATARATE RF24_250KBPS
+
+//#define MY_ENCRYPTION_SIMPLE_PASSWD "pihome2019"
+
+//#define MY_SIGNING_SIMPLE_PASSWD "pihome2019"
+
+#define MY_INDICATION_HANDLER
+
+// Flash leds on rx/tx/err
+// Led pins used if blinking feature is enabled above
+#define MY_DEFAULT_ERR_LED_PIN 16  // Error led pin
+#define MY_DEFAULT_RX_LED_PIN  16  // Receive led pin
+#define MY_DEFAULT_TX_LED_PIN  16  // the PCB, on board LED
+#define MY_WITH_LEDS_BLINKING_INVERSE
+
+// Set blinking period
+#define MY_DEFAULT_LED_BLINK_PERIOD 400
+
 
 #define MY_GATEWAY_ESP8266
-#include <ESP8266WiFi.h>          //https://github.com/esp8266/Arduino
 
-//needed for library
-#include <DNSServer.h>
-#include <ESP8266WebServer.h>
-#include <WiFiManager.h>          //https://github.com/kentaylor/WiFiManager
-#include <DoubleResetDetector.h>  //https://github.com/datacute/DoubleResetDetector
+//#define MY_WIFI_SSID "MySSID"
+//#define MY_WIFI_PASSWORD "MyVerySecretPassword"
+#define MY_HOSTNAME "ESP8266_GW"
 
-// Number of seconds after reset during which a 
-// subseqent reset will be considered a double reset.
-#define DRD_TIMEOUT 10
-
-// RTC Memory Address for the DoubleResetDetector to use
-#define DRD_ADDRESS 0
-
-DoubleResetDetector drd(DRD_TIMEOUT, DRD_ADDRESS);
-// Indicates whether ESP has WiFi credentials saved from previous session, or double reset detected
-bool initialConfig = false;
-
-void setup() {
-     Serial.begin(115200);
-  Serial.println("\n Starting");
-  WiFi.printDiag(Serial); //Remove this line if you do not want to see WiFi password printed
-  if (WiFi.SSID()==""){
-    Serial.println("We haven't got any access point credentials, so get them now");   
-    initialConfig = true;
-  }
-  if (drd.detectDoubleReset()) {
-    Serial.println("Double Reset Detected");
-    initialConfig = true;
-  }
-  if (initialConfig) {
-    Serial.println("Starting configuration portal.");
-    //Local intialization. Once its business is done, there is no need to keep it around
-    WiFiManager wifiManager;
-
-    //sets timeout in seconds until configuration portal gets turned off.
-    //If not specified device will remain in configuration mode until
-    //switched off via webserver or device is restarted.
-    //wifiManager.setConfigPortalTimeout(600);
-
-    //it starts an access point 
-    //and goes into a blocking loop awaiting configuration
-    if (!wifiManager.startConfigPortal()) {
-      Serial.println("Not connected to WiFi but continuing anyway.");
-    } else {
-      //if you get here you have connected to the WiFi
-      Serial.println("connected...yeey :)");
-    }
-    ESP.reset(); // This is a bit crude. For some unknown reason webserver can only be started once per boot up 
-    // so resetting the device allows to go back into config mode again when it reboots.
-    delay(5000);
-  }
-	
-  WiFi.mode(WIFI_STA); // Force to station mode because if device was switched off while in access point mode it will start up next time in access point mode.
-  unsigned long startedAt = millis();
-  Serial.print("After waiting ");
-  int connRes = WiFi.waitForConnectResult();
-  float waited = (millis()- startedAt);
-  Serial.print(waited/1000);
-  Serial.print(" secs in setup() connection result is ");
-  Serial.println(connRes);
-  if (WiFi.status()!=WL_CONNECTED){
-    Serial.println("failed to connect, finishing setup anyway");
-  } else{
-    Serial.print("local ip: ");
-    Serial.println(WiFi.localIP());
-  }
-}
 
 // Enable UDP communication
-//#define MY_USE_UDP // If using UDP you need to set MY_CONTROLLER_IP_ADDRESS below
+//#define MY_USE_UDP
+
+// Set the hostname for the WiFi Client. This is the hostname
+// it will pass to the DHCP server if not static.
+//#define MY_ESP8266_HOSTNAME "PiHome_Gateway"
 
 // Enable MY_IP_ADDRESS here if you want a static ip address (no DHCP)
 //#define MY_IP_ADDRESS 192,168,99,4
@@ -197,28 +86,128 @@ void setup() {
 //#define MY_INCLUSION_MODE_FEATURE
 
 // Enable Inclusion mode button on gateway
-// #define MY_INCLUSION_BUTTON_FEATURE
+//#define MY_INCLUSION_BUTTON_FEATURE
 // Set inclusion mode duration (in seconds)
 //#define MY_INCLUSION_MODE_DURATION 60
 // Digital pin used for inclusion mode button
-//#define MY_INCLUSION_MODE_BUTTON_PIN  3
-
-
-// Set blinking period
-#define MY_DEFAULT_LED_BLINK_PERIOD 300
-
-// Flash leds on rx/tx/err
-// Led pins used if blinking feature is enabled above
-#define MY_DEFAULT_ERR_LED_PIN 16  // Error led pin
-#define MY_DEFAULT_RX_LED_PIN  16  // Receive led pin
-#define MY_DEFAULT_TX_LED_PIN  16  // the PCB, on board LED
+//#define MY_INCLUSION_MODE_BUTTON_PIN D1
 
 #if defined(MY_USE_UDP)
 #include <WiFiUdp.h>
 #endif
 
+
+
+#include <WiFiClient.h>
+
+
+#include <ESP8266WiFi.h>          //https://github.com/esp8266/Arduino
+//needed for library
+#include <DNSServer.h>
+#include <ESP8266WebServer.h>
+#include <WiFiManager.h>         //https://github.com/tzapu/WiFiManager
+//#include <ESP8266mDNS.h>		 // Makes the WiFi Gateway accessible throught http://pihomegw.local
+
+
+ESP8266WebServer WebServer(80);
+//Gateway Web Interface Stats 
+unsigned long startTime=millis();
+unsigned long MsgTx = 0;
+unsigned long MsgRx = 0;
+unsigned long GWMsgTx = 0;
+unsigned long GWMsgRx = 0;
+unsigned long GWErTx = 0;
+unsigned long GWErVer = 0;
+unsigned long GWErTran = 0;
+
+
+//String WebPage = "<h1>PiHome Smart Home Gateway</h1>";
+String WebPage = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\" name=\"viewport\" content=\"width=device-width, initial-scale=1, user-scalable=no\"/><title>PiHome Smart Home Gateway</title></head><body>";
+
+
+void setupWebServer();
+void showRootPage();
+String readableTimestamp(unsigned long milliseconds);
+
+
+const char* host = "pihomegw";
 #include <MySensors.h>
 
+//for LED status
+#include <Ticker.h>
+Ticker ticker;
+
+void tick(){
+  //toggle state
+  int state = digitalRead(16);  // get the current state of GPIO1 pin
+  digitalWrite(16, !state);     // set pin to the opposite state
+}
+
+//gets called when WiFiManager enters configuration mode
+void configModeCallback (WiFiManager *myWiFiManager) {
+  Serial.println("Smart Home Gateway Entered WiFi Config Mode!!!");
+  Serial.println(WiFi.softAPIP());
+  //if you used auto generated SSID, print it
+  Serial.println(myWiFiManager->getConfigPortalSSID());
+  //entered config mode, make led toggle faster
+  ticker.attach(0.2, tick);
+}
+
+void setup(){
+	//set led pin as output
+	pinMode(16, OUTPUT);
+	
+	wifi_station_set_hostname("pihomegw");
+	//start ticker with 0.5 because we start in AP mode and try to connect
+	ticker.attach(0.6, tick);
+  
+	//Local intialization. Once its business is done, there is no need to keep it around
+	WiFiManager wifiManager;
+	
+	//WiFihostname("PiHome_Gateway");
+	//reset saved settings
+	//wifiManager.resetSettings();
+    
+	//set callback that gets called when connecting to previous WiFi fails, and enters Access Point mode
+	wifiManager.setAPCallback(configModeCallback);
+	
+	//set custom ip for portal
+    wifiManager.setAPStaticIPConfig(IPAddress(10,0,1,1), IPAddress(10,0,1,1), IPAddress(255,255,255,0));
+
+	//sets timeout until configuration portal gets turned off useful to make it all retry or go to sleep in seconds
+	wifiManager.setTimeout(500);
+	
+	//fetches ssid and pass and tries to connect if it does not connect it starts an access point with the specified name here  "AutoConnectAP" and goes into a blocking loop awaiting configuration
+	if(!wifiManager.autoConnect("PiHome_AP")) {
+		Serial.println("Smart Home Gateway Failed to Connect and Hit Timeout");
+		delay(3000);
+		//reset and try again, or maybe put it to deep sleep
+		ESP.reset();
+		delay(5000);
+	}
+
+	//WiFi.hostname(host);
+	//Serial.println(WiFi.hostname());
+	/*
+	if (!MDNS.begin(host)){
+		Serial.println("error starting MDNS responder!");
+	}
+	Serial.println("mDNS responder started");
+	server.begin();
+	MDNS.addService("http", "tcp", 80);
+	
+*/
+	
+	//if you get here you have connected to the WiFi
+	Serial.println("Smart Home Gateway Connected to your WiFi Successfully");
+	ticker.detach();
+	//keep LED on
+	digitalWrite(16, LOW);
+	
+	Serial.begin(9600);
+	setupWebServer();
+  
+}
 
 void presentation()
 {
@@ -226,12 +215,105 @@ void presentation()
 }
 
 
-void loop()
+void loop(){
+WebServer.handleClient();
+}
+
+void setupWebServer(){
+  WebServer.on("/", HTTP_GET, showRootPage);
+  WebServer.begin();
+  Serial.println("WebServer started...");
+}
+
+void indication( const indication_t ind ){
+	switch (ind) {
+		case INDICATION_TX:
+		MsgTx++;
+		break;
+
+		case INDICATION_RX:
+		MsgRx++;
+		break;
+		
+		case INDICATION_GW_TX:
+		GWMsgTx++;
+		break;		
+		
+		case INDICATION_GW_RX:
+		GWMsgRx++;
+		break;
+		
+	 
+		case INDICATION_ERR_TX:
+		GWErTx++;
+		break;
+    
+		case INDICATION_ERR_VERSION:
+		GWErVer++;
+		break;
+		
+		case INDICATION_ERR_INIT_GWTRANSPORT:
+		GWErTran++;
+		break;
+    default:
+    break;
+  };
+}
+
+void showRootPage()
 {
-  // Call the double reset detector loop method every so often,
-  // so that it can recognise when the timeout expires.
-  // You can also call drd.stop() when you wish to no longer
-  // consider the next reset as a double reset.
-	drd.loop();
-	// Send locally attached sensors data here
+  unsigned long runningTime = millis() - startTime;
+  String page = WebPage;
+  
+  page+="<div style='text-align:center;display:inline-block;min-width:300px;'><h2>PiHome Smart Home Gateway</h2><h4>General Information</h4>";
+  page+="<style>body{text-align: center;font-family:verdana;font-size:1rem;} tr, td {border-bottom:1px solid #ff8839;padding:10px;text-align:left;} tr:hover {background-color: #ffede2;}</style>";
+//  page+="<table style=\"width:400\">";
+  page+="<table align=\"center\">";
+
+//Message Related 
+	page+="<tr>"; page+= "<td>Gateway Up Time</td>"; page+= "<td>"; page += readableTimestamp(runningTime); page+= "</td>"; page+="</tr>";
+	
+	page+="<tr>"; page+= "<td>Wi-Fi SSID</td>"; page+= "<td>"; page += WiFi.SSID(); page+= "</td>"; page+="</tr>";
+	page+="<tr>"; page+= "<td>Wi-Fi Signal</td>"; page+= "<td>"; page += WiFi.RSSI(); page+= "</td>"; page+="</tr>";
+	//page+="<tr>"; page+= "<td>Hostname</td>"; page+= "<td>"; page += WiFi.hostname(); page+= "</td>"; page+="</tr>";
+	page+="<tr>"; page+= "<td>MAC Address</td>"; page+= "<td>"; page += WiFi.macAddress(); page+= "</td>"; page+="</tr>";
+	page+="<tr>"; page+= "<td>Free Memory</td>"; page+= "<td>"; page += ESP.getFreeHeap(); page+= "</td>"; page+="</tr>";
+	
+	page+="<tr>"; page+= "<td>Network Transmited Messages</td>"; page+= "<td>"; page += MsgTx; page+= "</td>"; page+="</tr>";
+	page+="<tr>"; page+= "<td>Network Received Messages</td>"; page+= "<td>"; page += MsgRx; page+= "</td>"; page+="</tr>";
+	page+="<tr>"; page+= "<td>Gateway Transmit Message</td>"; page+= "<td>"; page += GWMsgTx; page+= "</td>"; page+="</tr>";
+	page+="<tr>"; page+= "<td>Gateway Received Message</td>"; page+= "<td>"; page += GWMsgRx; page+= "</td>"; page+="</tr>";
+	page+="<tr>"; page+= "<td>Gateway Failed to Transmit Message</td>"; page+= "<td>"; page += GWErTx; page+= "</td>"; page+="</tr>";
+	page+="<tr>"; page+= "<td>Gateway Protocol Version Mismatch</td>"; page+= "<td>"; page += GWErVer; page+= "</td>"; page+="</tr>";
+	page+="<tr>"; page+= "<td>Gateway Transport Hardware Failure</td>"; page+= "<td>"; page += GWErTran; page+= "</td>"; page+="</tr>";
+	page+="<tr>"; page+= "<td>Gateway Sketch Version</td>"; page+= "<td>"; page += SKETCH_VERSION; page+= "</td>"; page+="</tr>";
+	
+	page+="</table></div></body></html>";
+
+  Serial.println("Smart Home Gateway Served Web Interface");
+  WebServer.send(200, "text/html", page);
+}
+
+String readableTimestamp(unsigned long milliseconds)
+{
+  int days = milliseconds / 86400000;
+
+  milliseconds=milliseconds % 86400000;
+  int hours = milliseconds / 3600000;
+  milliseconds = milliseconds %3600000;
+
+   int minutes = milliseconds / 60000;
+   milliseconds = milliseconds % 60000;
+
+   int seconds = milliseconds / 1000;
+   milliseconds = milliseconds % 1000;
+
+    String timeStamp;
+    timeStamp = days; timeStamp += " days, ";
+    timeStamp += hours; timeStamp += ":";
+    timeStamp += minutes ; timeStamp +=  ":";
+    timeStamp +=seconds; timeStamp += ".";
+    timeStamp +=milliseconds;
+    Serial.println(timeStamp);
+    return timeStamp;
 }
