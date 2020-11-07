@@ -110,6 +110,8 @@ MyMessage msgBatt(CHILD_ID_BATT, V_VOLTAGE);
 MyMessage msgBattLevel(CHILD_ID_BATT, V_VAR1);
 
 // Dallas Temperature related init
+ #define TEMPERATURE_PRECISION 12 // Temperature resolution
+ sensors.setResolution(TEMPERATURE_PRECISION);
 OneWire oneWire(ONE_WIRE_BUS); // Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
 DallasTemperature sensors(&oneWire); // Pass the oneWire reference to Dallas Temperature. 
 float lastTemperature[MAX_ATTACHED_DS18B20];
