@@ -7,6 +7,8 @@ $lang['login'] = "Login";
 $lang['sign_in'] = "Please Sign In";
 $lang['build'] = "Build";
 $lang['powerd_by_rpi'] = "Powered By: Raspberry Pi";
+$lang['wifi_connect'] = "Connect To WiFi";
+$lang['set_reboot'] = "Set and Reboot";
 $lang['lang_en'] = "English";
 $lang['lang_pt'] = "Portuguese";
 $lang['lang_fr'] = "Français";
@@ -66,6 +68,8 @@ $lang['pass_empty'] = "Password is empty";
 $lang['user_pass_error'] = "Username/Password combination incorrect. Please make sure your caps lock key is off and try again.";
 $lang['user_logout'] = "You are now logged out.";
 $lang['please_wait_text'] = "Please wait while the system grabs the latest information from the database.";
+$lang['ssid_empty'] = "SSID is empty";
+$lang['ssid_pass_empty'] = "SSID and Password is empty.";
 
 $lang['one_touch'] = "One Touch";
 $lang['schedule_active_today'] = "Active Schedules for Today.";
