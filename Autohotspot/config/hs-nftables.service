@@ -1,0 +1,11 @@
+[Unit]
+Description=Activate NFtables for Hotspot
+After=network-pre.target
+Before=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/etc/nftables-hs
+
+[Install]
+WantedBy=multi-user.target
