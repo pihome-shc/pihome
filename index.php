@@ -37,8 +37,23 @@ require_once(__DIR__.'/st_inc/functions.php');
 //setcookie("PiHomeLanguage", $lang, time()+(3600*24*90));
 //require_once (__DIR__.'/languages/'.$_COOKIE['PiHomeLanguage'].'.php');
 
+//check is associated with a local wifi network
+$localSSID = exec("/sbin/iwconfig wlan0 | grep 'ESSID'  ");
+if(strpos($localSSID, 'ESSID:') !== false) {
+        $wifi_connected = 1;
+} else {
+        $wifi_connected = 0;
+}
+//check if ethernet connection is available
+$eth_found = exec("sudo /usr/sbin/ifconfig eth0 | grep 'inet '");
+if(strpos($eth_found, 'inet ') !== false) {
+        $eth_connected = 1;
+} else {
+        $eth_connected = 0;
+}
+//$wifi_connected = 0;
  // start process if data is passed from url  http://192.168.99.9/index.php?user=username&pass=password
-    if(isset($_GET['user']) && isset($_GET['password'])) {
+    if(($wifi_connected == 1 || $eth_connected == 1) && isset($_GET['user']) && isset($_GET['password'])) {
 		$username = $_GET['user'];
 		$password = $_GET['password'];
 		// perform validations on the form data
@@ -62,7 +77,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 				// Set username session variable
 				$_SESSION['user_id'] = $found_user['id'];
 				$_SESSION['username'] = $found_user['username'];
-				
+
 				if(!empty($_POST["remember"])) {
 					setcookie ("user_login",$_POST["username"],time()+ (10 * 365 * 24 * 60 * 60));
 					setcookie ("pass_login",$_POST["password"],time()+ (10 * 365 * 24 * 60 * 60));
@@ -82,7 +97,7 @@ require_once(__DIR__.'/st_inc/functions.php');
 				if(isset($_SESSION['url'])) {
 					$url = $_SESSION['url']; // holds url for last page visited.
 				}else {
-					$url = "index.php"; // default page for 
+					$url = "index.php"; // default page for
 				}
 			redirect_to($url);
 			}
@@ -90,88 +105,130 @@ require_once(__DIR__.'/st_inc/functions.php');
 	}
 
 	if (isset($_POST['submit'])) {
-		if( (((!isset($_POST['username'])) || (empty($_POST['username']))) && (((!isset($_POST['password'])) || (empty($_POST['password'])))) )){
-			$error_message = $lang['user_pass_empty'];
-		} elseif ((!isset($_POST['username'])) || (empty($_POST['username']))) {
-			$error_message = $lang['user_empty'];
-		} elseif((!isset($_POST['password'])) || (empty($_POST['password']))) {
-			$error_message = $lang['pass_empty'];
-		} 
-
-		$username = mysqli_real_escape_string($conn, $_POST['username']);
-		$password = mysqli_real_escape_string($conn,(md5($_POST['password'])));
-
-		//get client ip address 
-		if (!empty($_SERVER["HTTP_CLIENT_IP"])){
-			//check for ip from share internet
-			$ip = $_SERVER["HTTP_CLIENT_IP"];
-		}elseif (!empty($_SERVER["HTTP_X_FORWARDED_FOR"])){
-			// Check for the Proxy User
-			$ip = $_SERVER["HTTP_X_FORWARDED_FOR"];
-		}else{
-			$ip = $_SERVER["REMOTE_ADDR"]; 
-		}
-		//set date and time 
-		$lastlogin= date("Y-m-d H:i:s");		
-
-		if ( !isset($error_message) ) {
-			// Check database to see if username and the hashed password exist there.
-			$query = "SELECT id, username FROM user WHERE username = '{$username}' AND password = '{$password}';";
-			$result_set = $conn->query($query);
-			if (mysqli_num_rows($result_set) == 1) {
-				// username/password authenticated
-				$found_user = mysqli_fetch_array($result_set);
-				// Set username session variable
-				$_SESSION['user_id'] = $found_user['id'];
-        		$_SESSION['username'] = $found_user['username'];
-				
-				if(!empty($_POST["remember"])) {
-					setcookie ("user_login",$_POST["username"],time()+ (10 * 365 * 24 * 60 * 60));
-					setcookie ("pass_login",$_POST["password"],time()+ (10 * 365 * 24 * 60 * 60));
-				} else {
-					if(isset($_COOKIE["user_login"])) {
-						// set the expiration date to one hour ago
-						setcookie("user_login", "", time() - 3600);
-						setcookie("pass_login", "", time() - 3600);
-					}
-				}
-
-				// add entry to database if login is success
-				$query = "INSERT INTO userhistory(username, password, date, audit, ipaddress) VALUES ('{$username}', '{$password}', '{$lastlogin}', 'Successful', '{$ip}')";
-				$conn->query($query);
-				// Set Language cookie if doesn't exist
-				if(!isset($_COOKIE['PiHomeLanguage'])) {
-					$query = "SELECT language FROM system;";
-					$result = $conn->query($query);
-					$row = mysqli_fetch_assoc($result);
-					if (mysqli_num_rows($result) == 1) {
-						$lang = $row['language'];
-						setcookie("PiHomeLanguage", $lang, time()+(3600*24*90));
-						header("Location: " . $_SERVER['HTTP_REFERER']);
-					}
-				}
-				
-        		// Jump to secured page
-				if(isset($_SESSION['url'])) {
-					$url = $_SESSION['url']; // holds url for last page visited.
-				}else {
-					$url = "index.php"; // default page for 
-				}
-				redirect_to($url);
-			} else {
-				// add entry to database if login is success
-				$query = "INSERT INTO userhistory(username, password, date, audit, ipaddress) VALUES ('{$username}', '{$password}', '{$lastlogin}', 'Failed', '{$ip}')";
-				$result = $conn->query($query);
-				// username/password was not found in the database
-				$error_message = $lang['user_pass_error'];
+		if ($wifi_connected == 1 || $eth_connected == 1) {
+			if( (((!isset($_POST['username'])) || (empty($_POST['username']))) && (((!isset($_POST['password'])) || (empty($_POST['password'])))) )){
+				$error_message = $lang['user_pass_empty'];
+			} elseif ((!isset($_POST['username'])) || (empty($_POST['username']))) {
+				$error_message = $lang['user_empty'];
+			} elseif((!isset($_POST['password'])) || (empty($_POST['password']))) {
+				$error_message = $lang['pass_empty'];
 			}
-		} 
+
+			$username = mysqli_real_escape_string($conn, $_POST['username']);
+			$password = mysqli_real_escape_string($conn,(md5($_POST['password'])));
+
+			//get client ip address
+			if (!empty($_SERVER["HTTP_CLIENT_IP"])){
+				//check for ip from share internet
+				$ip = $_SERVER["HTTP_CLIENT_IP"];
+			}elseif (!empty($_SERVER["HTTP_X_FORWARDED_FOR"])){
+				// Check for the Proxy User
+				$ip = $_SERVER["HTTP_X_FORWARDED_FOR"];
+			}else{
+				$ip = $_SERVER["REMOTE_ADDR"];
+			}
+			//set date and time
+			$lastlogin= date("Y-m-d H:i:s");
+
+			if ( !isset($error_message) ) {
+				// Check database to see if username and the hashed password exist there.
+				$query = "SELECT id, username FROM user WHERE username = '{$username}' AND password = '{$password}';";
+				$result_set = $conn->query($query);
+				if (mysqli_num_rows($result_set) == 1) {
+					// username/password authenticated
+					$found_user = mysqli_fetch_array($result_set);
+					// Set username session variable
+					$_SESSION['user_id'] = $found_user['id'];
+        				$_SESSION['username'] = $found_user['username'];
+
+					if(!empty($_POST["remember"])) {
+						setcookie ("user_login",$_POST["username"],time()+ (10 * 365 * 24 * 60 * 60));
+						setcookie ("pass_login",$_POST["password"],time()+ (10 * 365 * 24 * 60 * 60));
+					} else {
+						if(isset($_COOKIE["user_login"])) {
+							// set the expiration date to one hour ago
+							setcookie("user_login", "", time() - 3600);
+							setcookie("pass_login", "", time() - 3600);
+						}
+					}
+
+					// add entry to database if login is success
+					$query = "INSERT INTO userhistory(username, password, date, audit, ipaddress) VALUES ('{$username}', '{$password}', '{$lastlogin}', 'Successful', '{$ip}')";
+					$conn->query($query);
+					// Set Language cookie if doesn't exist
+					if(!isset($_COOKIE['PiHomeLanguage'])) {
+						$query = "SELECT language FROM system;";
+						$result = $conn->query($query);
+						$row = mysqli_fetch_assoc($result);
+						if (mysqli_num_rows($result) == 1) {
+							$lang = $row['language'];
+							setcookie("PiHomeLanguage", $lang, time()+(3600*24*90));
+							header("Location: " . $_SERVER['HTTP_REFERER']);
+						}
+					}
+
+        			// Jump to secured page
+					if(isset($_SESSION['url'])) {
+						$url = $_SESSION['url']; // holds url for last page visited.
+					}else {
+						$url = "index.php"; // default page for
+					}
+					redirect_to($url);
+				} else {
+					// add entry to database if login is success
+					$query = "INSERT INTO userhistory(username, password, date, audit, ipaddress) VALUES ('{$username}', '{$password}', '{$lastlogin}', 'Failed', '{$ip}')";
+					$result = $conn->query($query);
+					// username/password was not found in the database
+					$error_message = $lang['user_pass_error'];
+				}
+			}
+		} else {
+                        if( (((!isset($_POST['ssid'])) || (empty($_POST['ssid']))) && (((!isset($_POST['password'])) || (empty($_POST['password'])))) )){
+                                $error_message = $lang['ssid_pass_empty'];
+                        } elseif ((!isset($_POST['ssid'])) || (empty($_POST['ssid']))) {
+                                $error_message = $lang['ssid_empty'];
+                        } elseif((!isset($_POST['password'])) || (empty($_POST['password']))) {
+                                $error_message = $lang['pass_empty'];
+                        }
+			$ssid = mysqli_real_escape_string($conn, $_POST['ssid']);
+                        $password = mysqli_real_escape_string($conn, $_POST['password']);
+
+			$wpa_conf='/etc/wpa_supplicant/wpa_supplicant.conf';
+    			$reading = fopen($wpa_conf, 'r');
+    			$writing = fopen('myfile.tmp', 'w');
+    			$replaced = false;
+    			while (!feof($reading)) {
+      				$line = fgets($reading);
+      				if (stristr($line,'ssid="')) {
+        				$line = '    ssid="'.$ssid.'"';
+        				$line = $line."\n";
+        				$replaced = true;
+      				}
+                                if (stristr($line,'psk="')) {
+                                        $line = '    psk="'.$password.'"';
+                                        $line = $line."\n";
+                                        $replaced = true;
+                                }
+      				fputs($writing, $line);
+    			}
+    			fclose($reading); fclose($writing);
+    			// might as well not overwrite the file if we didn't replace anything
+    			if ($replaced)
+    				{
+      					exec("sudo mv myfile.tmp ".$wpa_conf);
+    				} else {
+      					exec("rm myfile.tmp");
+    				}
+        		exec("sudo reboot");
+		}
+
 	} else { // Form has not been submitted.
 		if (isset($_GET['logout']) && $_GET['logout'] == 1) {
 			$info_message = $lang['user_logout'];
-		} 
+		}
 	}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -235,61 +292,89 @@ html {
 }
 </style>
 <body>
-    <div class="container">
-        <div class="row">
-		<br><br>
-		<h6 class="text-center"><img src="images/pi-home_logo.png" height="64"> <br><br><?php  echo settings($conn, 'name') ;?></h6>
-            <div class="col-md-4 col-md-offset-4">
-                <div class="login-panel panel panel-primary">
-                    <div class="panel-heading">
-                      <?php echo $lang['sign_in']; ?>
-                    </div>
-                    <div class="panel-body">
-					<div class="row">
-					
-                        <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>" role="form">
-						<?php include("notice.php");  ?>
+	<div class="container">
+        	<div class="row">
+			<br><br>
+			<h6 class="text-center"><img src="images/pi-home_logo.png" height="64"> <br><br><?php  echo settings($conn, 'name') ;?></h6>
+            		<div class="col-md-4 col-md-offset-4">
+                		<div class="login-panel panel panel-primary">
+                    			<?php 
+					if ($wifi_connected == 1 || $eth_connected == 1) {
+						echo '<div class="panel-heading">'.$lang['sign_in'].'</div>';
+					} else {
+                                                echo '<div class="panel-heading">'.$lang['wifi_connect'].'</div>';
+					}
+           				echo '<div class="panel-body">
+						<div class="row">
+                        				<form method="post" action="'.$_SERVER['PHP_SELF'].'" role="form">';
+								include("notice.php");
+								echo '<br>
+                            					<fieldset>
+                                					<div class="form-group">';
+										if ($wifi_connected == 1 || $eth_connected == 1) {
+											echo '<input class="form-control" placeholder="User Name" name="username" type="input" value="';
+											if(isset($_COOKIE["user_login"])) { echo $_COOKIE["user_login"]; }
+											echo '" autofocus>';
+										} else {
+											echo '<select class="form-control input-sm" type="text" id="ssid" name="ssid" >';
+											$command= "sudo /usr/sbin/iwlist wlan0 scan | grep ESSID";
+											//$command= "sudo wifi scan";
+											$output = array();
+											exec("$command 2>&1 &", $output);
+        										$arrayLength = count($output);
+        										$i = 0;
+        										while ($i < $arrayLength) {
+                										preg_match('/"([^"]+)"/', trim($output[$i]), $result);
+												echo '<option value="'.$result[1].'">'.$result[1].'</option>';
+                										$i++;
+        										}
+											echo '</select>';
+										}
+									echo '</div>
+
+                                					<div class="form-group">
+                                						<input class="form-control" placeholder="Password" name="password" type="password" value="';
+										if(isset($_COOKIE["pass_login"])) { echo $_COOKIE["pass_login"]; }
+                                					echo '"></div>';
+                                        				if ($wifi_connected == 1 || $eth_connected == 1) {
+										echo '<div class="field-group">
+											<div class="checkbox checkbox-default checkbox-circle">
+												<input id="checkbox1" class="styled" type="checkbox" name="remember" ';
+												if(isset($_COOKIE["user_login"])) { echo 'checked >'; }
+													echo '<label for="checkbox1"> Remember me</label>';
+											echo '</div>
+										</div>
+										<input type="submit" name="submit" value="'.$lang['login'].'" class="btn btn-block btn-default btn-block login"/>';
+									} else {
+                                                                                echo '<input type="submit" name="submit" value="'.$lang['set_reboot'].'" class="btn btn-block btn-default btn-block login"/>';
+									}
+                            					echo '</fieldset>
+                        				</form>
 							<br>
-                            <fieldset>
-                                <div class="form-group">
-								<input class="form-control" placeholder="User Name" name="username" type="input" value="<?php if(isset($_COOKIE["user_login"])) { echo $_COOKIE["user_login"]; } ?>" autofocus>
-								</div>
-								
-                                <div class="form-group">
-                                <input class="form-control" placeholder="Password" name="password" type="password" value="<?php if(isset($_COOKIE["pass_login"])) { echo $_COOKIE["pass_login"]; } ?>">
-                                </div>
-								
-								<div class="field-group">
-								<div class="checkbox checkbox-default checkbox-circle">
-								<input id="checkbox1" class="styled" type="checkbox" name="remember" <?php if(isset($_COOKIE["user_login"])) { ?> checked <?php } ?> >
-								<label for="checkbox1"> Remember me</label></div>
-								</div>
-								<input type="submit" name="submit" value="<?php echo $lang['login']; ?>" class="btn btn-block btn-default btn-block login"/>
-                            </fieldset>
-                        </form>
-						<br>
-								<h3 class="text-right">
-								<small>
-								<?php $languages = ListLanguages(settings($conn, 'language'));
-								for ($x = 0; $x <= count($languages) - 1; $x++) {
-									echo '<a class="text-info" style="text-decoration: none;" href="languages.php?lang='.$languages[$x][0].'" title="'.$languages[$x][1].'">'.$languages[$x][1].'</a>';
-									if ($x <= count($languages) - 2) { echo ' - '; }
-								 } ?>	
+							<h3 class="text-right">
+								<small>';
+									$languages = ListLanguages(settings($conn, 'language'));
+									for ($x = 0; $x <= count($languages) - 1; $x++) {
+										echo '<a class="text-info" style="text-decoration: none;" href="languages.php?lang='.$languages[$x][0].'" title="'.$languages[$x][1].'">'.$languages[$x][1].'</a>';
+										if ($x <= count($languages) - 2) { echo ' - '; }
+							 		} ?>
 								</small>
-								</h3>
-                    </div></div>	
-<!--<div class="panel-footer">	</div> -->
-                 </div>
-        </div>
-    </div>
-	<div class="col-md-8 col-md-offset-2">
-	<div class="login-panel-foother">
-	<h6><?php echo settings($conn, 'name').' '.settings($conn, 'version')."&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;".$lang['build']." ".settings($conn, 'build'); ?>&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;<?php echo $lang['powerd_by_rpi']; ?></h6>
-	<br><br>
-	<h6><a style="color: #707070;" href="https://en.wikipedia.org/wiki/<?php echo substr($lang['dedicated_to'], strpos($lang['dedicated_to'], ":") + 2, strlen($lang['dedicated_to']) - strpos($lang['dedicated_to'], ":")); ?>" target="_blank" ><?php echo $lang['dedicated_to']; ?></a></h6>
+							</h3>
+                    				</div>
+					</div>
+					<!--<div class="panel-footer">	
+					</div> -->
+                 		</div>
+        		</div>
+    		</div>
+		<div class="col-md-8 col-md-offset-2">
+			<div class="login-panel-foother">
+				<h6><?php echo settings($conn, 'name').' '.settings($conn, 'version')."&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;".$lang['build']." ".settings($conn, 'build'); ?>&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;<?php echo $lang['powerd_by']; ?></h6>
+				<br><br>
+				<h6><a style="color: #707070;" href="https://en.wikipedia.org/wiki/<?php echo substr($lang['dedicated_to'], strpos($lang['dedicated_to'], ":") + 2, strlen($lang['dedicated_to']) - strpos($lang['dedicated_to'], ":")); ?>" target="_blank" ><?php echo $lang['dedicated_to']; ?></a></h6>
+			</div>
+		</div>
 	</div>
-	</div>
-</div>
 
     <!-- jQuery -->
     <script src="js/jquery.js"></script>
