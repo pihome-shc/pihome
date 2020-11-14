@@ -37,6 +37,15 @@ require_once(__DIR__.'/st_inc/functions.php');
 //setcookie("PiHomeLanguage", $lang, time()+(3600*24*90));
 //require_once (__DIR__.'/languages/'.$_COOKIE['PiHomeLanguage'].'.php');
 
+//check id wlan0 interface is flagged as working in AP mode
+$query = "SELECT ap_mode FROM network_settings WHERE interface_type = 'wlan0';";
+$result_set = $conn->query($query);
+if (mysqli_num_rows($result_set) == 1) {
+	$found = mysqli_fetch_array($result_set);
+	$ap_mode = $found['ap_mode'];
+} else {
+        $ap_mode = 0;
+}
 //check is associated with a local wifi network
 $localSSID = exec("/sbin/iwconfig wlan0 | grep 'ESSID'  ");
 if(strpos($localSSID, 'ESSID:') !== false) {
@@ -53,7 +62,7 @@ if(strpos($eth_found, 'inet ') !== false) {
 }
 //$wifi_connected = 0;
  // start process if data is passed from url  http://192.168.99.9/index.php?user=username&pass=password
-    if(($wifi_connected == 1 || $eth_connected == 1) && isset($_GET['user']) && isset($_GET['password'])) {
+    if(($wifi_connected == 1 || $eth_connected == 1 || $ap_mode == 1) && isset($_GET['user']) && isset($_GET['password'])) {
 		$username = $_GET['user'];
 		$password = $_GET['password'];
 		// perform validations on the form data
@@ -105,7 +114,7 @@ if(strpos($eth_found, 'inet ') !== false) {
 	}
 
 	if (isset($_POST['submit'])) {
-		if ($wifi_connected == 1 || $eth_connected == 1) {
+		if ($wifi_connected == 1 || $eth_connected == 1 || $ap_mode == 1) {
 			if( (((!isset($_POST['username'])) || (empty($_POST['username']))) && (((!isset($_POST['password'])) || (empty($_POST['password'])))) )){
 				$error_message = $lang['user_pass_empty'];
 			} elseif ((!isset($_POST['username'])) || (empty($_POST['username']))) {
@@ -183,45 +192,64 @@ if(strpos($eth_found, 'inet ') !== false) {
 				}
 			}
 		} else {
-                        if( (((!isset($_POST['ssid'])) || (empty($_POST['ssid']))) && (((!isset($_POST['password'])) || (empty($_POST['password'])))) )){
-                                $error_message = $lang['ssid_pass_empty'];
-                        } elseif ((!isset($_POST['ssid'])) || (empty($_POST['ssid']))) {
-                                $error_message = $lang['ssid_empty'];
-                        } elseif((!isset($_POST['password'])) || (empty($_POST['password']))) {
-                                $error_message = $lang['pass_empty'];
-                        }
-			$ssid = mysqli_real_escape_string($conn, $_POST['ssid']);
-                        $password = mysqli_real_escape_string($conn, $_POST['password']);
+			if(empty($_POST["ap_mode"])) { //set the ssid and password if not working in AP mode
+	                        if( (((!isset($_POST['ssid'])) || (empty($_POST['ssid']))) && (((!isset($_POST['password'])) || (empty($_POST['password'])))) )){
+        	                        $error_message = $lang['ssid_pass_empty'];
+                	        } elseif ((!isset($_POST['ssid'])) || (empty($_POST['ssid']))) {
+                        	        $error_message = $lang['ssid_empty'];
+	                        } elseif((!isset($_POST['password'])) || (empty($_POST['password']))) {
+        	                        $error_message = $lang['pass_empty'];
+                	        }
+				$ssid = mysqli_real_escape_string($conn, $_POST['ssid']);
+	                        $password = mysqli_real_escape_string($conn, $_POST['password']);
 
-			$wpa_conf='/etc/wpa_supplicant/wpa_supplicant.conf';
-    			$reading = fopen($wpa_conf, 'r');
-    			$writing = fopen('myfile.tmp', 'w');
-    			$replaced = false;
-    			while (!feof($reading)) {
-      				$line = fgets($reading);
-      				if (stristr($line,'ssid="')) {
-        				$line = '    ssid="'.$ssid.'"';
-        				$line = $line."\n";
-        				$replaced = true;
-      				}
-                                if (stristr($line,'psk="')) {
-                                        $line = '    psk="'.$password.'"';
-                                        $line = $line."\n";
-                                        $replaced = true;
-                                }
-      				fputs($writing, $line);
-    			}
-    			fclose($reading); fclose($writing);
-    			// might as well not overwrite the file if we didn't replace anything
-    			if ($replaced)
-    				{
-      					exec("sudo mv myfile.tmp ".$wpa_conf);
-    				} else {
-      					exec("rm myfile.tmp");
+				$wpa_conf='/etc/wpa_supplicant/wpa_supplicant.conf';
+    				$reading = fopen($wpa_conf, 'r');
+    				$writing = fopen('myfile.tmp', 'w');
+	    			$replaced = false;
+    				while (!feof($reading)) {
+      					$line = fgets($reading);
+      					if (stristr($line,'ssid="')) {
+        					$line = '    ssid="'.$ssid.'"';
+        					$line = $line."\n";
+	        				$replaced = true;
+      					}
+                	                if (stristr($line,'psk="')) {
+                        	                $line = '    psk="'.$password.'"';
+                                	        $line = $line."\n";
+                                        	$replaced = true;
+	                                }
+      					fputs($writing, $line);
     				}
-        		exec("sudo reboot");
+    				fclose($reading); fclose($writing);
+	    			// might as well not overwrite the file if we didn't replace anything
+    				if ($replaced)
+    					{
+      						exec("sudo mv myfile.tmp ".$wpa_conf);
+    					} else {
+      						exec("rm myfile.tmp");
+	    				}
+        			exec("sudo reboot");
+			} else {
+				//working in Ap mode set the ap_mode flag in the network settings table
+				$query = "SELECT ap_mode FROM network_settings WHERE interface_type = 'wlan0';";
+				$result_set = $conn->query($query);
+				if (mysqli_num_rows($result_set) == 1) {
+        				$found = mysqli_fetch_array($result_set);
+	        			if ($found['ap_mode'] == 0) {
+						$query = "UPDATE network_settings SET ap_mode = 1 WHERE interface_type = 'wlan0';";
+	        	                        $result = $conn->query($query);
+					}
+				} else {
+					$rowSQL = mysql_query( "SELECT MAX( interface_num ) AS max_interface_num FROM `network_settings`;" );
+					$row = mysql_fetch_array( $rowSQL );
+					$max_interface_num = $row['max_interface_num'] + 1;
+                        		$query = "INSERT INTO network_settings(sync, purge, primary_interface, ap_mode, interface_num, interface_type, mac_address, hostname, ip_address, gateway_address, net_mask, dns1_address, dns2_address) VALUES ('0', '0', '0', '1', '{$max_interface_num}', 'wlan0', '', '', '', '', '', '', '');";
+	                                $result = $conn->query($query);
+				}
+				redirect_to('index.php');
+			}
 		}
-
 	} else { // Form has not been submitted.
 		if (isset($_GET['logout']) && $_GET['logout'] == 1) {
 			$info_message = $lang['user_logout'];
@@ -311,7 +339,7 @@ html {
 								echo '<br>
                             					<fieldset>
                                 					<div class="form-group">';
-										if ($wifi_connected == 1 || $eth_connected == 1) {
+										if ($wifi_connected == 1 || $eth_connected == 1 || $ap_mode == 1) {
 											echo '<input class="form-control" placeholder="User Name" name="username" type="input" value="';
 											if(isset($_COOKIE["user_login"])) { echo $_COOKIE["user_login"]; }
 											echo '" autofocus>';
@@ -336,7 +364,7 @@ html {
                                 						<input class="form-control" placeholder="Password" name="password" type="password" value="';
 										if(isset($_COOKIE["pass_login"])) { echo $_COOKIE["pass_login"]; }
                                 					echo '"></div>';
-                                        				if ($wifi_connected == 1 || $eth_connected == 1) {
+                                        				if ($wifi_connected == 1 || $eth_connected == 1 || $ap_mode == 1) {
 										echo '<div class="field-group">
 											<div class="checkbox checkbox-default checkbox-circle">
 												<input id="checkbox1" class="styled" type="checkbox" name="remember" ';
@@ -346,7 +374,13 @@ html {
 										</div>
 										<input type="submit" name="submit" value="'.$lang['login'].'" class="btn btn-block btn-default btn-block login"/>';
 									} else {
-                                                                                echo '<input type="submit" name="submit" value="'.$lang['set_reboot'].'" class="btn btn-block btn-default btn-block login"/>';
+                                                                                echo '<div class="field-group">
+                                                                                        <div class="checkbox checkbox-default checkbox-circle">
+                                                                                                <input id="checkbox2" class="styled" type="checkbox" name="ap_mode" >';
+                                                                                                        echo '<label for="checkbox2"> AP Mode</label>';
+                                                                                        echo '</div>
+                                                                                </div>
+                                                                                <input type="submit" name="submit" value="'.$lang['set_reboot'].'" class="btn btn-block btn-default btn-block login"/>';
 									}
                             					echo '</fieldset>
                         				</form>
