@@ -350,6 +350,7 @@ CREATE TABLE IF NOT EXISTS `network_settings` (
   `sync` tinyint(4) NOT NULL,
   `purge` tinyint(4) NOT NULL COMMENT 'Mark For Deletion',
   `primary_interface` tinyint(4),
+  `ap_mode` tinyint(1),
   `interface_num` tinyint(4),
   `interface_type` char(50) COLLATE utf16_bin,
   `mac_address` char(50) COLLATE utf16_bin,
