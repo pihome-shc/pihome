@@ -1186,6 +1186,14 @@ echo '
                 <div class="help-block with-errors">
                 </div>
         </div>
+        <div class="form-group" class="control-label"><label>'.$lang['network_ap_mode'].'</label>
+                <select class="form-control input-sm" type="text" id="n_ap_mode" name="n_ap_mode">
+                <option selected value=0>No</option>
+                <option value=1>Yes</option>
+                </select>
+                <div class="help-block with-errors">
+                </div>
+        </div>
         <div class="form-group" class="control-label"><label>'.$lang['network_mac_address'].'</label>
                 <input class="form-control input-sm" type="text" id="n_mac" name="n_mac" value="'.$rowArray[0]['mac_address'].'" placeholder="MAC Address">
                 <div class="help-block with-errors">
