@@ -8,7 +8,7 @@ $lang['sign_in'] = "Please Sign In";
 $lang['build'] = "Build";
 $lang['powerd_by_rpi'] = "Powered By: Raspberry Pi";
 $lang['wifi_connect'] = "Connect To WiFi";
-$lang['set_reboot'] = "Set and Reboot";
+$lang['set_reboot'] = "Set and Restart";
 $lang['lang_en'] = "English";
 $lang['lang_pt'] = "Portuguese";
 $lang['lang_fr'] = "Français";
@@ -444,6 +444,7 @@ $lang['network_net_mask'] = "Controller Net Mask";
 $lang['network_dns1_address'] = "Controller DNS1 Address";
 $lang['network_dns2_address'] = "Controller DNS2 Address";
 $lang['network_primary'] = "Controller Primary Interface";
+$lang['network_ap_mode'] = "Operate as Access Point";
 
 $lang['add_on'] = "Add On";
 $lang['add_on_http'] = "HTTP";
