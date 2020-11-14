@@ -856,6 +856,7 @@ if($what=="setup_gateway"){
 //network Settings
 if($what=="setup_network"){
         $n_primary = $_GET['n_primary'];
+        $n_ap_mode = $_GET['n_ap_mode'];
         $n_int_num = $_GET['n_int_num'];
         $n_int_type = $_GET['n_int_type'];
         $n_mac = $_GET['n_mac'];
@@ -871,10 +872,10 @@ if($what=="setup_network"){
         $result = $conn->query($query);
         if (mysqli_num_rows($result)==0){
                 //No record, so add
-                $query = "INSERT INTO `network_settings`(`sync`, `purge`, `primary_interface`, `interface_num`, `interface_type`, `mac_address`, `hostname`, `ip_address`, `gateway_address`, `net_mask`, `dns1_address`, `dns2_address`) VALUES (0,0,'".$n_primary."','".$n_int_num."','".$n_int_type."','".$n_mac."','".$n_hostname."','".$n_ip."','".$n_gateway."','".$n_net_mask."','".$n_dns1."','".$n_dns2."');";
+                $query = "INSERT INTO `network_settings`(`sync`, `purge`, `primary_interface`, `ap_mode`, `interface_num`, `interface_type`, `mac_address`, `hostname`, `ip_address`, `gateway_address`, `net_mask`, `dns1_address`, `dns2_address`) VALUES (0,0,'".$n_primary."','"$n_ap_mode."','".$n_int_num."','".$n_int_type."','".$n_mac."','".$n_hostname."','".$n_ip."','".$n_gateway."','".$n_net_mask."','".$n_dns1."','".$n_dns2."');";
         } else {
                 //Update
-                $query = "UPDATE `network_settings` SET primary_interface = '".$n_primary."', interface_type = '".$n_int_type."', mac_address = '".$n_mac."', hostname = '".$n_hostname."', ip_address = '".$n_ip."', gateway_address = '".$n_gateway."', net_mask = '".$n_net_mask."', dns1_address = '".$n_dns1."', dns2_address = '".$n_dns2."' where interface_num = '".$n_int_num."';";
+                $query = "UPDATE `network_settings` SET primary_interface = '".$n_primary."', ap_mode = '".$n_ap_mode."', interface_type = '".$n_int_type."', mac_address = '".$n_mac."', hostname = '".$n_hostname."', ip_address = '".$n_ip."', gateway_address = '".$n_gateway."', net_mask = '".$n_net_mask."', dns1_address = '".$n_dns1."', dns2_address = '".$n_dns2."' where interface_num = '".$n_int_num."';";
         }
         if($conn->query($query)){
                 header('Content-type: application/json');
