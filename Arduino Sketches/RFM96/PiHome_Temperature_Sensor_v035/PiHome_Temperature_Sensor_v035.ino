@@ -117,6 +117,7 @@ MyMessage msgBattLevel(CHILD_ID_BATT, V_VAR1);
 // Dallas Temperature related init
 OneWire oneWire(ONE_WIRE_BUS); // Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
 DallasTemperature sensors(&oneWire); // Pass the oneWire reference to Dallas Temperature.
+#define TEMPERATURE_PRECISION 12 // Temperature resolution
 float lastTemperature[MAX_ATTACHED_DS18B20];
 int numSensors=0;
 bool receivedConfig = false;
@@ -137,6 +138,7 @@ void setup(){
   digitalWrite(ledpin, LOW);
   // requestTemperatures() will not block current thread
   sensors.setWaitForConversion(false);
+  sensors.setResolution(TEMPERATURE_PRECISION);
   // needed for battery soc
   // use the 1.1 V internal reference
   #if defined(__AVR_ATmega2560__)
@@ -227,6 +229,10 @@ void loop(){
   int16_t conversionTime = sensors.millisToWaitForConversion(sensors.getResolution());
   //sleep() call can be replaced by wait() call if node need to process incoming messages (or if node is repeater)
   sleep(conversionTime);
+  #ifdef MY_DEBUG
+    Serial.print("Conversion Time: ");
+    Serial.println(conversionTime);
+  #endif
   // Read temperatures and send them to controller
   for (int i=0; i<numSensors && i<MAX_ATTACHED_DS18B20; i++) {
     // Fetch and round temperature to one decimal
