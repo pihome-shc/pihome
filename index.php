@@ -37,32 +37,38 @@ require_once(__DIR__.'/st_inc/functions.php');
 //setcookie("PiHomeLanguage", $lang, time()+(3600*24*90));
 //require_once (__DIR__.'/languages/'.$_COOKIE['PiHomeLanguage'].'.php');
 
-//check id wlan0 interface is flagged as working in AP mode
-$query = "SELECT ap_mode FROM network_settings WHERE interface_type = 'wlan0';";
-$result_set = $conn->query($query);
-if (mysqli_num_rows($result_set) == 1) {
-	$found = mysqli_fetch_array($result_set);
-	$ap_mode = $found['ap_mode'];
-} else {
-        $ap_mode = 0;
-}
-//check is associated with a local wifi network
-$localSSID = exec("/sbin/iwconfig wlan0 | grep 'ESSID'  ");
-if(strpos($localSSID, 'ESSID:') !== false) {
-        $wifi_connected = 1;
-} else {
-        $wifi_connected = 0;
-}
-//check if ethernet connection is available
-$eth_found = exec("sudo /usr/sbin/ifconfig eth0 | grep 'inet '");
-if(strpos($eth_found, 'inet ') !== false) {
-        $eth_connected = 1;
-} else {
+if (file_exists("/etc/systemd/system/autohotspot.service") == 1) {
+        $no_ap = 1;
+	//check id wlan0 interface is flagged as working in AP mode
+	$query = "SELECT ap_mode FROM network_settings WHERE interface_type = 'wlan0';";
+	$result_set = $conn->query($query);
+	if (mysqli_num_rows($result_set) == 1) {
+		$found = mysqli_fetch_array($result_set);
+		$ap_mode = $found['ap_mode'];
+	} else {
+        	$ap_mode = 0;
+	}
+	//check is associated with a local wifi network
+	$localSSID = exec("/sbin/iwconfig wlan0 | grep 'ESSID'  ");
+	if(strpos($localSSID, 'ESSID:') !== false) {
+        	$wifi_connected = 1;
+	} else {
+        	$wifi_connected = 0;
+	}
+	//check if ethernet connection is available
+	$eth_found = exec("sudo /usr/sbin/ifconfig eth0 | grep 'inet '");
+	if(strpos($eth_found, 'inet ') !== false) {
+        	$eth_connected = 1;
+	} else {
         $eth_connected = 0;
+	}
+} else {
+        $no_ap = 0;
 }
+
 //$wifi_connected = 0;
  // start process if data is passed from url  http://192.168.99.9/index.php?user=username&pass=password
-    if(($wifi_connected == 1 || $eth_connected == 1 || $ap_mode == 1) && isset($_GET['user']) && isset($_GET['password'])) {
+    if(($no_ap == 0 || $wifi_connected == 1 || $eth_connected == 1 || $ap_mode == 1) && isset($_GET['user']) && isset($_GET['password'])) {
 		$username = $_GET['user'];
 		$password = $_GET['password'];
 		// perform validations on the form data
@@ -114,7 +120,7 @@ if(strpos($eth_found, 'inet ') !== false) {
 	}
 
 	if (isset($_POST['submit'])) {
-		if ($wifi_connected == 1 || $eth_connected == 1 || $ap_mode == 1) {
+		if ($no_ap == 0 || $wifi_connected == 1 || $eth_connected == 1 || $ap_mode == 1) {
 			if( (((!isset($_POST['username'])) || (empty($_POST['username']))) && (((!isset($_POST['password'])) || (empty($_POST['password'])))) )){
 				$error_message = $lang['user_pass_empty'];
 			} elseif ((!isset($_POST['username'])) || (empty($_POST['username']))) {
@@ -339,7 +345,7 @@ html {
 								echo '<br>
                             					<fieldset>
                                 					<div class="form-group">';
-										if ($wifi_connected == 1 || $eth_connected == 1 || $ap_mode == 1) {
+										if ($no_ap == 0 || $wifi_connected == 1 || $eth_connected == 1 || $ap_mode == 1) {
 											echo '<input class="form-control" placeholder="User Name" name="username" type="input" value="';
 											if(isset($_COOKIE["user_login"])) { echo $_COOKIE["user_login"]; }
 											echo '" autofocus>';
@@ -364,7 +370,7 @@ html {
                                 						<input class="form-control" placeholder="Password" name="password" type="password" value="';
 										if(isset($_COOKIE["pass_login"])) { echo $_COOKIE["pass_login"]; }
                                 					echo '"></div>';
-                                        				if ($wifi_connected == 1 || $eth_connected == 1 || $ap_mode == 1) {
+                                        				if ($no_ap == 0 || $wifi_connected == 1 || $eth_connected == 1 || $ap_mode == 1) {
 										echo '<div class="field-group">
 											<div class="checkbox checkbox-default checkbox-circle">
 												<input id="checkbox1" class="styled" type="checkbox" name="remember" ';
