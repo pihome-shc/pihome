@@ -233,7 +233,7 @@ if (!$db_selected) {
 		//Adding Zone Type Records 
 		echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Adding Zone Type\n";
 		$datetime = date('Y-m-d H:i:s');
-		$query_zone_type = "insert INTO `zone_type` (`purge`, `sync`, `type`, `category`) VALUES (0, 0, 'Heating', 0), ('Water', 0), (0, 0, 'Immersion', 1), (0, 0, 'Lamp', 2);";
+		$query_zone_type = "insert INTO `zone_type` (`purge`, `sync`, `type`, `category`) VALUES (0, 0, 'Heating', 0), (0, 0, 'Water', 0), (0, 0, 'Immersion', 1), (0, 0, 'Lamp', 2);";
 		$results = $conn->query($query_zone_type);
 		if ($results) {
 				echo  "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Zone Type Records Added \033[41mZone Type\033[0m Data Succeeded \n";
