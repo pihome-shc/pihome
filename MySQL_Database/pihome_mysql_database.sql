@@ -364,8 +364,8 @@ CREATE TABLE IF NOT EXISTS `network_settings` (
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf16 COLLATE=utf16_bin;
 
 -- Dumping data for table pihome.network_settings: ~0 rows (approximately)
-/*!40000 ALTER TABLE `system` DISABLE KEYS */;
-/*!40000 ALTER TABLE `system` ENABLE KEYS */;
+/*!40000 ALTER TABLE `network_settings` DISABLE KEYS */;
+/*!40000 ALTER TABLE `network_settings` ENABLE KEYS */;
 
 -- Dumping structure for table pihome.nodes
 DROP TABLE IF EXISTS `nodes`;
