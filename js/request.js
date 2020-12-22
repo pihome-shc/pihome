@@ -670,7 +670,7 @@ function update_email(){
     $.get('db.php',idata)
     .done(function(odata){
         if(odata.Success)
-            reload_page();
+            $("#user_email_Modal").modal("dispose");
         else
             console.log(odata.Message);
     })
