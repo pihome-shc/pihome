@@ -374,7 +374,7 @@ html {
 										echo '<div class="field-group">
 											<div class="checkbox checkbox-default checkbox-circle">
 												<input id="checkbox1" class="styled" type="checkbox" name="remember" ';
-												if(isset($_COOKIE["user_login"])) { echo 'checked >'; }
+												if(isset($_COOKIE["user_login"])) { echo 'checked >'; } else {  echo '>'; }
 													echo '<label for="checkbox1"> Remember me</label>';
 											echo '</div>
 										</div>
