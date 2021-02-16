@@ -567,6 +567,18 @@ if($what=="user_email"){
                 $user_id = $_SESSION['user_id'];
                 $query = "UPDATE `user` SET `email`= '{$email_add}' WHERE id = '{$user_id}';";
                 if($conn->query($query)){
+                         $update_error=0;
+                }else{
+                         $update_error=1;
+                }
+		//re-read to ensure update is sync'd before the page is reloaded
+		$query = "SELECT `email` FROM `user` WHERE id = '{$user_id}';";
+                if($conn->query($query)){
+                         $update_error=0;
+                }else{
+                         $update_error=1;
+                }
+                if($update_error == 0){
                         header('Content-type: application/json');
                         echo json_encode(array('Success'=>'Success','Query'=>$query));
                         return;
