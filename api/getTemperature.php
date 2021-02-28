@@ -48,10 +48,23 @@ if(isset($_GET['zonename'])) {
                 	http_response_code(400);
                 	echo json_encode(array("success" => False, "state" => "Sensor has not reported in the last 24 hours."));
         	} else {
-		        $zone_c = $sensor['payload'];
-        		http_response_code(200);
-        		echo json_encode(array("success" => True, "state" => $zone_c));
-		}
+		        $zone_temp = $sensor['payload'];
+				$zone_time = $sensor['datetime'];
+
+				//query to get battery info from nodes_battery table
+				$query = "SELECT * FROM nodes_battery WHERE node_id = '{$zone_sensor_id}' ORDER BY id desc LIMIT 1;";
+				$result = $conn->query($query);
+				$node = mysqli_fetch_array($result);
+				if(! $node) {
+                	http_response_code(200);
+        			echo json_encode(array("success" => True, "state" => $zone_temp, "datetime" => $zone_time));
+				} else {
+					$zone_bat_voltage = $node['bat_voltage'];
+					$zone_bat_level = $node['bat_level'];
+        			http_response_code(200);
+        			echo json_encode(array("success" => True, "state" => $zone_temp, "datetime" => $zone_time, "bat_voltage" => $zone_bat_voltage, "bat_level" => $zone_bat_level));
+				}
+			}
 	}
 } else {
         http_response_code(400);
