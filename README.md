@@ -36,14 +36,6 @@ A real documentation (currently there's none, but the code is self explanatory a
 
 Follow Instructions on [PiHome](http://www.pihome.eu "PiHome - Smart Heating Control") if you have any question drop me comments and i will do my best to reply as soon as humanely possible. 
 
-![alt text](http://www.pihome.eu/images/pihome_one_touch.png "PiHome - Smart Heating Control - One Touch")
-
-![alt text](http://www.pihome.eu/images/pihome_graphs.png "PiHome - Smart Heating Control - Heating Graps")
-
-![alt text](http://www.pihome.eu/images/pihome_temperature_graps.png "PiHome - Smart Heating Control - Temperature Graps")
-
-![alt text](http://www.pihome.eu/images/pihome_settings.png "PiHome - Smart Heating Control - Settings")
-
 ## Requirements
 Basic knowledge of command line with following main components for pihome to function. 
 * Apache Web Server
