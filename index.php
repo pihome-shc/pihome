@@ -56,7 +56,7 @@ if (file_exists("/etc/systemd/system/autohotspot.service") == 1) {
         	$wifi_connected = 0;
 	}
 	//check if ethernet connection is available
-	$eth_found = exec("sudo /usr/sbin/ifconfig eth0 | grep 'inet '");
+	$eth_found = exec("sudo /sbin/ifconfig eth0 | grep 'inet '");
 	if(strpos($eth_found, 'inet ') !== false) {
         	$eth_connected = 1;
 	} else {
