@@ -351,7 +351,7 @@ html {
 											echo '" autofocus>';
 										} else {
 											echo '<select class="form-control input-sm" type="text" id="ssid" name="ssid" >';
-											$command= "sudo /usr/sbin/iwlist wlan0 scan | grep ESSID";
+											$command= "sudo /sbin/iwlist wlan0 scan | grep ESSID";
 											//$command= "sudo wifi scan";
 											$output = array();
 											exec("$command 2>&1 &", $output);
