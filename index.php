@@ -210,8 +210,9 @@ if (file_exists("/etc/systemd/system/autohotspot.service") == 1) {
 	                        $password = mysqli_real_escape_string($conn, $_POST['password']);
 
 				$wpa_conf='/etc/wpa_supplicant/wpa_supplicant.conf';
-    				$reading = fopen($wpa_conf, 'r');
-    				$writing = fopen('myfile.tmp', 'w');
+				exec("sudo cat ".$wpa_conf.">myfile1.tmp");
+    				$reading = fopen('myfile1.tmp', 'r');
+    				$writing = fopen('myfile2.tmp', 'w');
 	    			$replaced = false;
     				while (!feof($reading)) {
       					$line = fgets($reading);
@@ -231,9 +232,10 @@ if (file_exists("/etc/systemd/system/autohotspot.service") == 1) {
 	    			// might as well not overwrite the file if we didn't replace anything
     				if ($replaced)
     					{
-      						exec("sudo mv myfile.tmp ".$wpa_conf);
+      						exec("sudo mv myfile2.tmp ".$wpa_conf);
+						exec("sudo rm myfile1.tmp");
     					} else {
-      						exec("rm myfile.tmp");
+      						exec("sudo rm myfile*.tmp");
 	    				}
         			exec("sudo reboot");
 			} else {
