@@ -10,10 +10,10 @@ ace02c8a941b75e2c922791e4a30b32c  dhcpcd-remove.conf
 807885886aa6a40f30d4c9d480b80c84  dnsmasqAHSN.conf
 25e3152c11d0860428bcb51b25e33441  dnsmasqSHS.conf
 50D80F635B02B8CE58BFA8F260EBA7E7  hostapd
-FAE518A1B2AC3712EAB79BCD04809159  hostapd.conf
+fae518a1b2ac3712eab79bcd04809159  hostapd.conf
 d0f09b7f89ef821edaef58e7b91b313a  hs-iptables.service
 65de69ce894bce4e0705143fc2cfb8d3  hs-nftables.service
 c82e7473bb1490cf4702aaf7b669bb33  interfaces
 fbb31822a27f4acca55acdb8f52d538c  iptables-hs.txt
 A275BC010255C5A95BE487A8C32F8B50  wpa_supplicant.conf
-6E101C28076DD5FB2F4506F912EFCD70  pihome
+37c78100f849d6fe8e2067d56e08b7f0  pihome
