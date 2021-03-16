@@ -37,19 +37,20 @@ if(isset($_GET['zonename'])) {
                 http_response_code(400);
                 echo json_encode(array("success" => False, "state" => "No Zone with that name found."));
         } else {
-	        $zone_sensor_id=$row['sensors_id'];
-        	$zone_sensor_child_id=$row['sensor_child_id'];
+			$zone_id=$row['id'];
+        	$zone_sensor_id=$row['sensors_id'];
 
 	        //query to get temperature from messages_in_view_24h table view
-        	$query = "SELECT * FROM messages_in_view_24h WHERE node_id = '{$zone_sensor_id}' AND child_id = {$zone_sensor_child_id} ORDER BY datetime desc LIMIT 1;";
+        	$query = "SELECT * FROM zone_current_state WHERE id = '{$zone_id}' ORDER BY id desc LIMIT 1;";
 	        $result = $conn->query($query);
-	        $sensor = mysqli_fetch_array($result);
-        	if(! $sensor) {
+	        $zone = mysqli_fetch_array($result);
+        	if(! $zone) {
                 	http_response_code(400);
-                	echo json_encode(array("success" => False, "state" => "Sensor has not reported in the last 24 hours."));
+                	echo json_encode(array("success" => False, "state" => "Zone with this ID."));
         	} else {
-		        $zone_temp = $sensor['payload'];
-				$zone_time = $sensor['datetime'];
+				$zone_status = $zone['status'];
+        		$zone_temp = $zone['temp_reading'];
+				$zone_temp_time = $zone['sensor_reading_time'];
 
 				//query to get battery info from nodes_battery table
 				$query = "SELECT * FROM nodes_battery WHERE node_id = '{$zone_sensor_id}' ORDER BY id desc LIMIT 1;";
@@ -57,12 +58,12 @@ if(isset($_GET['zonename'])) {
 				$node = mysqli_fetch_array($result);
 				if(! $node) {
                 	http_response_code(200);
-        			echo json_encode(array("success" => True, "state" => $zone_temp, "datetime" => $zone_time));
+        			echo json_encode(array("success" => True, "status" => $zone_status, "temp" => $zone_temp, "datetime" => $zone_temp_time));
 				} else {
 					$zone_bat_voltage = $node['bat_voltage'];
 					$zone_bat_level = $node['bat_level'];
         			http_response_code(200);
-        			echo json_encode(array("success" => True, "state" => $zone_temp, "datetime" => $zone_time, "bat_voltage" => $zone_bat_voltage, "bat_level" => $zone_bat_level));
+        			echo json_encode(array("success" => True, "status" => $zone_status, "temp" => $zone_temp, "datetime" => $zone_temp_time, "bat_voltage" => $zone_bat_voltage, "bat_level" => $zone_bat_level));
 				}
 			}
 	}

@@ -1,0 +1,10 @@
+#www-data ALL=(ALL) NOPASSWD:/usr/sbin/iwlist wlan0 scan
+#www-data ALL=(ALL) NOPASSWD:/usr/sbin/reboot
+#www-data ALL=(ALL) NOPASSWD:/usr/bin/mv myfile.tmp /etc/wpa_supplicant/wpa_supplicant.conf
+#www-data ALL=(ALL) NOPASSWD:/usr/sbin/ifconfig eth0
+
+www-data ALL=(ALL) NOPASSWD:/sbin/iwlist wlan0 scan
+www-data ALL=(ALL) NOPASSWD:/sbin/iwconfig wlan0
+www-data ALL=(ALL) NOPASSWD:/sbin/reboot
+www-data ALL=(ALL) NOPASSWD:/sbin/ifconfig eth0
+www-data ALL=(ALL) NOPASSWD:/bin/mv myfile.tmp /etc/wpa_supplicant/wpa_supplicant.conf
