@@ -43,6 +43,6 @@ echo "Backing Up and Updateing /var/lib/homebridge/config.json"
 echo "Adding WebHooks Plugin and  Accessories for Each Zone"
 FILE=/var/lib/homebridge/config.json
 sudo cp -a -- "$FILE" "$FILE-$(date +"%Y%m%d-%H%M%S")"
-/usr/bin/python config_json.py
+/usr/bin/python3 config_json.py
 echo "Restarting Homebridge"
 sudo hb-service restart

@@ -1,11 +1,11 @@
 import json
 import MySQLdb as mdb
-import ConfigParser
+import configparser
 import time
 import collections
 
 # Initialise the database access variables
-config = ConfigParser.ConfigParser()
+config = configparser.ConfigParser()
 config.read('/var/www/st_inc/db_config.ini')
 dbhost = config.get('db', 'hostname')
 dbuser = config.get('db', 'dbusername')
@@ -27,11 +27,11 @@ for row in result:
         if row[0] == 1:
                 sub_d = collections.OrderedDict()
                 sub_d['port'] = port
-                sub_d['on_cmd'] = 'http://127.0.0.1/api/boostSet?zonename=' + row[4].replace(" ", "%20") + '&state=1'
-                sub_d['off_cmd'] = 'http://127.0.0.1/api/boostSet?zonename=' + row[4].replace(" ", "%20") + '&state=0'
-                sub_d['state_cmd'] = 'http://127.0.0.1/api/boostSet?zonename=' + row[4].replace(" ", "%20")
+                sub_d['on_cmd'] = 'http://127.0.0.1/api/boostSet?zonename=' + row[5].replace(" ", "%20") + '&state=1'
+                sub_d['off_cmd'] = 'http://127.0.0.1/api/boostSet?zonename=' + row[5].replace(" ", "%20") + '&state=0'
+                sub_d['state_cmd'] = 'http://127.0.0.1/api/boostSet?zonename=' + row[5].replace(" ", "%20")
                 sub_d['method'] = 'GET'
-                sub_d['name'] = row[4]
+                sub_d['name'] = row[5]
                 sub_d['state_response_on'] = 'on'
                 sub_d['state_response_off'] = 'off'
                 switches.append(sub_d)

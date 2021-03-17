@@ -1,11 +1,11 @@
 import json
 import MySQLdb as mdb
-import ConfigParser
+import configparser
 import time
 import collections
 
 # Initialise the database access variables
-config = ConfigParser.ConfigParser()
+config = configparser.ConfigParser()
 config.read('/var/www/st_inc/db_config.ini')
 dbhost = config.get('db', 'hostname')
 dbuser = config.get('db', 'dbusername')
@@ -44,11 +44,11 @@ switches = []
 for row in result:
         if row[0] == 1:
                 sub_d = collections.OrderedDict()
-                sub_d['id'] = 'switch' + str(row[2])
-                sub_d['name'] = row[4] + ' Zone'
-                sub_d['on_url'] = 'http://127.0.0.1/api/boostSet?zonename=' + row[4] + '&state=1'
+                sub_d['id'] = 'switch' + str(row[3])
+                sub_d['name'] = row[5] + ' Zone'
+                sub_d['on_url'] = 'http://127.0.0.1/api/boostSet?zonename=' + row[5] + '&state=1'
                 sub_d['on_method'] = 'GET'
-                sub_d['off_url'] = 'http://127.0.0.1/api/boostSet?zonename=' + row[4] + '&state=0'
+                sub_d['off_url'] = 'http://127.0.0.1/api/boostSet?zonename=' + row[5] + '&state=0'
                 sub_d['off_method'] = 'GET'
                 switches.append(sub_d)
 d['switches'] = switches
@@ -57,8 +57,8 @@ d['switches'] = switches
 sensors = []
 for row in result:
         sub_d = collections.OrderedDict()
-        sub_d['id'] = 'sensor' + str(row[2])
-        sub_d['name'] = row[4] + ' Temperature'
+        sub_d['id'] = 'sensor' + str(row[3])
+        sub_d['name'] = row[5] + ' Temperature'
         sub_d['type'] = 'temperature'
         sensors.append(sub_d)
 d['sensors'] = sensors
