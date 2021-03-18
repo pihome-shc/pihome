@@ -17,6 +17,7 @@ con = mdb.connect(dbhost, dbuser, dbpass, dbname)
 cur = con.cursor()
 cur.execute("SELECT * FROM zone_view WHERE status  = 1")
 result = cur.fetchall()
+row_to_index = dict((d[0], i) for i, d in enumerate(cur.description))
 cur.close()
 con.close()
 
@@ -24,14 +25,14 @@ src = "/etc/fauxmo/config.json"
 port = 12340
 switches = []
 for row in result:
-        if row[0] == 1:
+        if row[row_to_index['status']] == 1:
                 sub_d = collections.OrderedDict()
                 sub_d['port'] = port
-                sub_d['on_cmd'] = 'http://127.0.0.1/api/boostSet?zonename=' + row[5].replace(" ", "%20") + '&state=1'
-                sub_d['off_cmd'] = 'http://127.0.0.1/api/boostSet?zonename=' + row[5].replace(" ", "%20") + '&state=0'
-                sub_d['state_cmd'] = 'http://127.0.0.1/api/boostSet?zonename=' + row[5].replace(" ", "%20")
+                sub_d['on_cmd'] = 'http://127.0.0.1/api/boostSet?zonename=' + row[row_to_index['name']].replace(" ", "%20") + '&state=1'
+                sub_d['off_cmd'] = 'http://127.0.0.1/api/boostSet?zonename=' + row[row_to_index['name']].replace(" ", "%20") + '&state=0'
+                sub_d['state_cmd'] = 'http://127.0.0.1/api/boostSet?zonename=' + row[row_to_index['name']].replace(" ", "%20")
                 sub_d['method'] = 'GET'
-                sub_d['name'] = row[5]
+                sub_d['name'] = row[row_to_index['name']]
                 sub_d['state_response_on'] = 'on'
                 sub_d['state_response_off'] = 'off'
                 switches.append(sub_d)

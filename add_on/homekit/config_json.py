@@ -42,13 +42,13 @@ d['https'] = False
 # Add switches for active zone controllers
 switches = []
 for row in result:
-        if row[0] == 1:
+        if row[row_to_index['status']] == 1:
                 sub_d = collections.OrderedDict()
-                sub_d['id'] = 'switch' + str(row[3])
-                sub_d['name'] = row[5] + ' Zone'
-                sub_d['on_url'] = 'http://127.0.0.1/api/boostSet?zonename=' + row[5] + '&state=1'
+                sub_d['id'] = 'switch' + str(row[row_to_index['id']])
+                sub_d['name'] = row[row_to_index['name']] + ' Zone'
+                sub_d['on_url'] = 'http://127.0.0.1/api/boostSet?zonename=' + row[row_to_index['name']] + '&state=1'
                 sub_d['on_method'] = 'GET'
-                sub_d['off_url'] = 'http://127.0.0.1/api/boostSet?zonename=' + row[5] + '&state=0'
+                sub_d['off_url'] = 'http://127.0.0.1/api/boostSet?zonename=' + row[row_to_index['name']] + '&state=0'
                 sub_d['off_method'] = 'GET'
                 switches.append(sub_d)
 d['switches'] = switches
@@ -57,8 +57,8 @@ d['switches'] = switches
 sensors = []
 for row in result:
         sub_d = collections.OrderedDict()
-        sub_d['id'] = 'sensor' + str(row[3])
-        sub_d['name'] = row[5] + ' Temperature'
+        sub_d['id'] = 'sensor' + str(row[row_to_index['id']])
+        sub_d['name'] = row[row_to_index['name']] + ' Temperature'
         sub_d['type'] = 'temperature'
         sensors.append(sub_d)
 d['sensors'] = sensors
