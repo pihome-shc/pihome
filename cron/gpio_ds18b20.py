@@ -6,7 +6,7 @@ import configparser
 # Parameters for spike removal and data smoothing
 dT_max = 3   # Maximum difference in tempearture between consecuive readings of the seonsor
 skip_max = 3 # Maximum number of readings skipped if dT is greater than dT_Max
-lamb = 1     # Lambda for expnentila moving average. Value must be between 0 and 1 (lambda = 1 means EMA is disabled)
+alpha = 1     # Alpha for expnential weighted moving average. Value must be between 0 and 1 (alpha = 1 means EWMA is disabled)
 
 update_rate = 60 #Update rate for DS18b20 sensors in seconds
 
@@ -117,7 +117,7 @@ while True:
 							old_temperature[i] = current_temperature
 						if (abs(current_temperature - old_temperature[i]) < dT_max): #If the new reading is within the max range update temperature with the EMA
 							skip_count[i] = 0
-							temperature[i] = (1 - lamb) * old_temperature[i] + lamb * current_temperature
+							temperature[i] = (1 - alpha) * old_temperature[i] + alpha * current_temperature
 						else: #If the new reading is not within the max range return the revious reading
 							skip_count[i] += 1
 							temperature[i] = old_temperature[i]
