@@ -3,8 +3,8 @@
 */30 * * * * /usr/bin/php /var/www/cron/weather_update.php >/dev/null 2>&1
 # */2 * * * * sh /var/www/cron/reboot_wifi.sh >>/var/www/cron/logs/reboot_wifi.log 2>&1
 */2 * * * * sh /var/www/cron/reboot_wifi.sh >/dev/null 2>&1
-*/1 * * * * php /var/www/cron/check_gw.php >/dev/null 2>&1
-#*/1 * * * * python /var/www/cron/gpio_ds18b20.py >/dev/null 2>&1
+*/1 * * * * sudo php /var/www/cron/check_gw.php >/dev/null 2>&1
+*/1 * * * * sudo php /var/www/cron/check_ds18b20.php >/dev/null 2>&1
 */1 * * * * /usr/bin/php /var/www/cron/boiler.php >/dev/null 2>&1
 */1 * * * * /usr/bin/php /var/www/cron/piconnect.php >/dev/null 2>&1
 */30 * * * * python  /var/www/cron/notice.py >/dev/null 2>&1
