@@ -2,6 +2,14 @@
 import time, os, fnmatch, MySQLdb as mdb, logging
 from decimal import Decimal
 import configparser
+
+# Parameters for spike removal and data smoothing
+dT_max = 3   # Maximum difference in tempearture between consecuive readings of the seonsor
+skip_max = 3 # Maximum number of readings skipped if dT is greater than dT_Max
+alpha = 1     # Alpha for expnential weighted moving average. Value must be between 0 and 1 (alpha = 1 means EWMA is disabled)
+
+update_rate = 60 #Update rate for DS18b20 sensors in seconds
+
 class bc:
 	hed = '\033[0;36;40m'
 	dtm = '\033[0;36;40m'
@@ -90,9 +98,10 @@ def insertDB(IDs, temperature):
 		print(bc.dtm + time.ctime() + bc.ENDC + ' - DB Connection Closed: %s' % e)
 
 #Read DS18B20 Sensors and Save Them to MySQL
+temperature = []
+IDs = []
+skip_count = []
 while True:
-	temperature = []
-	IDs = []
 	for filename in os.listdir("/sys/bus/w1/devices"):
 		if fnmatch.fnmatch(filename, '28-*'):
 			with open("/sys/bus/w1/devices/" + filename + "/w1_slave") as fileobj:
@@ -100,12 +109,26 @@ while True:
 				#print lines
 				if lines[0].find("YES"):
 					pok = lines[1].find('=')
-					temperature.append(float(lines[1][pok+1:pok+6])/1000)
-					IDs.append(filename)
+					current_temperature = float(lines[1][pok+1:pok+6])/1000 #Current tempearture reading
+					current_ID = filename #Current sensor ID
+					if (filename in IDs): #Check if data from this sensor had alread been received
+						i = IDs.index(filename) #Find the index for the sensore
+						if (skip_count[i] == skip_max): #If the maximum number of readings as been reached force and update
+							old_temperature[i] = current_temperature
+						if (abs(current_temperature - old_temperature[i]) < dT_max): #If the new reading is within the max range update temperature with the EMA
+							skip_count[i] = 0
+							temperature[i] = (1 - alpha) * old_temperature[i] + alpha * current_temperature
+						else: #If the new reading is not within the max range return the revious reading
+							skip_count[i] += 1
+							temperature[i] = old_temperature[i]
+					else: #If this is a new sensor append it to the end and set the skip count to 0
+						temperature.append(current_temperature)
+						IDs.append(current_ID)
+						skip_count.append(0)
 				else:
 					logger.error("Error reading sensor with ID: %s" % (filename))
+	old_temperature = temperature #Update the previous tempearture record
 	if (len(temperature)>0):
 		insertDB(IDs, temperature)
-		#time.sleep(300)
-		break
+	time.sleep(update_rate)
 
