@@ -29,7 +29,7 @@ print("*                                 Have Fun - PiHome.eu *")
 print("********************************************************")
 print(" " + bc.ENDC)
 
-import MySQLdb as mdb, sys, serial, telnetlib, time, datetime
+import MySQLdb as mdb, sys, serial, telnetlib, time, datetime, os
 import configparser, logging
 from datetime import datetime
 import struct
