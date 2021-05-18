@@ -239,9 +239,11 @@ if($what=="boost"){
 			$boost_button_id = $_GET[$input3];
 			$boost_button_child_id = $_GET[$input4];
 			$zone_id = $_GET[$input5];
-			//Delete all boost console records from messages_out 
-			$query = "DELETE FROM messages_out WHERE node_id = '{$boost_button_id}';";
-			$conn->query($query);
+                        if ($row['boost_button_id'] != 0) {
+                        	//Delete all boost console records from messages_out
+                                $query = "DELETE FROM messages_out WHERE node_id = '{$boost_button_id}';";
+                                $conn->query($query);
+                        }
 			//Update Boost table
 			$query = "UPDATE boost SET minute = '".$minute."', temperature = '".$temperature."', boost_button_id = '".$boost_button_id."', boost_button_child_id = '".$boost_button_child_id."' WHERE id='".$row['id']."' LIMIT 1;";
 			$conn->query($sel_query);
