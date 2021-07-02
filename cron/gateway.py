@@ -101,10 +101,10 @@ try:
 
 	while 1:
 		## Terminate gateway script if no route to network gateway
-		if gatewaytype == "wifi":
-			gateway_up  = True if os.system("ping -c 1 " + gatewaylocation) is 0 else False
-			if not gateway_up:
-				break
+		##if gatewaytype == "wifi":
+		##	gateway_up  = True if os.system("ping -c 1 " + gatewaylocation) is 0 else False
+		##	if not gateway_up:
+		##		break
 	## Outgoing messages
 		con.commit()
 		cur.execute('SELECT COUNT(*) FROM `messages_out` where sent = 0') # MySQL query statement
