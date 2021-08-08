@@ -517,6 +517,7 @@ function GetModal_MQTTAddEdit($conn)
                 <select class="form-control" id="sel_Type" name="sel_Type" >
                     <option value="0" ' . ($IsAdd ? '' : ($row['type'] ? 'selected' : '')) . '>Default - view all</option>
                     <option value="1" ' . ($IsAdd ? '' : ($row['type'] ? 'selected' : '')) . '>Sonoff - Tasmota</option>
+                    <option value="2" ' . ($IsAdd ? '' : ($row['type'] ? 'selected' : '')) . '>Home Assistant - Inegration</option>
                 </select>
             </div>
             </form>';
