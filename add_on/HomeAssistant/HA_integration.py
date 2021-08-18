@@ -160,11 +160,12 @@ def updateSensors():
     for zone in range(ZONES):
         payload_str = payload_str + f'"{HA_Zone_Name[zone]}": ' + '{'
         zone_status = get_zone(zone)
-        payload_str = payload_str + f' "status": {zone_status[0]}'
+        payload_str = payload_str + f' "status": "{zone_status[0]}"'
         payload_str = payload_str + f', "temp": {zone_status[1]}'
-        if len(zone_status) > 2:
-            payload_str = payload_str + f', "batt": {zone_status[2]}'
-            payload_str = payload_str + f', "battV": {zone_status[3]}'
+        payload_str = payload_str + f', "target_temp": {zone_status[2]}'
+        if PiH_Zone_Type[zone] == "MySensor":
+            payload_str = payload_str + f', "batt": {zone_status[3]}'
+            payload_str = payload_str + f', "battV": {zone_status[4]}'
         payload_str = payload_str + ' },'
     payload_str = payload_str + f'"boiler_status": "{get_boiler_status()}"'
     if CHECK_AVAILABLE_UPDATES and not apt_disabled:
@@ -175,7 +176,7 @@ def updateSensors():
         payload_str = payload_str + f', "wifi_ssid": \"{get_wifi_ssid()}\"'
     payload_str = payload_str + "}"
     mqttClient.publish(
-        topic=f"system-sensors/sensor/{deviceName}/state",
+        topic=f"{MQTT_TOPIC}{deviceName}/state",
         payload=payload_str,
         qos=1,
         retain=False,
@@ -273,11 +274,18 @@ def get_zone(zone):
     zone_status = []
     con = mdb.connect(dbhost, dbuser, dbpass, dbname)
     cur = con.cursor()
-    cur.execute('SELECT `status`, `temp_reading` FROM `zone_current_state` WHERE `id` = (%s)', [PiH_Zone_ID[zone]])
+    cur.execute('SELECT `status`, `temp_reading`, `temp_target` FROM `zone_current_state` WHERE `id` = (%s)', [PiH_Zone_ID[zone]])
     results = cur.fetchone()
     con.close()
-    zone_status.append(results[0])
+    if results[0] == 0:
+        zone_status.append("OFF") 
+    else:
+        zone_status.append("ON") 
     zone_status.append(results[1])
+    if results[2] == 0:
+        zone_status.append("\"OFF\"") 
+    else:
+        zone_status.append(results[2])
     if PiH_Zone_Type[zone] == "MySensor":
             con = mdb.connect(dbhost, dbuser, dbpass, dbname)
             cur = con.cursor()
@@ -329,11 +337,11 @@ def send_config_message(mqttClient):
         topic=f"homeassistant/sensor/{deviceName}/temperature/config",
         payload='{"device_class":"temperature",'
                 + f"\"name\":\"{deviceNameDisplay} Temperature\","
-                + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
+                + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
                 + '"unit_of_measurement":"°C",'
                 + '"value_template":"{{value_json.temperature}}",'
                 + f"\"unique_id\":\"{deviceName}_sensor_temperature\","
-                + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
+                + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
                 + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
                 + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"RPI {deviceNameDisplay}\", \"manufacturer\":\"RPI\"}},"
                 + f"\"icon\":\"mdi:thermometer\"}}",
@@ -344,11 +352,11 @@ def send_config_message(mqttClient):
     mqttClient.publish(
         topic=f"homeassistant/sensor/{deviceName}/disk_use/config",
         payload=f"{{\"name\":\"{deviceNameDisplay} Disk Use\","
-                + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
+                + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
                 + '"unit_of_measurement":"%",'
                 + '"value_template":"{{value_json.disk_use}}",'
                 + f"\"unique_id\":\"{deviceName}_sensor_disk_use\","
-                + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
+                + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
                 + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
                 + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"RPI {deviceNameDisplay}\", \"manufacturer\":\"RPI\"}},"
                 + f"\"icon\":\"mdi:micro-sd\"}}",
@@ -359,11 +367,11 @@ def send_config_message(mqttClient):
     mqttClient.publish(
         topic=f"homeassistant/sensor/{deviceName}/memory_use/config",
         payload=f"{{\"name\":\"{deviceNameDisplay} Memory Use\","
-                + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
+                + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
                 + '"unit_of_measurement":"%",'
                 + '"value_template":"{{value_json.memory_use}}",'
                 + f"\"unique_id\":\"{deviceName}_sensor_memory_use\","
-                + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
+                + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
                 + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
                 + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"RPI {deviceNameDisplay}\", \"manufacturer\":\"RPI\"}},"
                 + f"\"icon\":\"mdi:memory\"}}",
@@ -374,11 +382,11 @@ def send_config_message(mqttClient):
     mqttClient.publish(
         topic=f"homeassistant/sensor/{deviceName}/cpu_usage/config",
         payload=f"{{\"name\":\"{deviceNameDisplay} Cpu Usage\","
-                + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
+                + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
                 + '"unit_of_measurement":"%",'
                 + '"value_template":"{{value_json.cpu_usage}}",'
                 + f"\"unique_id\":\"{deviceName}_sensor_cpu_usage\","
-                + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
+                + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
                 + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
                 + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"RPI {deviceNameDisplay}\", \"manufacturer\":\"RPI\"}},"
                 + f"\"icon\":\"mdi:memory\"}}",
@@ -389,10 +397,10 @@ def send_config_message(mqttClient):
     mqttClient.publish(
         topic=f"homeassistant/sensor/{deviceName}/load_1m/config",
         payload=f"{{\"name\":\"{deviceNameDisplay} Load 1m\","
-                + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
+                + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
                 + '"value_template":"{{value_json.load_1m}}",'
                 + f"\"unique_id\":\"{deviceName}_sensor_load_1m\","
-                + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
+                + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
                 + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
                 + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"RPI {deviceNameDisplay}\", \"manufacturer\":\"RPI\"}},"
                 + f"\"icon\":\"mdi:cpu-64-bit\"}}",
@@ -403,10 +411,10 @@ def send_config_message(mqttClient):
     mqttClient.publish(
         topic=f"homeassistant/sensor/{deviceName}/load_5m/config",
         payload=f"{{\"name\":\"{deviceNameDisplay} Load 5m\","
-                + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
+                + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
                 + '"value_template":"{{value_json.load_5m}}",'
                 + f"\"unique_id\":\"{deviceName}_sensor_load_5m\","
-                + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
+                + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
                 + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
                 + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"RPI {deviceNameDisplay}\", \"manufacturer\":\"RPI\"}},"
                 + f"\"icon\":\"mdi:cpu-64-bit\"}}",
@@ -417,10 +425,10 @@ def send_config_message(mqttClient):
     mqttClient.publish(
         topic=f"homeassistant/sensor/{deviceName}/load_15m/config",
         payload=f"{{\"name\":\"{deviceNameDisplay} Load 15m\","
-                + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
+                + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
                 + '"value_template":"{{value_json.load_15m}}",'
                 + f"\"unique_id\":\"{deviceName}_sensor_load_15m\","
-                + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
+                + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
                 + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
                 + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"RPI {deviceNameDisplay}\", \"manufacturer\":\"RPI\"}},"
                 + f"\"icon\":\"mdi:cpu-64-bit\"}}",
@@ -431,11 +439,11 @@ def send_config_message(mqttClient):
     mqttClient.publish(
         topic=f"homeassistant/sensor/{deviceName}/net_tx/config",
         payload=f"{{\"name\":\"{deviceNameDisplay} Network Upload\","
-                + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
+                + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
                 + '"unit_of_measurement":"Kb/sec",'
                 + '"value_template":"{{value_json.net_tx}}",'
                 + f"\"unique_id\":\"{deviceName}_sensor_net_tx\","
-                + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
+                + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
                 + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
                 + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"RPI {deviceNameDisplay}\", \"manufacturer\":\"RPI\"}},"
                 + f"\"icon\":\"mdi:server-network\"}}",
@@ -446,11 +454,11 @@ def send_config_message(mqttClient):
     mqttClient.publish(
         topic=f"homeassistant/sensor/{deviceName}/net_rx/config",
         payload=f"{{\"name\":\"{deviceNameDisplay} Network Download\","
-                + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
+                + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
                 + '"unit_of_measurement":"Kb/sec",'
                 + '"value_template":"{{value_json.net_rx}}",'
                 + f"\"unique_id\":\"{deviceName}_sensor_net_rx\","
-                + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
+                + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
                 + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
                 + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"RPI {deviceNameDisplay}\", \"manufacturer\":\"RPI\"}},"
                 + f"\"icon\":\"mdi:server-network\"}}",
@@ -461,11 +469,11 @@ def send_config_message(mqttClient):
     mqttClient.publish(
         topic=f"homeassistant/sensor/{deviceName}/swap_usage/config",
         payload=f"{{\"name\":\"{deviceNameDisplay} Swap Usage\","
-                + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
+                + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
                 + '"unit_of_measurement":"%",'
                 + '"value_template":"{{value_json.swap_usage}}",'
                 + f"\"unique_id\":\"{deviceName}_sensor_swap_usage\","
-                + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
+                + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
                 + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
                 + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"RPI {deviceNameDisplay}\", \"manufacturer\":\"RPI\"}},"
                 + f"\"icon\":\"mdi:harddisk\"}}",
@@ -477,10 +485,10 @@ def send_config_message(mqttClient):
         topic=f"homeassistant/binary_sensor/{deviceName}/power_status/config",
         payload='{"device_class":"problem",'
                 + f"\"name\":\"{deviceNameDisplay} Under Voltage\","
-                + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
+                + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
                 + '"value_template":"{{value_json.power_status}}",'
                 + f"\"unique_id\":\"{deviceName}_sensor_power_status\","
-                + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
+                + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
                 + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
                 + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"RPI {deviceNameDisplay}\", \"manufacturer\":\"RPI\"}}"
                 + f"}}",
@@ -493,10 +501,10 @@ def send_config_message(mqttClient):
         topic=f"homeassistant/sensor/{deviceName}/last_boot/config",
         payload='{"device_class":"timestamp",'
                 + f"\"name\":\"{deviceNameDisplay} Last Boot\","
-                + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
+                + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
                 + '"value_template":"{{value_json.last_boot}}",'
                 + f"\"unique_id\":\"{deviceName}_sensor_last_boot\","
-                + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
+                + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
                 + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
                 + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"RPI {deviceNameDisplay}\", \"manufacturer\":\"RPI\"}},"
                 + f"\"icon\":\"mdi:clock\"}}",
@@ -506,10 +514,10 @@ def send_config_message(mqttClient):
     mqttClient.publish(
         topic=f"homeassistant/sensor/{deviceName}/hostname/config",
         payload=f"{{\"name\":\"{deviceNameDisplay} Hostname\","
-                + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
+                + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
                 + '"value_template":"{{value_json.host_name}}",'
                 + f"\"unique_id\":\"{deviceName}_sensor_host_name\","
-                + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
+                + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
                 + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
                 + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"RPI {deviceNameDisplay}\", \"manufacturer\":\"RPI\"}},"
                 + f"\"icon\":\"mdi:card-account-details\"}}",
@@ -519,10 +527,10 @@ def send_config_message(mqttClient):
     mqttClient.publish(
         topic=f"homeassistant/sensor/{deviceName}/host_ip/config",
         payload=f"{{\"name\":\"{deviceNameDisplay} Host Ip\","
-                + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
+                + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
                 + '"value_template":"{{value_json.host_ip}}",'
                 + f"\"unique_id\":\"{deviceName}_sensor_host_ip\","
-                + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
+                + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
                 + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
                 + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"RPI {deviceNameDisplay}\", \"manufacturer\":\"RPI\"}},"
                 + f"\"icon\":\"mdi:lan\"}}",
@@ -532,10 +540,10 @@ def send_config_message(mqttClient):
     mqttClient.publish(
         topic=f"homeassistant/sensor/{deviceName}/host_os/config",
         payload=f"{{\"name\":\"{deviceNameDisplay} Host OS\","
-                + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
+                + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
                 + '"value_template":"{{value_json.host_os}}",'
                 + f"\"unique_id\":\"{deviceName}_sensor_host_os\","
-                + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
+                + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
                 + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
                 + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"RPI {deviceNameDisplay}\", \"manufacturer\":\"RPI\"}},"
                 + f"\"icon\":\"mdi:linux\"}}",
@@ -545,10 +553,10 @@ def send_config_message(mqttClient):
     mqttClient.publish(
         topic=f"homeassistant/sensor/{deviceName}/host_arch/config",
         payload=f"{{\"name\":\"{deviceNameDisplay} Host Architecture\","
-                + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
+                + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
                 + '"value_template":"{{value_json.host_arch}}",'
                 + f"\"unique_id\":\"{deviceName}_sensor_host_arch\","
-                + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
+                + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
                 + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
                 + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"RPI {deviceNameDisplay}\", \"manufacturer\":\"RPI\"}},"
                 + f"\"icon\":\"mdi:chip\"}}",
@@ -559,10 +567,10 @@ def send_config_message(mqttClient):
         topic=f"homeassistant/sensor/{deviceName}/last_message/config",
         payload='{"device_class":"timestamp",'
                 + f"\"name\":\"{deviceNameDisplay} Last Message\","
-                + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
+                + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
                 + '"value_template":"{{value_json.last_message}}",'
                 + f"\"unique_id\":\"{deviceName}_sensor_last_message\","
-                + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
+                + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
                 + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
                 + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"RPI {deviceNameDisplay}\", \"manufacturer\":\"RPI\"}},"
                 + f"\"icon\":\"mdi:clock-check\"}}",
@@ -574,10 +582,10 @@ def send_config_message(mqttClient):
         topic=f"homeassistant/binary_sensor/{deviceName}/boiler_status/config",
         payload='{"device_class":"heat",'
                 + f"\"name\":\"{deviceNameDisplay} Boiler\","
-                + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
+                + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
                 + '"value_template":"{{value_json.boiler_status}}",'
                 + f"\"unique_id\":\"{deviceName}_boiler_status\","
-                + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
+                + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
                 + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
                 + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"RPI {deviceNameDisplay}\", \"manufacturer\":\"RPI\"}}"
                 + f"}}",
@@ -596,16 +604,31 @@ def send_config_message(mqttClient):
             topic=f"homeassistant/sensor/{deviceName}/{HA_Zone_Name[zone]}_temp/config",
             payload='{"device_class":"temperature",'
                     + f"\"name\":\"{deviceNameDisplay} {PiH_Zone_Name[zone]} Temperature\","
-                    + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
+                    + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
                     + '"unit_of_measurement":"°C",'
-#                    + '"value_template":"{{value_json.'
-#                    + f"{HA_Zone_Name[zone]}_temp"
-#                    + '}}",'
                     + '"value_template":"{{ value_json[\''
                     + f"{HA_Zone_Name[zone]}"
                     + '\'][\'temp\'] }}",'
                     + f"\"unique_id\":\"{deviceName}_{HA_Zone_Name[zone]}_temperature\","
-                    + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
+                    + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
+                    + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
+                    + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"{PiH_Zone_Type[zone]}\", \"manufacturer\":\"PiHome\"}},"
+                    + f"\"icon\":\"mdi:thermometer\"}}",
+            qos=1,
+            retain=True,
+        )
+
+        mqttClient.publish(
+            topic=f"homeassistant/sensor/{deviceName}/{HA_Zone_Name[zone]}_target_temp/config",
+            payload='{"device_class":"temperature",'
+                    + f"\"name\":\"{deviceNameDisplay} {PiH_Zone_Name[zone]} Target Temperature\","
+                    + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
+                    + '"unit_of_measurement":"°C",'
+                    + '"value_template":"{{ value_json[\''
+                    + f"{HA_Zone_Name[zone]}"
+                    + '\'][\'target_temp\'] }}",'
+                    + f"\"unique_id\":\"{deviceName}_{HA_Zone_Name[zone]}_target_temperature\","
+                    + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
                     + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
                     + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"{PiH_Zone_Type[zone]}\", \"manufacturer\":\"PiHome\"}},"
                     + f"\"icon\":\"mdi:thermometer\"}}",
@@ -617,15 +640,12 @@ def send_config_message(mqttClient):
             topic=f"homeassistant/binary_sensor/{deviceName}/{HA_Zone_Name[zone]}_status/config",
             payload='{"device_class":"heat",'
                     + f"\"name\":\"{deviceNameDisplay} {PiH_Zone_Name[zone]} Zone\","
-                    + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
-#                    + '"value_template":"{{value_json.'
-#                    + f"{HA_Zone_Name[zone]}_status"
-#                    + '}}",'
+                    + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
                     + '"value_template":"{{ value_json[\''
                     + f"{HA_Zone_Name[zone]}"
                     + '\'][\'status\'] }}",'
                     + f"\"unique_id\":\"{deviceName}_{HA_Zone_Name[zone]}_status\","
-                    + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
+                    + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
                     + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
                     + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"{PiH_Zone_Type[zone]}\", \"manufacturer\":\"PiHome\"}}"
                     + f"}}",
@@ -638,16 +658,13 @@ def send_config_message(mqttClient):
                 topic=f"homeassistant/sensor/{deviceName}/{HA_Zone_Name[zone]}_batt/config",
                 payload='{"device_class":"battery",'
                         + f"\"name\":\"{deviceNameDisplay} {PiH_Zone_Name[zone]} Battery\","
-                        + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
+                        + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
                         + '"unit_of_measurement":"%",'
-#                        + '"value_template":"{{value_json.'
-#                        + f"{HA_Zone_Name[zone]}_batt"
-#                        + '}}",'
                         + '"value_template":"{{ value_json[\''
                         + f"{HA_Zone_Name[zone]}"
                         + '\'][\'batt\'] }}",'
                         + f"\"unique_id\":\"{deviceName}_{HA_Zone_Name[zone]}_battery\","
-                        + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
+                        + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
                         + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
                         + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"{PiH_Zone_Type[zone]}\", \"manufacturer\":\"PiHome\"}}"
                         + f"}}",
@@ -658,16 +675,13 @@ def send_config_message(mqttClient):
                 topic=f"homeassistant/sensor/{deviceName}/{HA_Zone_Name[zone]}_battV/config",
                 payload='{"device_class":"voltage",'
                         + f"\"name\":\"{deviceNameDisplay} {PiH_Zone_Name[zone]} Battery Voltage\","
-                        + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
+                        + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
                         + '"unit_of_measurement":"V",'
-                        #+ '"value_template":"{{value_json.'
-                        #+ f"{HA_Zone_Name[zone]}_battV"
-                        #+ '}}",'
                         + '"value_template":"{{ value_json[\''
                         + f"{HA_Zone_Name[zone]}"
                         + '\'][\'battV\'] }}",'
                         + f"\"unique_id\":\"{deviceName}_{HA_Zone_Name[zone]}_battery_voltage\","
-                        + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
+                        + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
                         + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
                         + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"{PiH_Zone_Type[zone]}\", \"manufacturer\":\"PiHome\"}}"
                         + f"}}",
@@ -683,10 +697,10 @@ def send_config_message(mqttClient):
             mqttClient.publish(
                 topic=f"homeassistant/sensor/{deviceName}/updates/config",
                 payload=f"{{\"name\":\"{deviceNameDisplay} Updates\","
-                        + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
+                        + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
                         + '"value_template":"{{value_json.updates}}",'
                         + f"\"unique_id\":\"{deviceName}_sensor_updates\","
-                        + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
+                        + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
                         + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
                         + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"RPI {deviceNameDisplay}\", \"manufacturer\":\"RPI\"}},"
                         + f"\"icon\":\"mdi:cellphone-arrow-down\"}}",
@@ -700,11 +714,11 @@ def send_config_message(mqttClient):
             topic=f"homeassistant/sensor/{deviceName}/wifi_strength/config",
             payload='{"device_class":"signal_strength",'
                     + f"\"name\":\"{deviceNameDisplay} Wifi Strength\","
-                    + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
+                    + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
                     + '"unit_of_measurement":"dBm",'
                     + '"value_template":"{{value_json.wifi_strength}}",'
                     + f"\"unique_id\":\"{deviceName}_sensor_wifi_strength\","
-                    + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
+                    + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
                     + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
                     + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"RPI {deviceNameDisplay}\", \"manufacturer\":\"RPI\"}},"
                     + f"\"icon\":\"mdi:wifi\"}}",
@@ -718,10 +732,10 @@ def send_config_message(mqttClient):
             topic=f"homeassistant/sensor/{deviceName}/wifi_ssid/config",
             payload='{"device_class":"signal_strength",'
                     + f"\"name\":\"{deviceNameDisplay} Wifi SSID\","
-                    + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
+                    + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
                     + '"value_template":"{{value_json.wifi_ssid}}",'
                     + f"\"unique_id\":\"{deviceName}_sensor_wifi_ssid\","
-                    + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
+                    + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
                     + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
                     + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"RPI {deviceNameDisplay}\", \"manufacturer\":\"RPI\"}},"
                     + f"\"icon\":\"mdi:wifi\"}}",
@@ -729,13 +743,13 @@ def send_config_message(mqttClient):
             retain=True,
         )
 
-    mqttClient.publish(f"system-sensors/sensor/{deviceName}/availability", "online", retain=True)
+    mqttClient.publish(f"{MQTT_TOPIC}{deviceName}/availability", "online", retain=True)
 
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
         write_message_to_console("Connected to broker")
         client.subscribe("hass/status")
-        mqttClient.publish(f"system-sensors/sensor/{deviceName}/availability", "online", retain=True)
+        mqttClient.publish(f"{MQTT_TOPIC}{deviceName}/availability", "online", retain=True)
     else:
         write_message_to_console("Connection failed")
 
@@ -762,14 +776,15 @@ if __name__ == "__main__":
     con.close()
     MQTT_HOSTNAME = results[2]
     MQTT_PORT = results[3]
-    MQTT_USERNAME = results[4]
-    MQTT_PASSWORD = results[5]
+    MQTT_TOPIC = results[4]
+    MQTT_USERNAME = results[5]
+    MQTT_PASSWORD = results[6]
     mqttClient = mqtt.Client(MQTT_CLIENT_ID)
     mqttClient.on_connect = on_connect                      #attach function to callback
     mqttClient.on_message = on_message
     deviceName = MQTT_deviceName.replace(" ", "").lower()
     deviceNameDisplay = MQTT_deviceName
-    mqttClient.will_set(f"system-sensors/sensor/{deviceName}/availability", "offline", retain=True)
+    mqttClient.will_set(f"{MQTT_TOPIC}{deviceName}/availability", "offline", retain=True)
     mqttClient.username_pw_set(MQTT_USERNAME, MQTT_PASSWORD)
     signal.signal(signal.SIGTERM, signal_handler)
     signal.signal(signal.SIGINT, signal_handler)
@@ -790,7 +805,7 @@ if __name__ == "__main__":
             time.sleep(1)
         except ProgramKilled:
             write_message_to_console("Program killed: running cleanup code")
-            mqttClient.publish(f"system-sensors/sensor/{deviceName}/availability", "offline", retain=True)
+            mqttClient.publish(f"{MQTT_TOPIC}{deviceName}/availability", "offline", retain=True)
             mqttClient.disconnect()
             mqttClient.loop_stop()
             sys.stdout.flush()

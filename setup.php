@@ -194,17 +194,13 @@ $message = '#
 # */2 * * * * sh /var/www/cron/reboot_wifi.sh >>/var/www/cron/logs/reboot_wifi.log 2>&1
 */2 * * * * sh /var/www/cron/reboot_wifi.sh >/dev/null 2>&1
 
-# If you are using Wireless setup with Smart Home Gateway then you need followi$
+# If you are using Wireless setup with Smart Home Gateway then you need following crong job
 # to  check and start Smart Home Gateway python script if its not running.
-*/1 * * * * sudo php /var/www/cron/check_gw.php >/dev/null 2>&1
+*/1 * * * * php /var/www/cron/check_gw.php >/dev/null 2>&1
 
 # If you have Temperature Sensors Wired to Raspberry pi GPIO un-comment
 # following line to read temperature sensors data.
-#*/1 * * * * sudo php /var/www/cron/check_ds18b20.php >/dev/null 2>&1
-
-# If you want to push the zone status to Home Assistant via MQTT un-comment
-# following line to read temperature sensors data.
-#*/1 * * * * sudo php /var/www/cron/check_HA.php >/dev/null 2>&1
+# */1 * * * * python3 /var/www/cron/gpio_ds18b20.py >/dev/null 2>&1
 
 
 # Main engine for PiHome Smart Heating, If you want to ouput logs then comment first line and uncomment second line.
@@ -531,12 +527,6 @@ if ($tzname == 1) {
 	}
 
 }
-
-// Install Phyton requirements
-echo "---------------------------------------------------------------------------------------- \n";
-echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Installing Phyton modules \n";
-$requirements_txt = '/var/www/requirements.txt';
-exec("sudo pip3 install -r '$requirements_txt'");
 
 echo "---------------------------------------------------------------------------------------- \n";
 echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - PiHome Install Script Ended \n"; 

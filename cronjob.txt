@@ -5,7 +5,6 @@
 */2 * * * * sh /var/www/cron/reboot_wifi.sh >/dev/null 2>&1
 */1 * * * * sudo php /var/www/cron/check_gw.php >/dev/null 2>&1
 */1 * * * * sudo php /var/www/cron/check_ds18b20.php >/dev/null 2>&1
-*/1 * * * * php /var/www/cron/check_HA.php >/dev/null 2>&1
 */1 * * * * /usr/bin/php /var/www/cron/boiler.php >/dev/null 2>&1
 */1 * * * * /usr/bin/php /var/www/cron/piconnect.php >/dev/null 2>&1
 */30 * * * * python  /var/www/cron/notice.py >/dev/null 2>&1

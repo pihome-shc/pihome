@@ -496,7 +496,11 @@ function GetModal_MQTTAddEdit($conn)
             <div class="form-group">
                 <label>Port</label>
                 <input type="text" class="form-control" name="inp_Port" id="inp_Port" value="' . ($IsAdd ? '' : $row['port']) . '">
-            </div>               
+            </div>
+            <div class="form-group">
+                <label>Topic (e.g. HVAC/sensor/)</label>
+                <input type="text" class="form-control" name="inp_Topic" id="inp_Topic" value="' . ($IsAdd ? '' : $row['topic']) . '">
+            </div>                
             <div class="form-group">
                 <label>Username</label>
                 <input type="text" class="form-control" name="inp_Username" id="inp_Username" value="' . ($IsAdd ? '' : $row['username']) . '">

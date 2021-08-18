@@ -8,6 +8,4 @@
 */2 * * * * php /var/www/cron/check_gw.php >/dev/null 2>&1
 */1 * * * * /usr/bin/php /var/www/cron/boiler.php >/dev/null 2>&1
 */1 * * * * /usr/bin/php /var/www/cron/selfservice.php >/dev/null 2>&1
-*/1 * * * * sudo php /var/www/cron/check_ds18b20.php >/dev/null 2>&1
-*/1 * * * * php /var/www/cron/check_HA.php >/dev/null 2>&1
 # @reboot sh /var/www/cron/gw.sh >/dev/null 2>&1

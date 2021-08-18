@@ -330,6 +330,7 @@ CREATE TABLE `mqtt` (
   	`name` varchar(50) COLLATE utf16_bin NOT NULL,
   	`ip` varchar(39) COLLATE utf16_bin NOT NULL,
   	`port` int(11) NOT NULL,
+    `topic` varchar(50) COLLATE utf16_bin NOT NULL,
   	`username` varchar(50) COLLATE utf16_bin NOT NULL,
   	`password` varchar(50) COLLATE utf16_bin NOT NULL,
   	`enabled` tinyint(4) NOT NULL,
