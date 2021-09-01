@@ -5,7 +5,7 @@ After=multi-user.target
 [Service]
 User=root
 Type=idle
-ExecStart=/usr/bin/python3 /var/www/add_on/HomeAssistant/HA_integration.py
+ExecStart=/usr/bin/python3 /var/www/add_on/HomeAssistant/HA_HVAC_integration.py
 
 [Install]
 WantedBy=multi-user.target

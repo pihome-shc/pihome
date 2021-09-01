@@ -75,6 +75,9 @@ for row in results:
     PiH_Sensor_ID.append(row[1])
     PiH_Zone_Name.append(row[2])
     HA_Zone_Name.append(row[2].lower().replace(" ", ""))
+# Get frost protection temperature
+cur.execute('SELECT `temperature` FROM `frost_protection` LIMIT 1;')
+frost_protection_temp = cur.fetchone()[0]
 con.close()
 
 class ProgramKilled(Exception):
@@ -131,12 +134,68 @@ def get_last_message():
 
 
 def on_message(client, userdata, message):
-    print (f"Message received: {message.payload.decode()}"  )
-    if(message.payload.decode() == "online"):
+    con = mdb.connect(dbhost, dbuser, dbpass, dbname)
+    cur = con.cursor()
+    if (message.topic == "homeassistant/status") and (message.payload.decode() == "online"):
         send_config_message(client)
+    elif (message.topic[-12:] == "away/command"): 
+        if message.payload.decode() == "ON":             # Turn away mode on
+            cur.execute('UPDATE `away` SET `status` = 1 WHERE `id` = 1 ;') 
+        else:                                            # Turn off away
+            cur.execute('UPDATE `away` SET `status` = 0 WHERE `id` = 1 ;')  
+    elif (message.topic[-11:] == "aux_command"):
+        zone = HA_Zone_Name.index(message.topic.split('/')[1])
+        if message.payload.decode() == "ON":             # Turn boost on
+            cur.execute('UPDATE `boost` SET `status` = 1 WHERE `zone_id` = (%s)', [PiH_Zone_ID[zone]])
+        else:                                            # Turn boost off
+            cur.execute('UPDATE `boost` SET `status` = 0 WHERE `zone_id` = (%s)', [PiH_Zone_ID[zone]])
+    con.commit()
+    con.close()  
+    updateSensors()
 
 
 def updateSensors():
+    # Zones status
+    for zone in range(ZONES):
+        zone_status = get_zone(zone)
+        # [0 - Zone Mode, 1 - Zone Status, 2 - Traget Temp, 3 - Current Temp, 4 - Boost Status, 5 - Batt Level, 6 - Batt Voltage]
+        payload_str = (
+        '{'
+        + f'"mode": "{zone_status[0]}",'
+        + f'"hvac_action": "{zone_status[1]}",'
+        + f'"temperature": "{zone_status[2]}",'
+        + f'"current_temperature": "{zone_status[3]}",'
+        + f'"aux_heat": "{zone_status[4]}"'
+        + ' }'
+        )
+        mqttClient.publish(
+            topic=f"{MQTT_TOPIC}{HA_Zone_Name[zone]}/state",
+            payload=payload_str,
+            qos=1,
+            retain=False,
+        )
+        if PiH_Zone_Type[zone] == "MySensor":
+            payload_str = (
+            '{'
+            + f'"batt_level": "{zone_status[5]}",'
+            + f'"batt_voltage": "{zone_status[6]}"'
+            + ' }'
+            )
+            mqttClient.publish(
+                topic=f"{MQTT_TOPIC}{HA_Zone_Name[zone]}/MySensor",
+                payload=payload_str,
+                qos=1,
+                retain=False,
+            )  
+    # Away status
+    mqttClient.publish(
+        topic=f"{MQTT_TOPIC}away/state",
+        payload=get_away_status(),
+        qos=1,
+        retain=False,
+    )
+
+    #PiHome system status
     payload_str = (
         '{'
         + f'"temperature": {get_temp()},'
@@ -157,16 +216,6 @@ def updateSensors():
         + f'"net_tx": "{get_net_data()[0]}",'
         + f'"net_rx": "{get_net_data()[1]}",'
     )
-    for zone in range(ZONES):
-        payload_str = payload_str + f'"{HA_Zone_Name[zone]}": ' + '{'
-        zone_status = get_zone(zone)
-        payload_str = payload_str + f' "status": "{zone_status[0]}"'
-        payload_str = payload_str + f', "temp": {zone_status[1]}'
-        payload_str = payload_str + f', "target_temp": {zone_status[2]}'
-        if PiH_Zone_Type[zone] == "MySensor":
-            payload_str = payload_str + f', "batt": {zone_status[3]}'
-            payload_str = payload_str + f', "battV": {zone_status[4]}'
-        payload_str = payload_str + ' },'
     payload_str = payload_str + f'"boiler_status": "{get_boiler_status()}"'
     if CHECK_AVAILABLE_UPDATES and not apt_disabled:
         payload_str = payload_str + f', "updates": {get_updates()}'
@@ -181,6 +230,19 @@ def updateSensors():
         qos=1,
         retain=False,
     )
+
+    # Boiler status
+    payload_str = (
+    '{'
+    + f'"boiler_status": "{get_boiler_status()}"'
+    + ' }'
+    )
+    mqttClient.publish(
+        topic=f"{MQTT_TOPIC}boiler/state",
+        payload=payload_str,
+        qos=1,
+        retain=False,
+    )  
 
 
 def get_updates():
@@ -270,25 +332,46 @@ def get_boiler_status():
     else:
         return "OFF"
 
+def get_away_status():
+    con = mdb.connect(dbhost, dbuser, dbpass, dbname)
+    cur = con.cursor()
+    cur.execute('SELECT `status` FROM `away` LIMIT 1;')
+    results =cur.fetchone()
+    con.close()
+    if results[0] == 0:
+        return "OFF"
+    else:
+        return "ON"
+
 def get_zone(zone):
-    zone_status = []
+    zone_status = [] # [0 - Zone Mode, 1 - Zone Status, 2 - Traget Temp, 3 - Current Temp, 4 - Boost Status, 5 - Batt Level, 6 - Batt Voltage]
     con = mdb.connect(dbhost, dbuser, dbpass, dbname)
     cur = con.cursor()
     cur.execute('SELECT `status`, `temp_reading`, `temp_target` FROM `zone_current_state` WHERE `id` = (%s)', [PiH_Zone_ID[zone]])
     results = cur.fetchone()
-    con.close()
+    # [0]- Zone Mode, [1] - Zone Status & [2] - Traget Temp
+    if results[2] == 0:
+        zone_status.append("off") # [0]- Zone Mode
+        zone_status.append("off") # [1] - Zone Status
+        zone_status.append(frost_protection_temp) # [2] - Traget Temp
+    else:
+        zone_status.append("heat") # [0]- Zone Mode
+        if results[0] == 0:
+            zone_status.append("idle") # [1] - Zone Status
+        else:
+            zone_status.append("heating") # [1] - Zone Status
+        zone_status.append(results[2]) # [2] - Traget Temp
+    # [3] - Current Temp
+    zone_status.append(results[1])
+    # [4] - Boost Status
+    cur.execute('SELECT `status` FROM `boost` WHERE `zone_id` = (%s)', [PiH_Zone_ID[zone]])
+    results = cur.fetchone()
     if results[0] == 0:
         zone_status.append("OFF") 
     else:
         zone_status.append("ON") 
-    zone_status.append(results[1])
-    if results[2] == 0:
-        zone_status.append("\"OFF\"") 
-    else:
-        zone_status.append(results[2])
+    # [5] - Batt Level & [6] - Batt Voltage
     if PiH_Zone_Type[zone] == "MySensor":
-            con = mdb.connect(dbhost, dbuser, dbpass, dbname)
-            cur = con.cursor()
             cur.execute('SELECT `bat_level`, `bat_voltage`  FROM `nodes_battery` WHERE `node_id` = (%s) ORDER BY `id` desc LIMIT 1', [PiH_Sensor_ID[zone]])
             if cur.rowcount > 0:
                 results = cur.fetchone()
@@ -300,7 +383,7 @@ def get_zone(zone):
                     zone_status.append("0")
                 else:
                     zone_status.append(results[1])
-            con.close()
+    con.close()
     return zone_status
 
 def get_host_name():
@@ -578,117 +661,6 @@ def send_config_message(mqttClient):
         retain=True,
     )
 
-    mqttClient.publish(
-        topic=f"homeassistant/binary_sensor/{deviceName}/boiler_status/config",
-        payload='{"device_class":"heat",'
-                + f"\"name\":\"{deviceNameDisplay} Boiler\","
-                + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
-                + '"value_template":"{{value_json.boiler_status}}",'
-                + f"\"unique_id\":\"{deviceName}_boiler_status\","
-                + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
-                + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
-                + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"RPI {deviceNameDisplay}\", \"manufacturer\":\"RPI\"}}"
-                + f"}}",
-        qos=1,
-        retain=True,
-    )
-
-    for zone in range(ZONES):
-        con = mdb.connect(dbhost, dbuser, dbpass, dbname)
-        cur = con.cursor()
-        cur.execute('SELECT `node_id`, `type` FROM `nodes` where `node_id`= (%s)', [PiH_Sensor_ID[zone]])
-        results = cur.fetchone()
-        con.close()
-        PiH_Zone_Type.append(results[1])
-        mqttClient.publish(
-            topic=f"homeassistant/sensor/{deviceName}/{HA_Zone_Name[zone]}_temp/config",
-            payload='{"device_class":"temperature",'
-                    + f"\"name\":\"{deviceNameDisplay} {PiH_Zone_Name[zone]} Temperature\","
-                    + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
-                    + '"unit_of_measurement":"°C",'
-                    + '"value_template":"{{ value_json[\''
-                    + f"{HA_Zone_Name[zone]}"
-                    + '\'][\'temp\'] }}",'
-                    + f"\"unique_id\":\"{deviceName}_{HA_Zone_Name[zone]}_temperature\","
-                    + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
-                    + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
-                    + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"{PiH_Zone_Type[zone]}\", \"manufacturer\":\"PiHome\"}},"
-                    + f"\"icon\":\"mdi:thermometer\"}}",
-            qos=1,
-            retain=True,
-        )
-
-        mqttClient.publish(
-            topic=f"homeassistant/sensor/{deviceName}/{HA_Zone_Name[zone]}_target_temp/config",
-            payload='{"device_class":"temperature",'
-                    + f"\"name\":\"{deviceNameDisplay} {PiH_Zone_Name[zone]} Target Temperature\","
-                    + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
-                    + '"unit_of_measurement":"°C",'
-                    + '"value_template":"{{ value_json[\''
-                    + f"{HA_Zone_Name[zone]}"
-                    + '\'][\'target_temp\'] }}",'
-                    + f"\"unique_id\":\"{deviceName}_{HA_Zone_Name[zone]}_target_temperature\","
-                    + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
-                    + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
-                    + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"{PiH_Zone_Type[zone]}\", \"manufacturer\":\"PiHome\"}},"
-                    + f"\"icon\":\"mdi:thermometer\"}}",
-            qos=1,
-            retain=True,
-        )
-
-        mqttClient.publish(
-            topic=f"homeassistant/binary_sensor/{deviceName}/{HA_Zone_Name[zone]}_status/config",
-            payload='{"device_class":"heat",'
-                    + f"\"name\":\"{deviceNameDisplay} {PiH_Zone_Name[zone]} Zone\","
-                    + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
-                    + '"value_template":"{{ value_json[\''
-                    + f"{HA_Zone_Name[zone]}"
-                    + '\'][\'status\'] }}",'
-                    + f"\"unique_id\":\"{deviceName}_{HA_Zone_Name[zone]}_status\","
-                    + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
-                    + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
-                    + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"{PiH_Zone_Type[zone]}\", \"manufacturer\":\"PiHome\"}}"
-                    + f"}}",
-            qos=1,
-            retain=True,
-        )
-
-        if PiH_Zone_Type[zone] == "MySensor":
-            mqttClient.publish(
-                topic=f"homeassistant/sensor/{deviceName}/{HA_Zone_Name[zone]}_batt/config",
-                payload='{"device_class":"battery",'
-                        + f"\"name\":\"{deviceNameDisplay} {PiH_Zone_Name[zone]} Battery\","
-                        + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
-                        + '"unit_of_measurement":"%",'
-                        + '"value_template":"{{ value_json[\''
-                        + f"{HA_Zone_Name[zone]}"
-                        + '\'][\'batt\'] }}",'
-                        + f"\"unique_id\":\"{deviceName}_{HA_Zone_Name[zone]}_battery\","
-                        + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
-                        + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
-                        + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"{PiH_Zone_Type[zone]}\", \"manufacturer\":\"PiHome\"}}"
-                        + f"}}",
-            qos=1,
-            retain=True,
-            )
-            mqttClient.publish(
-                topic=f"homeassistant/sensor/{deviceName}/{HA_Zone_Name[zone]}_battV/config",
-                payload='{"device_class":"voltage",'
-                        + f"\"name\":\"{deviceNameDisplay} {PiH_Zone_Name[zone]} Battery Voltage\","
-                        + f"\"state_topic\":\"{MQTT_TOPIC}{deviceName}/state\","
-                        + '"unit_of_measurement":"V",'
-                        + '"value_template":"{{ value_json[\''
-                        + f"{HA_Zone_Name[zone]}"
-                        + '\'][\'battV\'] }}",'
-                        + f"\"unique_id\":\"{deviceName}_{HA_Zone_Name[zone]}_battery_voltage\","
-                        + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
-                        + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
-                        + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"{PiH_Zone_Type[zone]}\", \"manufacturer\":\"PiHome\"}}"
-                        + f"}}",
-            qos=1,
-            retain=True,
-            )
-
     if CHECK_AVAILABLE_UPDATES:
         # import apt
         if(apt_disabled):
@@ -708,6 +680,55 @@ def send_config_message(mqttClient):
                 retain=True,
             )
 
+    mqttClient.publish(
+        topic=f"homeassistant/binary_sensor/{deviceName}/boiler_status/config",
+        payload='{"device_class":"heat",'
+                + f"\"name\":\"{deviceNameDisplay} Boiler\","
+                + f"\"state_topic\":\"{MQTT_TOPIC}boiler/state\","
+                + '"value_template":"{{value_json.boiler_status}}",'
+                + f"\"unique_id\":\"{deviceName}_boiler_status\","
+                + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
+                + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
+                + f"\"name\":\"{deviceNameDisplay} Sensors\",\"model\":\"RPI {deviceNameDisplay}\", \"manufacturer\":\"RPI\"}}"
+                + f"}}",
+        qos=1,
+        retain=True,
+    )
+
+    for zone in range(ZONES):
+        con = mdb.connect(dbhost, dbuser, dbpass, dbname)
+        cur = con.cursor()
+        cur.execute('SELECT `node_id`, `type` FROM `nodes` where `node_id`= (%s)', [PiH_Sensor_ID[zone]])
+        results = cur.fetchone()
+        con.close()
+        PiH_Zone_Type.append(results[1])
+        mqttClient.publish(
+            topic=f"homeassistant/climate/{deviceName}/{HA_Zone_Name[zone]}/config",
+            payload='{"temp_unit":"C",'
+                    + '"modes": [\"off\", \"heat\"],'
+                    + f"\"avty_t\":\"{MQTT_TOPIC}{deviceName}/availability\","
+                    + f"\"away_mode_command_topic\":\"{MQTT_TOPIC}away/command\","
+                    + f"\"away_mode_state_topic\":\"{MQTT_TOPIC}away/state\","
+                    + f"\"uniq_id\":\"{deviceName}_{HA_Zone_Name[zone]}\","
+                    + f"\"name\":\"{deviceNameDisplay} {PiH_Zone_Name[zone]}\","
+                    + f"\"mode_stat_t\":\"{MQTT_TOPIC}{HA_Zone_Name[zone]}/state\","
+                    + '"mode_stat_tpl":"{{ value_json.mode }}",'
+                    + f"\"act_t\":\"{MQTT_TOPIC}{HA_Zone_Name[zone]}/state\","
+                    + '"act_tpl":"{{ value_json.hvac_action }}",'
+                    + f"\"aux_cmd_t\":\"{MQTT_TOPIC}{HA_Zone_Name[zone]}/aux_command\","
+                    + f"\"aux_stat_t\":\"{MQTT_TOPIC}{HA_Zone_Name[zone]}/state\","
+                    + '"aux_stat_tpl":"{{ value_json.aux_heat }}",'
+                    + f"\"curr_temp_t\":\"{MQTT_TOPIC}{HA_Zone_Name[zone]}/state\","
+                    + '"curr_temp_tpl":"{{ value_json.current_temperature }}",'
+                    + f"\"temp_stat_t\":\"{MQTT_TOPIC}{HA_Zone_Name[zone]}/state\","
+                    + '"temp_stat_tpl":"{{ value_json.temperature }}",'
+                    + f"\"json_attr_t\":\"{MQTT_TOPIC}{HA_Zone_Name[zone]}/MySensor\","
+                    + f"\"device\":{{\"identifiers\":[\"{deviceName}_{HA_Zone_Name[zone]}\"],"
+                    + f"\"name\":\"{deviceNameDisplay} {PiH_Zone_Name[zone]}\",\"model\":\"{PiH_Zone_Type[zone]}\", \"manufacturer\":\"PiHome\"}},"
+                    + f"\"icon\":\"mdi:thermometer\"}}",
+            qos=1,
+            retain=True,
+        )
 
     if CHECK_WIFI_STRENGHT:
         mqttClient.publish(
@@ -748,7 +769,10 @@ def send_config_message(mqttClient):
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
         write_message_to_console("Connected to broker")
-        client.subscribe("hass/status")
+        subscribe_topics =[("homeassistant/status", 0), (f"{MQTT_TOPIC}away/command", 0)] 
+        for zone in range(ZONES):
+            subscribe_topics.append((f"{MQTT_TOPIC}{HA_Zone_Name[zone]}/aux_command", 0))
+        client.subscribe(subscribe_topics)
         mqttClient.publish(f"{MQTT_TOPIC}{deviceName}/availability", "online", retain=True)
     else:
         write_message_to_console("Connection failed")
