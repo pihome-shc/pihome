@@ -149,6 +149,9 @@ def on_message(client, userdata, message):
             cur.execute('UPDATE `boost` SET `status` = 1 WHERE `zone_id` = (%s)', [PiH_Zone_ID[zone]])
         else:                                            # Turn boost off
             cur.execute('UPDATE `boost` SET `status` = 0 WHERE `zone_id` = (%s)', [PiH_Zone_ID[zone]])
+    elif (message.topic[-11:] == "target_temp"):
+        zone = HA_Zone_Name.index(message.topic.split('/')[1])
+        cur.execute('UPDATE `override` SET `status` = 1, `temperature` = (%s) WHERE `zone_id` = (%s)', [message.payload.decode(), PiH_Zone_ID[zone]])
     con.commit()
     con.close()  
     updateSensors()
@@ -706,26 +709,27 @@ def send_config_message(mqttClient):
             topic=f"homeassistant/climate/{deviceName}/{HA_Zone_Name[zone]}/config",
             payload='{"temp_unit":"C",'
                     + '"modes": [\"off\", \"heat\"],'
-                    + f"\"avty_t\":\"{MQTT_TOPIC}{deviceName}/availability\","
+                    + f"\"availability_topic\":\"{MQTT_TOPIC}{deviceName}/availability\","
                     + f"\"away_mode_command_topic\":\"{MQTT_TOPIC}away/command\","
                     + f"\"away_mode_state_topic\":\"{MQTT_TOPIC}away/state\","
-                    + f"\"uniq_id\":\"{deviceName}_{HA_Zone_Name[zone]}\","
+                    + f"\"unique_id\":\"{deviceName}_{HA_Zone_Name[zone]}\","
                     + f"\"name\":\"{deviceNameDisplay} {PiH_Zone_Name[zone]}\","
-                    + f"\"mode_stat_t\":\"{MQTT_TOPIC}{HA_Zone_Name[zone]}/state\","
-                    + '"mode_stat_tpl":"{{ value_json.mode }}",'
-                    + f"\"act_t\":\"{MQTT_TOPIC}{HA_Zone_Name[zone]}/state\","
-                    + '"act_tpl":"{{ value_json.hvac_action }}",'
-                    + f"\"aux_cmd_t\":\"{MQTT_TOPIC}{HA_Zone_Name[zone]}/aux_command\","
-                    + f"\"aux_stat_t\":\"{MQTT_TOPIC}{HA_Zone_Name[zone]}/state\","
-                    + '"aux_stat_tpl":"{{ value_json.aux_heat }}",'
-                    + f"\"curr_temp_t\":\"{MQTT_TOPIC}{HA_Zone_Name[zone]}/state\","
-                    + '"curr_temp_tpl":"{{ value_json.current_temperature }}",'
-                    + f"\"temp_stat_t\":\"{MQTT_TOPIC}{HA_Zone_Name[zone]}/state\","
-                    + '"temp_stat_tpl":"{{ value_json.temperature }}",'
-                    + f"\"json_attr_t\":\"{MQTT_TOPIC}{HA_Zone_Name[zone]}/MySensor\","
+                    + f"\"mode_state_topic\":\"{MQTT_TOPIC}{HA_Zone_Name[zone]}/state\","
+                    + '"mode_state_template":"{{ value_json.mode }}",'
+                    + f"\"action_topic\":\"{MQTT_TOPIC}{HA_Zone_Name[zone]}/state\","
+                    + '"action_template":"{{ value_json.hvac_action }}",'
+                    + f"\"aux_command_topic\":\"{MQTT_TOPIC}{HA_Zone_Name[zone]}/aux_command\","
+                    + f"\"aux_state_topic\":\"{MQTT_TOPIC}{HA_Zone_Name[zone]}/state\","
+                    + '"aux_state_template":"{{ value_json.aux_heat }}",'
+                    + f"\"current_temperature_topic\":\"{MQTT_TOPIC}{HA_Zone_Name[zone]}/state\","
+                    + '"current_temperature_template":"{{ value_json.current_temperature }}",'
+                    + f"\"temperature_state_topic\":\"{MQTT_TOPIC}{HA_Zone_Name[zone]}/state\","
+                    + '"temperature_state_template":"{{ value_json.temperature }}",'
+                    + f"\"temperature_command_topic\":\"{MQTT_TOPIC}{HA_Zone_Name[zone]}/target_temp\","
+                    + f"\"json_attributes_topic\":\"{MQTT_TOPIC}{HA_Zone_Name[zone]}/MySensor\","
                     + f"\"device\":{{\"identifiers\":[\"{deviceName}_{HA_Zone_Name[zone]}\"],"
-                    + f"\"name\":\"{deviceNameDisplay} {PiH_Zone_Name[zone]}\",\"model\":\"{PiH_Zone_Type[zone]}\", \"manufacturer\":\"PiHome\"}},"
-                    + f"\"icon\":\"mdi:thermometer\"}}",
+                    + f"\"name\":\"{deviceNameDisplay} {PiH_Zone_Name[zone]}\",\"model\":\"{PiH_Zone_Type[zone]}\", \"manufacturer\":\"PiHome\"}}"
+                    + '}',
             qos=1,
             retain=True,
         )
@@ -772,6 +776,7 @@ def on_connect(client, userdata, flags, rc):
         subscribe_topics =[("homeassistant/status", 0), (f"{MQTT_TOPIC}away/command", 0)] 
         for zone in range(ZONES):
             subscribe_topics.append((f"{MQTT_TOPIC}{HA_Zone_Name[zone]}/aux_command", 0))
+            subscribe_topics.append((f"{MQTT_TOPIC}{HA_Zone_Name[zone]}/target_temp", 0))
         client.subscribe(subscribe_topics)
         mqttClient.publish(f"{MQTT_TOPIC}{deviceName}/availability", "online", retain=True)
     else:
