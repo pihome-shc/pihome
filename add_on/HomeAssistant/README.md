@@ -1,4 +1,4 @@
-# Home Assistant intehration
+# Home Assistant integration
 For monitoring and controlling PiHome from Home Assistant via MQTT. PiHome will automatically broadcast over MQTT all the entity definitions needed to setup and then update the following HA entities:
 * PiHome CPU Usage - sensor
 * PiHome CPU Load (1m, 5m and 15m) - sensors
