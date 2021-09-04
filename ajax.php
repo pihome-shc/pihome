@@ -496,7 +496,11 @@ function GetModal_MQTTAddEdit($conn)
             <div class="form-group">
                 <label>Port</label>
                 <input type="text" class="form-control" name="inp_Port" id="inp_Port" value="' . ($IsAdd ? '' : $row['port']) . '">
-            </div>               
+            </div>
+            <div class="form-group">
+                <label>Topic (e.g. HVAC/sensor/)</label>
+                <input type="text" class="form-control" name="inp_Topic" id="inp_Topic" value="' . ($IsAdd ? '' : $row['topic']) . '">
+            </div>                
             <div class="form-group">
                 <label>Username</label>
                 <input type="text" class="form-control" name="inp_Username" id="inp_Username" value="' . ($IsAdd ? '' : $row['username']) . '">
@@ -517,6 +521,7 @@ function GetModal_MQTTAddEdit($conn)
                 <select class="form-control" id="sel_Type" name="sel_Type" >
                     <option value="0" ' . ($IsAdd ? '' : ($row['type'] ? 'selected' : '')) . '>Default - view all</option>
                     <option value="1" ' . ($IsAdd ? '' : ($row['type'] ? 'selected' : '')) . '>Sonoff - Tasmota</option>
+                    <option value="2" ' . ($IsAdd ? '' : ($row['type'] ? 'selected' : '')) . '>Home Assistant - Inegration</option>
                 </select>
             </div>
             </form>';

@@ -999,11 +999,12 @@ if($what=="mqtt"){
 	}
 	if($opp=="add"){
         $query = "INSERT INTO `mqtt` 
-            (`id`, `name`, `ip`, `port`, `username`, `password`, `enabled`, `type`) VALUES 
+            (`id`, `name`, `ip`, `port`, `topic`, `username`, `password`, `enabled`, `type`) VALUES 
             (NULL,
              '" . $_GET['inp_Name'] . "',
              '" . $_GET['inp_IP'] . "',
              " . $_GET['inp_Port'] . ",
+			 " . $_GET['inp_Topic'] . ",
              '" . $_GET['inp_Username'] . "',
              '" . $_GET['inp_Password'] . "',
              " . $_GET['sel_Enabled'] . ",
@@ -1023,6 +1024,7 @@ if($what=="mqtt"){
             `name`='" . $_GET['inp_Name'] . "',
             `ip`='" . $_GET['inp_IP'] . "',
             `port`=" . $_GET['inp_Port'] . ",
+			`topic`='" . $_GET['inp_Topic'] . "',
             `username`='" . $_GET['inp_Username'] . "',
             `password`='" . $_GET['inp_Password'] . "',
             `enabled`=" . $_GET['sel_Enabled'] . ",
