@@ -625,6 +625,13 @@ while ($row = mysqli_fetch_assoc($results)) {
 										$zone_mode = 0;
 										$stop_cause="No Schedule";
 										$zone_state = 0;
+										// Uncomment the following lines to disable the override when the current schedule for the zone ends.
+#										$query = "SELECT temperature FROM boost WHERE zone_id = {$zone_id} LIMIT 1;"; #HA-Integration
+#										$result = $conn->query($query); #HA-Integration
+#										$boost = mysqli_fetch_array($result); #HA-Integration
+#										$boost_c = $boost['temperature']; #HA-Integration
+#										$query = "UPDATE override SET status = '0', temperature = '{$boost_c}' WHERE `override`.`zone_id`= '{$zone_id}' LIMIT 1"; #HA-Integration
+#										$conn->query($query); #HA-Integration
 									}
 								}elseif(($night_climate_status=='1') && ($zone_c < $temp_cut_in)){
 									$zone_status="1";
