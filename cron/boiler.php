@@ -1110,7 +1110,8 @@ if (TimeIsBetweenTwoTimes($current_time, $start_time, $end_time)) {
 	$email = $user_row['email'];
 	echo "---------------------------------------------------------------------------------------- \n";
 	echo "\033[36m".date('Y-m-d H:i:s'). "\033[0m - Calling Home \n";
-	$external_ip = file_get_contents('http://www.pihome.eu/piconnect/myip.php');
+	//$external_ip = file_get_contents('http://www.pihome.eu/piconnect/myip.php');
+	$external_ip = exec ("curl -s checkip.amazonaws.com");
 	$pi_serial = exec ("cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2");
 	$cpu_model = exec ("cat /proc/cpuinfo | grep 'model name' | cut -d ' ' -f 3-");
 	$cpu_model = urlencode($cpu_model);
